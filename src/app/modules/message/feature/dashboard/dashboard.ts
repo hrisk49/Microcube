@@ -1,7 +1,8 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import Highcharts from 'highcharts';
 import 'highcharts/highcharts-3d';
 import {HighchartsChartModule} from 'highcharts-angular';
+import {ButtonActions} from '../../../../shared/constant/button-actions';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,7 +12,7 @@ import {HighchartsChartModule} from 'highcharts-angular';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
 
   pieColors = [
     // Soft Neutrals & Calm Tones
@@ -44,6 +45,21 @@ export class Dashboard {
     '#F0EFEB',  // Off-white Beige
   ];
   Highcharts: typeof Highcharts = Highcharts;
+
+  constructor() {
+  }
+
+  ngOnInit(): void {
+    ButtonActions.set({
+      save: true,
+      update: false,
+      view: true,
+      delete: true,
+      exit: true,
+      reset: true
+    });
+  }
+
   chartOptionsPie: Highcharts.Options = {
     colors: this.pieColors,
     chart: {

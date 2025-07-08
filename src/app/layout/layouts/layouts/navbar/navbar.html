@@ -14,18 +14,17 @@
 
   <div class="flex items-center space-x-3">
     <!-- Buttons -->
-    @if (submitAction === SAVE) {
-      <app-save></app-save>
-    } @else if (submitAction === UPDATE) {
-      <app-update></app-update>
-    }
 
-    <app-view></app-view>
+    <app-save *ngIf="buttons().save"></app-save>
 
-    <app-delete></app-delete>
+    <app-update *ngIf="buttons().update"></app-update>
 
-    <app-reset></app-reset>
+    <app-view *ngIf="buttons().view"></app-view>
 
-    <app-exit></app-exit>
+    <app-delete *ngIf="buttons().delete"></app-delete>
+
+    <app-reset *ngIf="buttons().reset"></app-reset>
+
+    <app-exit *ngIf="buttons().exit"></app-exit>
   </div>
 </div>
