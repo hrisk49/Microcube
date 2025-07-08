@@ -4,91 +4,281 @@ html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 
-$save: #4A90E2;
-$view: #06B6D4;
-$exit: #F59E0B;
-$reset: #9CA3AF;
-$delete: #EF4444;
+//$save: #4A90E2;
+//$view: #06B6D4;
+//$exit: #F59E0B;
+//$reset: #9CA3AF;
+//$delete: #EF4444;
+//
+//.btn {
+//  display: flex;
+//  align-items: center;
+//  gap: 0.5rem;
+//  justify-content: flex-start;
+//  width: fit-content;
+//  min-width: 105px;
+//  height: 40px;
+//  border: none;
+//  padding: 0px 15px;
+//  border-radius: 6px;
+//  cursor: pointer;
+//  transition: all 0.3s;
+//
+//  // button text
+//  color: #FFFFFF;
+//  font-size: 16px;
+//  font-weight: 500;
+//  letter-spacing: 0.5px;
+//
+//  &:hover {
+//    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+//  }
+//
+//  &:active {
+//    transform: scale(0.95);
+//  }
+//
+//  &:focus {
+//    outline: 2px solid rgba(255, 255, 255, 0.3);
+//    outline-offset: 2px;
+//  }
+//}
+//
+//.save-btn {
+//  @extend .btn;
+//  background-color: $save;
+//
+//  &:hover {
+//    background-color: darken($save, 10%);
+//  }
+//}
+//
+//.view-btn {
+//  @extend .btn;
+//  background-color: $view;
+//
+//  &:hover {
+//    background-color: darken($view, 10%);
+//  }
+//}
+//
+//.delete-btn {
+//  @extend .btn;
+//  background-color: $delete;
+//
+//  &:hover {
+//    background-color: darken($delete, 10%);
+//  }
+//}
+//
+//.reset-btn {
+//  @extend .btn;
+//  background-color: $reset;
+//
+//  &:hover {
+//    background-color: darken($reset, 10%);
+//  }
+//
+//  &:focus {
+//    outline: 2px solid rgba(0, 0, 0, 0.3); // Dark outline for light button
+//  }
+//}
+//
+//.exit-btn {
+//  @extend .btn;
+//  background-color: $exit;
+//
+//  &:hover {
+//    background-color: darken($exit, 10%);
+//  }
+//}
 
-.btn {
-  display: flex;
+
+// Color Palette
+$banking-primary: #2563EB;     // Corporate blue (trust, stability)
+$banking-success: #16A34A;     // Process success (softer green)
+$banking-info: #0EA5E9;        // Information/view (calming blue)
+$banking-warning: #EA580C;     // Alert/caution (muted orange)
+$banking-danger: #DC2626;      // Critical/delete (reserved red)
+$banking-neutral: #64748B;     // Secondary actions (soft gray)
+
+// Background colors
+$bg-primary: #F8FAFC;          // Very light blue-gray
+$bg-surface: #FFFFFF;          // Pure white
+$bg-hover: #F1F5F9;            // Subtle hover background
+
+// Text colors
+$text-primary: #1E293B;        // Dark blue-gray (easier than pure black)
+$text-secondary: #475569;      // Medium gray
+$text-inverse: #FFFFFF;        // White text
+
+// specific button base
+.banking-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  justify-content: flex-start;
-  width: fit-content;
-  min-width: 105px;
-  height: 40px;
-  border: none;
-  padding: 0px 15px;
+  justify-content: center;
+  gap: 7px;
+  min-width: 100px;
+  height: 38px;
+  padding: 0 18px;
+  border: 1px solid transparent;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s;
+  position: relative;
 
-  // button text
-  color: #FFFFFF;
-  font-size: 16px;
+  // Optimized transitions
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.6, 1);
+
+  // standard typography
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 13.5px;             // Balanced readability
   font-weight: 500;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  text-decoration: none;
 
-  &:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  }
+  // Reduce subtle shadows
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
-  &:active {
-    transform: scale(0.95);
-  }
-
+  // Accessibility & UX
   &:focus {
-    outline: 2px solid rgba(255, 255, 255, 0.3);
+    outline: 2px solid currentColor;
     outline-offset: 2px;
   }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  // Subtle hover effect
+  &:hover:not(:disabled) {
+    transform: translateY(-0.5px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    transition-duration: 0.05s;
+  }
+
+  // Icon styling
+  .icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
 }
 
+// PRIMARY: Transaction Processing, Save
 .save-btn {
-  @extend .btn;
-  background-color: $save;
+  @extend .banking-btn;
+  background-color: $banking-success;
+  color: $text-inverse;
+  border-color: darken($banking-success, 5%);
 
-  &:hover {
-    background-color: darken($save, 10%);
-  }
-}
-
-.view-btn {
-  @extend .btn;
-  background-color: $view;
-
-  &:hover {
-    background-color: darken($view, 10%);
-  }
-}
-
-.delete-btn {
-  @extend .btn;
-  background-color: $delete;
-
-  &:hover {
-    background-color: darken($delete, 10%);
-  }
-}
-
-.reset-btn {
-  @extend .btn;
-  background-color: $reset;
-
-  &:hover {
-    background-color: darken($reset, 10%);
+  &:hover:not(:disabled) {
+    background-color: darken($banking-success, 6%);
+    border-color: darken($banking-success, 10%);
   }
 
   &:focus {
-    outline: 2px solid rgba(0, 0, 0, 0.3); // Dark outline for light button
+    outline-color: $banking-success;
+    box-shadow: 0 0 0 3px rgba($banking-success, 0.2);
+  }
+
+  &:active:not(:disabled) {
+    background-color: darken($banking-success, 8%);
   }
 }
 
-.exit-btn {
-  @extend .btn;
-  background-color: $exit;
+// SECONDARY: View Records, Reports
+.view-btn {
+  @extend .banking-btn;
+  background-color: $banking-info;
+  color: $text-inverse;
+  border-color: darken($banking-info, 5%);
 
-  &:hover {
-    background-color: darken($exit, 10%);
+  &:hover:not(:disabled) {
+    background-color: darken($banking-info, 6%);
+    border-color: darken($banking-info, 10%);
+  }
+
+  &:focus {
+    outline-color: $banking-info;
+    box-shadow: 0 0 0 3px rgba($banking-info, 0.2);
+  }
+
+  &:active:not(:disabled) {
+    background-color: darken($banking-info, 8%);
+  }
+}
+
+// DANGER: Delete Records, Cancel Transactions
+.delete-btn {
+  @extend .banking-btn;
+  background-color: $bg-surface;
+  color: $banking-danger;
+  border-color: $banking-danger;
+
+  &:hover:not(:disabled) {
+    background-color: $banking-danger;
+    color: $text-inverse;
+    border-color: darken($banking-danger, 5%);
+  }
+
+  &:focus {
+    outline-color: $banking-danger;
+    box-shadow: 0 0 0 3px rgba($banking-danger, 0.2);
+  }
+
+  &:active:not(:disabled) {
+    background-color: darken($banking-danger, 5%);
+  }
+}
+
+// NEUTRAL: Reset Forms, Clear Data
+.reset-btn {
+  @extend .banking-btn;
+  background-color: $bg-surface;
+  color: $banking-neutral;
+  border-color: lighten($banking-neutral, 20%);
+
+  &:hover:not(:disabled) {
+    background-color: $bg-hover;
+    color: darken($banking-neutral, 10%);
+    border-color: $banking-neutral;
+  }
+
+  &:focus {
+    outline-color: $banking-neutral;
+    box-shadow: 0 0 0 3px rgba($banking-neutral, 0.15);
+  }
+
+  &:active:not(:disabled) {
+    background-color: darken($bg-hover, 3%);
+  }
+}
+
+// WARNING: Exit, Logout, Cancel
+.exit-btn {
+  @extend .banking-btn;
+  background-color: $banking-warning;
+  color: $text-inverse;
+  border-color: darken($banking-warning, 5%);
+
+  &:hover:not(:disabled) {
+    background-color: darken($banking-warning, 6%);
+    border-color: darken($banking-warning, 10%);
+  }
+
+  &:focus {
+    outline-color: $banking-warning;
+    box-shadow: 0 0 0 3px rgba($banking-warning, 0.2);
+  }
+
+  &:active:not(:disabled) {
+    background-color: darken($banking-warning, 8%);
   }
 }
