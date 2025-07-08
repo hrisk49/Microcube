@@ -36,7 +36,6 @@ export class Layout {
       }
 
       this.lastPressTime = now;
-
       if (this.spacePressCount === 2) {
         this.isBlurred = !this.isBlurred;
         this.spacePressCount = 0;
