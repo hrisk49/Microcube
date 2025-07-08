@@ -1,0 +1,119 @@
+<div class="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 p-6 overflow-auto">
+  <div class="max-w-7xl mx-auto">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div
+        class="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Recurring</p>
+            <p class="text-3xl font-bold text-gray-800 mt-1">৳200000</p>
+          </div>
+          <div
+            class="w-16 h-16 bg-[#C5BCF7] rounded-2xl flex items-center justify-center shadow-lg">
+            <i data-lucide="users" class="w-8 h-8 text-white"></i>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Savings</p>
+            <p class="text-3xl font-bold text-gray-800 mt-1">৳400000</p>
+          </div>
+          <div
+            class="w-16 h-16 bg-[#B2F5EA] rounded-2xl flex items-center justify-center shadow-lg">
+            <i data-lucide="dollar-sign" class="w-8 h-8 text-white"></i>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Fixed Deposit</p>
+            <p class="text-3xl font-bold text-gray-800 mt-1">৳500000</p>
+          </div>
+          <div
+            class="w-16 h-16 bg-[#FFC4B9] rounded-2xl flex items-center justify-center shadow-lg">
+            <i data-lucide="shopping-cart" class="w-8 h-8 text-white"></i>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform border border-gray-100">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium">Current</p>
+            <p class="text-3xl font-bold text-gray-800 mt-1">৳300000</p>
+          </div>
+          <div
+            class="w-16 h-16 bg-[#A0AEC0] rounded-2xl flex items-center justify-center shadow-lg">
+            <i data-lucide="trending-up" class="w-8 h-8 text-white"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Sections -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Pie Chart Area -->
+      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-bold text-gray-800">Deposit Distribution by Account Type</h3>
+          <div class="flex space-x-2">
+            <button
+              class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors">
+              Weekly
+            </button>
+            <button
+              class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              Monthly
+            </button>
+          </div>
+        </div>
+        <div
+          class="mt-10 h-80 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-200">
+          <div class="text-center">
+            <highcharts-chart
+              [Highcharts]="Highcharts"
+              [options]="chartOptionsPie"
+              style="width: 100%; height: 400px; display: block;">
+            </highcharts-chart>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bar Chart Area -->
+      <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-bold text-gray-800">Branch Overview</h3>
+          <div class="flex space-x-2">
+            <button
+              class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors">
+              Weekly
+            </button>
+            <button
+              class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              Monthly
+            </button>
+          </div>
+        </div>
+        <div
+          class="mt-10 h-80 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-200">
+          <div class="text-center">
+            <highcharts-chart
+              [Highcharts]="Highcharts"
+              [options]="chartOptionsBar"
+              style="width: 100%; height: 400px; display: block;">
+            </highcharts-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

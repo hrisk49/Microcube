@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+$save: #4A90E2;
+$view: #06B6D4;
+$exit: #F59E0B;
+$reset: #9CA3AF;
+$delete: #EF4444;
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  width: fit-content;
+  min-width: 105px;
+  height: 40px;
+  border: none;
+  padding: 0px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  // button text
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus {
+    outline: 2px solid rgba(255, 255, 255, 0.3);
+    outline-offset: 2px;
+  }
+}
+
+.save-btn {
+  @extend .btn;
+  background-color: $save;
+
+  &:hover {
+    background-color: darken($save, 10%);
+  }
+}
+
+.view-btn {
+  @extend .btn;
+  background-color: $view;
+
+  &:hover {
+    background-color: darken($view, 10%);
+  }
+}
+
+.delete-btn {
+  @extend .btn;
+  background-color: $delete;
+
+  &:hover {
+    background-color: darken($delete, 10%);
+  }
+}
+
+.reset-btn {
+  @extend .btn;
+  background-color: $reset;
+
+  &:hover {
+    background-color: darken($reset, 10%);
+  }
+
+  &:focus {
+    outline: 2px solid rgba(0, 0, 0, 0.3); // Dark outline for light button
+  }
+}
+
+.exit-btn {
+  @extend .btn;
+  background-color: $exit;
+
+  &:hover {
+    background-color: darken($exit, 10%);
+  }
+}
