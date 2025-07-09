@@ -22,6 +22,7 @@ import {ButtonActions} from '../../../../shared/constant/button-actions';
     NgIf
   ],
   templateUrl: './navbar.html',
+  standalone: true,
   styleUrl: './navbar.scss'
 })
 export class Navbar {

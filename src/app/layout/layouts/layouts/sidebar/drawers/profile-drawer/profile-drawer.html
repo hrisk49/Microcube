@@ -1,1 +1,108 @@
-<p>profile-drawer works!</p>
+<div class="h-full overflow-y-auto pb-16">
+  <div class="p-6 space-y-4">
+    <!-- Profile Section -->
+    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+      <div class="flex items-center space-x-3 mb-3">
+        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+          <i class="fas fa-user text-white text-lg"></i>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-800">John Doe</h3>
+          <p class="text-sm text-gray-600">john.doe@email.com</p>
+        </div>
+      </div>
+      <button class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors">
+        <i class="fas fa-edit mr-2"></i>Edit Profile
+      </button>
+    </div>
+
+    <!-- My Profile -->
+    <div class="border-b border-gray-200 pb-4">
+      <button class="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+          <i class="fas fa-user-circle text-blue-600"></i>
+        </div>
+        <div class="flex-1 text-left">
+          <p class="font-medium text-gray-800">My Profile</p>
+          <p class="text-sm text-gray-600">View and edit your profile</p>
+        </div>
+        <i class="fas fa-chevron-right text-gray-400"></i>
+      </button>
+    </div>
+
+    <!-- Service Request -->
+    <div class="border-b border-gray-200 pb-4">
+      <button class="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+          <i class="fas fa-clipboard-list text-green-600"></i>
+        </div>
+        <div class="flex-1 text-left">
+          <p class="font-medium text-gray-800">Service Request</p>
+          <p class="text-sm text-gray-600">Request new services</p>
+        </div>
+        <i class="fas fa-chevron-right text-gray-400"></i>
+      </button>
+    </div>
+
+    <!-- System Date -->
+    <div class="border-b border-gray-200 pb-4">
+      <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+          <i class="fas fa-calendar-alt text-purple-600"></i>
+        </div>
+        <div class="flex-1">
+          <p class="font-medium text-gray-800">System Date</p>
+          <p class="text-sm text-gray-600">{{currentDate | date:'medium'}}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change Branch -->
+    <div class="border-b border-gray-200 pb-4">
+      <button class="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+        <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+          <i class="fas fa-code-branch text-orange-600"></i>
+        </div>
+        <div class="flex-1 text-left">
+          <p class="font-medium text-gray-800">Change Branch</p>
+          <p class="text-sm text-gray-600">Current: {{selectedBranch}}</p>
+        </div>
+        <i class="fas fa-chevron-right text-gray-400"></i>
+      </button>
+    </div>
+
+    <!-- Notifications -->
+    <div class="border-b border-gray-200 pb-4">
+      <button class="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors relative">
+        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+          <i class="fas fa-bell text-red-600"></i>
+        </div>
+        <div class="flex-1 text-left">
+          <p class="font-medium text-gray-800">Notifications</p>
+          <p class="text-sm text-gray-600">View all notifications</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">{{notificationCount}}</span>
+          <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+      </button>
+    </div>
+
+    <!-- Messaging -->
+    <div class="border-b border-gray-200 pb-4">
+      <button class="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+        <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+          <i class="fas fa-envelope text-indigo-600"></i>
+        </div>
+        <div class="flex-1 text-left">
+          <p class="font-medium text-gray-800">Messaging</p>
+          <p class="text-sm text-gray-600">Send and receive messages</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="bg-indigo-500 text-white text-xs px-2 py-1 rounded-full">{{messageCount}}</span>
+          <i class="fas fa-chevron-right text-gray-400"></i>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>

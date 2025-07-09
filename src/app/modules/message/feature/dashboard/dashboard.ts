@@ -10,6 +10,7 @@ import {ButtonActions} from '../../../../shared/constant/button-actions';
     HighchartsChartModule
   ],
   templateUrl: './dashboard.html',
+  standalone: true,
   styleUrl: './dashboard.scss'
 })
 export class Dashboard implements OnInit {
