@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 
@@ -25,6 +25,7 @@ export class ChatBox {
   searchQuery = '';
   messageText = '';
   isTyping = false;
+  @Input() closeChat!: () => void;
 
   messages: Message[] = [
     {
@@ -191,7 +192,7 @@ export class ChatBox {
     }
   }
 
-  closeChat() {
-
+  onCloseClick() {
+    this.closeChat();
   }
 }

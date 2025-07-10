@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {NgClass, TitleCasePipe} from '@angular/common';
 import {MenuDrawer} from '../menu-drawer/menu-drawer';
 import {ChatBox} from './drawers/chat-box/chat-box';
@@ -21,13 +21,17 @@ export class ProfileDrawer {
   isMessagingOpen = false;
 
 
-  isChatOpen: boolean = false;
+  isChatOpen = signal(false);
   chatWith: string;
 
   toggleChat(chatWith: string) {
-    this.isChatOpen = !this.isChatOpen;
-    if (this.chatWith !== chatWith) this.isChatOpen = true;
-    if (this.isChatOpen) this.chatWith = chatWith;
+    this.isChatOpen.set(!this.isChatOpen());
+    if (this.chatWith !== chatWith) this.isChatOpen.set(true);
+    if (this.isChatOpen()) this.chatWith = chatWith;
+  }
+
+  closeChatFromChild() {
+    this.isChatOpen.set(false);
   }
 
 
