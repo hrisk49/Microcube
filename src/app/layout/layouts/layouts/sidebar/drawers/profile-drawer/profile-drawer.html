@@ -9,7 +9,7 @@
         </div>
         <div>
           <h3 class="font-semibold text-gray-800">Mahfuz</h3>
-          <p class="text-sm text-gray-600">john.doe.com</p>
+          <p class="text-sm text-gray-600">mahfuz.gmail.com</p>
         </div>
       </div>
       <button class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors">
@@ -18,7 +18,7 @@
     </div>
 
     <!-- Service Request -->
-    <div class="border-b border-gray-200 pb-4">
+    <div class="border-b border-gray-200 pb-2">
       <button class="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
         <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
           <i class="fas fa-clipboard-list text-green-600"></i>
@@ -32,7 +32,7 @@
     </div>
 
     <!-- Branch -->
-    <div class="border-b border-gray-200 pb-4">
+    <div class="border-b border-gray-200 pb-2">
       <button class="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
         <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
           <i class="fas fa-code-branch text-orange-600"></i>
@@ -46,48 +46,94 @@
     </div>
 
     <!-- Notifications (Expandable) -->
-    <div class="border-b border-gray-200 pb-4">
+    <div class="border-b border-gray-200 pb-2">
       <button
         class="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors relative"
         (click)="isNotificationsOpen = !isNotificationsOpen"
       >
-        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-          <i class="fas fa-bell text-red-600"></i>
+        <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+          <i class="fas fa-bell text-blue-600"></i>
         </div>
         <div class="flex-1 text-left">
           <p class="font-medium text-gray-800">Notifications</p>
-          <p class="text-sm text-gray-600">View all notifications</p>
+          <p class="text-sm text-gray-600">Latest alerts</p>
         </div>
         <div class="flex items-center space-x-2">
-          <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">{{ 3 }}</span>
-          <i
-            class="fas"
-            [ngClass]="isNotificationsOpen ? 'fa-chevron-down' : 'fa-chevron-right'"
-            class="text-gray-400"
-          ></i>
+          <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">3</span>
+          <i [ngClass]="isNotificationsOpen ? 'fa-chevron-down' : 'fa-chevron-right'" class="text-gray-400"></i>
         </div>
       </button>
 
-      <div
-        class="mt-2 space-y-2 pl-14 pr-4 overflow-hidden transition-[max-height] duration-700 ease-in-out"
-        [style.maxHeight]="isNotificationsOpen ? '1000px' : '0px'"
-        style="will-change: max-height;"
-      >
-        <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-gray-700">
-          🔔 Your password will expire in 3 days.
-        </div>
-        <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-gray-700">
-          📦 New update available for your dashboard.
-        </div>
-        <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-gray-700">
-          Service request #1234 has been approved.
+      <div class="mt-2 overflow-hidden transition-[max-height] duration-700 ease-in-out space-y-3"
+        [style.max-height]="isNotificationsOpen ? '1500px' : '0px'"
+        style="will-change: max-height;">
+
+        <!-- Notification Items -->
+        <div class="max-w-md mx-auto bg-gray-0 p-4 rounded-lg">
+          <!-- Notification List -->
+          <div class="space-y-3">
+            <!-- Item 1: Password Expiry -->
+            <div class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
+              <div class="mt-0.5 text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="flex justify-between">
+                  <p class="text-sm font-medium text-gray-800">Password Expiry</p>
+                  <span class="text-xs text-gray-500">3m ago</span>
+                </div>
+                <p class="text-xs text-gray-600">Expires in 3 days. Update now.</p>
+              </div>
+            </div>
+
+            <!-- Item 2: Dashboard Update -->
+            <div class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
+              <div class="mt-0.5 text-purple-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="flex justify-between">
+                  <p class="text-sm font-medium text-gray-800">System Updated</p>
+                  <span class="text-xs text-gray-500">30m ago</span>
+                </div>
+                <p class="text-xs text-gray-600">New dashboard features released.</p>
+              </div>
+            </div>
+
+            <!-- Item 3: Request Approved -->
+            <div class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
+              <div class="mt-0.5 text-green-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="flex justify-between">
+                  <p class="text-sm font-medium text-gray-800">Request Approved</p>
+                  <span class="text-xs text-gray-500">2h ago</span>
+                </div>
+                <p class="text-xs text-gray-600">Request #1234 has been approved.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- View More Button -->
+          <div class="flex justify-between items-center mt-4 px-6">
+            <div class="text-xs text-blue-600 cursor-pointer">View More</div>
+            <div class="text-xs text-blue-600 cursor-pointer">Mark all as read</div>
+          </div>
         </div>
       </div>
     </div>
 
 
+
     <!-- Messaging (Expandable) -->
-    <div class="border-b border-gray-200 pb-4">
+    <div class="border-b border-gray-200 pb-2">
       <button
         class="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
         (click)="isMessagingOpen = !isMessagingOpen">
@@ -100,62 +146,66 @@
         </div>
         <div class="flex items-center space-x-2">
           <span class="bg-indigo-500 text-white text-xs px-2 py-1 rounded-full">{{ 2 }}</span>
-          <i class="fas" [ngClass]="isMessagingOpen ? 'fa-chevron-down' : 'fa-chevron-right'" class="text-gray-400"></i>
+          <i [ngClass]="isMessagingOpen ? 'fa-chevron-down' : 'fa-chevron-right'" class="text-gray-400"></i>
         </div>
       </button>
 
       <!-- Messenger Style Inbox Box -->
       <div
-        class="mt-2 space-y-2 pl-14 pr-4 overflow-hidden transition-[max-height] duration-700 ease-in-out"
-        [style.maxHeight]="isMessagingOpen ? '1000px' : '0px'"
+        class="mt-2 space-y-2 overflow-hidden transition-[max-height] duration-700 ease-in-out bg-gray-50"
+        [style.max-height]="isMessagingOpen ? '1000px' : '0px'"
         style="will-change: max-height;"
       >
-        <!-- Single Chat Preview -->
-        <div
-          class="flex items-center space-x-3 p-3 rounded-lg hover:bg-indigo-100 transition cursor-pointer bg-indigo-50 border border-indigo-200">
-          <!-- Avatar -->
-          <div class="w-10 h-10 rounded-full bg-indigo-200 flex items-center justify-center text-white font-semibold">
-            A
-          </div>
-          <!-- Chat Info -->
-          <div (click)="toggleChat('hello')" class="flex-1 min-w-0">
-            <div class="flex justify-between items-center">
-              <p class="font-medium text-gray-800 truncate">COO</p>
-              <span class="text-xs text-gray-500">2 min ago</span>
+        <!-- COO Chat -->
+        <div (click)="toggleChat('hello')" class="flex items-center p-2 hover:bg-gray-50 border-b border-gray-100 cursor-pointer">
+          <div class="relative mr-3">
+            <div class="w-12 h-12 rounded-full bg-green-200 flex items-center justify-center">
+              <span class="text-green-800 font-semibold">A</span>
             </div>
-            <p class="text-sm text-gray-600 truncate">Hey Mahfuz! Did you check the latest files?</p>
-          </div>
-          <!-- Unread Badge -->
-          <div class="ml-2">
-            <span class="bg-indigo-500 text-white text-xs px-2 py-1 rounded-full">2</span>
-          </div>
-        </div>
-
-        <!-- Another Chat -->
-        <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-indigo-100 transition cursor-pointer">
-          <div class="w-10 h-10 rounded-full bg-green-300 flex items-center justify-center text-white font-semibold">
-            R
+            <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-center">
-              <p class="font-medium text-gray-800 truncate">HR</p>
-              <span class="text-xs text-gray-500">10 min ago</span>
+              <p class="font-medium text-gray-900">COO</p>
+              <span class="text-xs text-gray-500">2 min</span>
+            </div>
+            <div class="flex items-center">
+              <i class="fas fa-check-double text-xs text-blue-500 mr-1"></i>
+              <p class="text-sm text-gray-600 truncate font-semibold">Hey! Did you check the latest files?</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat 1 -->
+        <div class="flex items-center p-2 hover:bg-gray-50 border-b border-gray-100 cursor-pointer bg-gray-50">
+          <div class="relative mr-3">
+            <div class="w-12 h-12 rounded-full bg-blue-200 flex items-center justify-center">
+              <span class="text-blue-800 font-semibold">R</span>
+            </div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-center">
+              <p class="font-medium text-gray-900">HR Team</p>
+              <span class="text-xs text-gray-500">10 min</span>
             </div>
             <p class="text-sm text-gray-600 truncate">Thank you! Got the report. 👍</p>
           </div>
         </div>
 
-        <!-- Another Chat -->
-        <div class="flex items-center space-x-3 p-3 rounded-lg hover:bg-indigo-100 transition cursor-pointer">
-          <div class="w-10 h-10 rounded-full bg-pink-300 flex items-center justify-center text-white font-semibold">
-            S
+        <!-- Chat 2 -->
+        <div class="flex items-center p-2 hover:bg-gray-50 border-b border-gray-100 cursor-pointer">
+          <div class="relative mr-3">
+            <div class="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center">
+              <span class="text-purple-800 font-semibold">S</span>
+            </div>
+            <span class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 rounded-full border-2 border-white"></span>
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-center">
-              <p class="font-medium text-gray-800 truncate">Support Team</p>
+              <p class="font-medium text-gray-900">Support</p>
               <span class="text-xs text-gray-500">Yesterday</span>
             </div>
-            <p class="text-sm text-gray-600 truncate">Please update your password before it expires.</p>
+            <p class="text-sm text-gray-600 truncate">Password update reminder</p>
           </div>
         </div>
       </div>
@@ -164,7 +214,8 @@
 
   <!--Drawer start-->
   <div
-    class="fixed bottom-[20px] right-[10px] w-[400px] bg-white shadow-2xl transform transition-all duration-300 ease-in-out border border-gray-200 rounded-lg overflow-hidden flex flex-col z-50"
+    class="fixed bottom-[20px] right-[10px] w-[400px] bg-white shadow-2xl transform transition-all duration-300 ease-in-out border border-gray-200
+    rounded-lg overflow-hidden flex flex-col z-50"
     [style.transform]="isChatOpen() ? 'translateY(0)' : 'translateY(100%)'"
     [style.opacity]="isChatOpen() ? '1' : '0'"
     [style.visibility]="isChatOpen() ? 'visible' : 'hidden'">
@@ -176,5 +227,4 @@
     <div
       class="absolute right-0 top-0 h-full w-1 bg-gray-200 hover:bg-blue-400 cursor-col-resize transition-colors duration-200"></div>
   </div>
-
 </div>

@@ -118,7 +118,13 @@ export class ChatBox {
       time: "10:51 AM",
       sender: "me",
       isRead: false
-    }
+    },
+    {
+      id: 15,
+      text: "Hey! Did you check the latest files?",
+      time: "12:45 PM",
+      sender: "other",
+    },
   ];
 
   toggleSearch() {

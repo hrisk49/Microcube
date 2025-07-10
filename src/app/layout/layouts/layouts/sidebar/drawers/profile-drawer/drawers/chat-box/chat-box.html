@@ -39,9 +39,10 @@
 
     <!-- Search Box -->
     <div
-      class="bg-white border-b border-gray-200 px-4 py-3 transition-all duration-500 ease-in-out"
+      class="bg-white border-b border-gray-200 px-4 transition-all duration-500 ease-in-out"
       [style.opacity]="isSearchOpen ? '1' : '0'"
       [style.max-height]="isSearchOpen ? '80px' : '0px'"
+      [class.py-3]="isSearchOpen"
       [class.pointer-events-auto]="isSearchOpen">
       <div class="flex items-center space-x-3">
         <button
@@ -76,58 +77,59 @@
     </div>
 
     <!-- Messages Loop -->
-    <div *ngFor="let message of messages;"
-         class="animate-fadeInUp">
+    @for (message of messages; track $index) {
+      <div class="animate-fadeInUp">
 
-      <!-- Received Message -->
-      <div *ngIf="message.sender === 'other'" class="flex items-start">
-        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 mr-3 mt-1 flex items-center justify-center text-sm font-semibold text-white shadow-md">
-          A
+        <!-- Received Message -->
+        <div *ngIf="message.sender === 'other'" class="flex items-start">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 mr-3 mt-1 flex items-center justify-center text-sm font-semibold text-white shadow-md">
+            A
+          </div>
+          <div class="bg-white p-3 rounded-2xl shadow-sm max-w-[75%] hover:shadow-md transition-shadow">
+            <p class="text-sm text-gray-800">{{ message.text }}</p>
+            <p class="text-xs text-gray-400 text-right mt-1">{{ message.time }}</p>
+          </div>
         </div>
-        <div class="bg-white p-3 rounded-2xl shadow-sm max-w-[75%] hover:shadow-md transition-shadow">
-          <p class="text-sm text-gray-800">{{ message.text }}</p>
-          <p class="text-xs text-gray-400 text-right mt-1">{{ message.time }}</p>
-        </div>
-      </div>
 
-      <!-- Sent Message -->
-      <div *ngIf="message.sender === 'me'" class="flex justify-end">
-        <div class="bg-gradient-to-r from-green-100 to-green-50 p-3 rounded-2xl shadow-sm max-w-[75%] hover:shadow-md transition-shadow">
-          <p class="text-sm text-gray-800">{{ message.text }}</p>
+        <!-- Sent Message -->
+        <div *ngIf="message.sender === 'me'" class="flex justify-end">
+          <div class="bg-gradient-to-r from-green-100 to-green-50 p-3 rounded-2xl shadow-sm max-w-[75%] hover:shadow-md transition-shadow">
+            <p class="text-sm text-gray-800">{{ message.text }}</p>
 
-          <!-- Preview for specific message -->
-          <!--          <div *ngIf="message.text.includes('preview')" class="mt-3 bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">-->
-          <!--            <div class="flex items-center space-x-3">-->
-          <!--              <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center">-->
-          <!--                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
-          <!--                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />-->
-          <!--                </svg>-->
-          <!--              </div>-->
-          <!--              <div class="flex-1">-->
-          <!--                <p class="font-medium text-gray-700 text-sm">ChatApp Design</p>-->
-          <!--                <p class="text-xs text-gray-400">Enhanced UI with animations</p>-->
-          <!--              </div>-->
-          <!--            </div>-->
-          <!--          </div>-->
+            <!-- Preview for specific message -->
+            <!--          <div *ngIf="message.text.includes('preview')" class="mt-3 bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">-->
+            <!--            <div class="flex items-center space-x-3">-->
+            <!--              <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center">-->
+            <!--                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">-->
+            <!--                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />-->
+            <!--                </svg>-->
+            <!--              </div>-->
+            <!--              <div class="flex-1">-->
+            <!--                <p class="font-medium text-gray-700 text-sm">ChatApp Design</p>-->
+            <!--                <p class="text-xs text-gray-400">Enhanced UI with animations</p>-->
+            <!--              </div>-->
+            <!--            </div>-->
+            <!--          </div>-->
 
-          <div class="flex justify-end items-center mt-2 space-x-1">
-            <p class="text-xs text-gray-400">{{ message.time }}</p>
-            <!-- Single tick for unread, double tick for read -->
-            <svg *ngIf="!message.isRead" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            <div *ngIf="message.isRead" class="flex">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="flex justify-end items-center mt-2 space-x-1">
+              <p class="text-xs text-gray-400">{{ message.time }}</p>
+              <!-- Single tick for unread, double tick for read -->
+              <svg *ngIf="!message.isRead" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-blue-500 -ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
+              <div *ngIf="message.isRead" class="flex">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-blue-500 -ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    }
 
     <!-- Typing indicator -->
     <div *ngIf="isTyping" class="flex items-start">
