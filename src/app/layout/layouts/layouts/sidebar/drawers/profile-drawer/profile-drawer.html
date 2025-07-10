@@ -164,15 +164,13 @@
 
   <!--Drawer start-->
   <div
-    class="fixed bottom-[20px] right-[20px] w-[400px] max-h-[600px] bg-white shadow-2xl transform transition-all duration-300 ease-in-out border border-gray-200 rounded-lg overflow-hidden flex flex-col z-50"
+    class="fixed bottom-[20px] right-[10px] w-[400px] bg-white shadow-2xl transform transition-all duration-300 ease-in-out border border-gray-200 rounded-lg overflow-hidden flex flex-col z-50"
     [style.transform]="isChatOpen ? 'translateY(0)' : 'translateY(100%)'"
     [style.opacity]="isChatOpen ? '1' : '0'"
     [style.visibility]="isChatOpen ? 'visible' : 'hidden'">
 
     <!-- Menu -->
-    <div class="overflow-y-auto">
-      <app-chat-box></app-chat-box>
-    </div>
+    <app-chat-box></app-chat-box>
 
     <!-- Resize handle -->
     <div
