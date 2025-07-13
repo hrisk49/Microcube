@@ -1,14 +1,11 @@
 import {Component, signal} from '@angular/core';
-import {NgClass, TitleCasePipe} from '@angular/common';
-import {MenuDrawer} from '../menu-drawer/menu-drawer';
+import {NgClass} from '@angular/common';
 import {ChatBox} from './drawers/chat-box/chat-box';
 
 @Component({
   selector: 'app-profile-drawer',
   imports: [
     NgClass,
-    MenuDrawer,
-    TitleCasePipe,
     ChatBox,
   ],
   templateUrl: './profile-drawer.html',
