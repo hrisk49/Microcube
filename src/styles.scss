@@ -2,7 +2,7 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
+/*
 // Color Palette
 $primary: #2563EB;     // Corporate blue (trust, stability)
 $success: #16A34A;     // Process success (softer green)
@@ -207,4 +207,188 @@ $text-inverse: #FFFFFF;        // White text
   &:active:not(:disabled) {
     background-color: darken($warning, 8%);
   }
+}*/
+
+
+// Color Palette - Simplified & Professional
+$primary: #1E40AF;     // Professional blue (trust, stability)
+$hover-color: #3B82F6;  // Single modern blue for all hover states
+$text-primary: #111827;
+$text-secondary: #6B7280;
+$text-muted: #9CA3AF;
+$text-inverse: #FFFFFF;
+
+// Background colors
+$bg-primary: #F8FAFC;
+$bg-surface: #FFFFFF;
+$bg-hover: #F1F5F9;
+
+// Button Base - Clean & Professional
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 105px;
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid #E5E7EB;
+  //border-radius: 8px;
+  border-radius: 16px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  // Professional typography
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  text-decoration: none;
+
+  // Initial state - clean white background
+  background: $bg-surface;
+  color: $text-primary;
+
+  // Subtle shadow
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  // Smooth transitions
+  transition: all 0.2s ease;
+
+  // Icon styling
+  .icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+
+  // Modern hover effect - same for all buttons
+  &:hover:not(:disabled) {
+    background: $hover-color;
+    color: $text-inverse;
+    border-color: $hover-color;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($hover-color, 0.25);
+
+    .icon {
+      transform: scale(1.05);
+    }
+  }
+
+  // Active state
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba($hover-color, 0.3);
+  }
+
+  // Focus state
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($hover-color, 0.2);
+  }
+
+  // Disabled state
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      background: $bg-surface;
+      color: $text-primary;
+      border-color: #E5E7EB;
+    }
+  }
+
+  // Loading state
+  &.loading {
+    pointer-events: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border: 2px solid transparent;
+      border-top: 2px solid currentColor;
+      border-right: 2px solid currentColor;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      z-index: 3;
+    }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 }
+
+// All button variants use the same base styles
+.save-btn {
+  @extend .btn;
+}
+
+.view-btn {
+  @extend .btn;
+}
+
+.delete-btn {
+  @extend .btn;
+}
+
+.reset-btn {
+  @extend .btn;
+}
+
+.exit-btn {
+  @extend .btn;
+}
+
+// Secondary button variant - subtle styling
+.btn-secondary {
+  @extend .btn;
+  background: $bg-primary;
+  color: $text-secondary;
+  border-color: #D1D5DB;
+
+  &:hover:not(:disabled) {
+    background: $hover-color;
+    color: $text-inverse;
+    border-color: $hover-color;
+  }
+}
+
+// Small button variant
+.btn-sm {
+  @extend .btn;
+  min-width: 80px;
+  height: 36px;
+  padding: 0 16px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+// Floating button
+.btn-floating {
+  @extend .btn;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  border-radius: 50%;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+  &:hover:not(:disabled) {
+    transform: scale(1.1);
+    box-shadow: 0 8px 30px rgba($hover-color, 0.3);
+  }
+}
+

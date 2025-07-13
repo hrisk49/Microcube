@@ -2,29 +2,32 @@
   class="h-16 flex items-center justify-between px-6 border-b-[0.5px] border-gray-300 shadow-2xl shadow-black/10">
   <div class="flex items-center space-x-4">
     <h1 class="text-2xl font-bold">Dashboard</h1>
-    <div class="flex items-center space-x-2">
-      <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-      <span class="text-sm opacity-90">Online</span>
-    </div>
+<!--    <div class="flex items-center space-x-2">-->
+<!--      <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>-->
+<!--      <span class="text-sm opacity-90">Online</span>-->
+<!--    </div>-->
 
     <!-- Search -->
+  </div>
+
+  <div class="flex items-center gap-8">
     <app-search></app-search>
+
+    <div class="flex items-center space-x-[10px]">
+      <!-- Buttons -->
+
+      <app-save *ngIf="buttons().save"></app-save>
+
+      <app-update *ngIf="buttons().update"></app-update>
+
+      <app-view *ngIf="buttons().view"></app-view>
+
+      <app-delete *ngIf="buttons().delete"></app-delete>
+
+      <app-reset *ngIf="buttons().reset"></app-reset>
+
+      <app-exit *ngIf="buttons().exit"></app-exit>
+    </div>
   </div>
 
-
-  <div class="flex items-center space-x-[10px]">
-    <!-- Buttons -->
-
-    <app-save *ngIf="buttons().save"></app-save>
-
-    <app-update *ngIf="buttons().update"></app-update>
-
-    <app-view *ngIf="buttons().view"></app-view>
-
-    <app-delete *ngIf="buttons().delete"></app-delete>
-
-    <app-reset *ngIf="buttons().reset"></app-reset>
-
-    <app-exit *ngIf="buttons().exit"></app-exit>
-  </div>
 </div>
