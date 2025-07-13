@@ -12,6 +12,7 @@ import {
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatCard} from '@angular/material/card';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {TextBaseInput} from './input-types/text-base-input/text-base-input';
 
 @Component({
   selector: 'app-quick-form',
@@ -30,6 +31,7 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/
     MatCard,
     MatError,
     ReactiveFormsModule,
+    TextBaseInput,
   ],
   templateUrl: './quick-form.html',
   styleUrl: './quick-form.scss'

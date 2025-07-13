@@ -1,6 +1,6 @@
 <div class="w-full mx-auto shadow-lg rounded-lg">
-
   <form [formGroup]="frmGroup" class="space-y-8">
+
     <!-- Personal Information Section -->
     <mat-card class="p-6 rounded-lg !bg-white">
       <h2 class="text-xl font-semibold mb-6 flex items-center">
@@ -11,113 +11,185 @@
       </h2>
 
       <!-- Row 1 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Full Name <span class="text-red-500"><span
-            class="text-red-500">*</span></span></label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input formControlName="name" type="text" matInput placeholder="Enter your full name" required>
-            <mat-error>Name is required..!</mat-error>
-          </mat-form-field>
-        </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth <span
-            class="text-red-500">*</span></label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput [matDatepicker]="dobPicker" placeholder="Select date" required>
-            <mat-datepicker-toggle matIconSuffix [for]="dobPicker"></mat-datepicker-toggle>
-            <mat-datepicker #dobPicker></mat-datepicker>
-          </mat-form-field>
-        </div>
+        <app-text-base-input [frmGroup]="frmGroup"></app-text-base-input>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Gender <span class="text-red-500">*</span>
+        <div class="form-group w-full">
+          <label for="dob" class="block mb-1 font-medium text-gray-700">
+            Date of Birth <span class="text-red-500">*</span>
           </label>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-select required>
-              <mat-option value="male">Male</mat-option>
-              <mat-option value="female">Female</mat-option>
-              <mat-option value="other">Other</mat-option>
-            </mat-select>
-          </mat-form-field>
+          <div class="relative">
+            <input
+              id="dob"
+              matInput
+              formControlName="date"
+              [matDatepicker]="dobPicker"
+              placeholder="Select date"
+              required
+              class="custom-input"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="dobPicker"
+              class="absolute top-1/2 right-2 -translate-y-1/2"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #dobPicker></mat-datepicker>
+          </div>
+          <div
+            class="text-red-500 text-xs mt-1"
+            *ngIf="frmGroup.get('date')?.invalid && (frmGroup.get('date')?.touched || frmGroup.get('date')?.dirty)"
+          >
+            Date of birth is required..!
+          </div>
+        </div>
+
+        <div class="form-group w-full">
+          <label for="gender" class="block mb-1 font-medium text-gray-700">
+            Gender <span class="text-red-500">*</span>
+          </label>
+          <select
+            id="gender"
+            required
+            class="custom-input"
+          >
+            <option value="">Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+          <div
+            class="text-red-500 text-xs mt-1"
+            *ngIf="frmGroup.get('gender')?.invalid && (frmGroup.get('gender')?.touched || frmGroup.get('gender')?.dirty)"
+          >
+            Gender is required..!
+          </div>
         </div>
       </div>
 
       <!-- Row 2 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">National ID/Passport <span
-            class="text-red-500">*</span></label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput placeholder="Enter ID number" required>
-            <mat-icon matSuffix>badge</mat-icon>
-          </mat-form-field>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+        <div class="form-group w-full relative mt-6">
+          <label for="gender" class="block mb-1 font-medium text-gray-700"></label>
+          <input
+            id="nationalId"
+            type="text"
+            placeholder=" "
+            class="custom-input floating-input !py-4"
+          />
+          <label for="nationalId" class="floating-label">
+            National ID/Passport <span class="text-red-500">*</span>
+          </label>
+          <div
+            class="text-red-500 text-xs mt-1"
+            *ngIf="frmGroup.get('nationalId')?.invalid && (frmGroup.get('nationalId')?.touched || frmGroup.get('nationalId')?.dirty)"
+          >
+            National ID/Passport is required..!
+          </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Nationality <span
-            class="text-red-500">*</span></label>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-select required>
-              <mat-option value="bangladeshi">Bangladeshi</mat-option>
-              <mat-option value="indian">Indian</mat-option>
-              <mat-option value="pakistani">Pakistani</mat-option>
-              <mat-option value="other">Other</mat-option>
-            </mat-select>
-          </mat-form-field>
+
+        <div class="form-group w-full">
+          <label for="nationality" class="block mb-1 font-medium text-gray-700">
+            Nationality <span class="text-red-500">*</span>
+          </label>
+          <select
+            id="nationality"
+            required
+            class="custom-input"
+          >
+            <option value="">Select nationality</option>
+            <option value="bangladeshi">Bangladeshi</option>
+            <option value="indian">Indian</option>
+            <option value="pakistani">Pakistani</option>
+            <option value="other">Other</option>
+          </select>
+          <div
+            class="text-red-500 text-xs mt-1"
+            *ngIf="frmGroup.get('nationality')?.invalid && (frmGroup.get('nationality')?.touched || frmGroup.get('nationality')?.dirty)"
+          >
+            Nationality is required..!
+          </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Marital Status</label>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-select>
-              <mat-option value="single">Single</mat-option>
-              <mat-option value="married">Married</mat-option>
-              <mat-option value="divorced">Divorced</mat-option>
-              <mat-option value="widowed">Widowed</mat-option>
-            </mat-select>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="maritalStatus" class="block mb-1 font-medium text-gray-700">
+            Marital Status
+          </label>
+          <select
+            id="maritalStatus"
+            class="custom-input"
+          >
+            <option value="">Select marital status</option>
+            <option value="single">Single</option>
+            <option value="married">Married</option>
+            <option value="divorced">Divorced</option>
+            <option value="widowed">Widowed</option>
+          </select>
         </div>
       </div>
 
       <!-- Row 3 -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Father's Name <span
-            class="text-red-500">*</span></label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput placeholder="Enter father's name" required>
-            <mat-icon matSuffix>person</mat-icon>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="fatherName" class="block mb-1 font-medium text-gray-700">
+            Father's Name <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="fatherName"
+            matInput
+            placeholder="Enter father's name"
+            type="text"
+            class="custom-input"
+          />
+          <div
+            class="text-red-500 text-xs mt-1"
+            *ngIf="frmGroup.get('fatherName')?.invalid && (frmGroup.get('fatherName')?.touched || frmGroup.get('fatherName')?.dirty)"
+          >
+            Father's name is required..!
+          </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Mother's Name <span
-            class="text-red-500">*</span></label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput placeholder="Enter mother's name" required>
-            <mat-icon matSuffix>person</mat-icon>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="motherName" class="block mb-1 font-medium text-gray-700">
+            Mother's Name <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="motherName"
+            matInput
+            placeholder="Enter mother's name"
+            type="text"
+            class="custom-input"
+          />
+          <div
+            class="text-red-500 text-xs mt-1"
+            *ngIf="frmGroup.get('motherName')?.invalid && (frmGroup.get('motherName')?.touched || frmGroup.get('motherName')?.dirty)"
+          >
+            Mother's name is required..!
+          </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Religion</label>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-select>
-              <mat-option value="islam">Islam</mat-option>
-              <mat-option value="hinduism">Hinduism</mat-option>
-              <mat-option value="buddhism">Buddhism</mat-option>
-              <mat-option value="christianity">Christianity</mat-option>
-              <mat-option value="other">Other</mat-option>
-            </mat-select>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="religion" class="block mb-1 font-medium text-gray-700">
+            Religion
+          </label>
+          <select
+            id="religion"
+            class="custom-input"
+          >
+            <option value="">Select religion</option>
+            <option value="islam">Islam</option>
+            <option value="hinduism">Hinduism</option>
+            <option value="buddhism">Buddhism</option>
+            <option value="christianity">Christianity</option>
+            <option value="other">Other</option>
+          </select>
         </div>
       </div>
     </mat-card>
 
     <!-- Contact Information Section -->
-    <mat-card class="p-6 rounded-lg !bg-white">
+    <mat-card class="p-6 rounded-lg !bg-white mt-6">
       <h2 class="text-xl font-semibold mb-6 flex items-center">
         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
           <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
@@ -127,69 +199,112 @@
       </h2>
 
       <!-- Row 1 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Email Address <span
-            class="text-red-500">*</span></label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput type="email" placeholder="Enter your email" required>
-            <mat-icon matSuffix>email</mat-icon>
-          </mat-form-field>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+        <div class="form-group w-full">
+          <label for="email" class="block mb-1 font-medium text-gray-700">
+            Email Address <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="email"
+            matInput
+            placeholder="Enter your email"
+            type="email"
+            class="custom-input"
+          />
+          <div
+            class="text-red-500 text-xs mt-1"
+            *ngIf="frmGroup.get('email')?.invalid && (frmGroup.get('email')?.touched || frmGroup.get('email')?.dirty)"
+          >
+            <ng-container *ngIf="frmGroup.get('email')?.errors?.['required']">
+              Email is required..!
+            </ng-container>
+            <ng-container *ngIf="frmGroup.get('email')?.errors?.['email']">
+              Please enter a valid email address
+            </ng-container>
+          </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number <span
-            class="text-red-500">*</span></label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput type="tel" placeholder="+880 1XXX-XXXXXX" required>
-            <mat-icon matSuffix>phone</mat-icon>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="phone" class="block mb-1 font-medium text-gray-700">
+            Phone Number <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="phone"
+            matInput
+            placeholder="+880 1XXX-XXXXXX"
+            type="tel"
+            class="custom-input"
+          />
+          <div
+            class="text-red-500 text-xs mt-1"
+            *ngIf="frmGroup.get('phone')?.invalid && (frmGroup.get('phone')?.touched || frmGroup.get('phone')?.dirty)"
+          >
+            Phone number is required..!
+          </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Alternative Phone</label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput type="tel" placeholder="+880 1XXX-XXXXXX">
-            <mat-icon matSuffix>phone</mat-icon>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="altPhone" class="block mb-1 font-medium text-gray-700">
+            Alternative Phone
+          </label>
+          <input
+            id="altPhone"
+            matInput
+            placeholder="+880 1XXX-XXXXXX"
+            type="tel"
+            class="custom-input"
+          />
         </div>
       </div>
 
       <!-- Row 2 -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Contact Name</label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput placeholder="Emergency contact name">
-            <mat-icon matSuffix>person</mat-icon>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="emergencyContact" class="block mb-1 font-medium text-gray-700">
+            Emergency Contact Name
+          </label>
+          <input
+            id="emergencyContact"
+            matInput
+            placeholder="Emergency contact name"
+            class="custom-input"
+          />
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Contact Phone</label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput type="tel" placeholder="Emergency contact number">
-            <mat-icon matSuffix>contact_phone</mat-icon>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="emergencyPhone" class="block mb-1 font-medium text-gray-700">
+            Emergency Contact Phone
+          </label>
+          <input
+            id="emergencyPhone"
+            matInput
+            placeholder="Emergency contact number"
+            type="tel"
+            class="custom-input"
+          />
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Relationship</label>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-select>
-              <mat-option value="spouse">Spouse</mat-option>
-              <mat-option value="parent">Parent</mat-option>
-              <mat-option value="sibling">Sibling</mat-option>
-              <mat-option value="friend">Friend</mat-option>
-              <mat-option value="other">Other</mat-option>
-            </mat-select>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="relationship" class="block mb-1 font-medium text-gray-700">
+            Relationship
+          </label>
+          <select
+            id="relationship"
+            class="custom-input"
+          >
+            <option value="">Select relationship</option>
+            <option value="spouse">Spouse</option>
+            <option value="parent">Parent</option>
+            <option value="sibling">Sibling</option>
+            <option value="friend">Friend</option>
+            <option value="other">Other</option>
+          </select>
         </div>
       </div>
     </mat-card>
 
     <!-- Employment Information Section -->
-    <mat-card class="p-6 rounded-lg !bg-white">
+    <mat-card class="p-6 rounded-lg !bg-white mt-6">
       <h2 class="text-xl font-semibold mb-6 flex items-center">
         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd"
@@ -201,105 +316,159 @@
       </h2>
 
       <!-- Row 1 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Employment Status <span
-            class="text-red-500">*</span></label>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-select required>
-              <mat-option value="employed">Employed</mat-option>
-              <mat-option value="self-employed">Self-Employed</mat-option>
-              <mat-option value="unemployed">Unemployed</mat-option>
-              <mat-option value="retired">Retired</mat-option>
-              <mat-option value="student">Student</mat-option>
-            </mat-select>
-          </mat-form-field>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+        <div class="form-group w-full">
+          <label for="employmentStatus" class="block mb-1 font-medium text-gray-700">
+            Employment Status <span class="text-red-500">*</span>
+          </label>
+          <select
+            id="employmentStatus"
+            required
+            class="custom-input"
+          >
+            <option value="">Select employment status</option>
+            <option value="employed">Employed</option>
+            <option value="self-employed">Self-Employed</option>
+            <option value="unemployed">Unemployed</option>
+            <option value="retired">Retired</option>
+            <option value="student">Student</option>
+          </select>
+          <div
+            class="text-red-500 text-xs mt-1"
+            *ngIf="frmGroup.get('employmentStatus')?.invalid && (frmGroup.get('employmentStatus')?.touched || frmGroup.get('employmentStatus')?.dirty)"
+          >
+            Employment status is required..!
+          </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Job Title/Position</label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput placeholder="Enter job title">
-            <mat-icon matSuffix>work</mat-icon>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="jobTitle" class="block mb-1 font-medium text-gray-700">
+            Job Title/Position
+          </label>
+          <input
+            id="jobTitle"
+            matInput
+            placeholder="Enter job title"
+            class="custom-input"
+          />
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput placeholder="Enter company name">
-            <mat-icon matSuffix>business</mat-icon>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="companyName" class="block mb-1 font-medium text-gray-700">
+            Company Name
+          </label>
+          <input
+            id="companyName"
+            matInput
+            placeholder="Enter company name"
+            class="custom-input"
+          />
         </div>
       </div>
 
       <!-- Row 2 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Monthly Income (BDT) <span
-            class="text-red-500">*</span></label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput type="number" placeholder="Enter monthly income" required>
-            <mat-icon matSuffix>attach_money</mat-icon>
-          </mat-form-field>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+        <div class="form-group w-full">
+          <label for="monthlyIncome" class="block mb-1 font-medium text-gray-700">
+            Monthly Income (BDT) <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="monthlyIncome"
+            matInput
+            placeholder="Enter monthly income"
+            type="number"
+            class="custom-input"
+          />
+          <div
+            class="text-red-500 text-xs mt-1"
+            *ngIf="frmGroup.get('monthlyIncome')?.invalid && (frmGroup.get('monthlyIncome')?.touched || frmGroup.get('monthlyIncome')?.dirty)"
+          >
+            Monthly income is required..!
+          </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Income Source <span
-            class="text-red-500">*</span></label>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-select required>
-              <mat-option value="salary">Salary</mat-option>
-              <mat-option value="business">Business</mat-option>
-              <mat-option value="investment">Investment</mat-option>
-              <mat-option value="pension">Pension</mat-option>
-              <mat-option value="other">Other</mat-option>
-            </mat-select>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="incomeSource" class="block mb-1 font-medium text-gray-700">
+            Income Source <span class="text-red-500">*</span>
+          </label>
+          <select
+            id="incomeSource"
+            required
+            class="custom-input"
+          >
+            <option value="">Select income source</option>
+            <option value="salary">Salary</option>
+            <option value="business">Business</option>
+            <option value="investment">Investment</option>
+            <option value="pension">Pension</option>
+            <option value="other">Other</option>
+          </select>
+          <div
+            class="text-red-500 text-xs mt-1"
+            *ngIf="frmGroup.get('incomeSource')?.invalid && (frmGroup.get('incomeSource')?.touched || frmGroup.get('incomeSource')?.dirty)"
+          >
+            Income source is required..!
+          </div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Work Experience</label>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-select>
-              <mat-option value="0-1">0-1 years</mat-option>
-              <mat-option value="1-3">1-3 years</mat-option>
-              <mat-option value="3-5">3-5 years</mat-option>
-              <mat-option value="5-10">5-10 years</mat-option>
-              <mat-option value="10+">10+ years</mat-option>
-            </mat-select>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="workExperience" class="block mb-1 font-medium text-gray-700">
+            Work Experience
+          </label>
+          <select
+            id="workExperience"
+            class="custom-input"
+          >
+            <option value="">Select work experience</option>
+            <option value="0-1">0-1 years</option>
+            <option value="1-3">1-3 years</option>
+            <option value="3-5">3-5 years</option>
+            <option value="5-10">5-10 years</option>
+            <option value="10+">10+ years</option>
+          </select>
         </div>
       </div>
 
       <!-- Row 3 -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Company Address</label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput placeholder="Enter company address">
-            <mat-icon matSuffix>location_on</mat-icon>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="companyAddress" class="block mb-1 font-medium text-gray-700">
+            Company Address
+          </label>
+          <input
+            id="companyAddress"
+            matInput
+            placeholder="Enter company address"
+            class="custom-input"
+          />
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Office Phone</label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput type="tel" placeholder="Enter office phone">
-            <mat-icon matSuffix>phone</mat-icon>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="officePhone" class="block mb-1 font-medium text-gray-700">
+            Office Phone
+          </label>
+          <input
+            id="officePhone"
+            matInput
+            placeholder="Enter office phone"
+            type="tel"
+            class="custom-input"
+          />
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-          <mat-form-field appearance="outline" class="w-full">
-            <input matInput placeholder="Enter department">
-            <mat-icon matSuffix>work</mat-icon>
-          </mat-form-field>
+        <div class="form-group w-full">
+          <label for="department" class="block mb-1 font-medium text-gray-700">
+            Department
+          </label>
+          <input
+            id="department"
+            matInput
+            placeholder="Enter department"
+            class="custom-input"
+          />
         </div>
       </div>
     </mat-card>
 
   </form>
-
 </div>

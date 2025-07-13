@@ -1,0 +1,86 @@
+.custom-input {
+  width: 100%;
+  padding: 12px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #374151;
+  background-color: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  }
+
+  &::placeholder {
+    color: #9ca3af;
+    opacity: 1;
+  }
+
+  &:disabled {
+    background-color: #f9fafb;
+    cursor: not-allowed;
+    border-color: #d1d5db;
+    color: #6b7280;
+  }
+}
+
+/* mat-select or other select inputs */
+.custom-select {
+  @extend .custom-input;
+}
+
+.form-group {
+  position: relative;
+}
+
+.floating-input {
+  width: 100%;
+  padding: 14px 12px 6px; /* উপরে প্যাডিং বেশি দিবে যাতে লেবেল ভিতরে থাকে */
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #fff;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  }
+
+  &:focus + .floating-label,
+  &:not(:placeholder-shown) + .floating-label {
+    top: 4px;
+    left: 12px;
+    font-size: 12px;
+    color: #3b82f6;
+    background-color: #fff;
+    padding: 0 4px;
+    pointer-events: none;
+    transition: all 0.2s ease;
+  }
+
+  &::placeholder {
+    color: transparent;
+  }
+}
+
+.floating-label {
+  position: absolute;
+  top: 14px;
+  left: 12px;
+  font-size: 14px;
+  color: #6b7280; /* gray-500 */
+  background-color: transparent;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  user-select: none;
+  border-radius: 6px;
+}
