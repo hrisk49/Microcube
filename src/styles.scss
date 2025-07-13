@@ -209,9 +209,8 @@ $text-inverse: #FFFFFF;        // White text
   }
 }*/
 
-
 // Color Palette - Simplified & Professional
-$primary: #1E40AF;     // Professional blue (trust, stability)
+$primary: #3868A6;     // Professional blue (trust, stability)
 $hover-color: #3B82F6;  // Single modern blue for all hover states
 $text-primary: #111827;
 $text-secondary: #6B7280;
@@ -234,7 +233,7 @@ $bg-hover: #F1F5F9;
   padding: 0 18px;
   border: 1px solid #E5E7EB;
   //border-radius: 8px;
-  border-radius: 16px;
+  border-radius: 8px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
