@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormControlName, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatInput} from "@angular/material/input";
 import {NgIf} from "@angular/common";
 
@@ -17,5 +17,7 @@ import {NgIf} from "@angular/common";
 export class TextBaseInput {
 
   @Input() frmGroup!: FormGroup;
+
+  @Input() controlName!: string;
 
 }
