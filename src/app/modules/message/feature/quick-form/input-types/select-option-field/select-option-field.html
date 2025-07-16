@@ -5,22 +5,12 @@
       <span class="text-red-500">*</span>
     }
   </label>
-  <div class="relative">
-    <input
-      matInput
-      formControlName="date"
-      [matDatepicker]="dobPicker"
-      placeholder="Select date"
-      required
-      class="custom-input"
-    />
-    <mat-datepicker-toggle
-      matSuffix
-      [for]="dobPicker"
-      class="absolute top-1/2 right-2 -translate-y-1/2"
-    ></mat-datepicker-toggle>
-    <mat-datepicker #dobPicker></mat-datepicker>
-  </div>
+  <select [formControlName]="controlName()" class="custom-input">
+    <option [value]="null">Select</option>
+    @for (option of options(); track $index) {
+      <option [value]="option.key">{{ option.value }}</option>
+    }
+  </select>
   @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
     <div class="text-red-500 text-xs mt-1">
       {{label()}} is required..!

@@ -1,23 +1,24 @@
 import {Component, input} from '@angular/core';
-import {FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {MatInput} from "@angular/material/input";
+import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {NgIf} from '@angular/common';
 
+type Option = { key: any; value: string };
 @Component({
-  selector: 'app-text-base-input',
+  selector: 'app-select-option-field',
   imports: [
     FormsModule,
-    MatInput,
+    NgIf,
     ReactiveFormsModule
   ],
-  templateUrl: './text-base-input.html',
+  templateUrl: './select-option-field.html',
   standalone: true,
-  styleUrl: './text-base-input.scss'
+  styleUrl: './select-option-field.scss'
 })
-export class TextBaseInput {
-
+export class SelectOptionField {
   readonly frmGroup = input.required<FormGroup>();
   readonly controlName = input.required<string>();
   readonly label = input.required<string>();
+  options = input<Option[] | null>(null);
 
   isRequired(): boolean {
     const control = this.frmGroup().get(this.controlName());
@@ -25,6 +26,4 @@ export class TextBaseInput {
     const validation = control.validator({} as any);
     return !!validation?.['required'];
   }
-
-
 }
