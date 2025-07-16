@@ -209,112 +209,134 @@ $text-inverse: #FFFFFF;        // White text
   }
 }*/
 
-// Color Palette - Simplified & Professional
-$primary: #3868A6;     // Professional blue (trust, stability)
-$hover-color: #3B82F6;  // Single modern blue for all hover states
-$text-primary: #111827;
-$text-secondary: #6B7280;
-$text-muted: #9CA3AF;
+.mat-mdc-card {
+  background-color: white !important;
+}
+// Color Palette - Banking & Eye Comfort Optimized
+$primary: #2563EB;        // Softer blue (less harsh than previous)
+$primary-dark: #1D4ED8;   // Darker blue for depth
+$hover-color: #3B82F6;    // Comfortable hover blue
+$text-primary: #1F2937;   // Softer black (easier on eyes)
+$text-secondary: #4B5563; // Comfortable gray
+$text-muted: #6B7280;     // Muted text
 $text-inverse: #FFFFFF;
 
-// Background colors
-$bg-primary: #F8FAFC;
-$bg-surface: #FFFFFF;
-$bg-hover: #F1F5F9;
+// Background colors - Optimized for gray-50 backdrop
+$bg-primary: #F9FAFB;     // Very light gray (blends with gray-50)
+$bg-surface: #FFFFFF;     // Pure white for contrast
+$bg-hover: #F3F4F6;       // Subtle hover background
+$bg-disabled: #F9FAFB;    // Disabled state background
 
-// Button Base - Clean & Professional
+// Border colors - Softer for eye comfort
+$border-default: #E5E7EB;
+$border-hover: #D1D5DB;
+$border-focus: #93C5FD;   // Soft blue for focus
+
+// Shadow colors - Reduced opacity for comfort
+$shadow-light: rgba(0, 0, 0, 0.08);
+$shadow-medium: rgba(0, 0, 0, 0.12);
+$shadow-hover: rgba(59, 130, 246, 0.15);
+
+// Button Base - Banking Professional & Eye Comfortable
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: 105px;
-  height: 40px;
-  padding: 0 18px;
-  border: 1px solid #E5E7EB;
-  //border-radius: 8px;
-  border-radius: 8px;
+  min-width: 110px;
+  height: 42px;           // Slightly taller for better touch target
+  padding: 0 20px;        // More padding for comfort
+  border: 1px solid $border-default;
+  border-radius: 8px;     // Slightly less rounded for professional look
   cursor: pointer;
   position: relative;
   overflow: hidden;
 
-  // Professional typography
+  // Banking-appropriate typography
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   font-size: 14px;
   font-weight: 500;
-  letter-spacing: 0.01em;
-  line-height: 1.2;
+  letter-spacing: 0.005em; // Slightly tighter for readability
+  line-height: 1.3;
   text-decoration: none;
+  user-select: none;      // Prevent text selection
 
-  // Initial state - clean white background
+  // Initial state - comfortable on gray-50 background
   background: $bg-surface;
   color: $text-primary;
 
-  // Subtle shadow
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  // Softer shadow for eye comfort
+  box-shadow: 0 1px 2px $shadow-light;
 
-  // Smooth transitions
-  transition: all 0.2s ease;
+  // Smooth but not too fast transitions
+  transition: all 0.15s ease-out;
 
   // Icon styling
   .icon {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
-    transition: transform 0.2s ease;
+    transition: transform 0.15s ease-out;
   }
 
-  // Modern hover effect - same for all buttons
+  // Comfortable hover effect - subtle but clear
   &:hover:not(:disabled) {
-    background: $hover-color;
+    background: $primary;
     color: $text-inverse;
-    border-color: $hover-color;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba($hover-color, 0.25);
+    border-color: $primary;
+    transform: translateY(-0.5px); // Subtle lift
+    box-shadow: 0 3px 8px $shadow-hover;
 
     .icon {
-      transform: scale(1.05);
+      transform: scale(1.02); // Very subtle scale
     }
   }
 
-  // Active state
+  // Active state - immediate feedback
   &:active:not(:disabled) {
     transform: translateY(0);
-    box-shadow: 0 2px 6px rgba($hover-color, 0.3);
+    box-shadow: 0 1px 4px $shadow-medium;
+    background: $primary-dark;
+    border-color: $primary-dark;
   }
 
-  // Focus state
+  // Focus state - accessibility optimized
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba($hover-color, 0.2);
+    box-shadow: 0 0 0 3px rgba($border-focus, 0.4);
+    border-color: $border-focus;
   }
 
-  // Disabled state
+  // Disabled state - clear but not harsh
   &:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
     transform: none !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: $bg-disabled;
+    color: $text-muted;
+    border-color: $border-default;
+    box-shadow: none;
 
     &:hover {
-      background: $bg-surface;
-      color: $text-primary;
-      border-color: #E5E7EB;
+      background: $bg-disabled;
+      color: $text-muted;
+      border-color: $border-default;
+      box-shadow: none;
     }
   }
 
-  // Loading state
+  // Loading state - banking appropriate
   &.loading {
     pointer-events: none;
+    color: transparent;
 
     &::after {
       content: '';
       position: absolute;
       width: 16px;
       height: 16px;
-      border: 2px solid transparent;
-      border-top: 2px solid currentColor;
-      border-right: 2px solid currentColor;
+      border: 2px solid rgba($primary, 0.3);
+      border-top: 2px solid $primary;
       border-radius: 50%;
       animation: spin 1s linear infinite;
       z-index: 3;
@@ -327,67 +349,213 @@ $bg-hover: #F1F5F9;
   }
 }
 
-// All button variants use the same base styles
+// Specific button variants for banking
 .save-btn {
   @extend .btn;
+  background: #10B981;    // Success green
+  color: $text-inverse;
+  border-color: #10B981;
+
+  &:hover:not(:disabled) {
+    background: #059669;
+    border-color: #059669;
+    box-shadow: 0 3px 8px rgba(16, 185, 129, 0.25);
+  }
+
+  &:active:not(:disabled) {
+    background: #047857;
+    border-color: #047857;
+  }
 }
 
 .view-btn {
   @extend .btn;
+  background: $bg-primary;
+  color: $text-primary;
+  border-color: $border-default;
+
+  &:hover:not(:disabled) {
+    background: $primary;
+    color: $text-inverse;
+    border-color: $primary;
+  }
 }
 
 .delete-btn {
   @extend .btn;
+  background: $bg-surface;
+  color: #DC2626;         // Danger red
+  border-color: #FCA5A5;  // Light red border
+
+  &:hover:not(:disabled) {
+    background: #DC2626;
+    color: $text-inverse;
+    border-color: #DC2626;
+    box-shadow: 0 3px 8px rgba(220, 38, 38, 0.25);
+  }
+
+  &:active:not(:disabled) {
+    background: #B91C1C;
+    border-color: #B91C1C;
+  }
 }
 
 .reset-btn {
   @extend .btn;
+  background: $bg-primary;
+  color: $text-secondary;
+  border-color: $border-default;
+
+  &:hover:not(:disabled) {
+    background: #F59E0B;    // Warning amber
+    color: $text-inverse;
+    border-color: #F59E0B;
+    box-shadow: 0 3px 8px rgba(245, 158, 11, 0.25);
+  }
 }
 
 .exit-btn {
   @extend .btn;
-}
-
-// Secondary button variant - subtle styling
-.btn-secondary {
-  @extend .btn;
-  background: $bg-primary;
-  color: $text-secondary;
-  border-color: #D1D5DB;
+  background: $bg-surface;
+  color: #0891B2;         // Cyan blue
+  border-color: #A5F3FC;  // Light cyan border
 
   &:hover:not(:disabled) {
-    background: $hover-color;
+    background: #0891B2;
     color: $text-inverse;
-    border-color: $hover-color;
+    border-color: #0891B2;
+    box-shadow: 0 3px 8px rgba(8, 145, 178, 0.20);
+  }
+
+  &:active:not(:disabled) {
+    background: #0E7490;
+    border-color: #0E7490;
   }
 }
 
-// Small button variant
+// Secondary button variant - minimal and comfortable
+.btn-secondary {
+  @extend .btn;
+  background: transparent;
+  color: $text-secondary;
+  border-color: $border-default;
+
+  &:hover:not(:disabled) {
+    background: $bg-hover;
+    color: $text-primary;
+    border-color: $border-hover;
+    box-shadow: 0 2px 6px $shadow-light;
+  }
+}
+
+// Small button variant - for compact interfaces
 .btn-sm {
   @extend .btn;
-  min-width: 80px;
+  min-width: 90px;
   height: 36px;
   padding: 0 16px;
   font-size: 13px;
-  border-radius: 6px;
+  border-radius: 5px;
 }
 
-// Floating button
+// Large button variant - for primary actions
+.btn-lg {
+  @extend .btn;
+  min-width: 140px;
+  height: 48px;
+  padding: 0 24px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+// Floating button - banking dashboard style
 .btn-floating {
   @extend .btn;
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 24px;
+  right: 24px;
   width: 56px;
   height: 56px;
   min-width: 56px;
   border-radius: 50%;
   z-index: 1000;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background: $primary;
+  color: $text-inverse;
+  border-color: $primary;
+  box-shadow: 0 4px 16px rgba($primary, 0.3);
 
   &:hover:not(:disabled) {
-    transform: scale(1.1);
-    box-shadow: 0 8px 30px rgba($hover-color, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0 6px 24px rgba($primary, 0.4);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+}
+
+// Outline button variant - for secondary actions
+.btn-outline {
+  @extend .btn;
+  background: transparent;
+  color: $primary;
+  border-color: $primary;
+
+  &:hover:not(:disabled) {
+    background: $primary;
+    color: $text-inverse;
+    border-color: $primary;
+  }
+}
+
+// Button group - for related actions
+.btn-group {
+  display: inline-flex;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px $shadow-light;
+
+  .btn {
+    border-radius: 0;
+    border-right: none;
+    box-shadow: none;
+
+    &:last-child {
+      border-right: 1px solid $border-default;
+      border-top-right-radius: 6px;
+      border-bottom-right-radius: 6px;
+    }
+
+    &:first-child {
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
+    }
+
+    &:hover:not(:disabled) {
+      z-index: 1;
+      border-color: $primary;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .btn {
+    min-width: 100px;
+    height: 44px;     // Slightly larger for touch
+    padding: 0 18px;
+    font-size: 15px;  // Larger text for mobile
+  }
+
+  .btn-sm {
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .btn-lg {
+    height: 52px;
+    font-size: 16px;
   }
 }
 

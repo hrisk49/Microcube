@@ -1,30 +1,23 @@
 import {Component, effect, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatInput} from '@angular/material/input';
-import {
-  MatDatepicker,
-  MatDatepickerInput,
-  MatDatepickerModule,
-  MatDatepickerToggle
-} from '@angular/material/datepicker';
+import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatCard} from '@angular/material/card';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {TextBaseInput} from './input-types/text-base-input/text-base-input';
+import {TextBaseInput} from '../../../../shared/components/input-types/text-base-input/text-base-input';
 import {FORM_LAYOUT} from '../../../../shared/constant/css-constant';
 import {ButtonActions} from '../../../../shared/constant/button-actions';
 import {RESET_CLICK} from '../../../../shared/constant/button-click';
-import {DateInput} from './input-types/date-input/date-input';
-import {SelectOptionField} from './input-types/select-option-field/select-option-field';
+import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
+import {SelectOptionField} from '../../../../shared/components/input-types/select-option-field/select-option-field';
 import {SelectOptions} from '../../../../shared/models/select-options';
+import {FormPanel} from '../../../../shared/components/form-panel/form-panel';
 
 @Component({
   selector: 'app-quick-form',
   imports: [
     CommonModule,
-    MatDatepickerInput,
-    MatDatepickerToggle,
-    MatDatepicker,
     MatInput,
     MatDatepickerModule,
     MatNativeDateModule,
@@ -33,6 +26,7 @@ import {SelectOptions} from '../../../../shared/models/select-options';
     TextBaseInput,
     DateInput,
     SelectOptionField,
+    FormPanel,
   ],
   templateUrl: './quick-form.html',
   standalone: true,

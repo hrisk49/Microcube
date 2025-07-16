@@ -1,17 +1,9 @@
 <div class="w-full mx-auto shadow-lg rounded-lg">
-  <form [formGroup]="frmGroup" class="space-y-8">
+  <form [formGroup]="frmGroup" class="space-y-4">
 
     <!-- Personal Information Section -->
-    <mat-card class="p-6 rounded-lg !bg-white">
-      <h2 class="text-xl font-semibold mb-6 flex items-center">
-        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-        </svg>
-        Personal Information
-      </h2>
-
-
-      <!-- Row 1 -->
+    <mat-card class="p-6">
+      <app-form-panel [panelTitle]="'Personal Information'"></app-form-panel>
       <div [ngClass]="FORM_LAYOUT">
 
         <app-text-base-input [frmGroup]="frmGroup" [label]="'Full Name'"
@@ -49,18 +41,11 @@
                              [controlName]="'fatherName'"></app-text-base-input>
 
       </div>
-
     </mat-card>
 
     <!-- Contact Information Section -->
-    <mat-card class="p-6 rounded-lg !bg-white mt-6">
-      <h2 class="text-xl font-semibold mb-6 flex items-center">
-        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-        </svg>
-        Contact Information
-      </h2>
+    <mat-card class="p-6">
+      <app-form-panel [panelTitle]="'Contact Information'"></app-form-panel>
 
       <!-- Row 1 -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
@@ -168,16 +153,8 @@
     </mat-card>
 
     <!-- Employment Information Section -->
-    <mat-card class="p-6 rounded-lg !bg-white mt-6">
-      <h2 class="text-xl font-semibold mb-6 flex items-center">
-        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd"
-                d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z"
-                clip-rule="evenodd"/>
-          <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/>
-        </svg>
-        Employment Information
-      </h2>
+    <mat-card class="p-6">
+      <app-form-panel [panelTitle]="'Employment Information'"></app-form-panel>
 
       <!-- Row 1 -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">

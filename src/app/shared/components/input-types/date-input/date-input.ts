@@ -1,24 +1,28 @@
 import {Component, input} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {NgIf} from '@angular/common';
+import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
+import {MatInput, MatSuffix} from '@angular/material/input';
 
-type Option = { key: any; value: string };
 @Component({
-  selector: 'app-select-option-field',
+  selector: 'app-date-input',
   imports: [
     FormsModule,
-    NgIf,
-    ReactiveFormsModule
+    MatDatepicker,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatInput,
+    ReactiveFormsModule,
+    MatSuffix
   ],
-  templateUrl: './select-option-field.html',
+  templateUrl: './date-input.html',
   standalone: true,
-  styleUrl: './select-option-field.scss'
+  styleUrl: './date-input.scss'
 })
-export class SelectOptionField {
+export class DateInput {
+
   readonly frmGroup = input.required<FormGroup>();
   readonly controlName = input.required<string>();
   readonly label = input.required<string>();
-  options = input<Option[] | null>(null);
 
   isRequired(): boolean {
     const control = this.frmGroup().get(this.controlName());
@@ -26,4 +30,5 @@ export class SelectOptionField {
     const validation = control.validator({} as any);
     return !!validation?.['required'];
   }
+
 }
