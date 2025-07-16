@@ -7,14 +7,16 @@
   </label>
   <div class="relative">
     <input
+      [ngClass]="{'readonly-input': isReadonly() }"
       matInput
-      formControlName="date"
+      [readonly]="isReadonly()"
+      [formControlName]="controlName()"
       [matDatepicker]="dobPicker"
-      placeholder="Select date"
-      required
+      placeholder="Select {{label()}}"
       class="custom-input"
     />
     <mat-datepicker-toggle
+      [disabled]="isReadonly()"
       matSuffix
       [for]="dobPicker"
       class="absolute top-1/2 right-2 -translate-y-1/2"

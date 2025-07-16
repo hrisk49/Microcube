@@ -1,5 +1,7 @@
 import {Component, input} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatInput} from '@angular/material/input';
+import {NgClass} from '@angular/common';
 
 type Option = { key: any; value: string };
 
@@ -7,7 +9,9 @@ type Option = { key: any; value: string };
   selector: 'app-select-option-field',
   imports: [
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatInput,
+    NgClass
   ],
   templateUrl: './select-option-field.html',
   standalone: true,
@@ -17,6 +21,7 @@ export class SelectOptionField {
   readonly frmGroup = input.required<FormGroup>();
   readonly controlName = input.required<string>();
   readonly label = input.required<string>();
+  readonly isReadonly = input<boolean>();
   options = input<Option[] | null>(null);
 
   isRequired(): boolean {

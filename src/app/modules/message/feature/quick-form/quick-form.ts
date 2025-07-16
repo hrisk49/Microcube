@@ -77,9 +77,18 @@ export class QuickForm implements OnInit {
       name: ['', Validators.required],
       email: [''],
       date: [new Date()],
-      gender: [null],
+      gender: ['male'],
       nationality: [null, Validators.required],
       fatherName: ['', Validators.required],
+      phone: [''],
+      alternativePhone: [''],
+      emergencyContactName: [''],
+      emergencyContactPhone: [''],
+      income: [''],
+      streetAddress: [''],
+      city: [''],
+      state: [''],
+      zipCode: [''],
     });
   }
 

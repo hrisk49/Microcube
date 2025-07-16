@@ -5,7 +5,8 @@
       <span class="text-red-500">*</span>
     }
   </label>
-  <input [formControlName]="controlName()" matInput placeholder="Enter {{label()}}" type="text" class="custom-input"/>
+  <input [formControlName]="controlName()" [ngClass]="{'readonly-input': isReadonly() }"
+         [readonly]="isReadonly()" matInput placeholder="Enter {{label()}}" [type]="type() ?? 'text'" class="custom-input"/>
   @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
     <div class="text-red-500 text-sm mt-1">
       {{label()}} is required..!

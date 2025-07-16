@@ -1,13 +1,15 @@
 import {Component, input} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatInput} from "@angular/material/input";
+import {NgClass} from '@angular/common';
 
 @Component({
   selector: 'app-text-base-input',
   imports: [
     FormsModule,
     MatInput,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgClass
   ],
   templateUrl: './text-base-input.html',
   standalone: true,
@@ -18,6 +20,8 @@ export class TextBaseInput {
   readonly frmGroup = input.required<FormGroup>();
   readonly controlName = input.required<string>();
   readonly label = input.required<string>();
+  readonly type = input<string>();
+  readonly isReadonly = input<boolean>();
 
   isRequired(): boolean {
     const control = this.frmGroup().get(this.controlName());

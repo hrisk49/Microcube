@@ -5,16 +5,13 @@
     <mat-card class="p-6">
       <app-form-panel [panelTitle]="'Personal Information'"></app-form-panel>
       <div [ngClass]="FORM_LAYOUT">
-
         <app-text-base-input [frmGroup]="frmGroup" [label]="'Full Name'"
                              [controlName]="'name'"></app-text-base-input>
-        <app-date-input [frmGroup]="frmGroup" [label]="'Date of Birth'"
+        <app-date-input [frmGroup]="frmGroup" [label]="'Date of Birth'" [isReadonly]="true"
                         [controlName]="'date'"></app-date-input>
-
-        <app-select-option-field [frmGroup]="frmGroup" [options]="genderOptions" [label]="'Gender'"
+        <app-select-option-field [frmGroup]="frmGroup" [options]="genderOptions"
+                                 [label]="'Gender'" [isReadonly]="true"
                                  [controlName]="'gender'"></app-select-option-field>
-
-
         <div class="form-group w-full relative mt-6">
           <label for="gender" class="block mb-1 font-medium text-gray-700"></label>
           <input
@@ -33,281 +30,43 @@
             National ID/Passport is required..!
           </div>
         </div>
-
-        <app-select-option-field [frmGroup]="frmGroup" [options]="nationalities" [label]="'Nationality'"
-                                 [controlName]="'nationality'"></app-select-option-field>
-
+        <app-select-option-field [frmGroup]="frmGroup" [options]="nationalities"
+                                 [label]="'Nationality'" [controlName]="'nationality'"></app-select-option-field>
         <app-text-base-input [frmGroup]="frmGroup" [label]="'Father\'s Name'"
                              [controlName]="'fatherName'"></app-text-base-input>
-
       </div>
     </mat-card>
 
     <!-- Contact Information Section -->
     <mat-card class="p-6">
-      <app-form-panel [panelTitle]="'Contact Information'"></app-form-panel>
+      <app-form-panel [panelTitle]="'Personal Information'"></app-form-panel>
+      <div [ngClass]="FORM_LAYOUT">
 
-      <!-- Row 1 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-        <div class="form-group w-full">
-          <label for="email" class="block mb-1 font-medium text-gray-700">
-            Email Address <span class="text-red-500">*</span>
-          </label>
-          <input
-            id="email"
-            matInput
-            placeholder="Enter your email"
-            type="email"
-            class="custom-input"
-          />
-          <div
-            class="text-red-500 text-xs mt-1"
-            *ngIf="frmGroup.get('email')?.invalid && (frmGroup.get('email')?.touched || frmGroup.get('email')?.dirty)"
-          >
-            <ng-container *ngIf="frmGroup.get('email')?.errors?.['required']">
-              Email is required..!
-            </ng-container>
-            <ng-container *ngIf="frmGroup.get('email')?.errors?.['email']">
-              Please enter a valid email address
-            </ng-container>
-          </div>
-        </div>
+        <app-text-base-input [frmGroup]="frmGroup" [label]="'Email Address'" [isReadonly]="true"
+                             [controlName]="'email'"></app-text-base-input>
+        <app-text-base-input [frmGroup]="frmGroup" [label]="'Phone Number'"
+                             [controlName]="'phone'"></app-text-base-input>
+        <app-text-base-input [frmGroup]="frmGroup" [label]="'Alternative Phone Number'"
+                             [controlName]="'alternativePhone'"></app-text-base-input>
+        <app-text-base-input [frmGroup]="frmGroup" [label]="'Emergency Contact Name'"
+                             [controlName]="'emergencyContactName'"></app-text-base-input>
+        <app-text-base-input [frmGroup]="frmGroup" [label]="'Emergency Contact Phone'"
+                             [controlName]="'emergencyContactPhone'"></app-text-base-input>
+        <app-text-base-input [frmGroup]="frmGroup" [label]="'Income'" [type]="'number'"
+                             [controlName]="'income'"></app-text-base-input>
 
-        <div class="form-group w-full">
-          <label for="phone" class="block mb-1 font-medium text-gray-700">
-            Phone Number <span class="text-red-500">*</span>
-          </label>
-          <input
-            id="phone"
-            matInput
-            placeholder="+880 1XXX-XXXXXX"
-            type="tel"
-            class="custom-input"
-          />
-          <div
-            class="text-red-500 text-xs mt-1"
-            *ngIf="frmGroup.get('phone')?.invalid && (frmGroup.get('phone')?.touched || frmGroup.get('phone')?.dirty)"
-          >
-            Phone number is required..!
-          </div>
-        </div>
-
-        <div class="form-group w-full">
-          <label for="altPhone" class="block mb-1 font-medium text-gray-700">
-            Alternative Phone
-          </label>
-          <input
-            id="altPhone"
-            matInput
-            placeholder="+880 1XXX-XXXXXX"
-            type="tel"
-            class="custom-input"
-          />
-        </div>
-      </div>
-
-      <!-- Row 2 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="form-group w-full">
-          <label for="emergencyContact" class="block mb-1 font-medium text-gray-700">
-            Emergency Contact Name
-          </label>
-          <input
-            id="emergencyContact"
-            matInput
-            placeholder="Emergency contact name"
-            class="custom-input"
-          />
-        </div>
-
-        <div class="form-group w-full">
-          <label for="emergencyPhone" class="block mb-1 font-medium text-gray-700">
-            Emergency Contact Phone
-          </label>
-          <input
-            id="emergencyPhone"
-            matInput
-            placeholder="Emergency contact number"
-            type="tel"
-            class="custom-input"
-          />
-        </div>
-
-        <div class="form-group w-full">
-          <label for="relationship" class="block mb-1 font-medium text-gray-700">
-            Relationship
-          </label>
-          <select
-            id="relationship"
-            class="custom-input"
-          >
-            <option value="">Select relationship</option>
-            <option value="spouse">Spouse</option>
-            <option value="parent">Parent</option>
-            <option value="sibling">Sibling</option>
-            <option value="friend">Friend</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
       </div>
     </mat-card>
-
-    <!-- Employment Information Section -->
+    <!-- Address Information Section -->
     <mat-card class="p-6">
-      <app-form-panel [panelTitle]="'Employment Information'"></app-form-panel>
+      <app-form-panel [panelTitle]="'Address Information'"></app-form-panel>
+      <div [ngClass]="FORM_LAYOUT">
+        <app-text-base-input [frmGroup]="frmGroup" [label]="'Street Address'"
+                             [controlName]="'streetAddress'"></app-text-base-input>
+        <app-text-base-input [frmGroup]="frmGroup" [label]="'City'" [controlName]="'city'"></app-text-base-input>
+        <app-text-base-input [frmGroup]="frmGroup" [label]="'State'" [controlName]="'state'"></app-text-base-input>
+        <app-text-base-input [frmGroup]="frmGroup" [label]="'Zip Code'" [controlName]="'zipCode'"></app-text-base-input>
 
-      <!-- Row 1 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-        <div class="form-group w-full">
-          <label for="employmentStatus" class="block mb-1 font-medium text-gray-700">
-            Employment Status <span class="text-red-500">*</span>
-          </label>
-          <select
-            id="employmentStatus"
-            required
-            class="custom-input"
-          >
-            <option value="">Select employment status</option>
-            <option value="employed">Employed</option>
-            <option value="self-employed">Self-Employed</option>
-            <option value="unemployed">Unemployed</option>
-            <option value="retired">Retired</option>
-            <option value="student">Student</option>
-          </select>
-          <div
-            class="text-red-500 text-xs mt-1"
-            *ngIf="frmGroup.get('employmentStatus')?.invalid && (frmGroup.get('employmentStatus')?.touched || frmGroup.get('employmentStatus')?.dirty)"
-          >
-            Employment status is required..!
-          </div>
-        </div>
-
-        <div class="form-group w-full">
-          <label for="jobTitle" class="block mb-1 font-medium text-gray-700">
-            Job Title/Position
-          </label>
-          <input
-            id="jobTitle"
-            matInput
-            placeholder="Enter job title"
-            class="custom-input"
-          />
-        </div>
-
-        <div class="form-group w-full">
-          <label for="companyName" class="block mb-1 font-medium text-gray-700">
-            Company Name
-          </label>
-          <input
-            id="companyName"
-            matInput
-            placeholder="Enter company name"
-            class="custom-input"
-          />
-        </div>
-      </div>
-
-      <!-- Row 2 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-        <div class="form-group w-full">
-          <label for="monthlyIncome" class="block mb-1 font-medium text-gray-700">
-            Monthly Income (BDT) <span class="text-red-500">*</span>
-          </label>
-          <input
-            id="monthlyIncome"
-            matInput
-            placeholder="Enter monthly income"
-            type="number"
-            class="custom-input"
-          />
-          <div
-            class="text-red-500 text-xs mt-1"
-            *ngIf="frmGroup.get('monthlyIncome')?.invalid && (frmGroup.get('monthlyIncome')?.touched || frmGroup.get('monthlyIncome')?.dirty)"
-          >
-            Monthly income is required..!
-          </div>
-        </div>
-
-        <div class="form-group w-full">
-          <label for="incomeSource" class="block mb-1 font-medium text-gray-700">
-            Income Source <span class="text-red-500">*</span>
-          </label>
-          <select
-            id="incomeSource"
-            required
-            class="custom-input"
-          >
-            <option value="">Select income source</option>
-            <option value="salary">Salary</option>
-            <option value="business">Business</option>
-            <option value="investment">Investment</option>
-            <option value="pension">Pension</option>
-            <option value="other">Other</option>
-          </select>
-          <div
-            class="text-red-500 text-xs mt-1"
-            *ngIf="frmGroup.get('incomeSource')?.invalid && (frmGroup.get('incomeSource')?.touched || frmGroup.get('incomeSource')?.dirty)"
-          >
-            Income source is required..!
-          </div>
-        </div>
-
-        <div class="form-group w-full">
-          <label for="workExperience" class="block mb-1 font-medium text-gray-700">
-            Work Experience
-          </label>
-          <select
-            id="workExperience"
-            class="custom-input"
-          >
-            <option value="">Select work experience</option>
-            <option value="0-1">0-1 years</option>
-            <option value="1-3">1-3 years</option>
-            <option value="3-5">3-5 years</option>
-            <option value="5-10">5-10 years</option>
-            <option value="10+">10+ years</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Row 3 -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="form-group w-full">
-          <label for="companyAddress" class="block mb-1 font-medium text-gray-700">
-            Company Address
-          </label>
-          <input
-            id="companyAddress"
-            matInput
-            placeholder="Enter company address"
-            class="custom-input"
-          />
-        </div>
-
-        <div class="form-group w-full">
-          <label for="officePhone" class="block mb-1 font-medium text-gray-700">
-            Office Phone
-          </label>
-          <input
-            id="officePhone"
-            matInput
-            placeholder="Enter office phone"
-            type="tel"
-            class="custom-input"
-          />
-        </div>
-
-        <div class="form-group w-full">
-          <label for="department" class="block mb-1 font-medium text-gray-700">
-            Department
-          </label>
-          <input
-            id="department"
-            matInput
-            placeholder="Enter department"
-            class="custom-input"
-          />
-        </div>
       </div>
     </mat-card>
 

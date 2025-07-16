@@ -212,6 +212,13 @@ $text-inverse: #FFFFFF;        // White text
 .mat-mdc-card {
   background-color: white !important;
 }
+
+.readonly-input {
+  background-color: #e5e7eb !important;
+  cursor: not-allowed;
+}
+
+
 // Color Palette - Banking & Eye Comfort Optimized
 $primary: #2563EB;        // Softer blue (less harsh than previous)
 $primary-dark: #1D4ED8;   // Darker blue for depth
