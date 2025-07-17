@@ -7,6 +7,7 @@ import {RESET_CLICK} from '../../../../shared/constant/button-click';
 import {SelectOptions} from '../../../../shared/models/select-options';
 import {ButtonActions} from '../../../../shared/constant/button-actions';
 import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-pacs-008',
@@ -23,6 +24,7 @@ import {DateInput} from '../../../../shared/components/input-types/date-input/da
 export class Pacs008 implements OnInit {
 
   formBuilder = inject(FormBuilder);
+  toastr = inject(ToastrService);
   frmGroup: FormGroup;
   resetClick = RESET_CLICK;
   priorityOptions: SelectOptions[] = [
@@ -187,7 +189,8 @@ export class Pacs008 implements OnInit {
 
   addServiceRow(): void {
     if (this.serviceLevels.length === 3) {
-      // this.toastr.error("Maximum 3..!!")
+      this.toastr.warning("You can't be add more then 3..!!", 'WARN');
+      return;
     }
     this.serviceLevels.push(this.createServiceLevelGroup());
   }
