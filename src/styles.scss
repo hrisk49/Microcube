@@ -218,8 +218,16 @@ $text-inverse: #FFFFFF;        // White text
   cursor: not-allowed;
 }
 
+.form-layout {
+  @apply grid grid-cols-1 md:grid-cols-3 gap-6 gap-x-20 mb-4;
+}
 
-// Color Palette - Banking & Eye Comfort Optimized
+.form-card {
+  @apply rounded-lg border border-gray-200;
+}
+
+
+// Color Palette
 $primary: #2563EB;        // Softer blue (less harsh than previous)
 $primary-dark: #1D4ED8;   // Darker blue for depth
 $hover-color: #3B82F6;    // Comfortable hover blue
@@ -228,51 +236,51 @@ $text-secondary: #4B5563; // Comfortable gray
 $text-muted: #6B7280;     // Muted text
 $text-inverse: #FFFFFF;
 
-// Background colors - Optimized for gray-50 backdrop
+// Background colors
 $bg-primary: #F9FAFB;     // Very light gray (blends with gray-50)
 $bg-surface: #FFFFFF;     // Pure white for contrast
 $bg-hover: #F3F4F6;       // Subtle hover background
 $bg-disabled: #F9FAFB;    // Disabled state background
 
-// Border colors - Softer for eye comfort
+// Border colors
 $border-default: #E5E7EB;
 $border-hover: #D1D5DB;
 $border-focus: #93C5FD;   // Soft blue for focus
 
-// Shadow colors - Reduced opacity for comfort
+// Shadow colors
 $shadow-light: rgba(0, 0, 0, 0.08);
 $shadow-medium: rgba(0, 0, 0, 0.12);
 $shadow-hover: rgba(59, 130, 246, 0.15);
 
-// Button Base - Banking Professional & Eye Comfortable
+// Button Base
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   min-width: 110px;
-  height: 42px;           // Slightly taller for better touch target
-  padding: 0 20px;        // More padding for comfort
+  height: 42px;           // Slightly taller
+  padding: 0 20px;        // More padding
   border: 1px solid $border-default;
-  border-radius: 8px;     // Slightly less rounded for professional look
+  border-radius: 8px;     // Slightly less rounded
   cursor: pointer;
   position: relative;
   overflow: hidden;
 
-  // Banking-appropriate typography
+
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   font-size: 14px;
   font-weight: 500;
-  letter-spacing: 0.005em; // Slightly tighter for readability
+  letter-spacing: 0.005em; // Slightly
   line-height: 1.3;
   text-decoration: none;
-  user-select: none;      // Prevent text selection
+  user-select: none;      // Prevent
 
-  // Initial state - comfortable on gray-50 background
+  // Initial state
   background: $bg-surface;
   color: $text-primary;
 
-  // Softer shadow for eye comfort
+  // Softer shadow
   box-shadow: 0 1px 2px $shadow-light;
 
   // Smooth but not too fast transitions
@@ -286,7 +294,7 @@ $shadow-hover: rgba(59, 130, 246, 0.15);
     transition: transform 0.15s ease-out;
   }
 
-  // Comfortable hover effect - subtle but clear
+  // Comfortable hover effect
   &:hover:not(:disabled) {
     background: $primary;
     color: $text-inverse;
@@ -299,7 +307,7 @@ $shadow-hover: rgba(59, 130, 246, 0.15);
     }
   }
 
-  // Active state - immediate feedback
+  // Active state
   &:active:not(:disabled) {
     transform: translateY(0);
     box-shadow: 0 1px 4px $shadow-medium;
@@ -307,14 +315,14 @@ $shadow-hover: rgba(59, 130, 246, 0.15);
     border-color: $primary-dark;
   }
 
-  // Focus state - accessibility optimized
+  // Focus state
   &:focus {
     outline: none;
     box-shadow: 0 0 0 3px rgba($border-focus, 0.4);
     border-color: $border-focus;
   }
 
-  // Disabled state - clear but not harsh
+  // Disabled state
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -332,7 +340,7 @@ $shadow-hover: rgba(59, 130, 246, 0.15);
     }
   }
 
-  // Loading state - banking appropriate
+  // Loading state
   &.loading {
     pointer-events: none;
     color: transparent;
@@ -440,7 +448,7 @@ $shadow-hover: rgba(59, 130, 246, 0.15);
   }
 }
 
-// Secondary button variant - minimal and comfortable
+// Secondary button variant
 .btn-secondary {
   @extend .btn;
   background: transparent;
@@ -455,7 +463,7 @@ $shadow-hover: rgba(59, 130, 246, 0.15);
   }
 }
 
-// Small button variant - for compact interfaces
+// Small button variant
 .btn-sm {
   @extend .btn;
   min-width: 90px;
@@ -465,7 +473,7 @@ $shadow-hover: rgba(59, 130, 246, 0.15);
   border-radius: 5px;
 }
 
-// Large button variant - for primary actions
+// Large button variant
 .btn-lg {
   @extend .btn;
   min-width: 140px;
@@ -476,7 +484,7 @@ $shadow-hover: rgba(59, 130, 246, 0.15);
   border-radius: 8px;
 }
 
-// Floating button - banking dashboard style
+// Floating button
 .btn-floating {
   @extend .btn;
   position: fixed;
@@ -502,7 +510,7 @@ $shadow-hover: rgba(59, 130, 246, 0.15);
   }
 }
 
-// Outline button variant - for secondary actions
+// Outline button variant
 .btn-outline {
   @extend .btn;
   background: transparent;
@@ -513,36 +521,6 @@ $shadow-hover: rgba(59, 130, 246, 0.15);
     background: $primary;
     color: $text-inverse;
     border-color: $primary;
-  }
-}
-
-// Button group - for related actions
-.btn-group {
-  display: inline-flex;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 1px 2px $shadow-light;
-
-  .btn {
-    border-radius: 0;
-    border-right: none;
-    box-shadow: none;
-
-    &:last-child {
-      border-right: 1px solid $border-default;
-      border-top-right-radius: 6px;
-      border-bottom-right-radius: 6px;
-    }
-
-    &:first-child {
-      border-top-left-radius: 6px;
-      border-bottom-left-radius: 6px;
-    }
-
-    &:hover:not(:disabled) {
-      z-index: 1;
-      border-color: $primary;
-    }
   }
 }
 
@@ -602,10 +580,6 @@ $shadow-hover: rgba(59, 130, 246, 0.15);
 /* mat-select or other select inputs */
 .custom-select {
   @extend .custom-input;
-}
-
-.form-group {
-  position: relative;
 }
 
 .floating-input {

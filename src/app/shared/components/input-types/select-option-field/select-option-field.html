@@ -6,7 +6,7 @@
     }
   </label>
   <select [formControlName]="controlName()" [ngClass]="{'readonly-input': isReadonly() }"
-          class="custom-input">
+          class="custom-select">
     <option [value]="null">Select</option>
     @for (option of options(); track $index) {
       <option [value]="option.key">{{ option.value }}</option>

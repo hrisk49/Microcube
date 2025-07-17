@@ -1,46 +1,50 @@
-<div class="w-full mx-auto shadow-lg rounded-lg">
+<div class="w-full bg-white mx-auto shadow-lg rounded-lg p-2">
   <form [formGroup]="frmGroup" class="space-y-4">
 
     <!-- Personal Information Section -->
-    <mat-card class="p-6">
-      <app-form-panel [panelTitle]="'Personal Information'"></app-form-panel>
-      <div [ngClass]="FORM_LAYOUT">
-        <app-text-base-input [frmGroup]="frmGroup" [label]="'Full Name'"
-                             [controlName]="'name'"></app-text-base-input>
-        <app-date-input [frmGroup]="frmGroup" [label]="'Date of Birth'" [isReadonly]="true"
-                        [controlName]="'date'"></app-date-input>
-        <app-select-option-field [frmGroup]="frmGroup" [options]="genderOptions"
-                                 [label]="'Gender'" [isReadonly]="true"
-                                 [controlName]="'gender'"></app-select-option-field>
-        <div class="form-group w-full relative mt-6">
-          <label for="gender" class="block mb-1 font-medium text-gray-700"></label>
-          <input
-            id="nationalId"
-            type="text"
-            placeholder=" "
-            class="custom-input floating-input !py-3"
-          />
-          <label for="nationalId" class="floating-label">
-            National ID/Passport <span class="text-red-500">*</span>
-          </label>
-          <div
-            class="text-red-500 text-xs mt-1"
-            *ngIf="frmGroup.get('nationalId')?.invalid && (frmGroup.get('nationalId')?.touched || frmGroup.get('nationalId')?.dirty)"
-          >
-            National ID/Passport is required..!
+    <div class="form-card">
+      <mat-card class="p-6">
+        <app-form-panel [panelTitle]="'Personal Information'"></app-form-panel>
+        <div class="form-layout">
+          <app-text-base-input [frmGroup]="frmGroup" [label]="'Full Name'"
+                               [controlName]="'name'"></app-text-base-input>
+          <app-date-input [frmGroup]="frmGroup" [label]="'Date of Birth'" [isReadonly]="true"
+                          [controlName]="'date'"></app-date-input>
+          <app-select-option-field [frmGroup]="frmGroup" [options]="genderOptions"
+                                   [label]="'Gender'" [isReadonly]="true"
+                                   [controlName]="'gender'"></app-select-option-field>
+          <div class="form-group w-full relative mt-6">
+            <label for="gender" class="block mb-1 font-medium text-gray-700"></label>
+            <input
+              id="nationalId"
+              type="text"
+              placeholder=" "
+              class="custom-input floating-input !py-3"
+            />
+            <label for="nationalId" class="floating-label">
+              National ID/Passport <span class="text-red-500">*</span>
+            </label>
+            <div
+              class="text-red-500 text-xs mt-1"
+              *ngIf="frmGroup.get('nationalId')?.invalid && (frmGroup.get('nationalId')?.touched || frmGroup.get('nationalId')?.dirty)"
+            >
+              National ID/Passport is required..!
+            </div>
           </div>
+          <app-select-option-field [frmGroup]="frmGroup" [options]="nationalities"
+                                   [label]="'Nationality'" [controlName]="'nationality'"></app-select-option-field>
+          <app-text-base-input [frmGroup]="frmGroup" [label]="'Father\'s Name'"
+                               [controlName]="'fatherName'"></app-text-base-input>
         </div>
-        <app-select-option-field [frmGroup]="frmGroup" [options]="nationalities"
-                                 [label]="'Nationality'" [controlName]="'nationality'"></app-select-option-field>
-        <app-text-base-input [frmGroup]="frmGroup" [label]="'Father\'s Name'"
-                             [controlName]="'fatherName'"></app-text-base-input>
-      </div>
-    </mat-card>
+      </mat-card>
+
+    </div>
 
     <!-- Contact Information Section -->
+    <div class="form-card">
     <mat-card class="p-6">
       <app-form-panel [panelTitle]="'Personal Information'"></app-form-panel>
-      <div [ngClass]="FORM_LAYOUT">
+      <div class="form-layout">
 
         <app-text-base-input [frmGroup]="frmGroup" [label]="'Email Address'" [isReadonly]="true"
                              [controlName]="'email'"></app-text-base-input>
@@ -57,10 +61,13 @@
 
       </div>
     </mat-card>
+    </div>
+
     <!-- Address Information Section -->
+    <div class="form-card">
     <mat-card class="p-6">
       <app-form-panel [panelTitle]="'Address Information'"></app-form-panel>
-      <div [ngClass]="FORM_LAYOUT">
+      <div class="form-layout">
         <app-text-base-input [frmGroup]="frmGroup" [label]="'Street Address'"
                              [controlName]="'streetAddress'"></app-text-base-input>
         <app-text-base-input [frmGroup]="frmGroup" [label]="'City'" [controlName]="'city'"></app-text-base-input>
@@ -69,6 +76,6 @@
 
       </div>
     </mat-card>
-
+    </div>
   </form>
 </div>

@@ -6,13 +6,13 @@ import {MatNativeDateModule} from '@angular/material/core';
 import {MatCard} from '@angular/material/card';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {TextBaseInput} from '../../../../shared/components/input-types/text-base-input/text-base-input';
-import {FORM_LAYOUT} from '../../../../shared/constant/css-constant';
 import {ButtonActions} from '../../../../shared/constant/button-actions';
 import {RESET_CLICK} from '../../../../shared/constant/button-click';
 import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
 import {SelectOptionField} from '../../../../shared/components/input-types/select-option-field/select-option-field';
 import {SelectOptions} from '../../../../shared/models/select-options';
 import {FormPanel} from '../../../../shared/components/form-panel/form-panel';
+import {formLayoutCss, formPanelCss} from '../../../../shared/constant/css-constant';
 
 @Component({
   selector: 'app-quick-form',
@@ -36,7 +36,6 @@ export class QuickForm implements OnInit {
 
   formBuilder = inject(FormBuilder);
   frmGroup: FormGroup;
-  FORM_LAYOUT = FORM_LAYOUT;
   resetClick = RESET_CLICK;
   genderOptions: SelectOptions[] = [
     {key: 'male', value: 'Male'},
