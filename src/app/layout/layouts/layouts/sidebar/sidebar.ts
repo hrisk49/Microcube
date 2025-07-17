@@ -3,6 +3,7 @@ import {MatIcon} from '@angular/material/icon';
 import {MenuDrawer} from './drawers/menu-drawer/menu-drawer';
 import {CommonModule, TitleCasePipe} from '@angular/common';
 import {ProfileDrawer} from './drawers/profile-drawer/profile-drawer';
+import {RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,6 +14,7 @@ import {ProfileDrawer} from './drawers/profile-drawer/profile-drawer';
     TitleCasePipe,
     CommonModule,
     ProfileDrawer,
+    RouterLink,
   ],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss'
