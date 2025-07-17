@@ -1,6 +1,5 @@
 import {Component, effect, inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MatInput} from '@angular/material/input';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatCard} from '@angular/material/card';
@@ -12,13 +11,11 @@ import {DateInput} from '../../../../shared/components/input-types/date-input/da
 import {SelectOptionField} from '../../../../shared/components/input-types/select-option-field/select-option-field';
 import {SelectOptions} from '../../../../shared/models/select-options';
 import {FormPanel} from '../../../../shared/components/form-panel/form-panel';
-import {formLayoutCss, formPanelCss} from '../../../../shared/constant/css-constant';
 
 @Component({
   selector: 'app-quick-form',
   imports: [
     CommonModule,
-    MatInput,
     MatDatepickerModule,
     MatNativeDateModule,
     MatCard,

@@ -1,0 +1,380 @@
+<div class="page-wrapper">
+  <form [formGroup]="frmGroup" class="form-wrapper">
+
+    <!--Business Application Header-->
+    <div class="form-section-card p-6">
+      <app-form-panel [panelTitle]="'Business Application Header'"/>
+      <div class="form-grid-3-col">
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'From BIC'"
+                             [controlName]="'fromBic'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'To BIC'"
+                             [controlName]="'toBic'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Business Message Identifier'"
+                             [controlName]="'businessMessageIdentifier'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Message Definition Identifier'"
+                             [controlName]="'messageDefinitionIdentifier'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Business Service'"
+                             [controlName]="'businessService'"/>
+
+        <app-select-option-field [frmGroup]="frmGroup"
+                                 [options]="duplicateOptions"
+                                 [label]="'Copy Duplicate'"
+                                 [controlName]="'copyDuplicate'"/>
+
+        <app-select-option-field [frmGroup]="frmGroup"
+                                 [options]="priorityOptions"
+                                 [label]="'Priority'"
+                                 [controlName]="'priority'"/>
+
+      </div>
+
+      <div class="form-sub-section-card">
+        <div class="form-sub-section-header">Related</div>
+        <div class="form-grid-3-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'From BIC'"
+                               [controlName]="'relatedFromBic'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'To BIC'"
+                               [controlName]="'relatedToBic'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Business Message Identifier'"
+                               [controlName]="'relatedBusinessMessageIdentifier'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Message Definition Identifier'"
+                               [controlName]="'relatedMessageDefinitionIdentifier'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Business Service'"
+                               [controlName]="'relatedBusinessService'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="duplicateOptions"
+                                   [label]="'Copy Duplicate'"
+                                   [controlName]="'relatedCopyDuplicate'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="priorityOptions"
+                                   [label]="'Priority'"
+                                   [controlName]="'relatedPriority'"/>
+        </div>
+      </div>
+    </div>
+
+    <!--FI To FI Customer Credit Transfer-->
+    <div class="form-section-card p-6">
+      <app-form-panel [panelTitle]="'FI To FI Customer Credit Transfer'"/>
+
+      <!--Group Header-->
+      <div class="form-sub-section-card">
+        <div class="form-sub-section-header">Group Header</div>
+        <div class="form-grid-3-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Message Identification'"
+                               [controlName]="'messageIdentification'"/>
+
+          <app-date-input [frmGroup]="frmGroup"
+                          [label]="'Creation Date'"
+                          [controlName]="'creationDate'"/>
+        </div>
+
+        <!--Settlement Information-->
+        <div class="form-sub-section-card">
+          <div class="form-sub-section-header">Settlement Information</div>
+          <div class="form-grid-4-col">
+            <app-select-option-field [frmGroup]="frmGroup"
+                                     [options]="settlementOptions"
+                                     [label]="'Settlement Method'"
+                                     [controlName]="'settlementMethod'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Account Id'"
+                                 [controlName]="'settleAccountId'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'IBAN'"
+                                 [controlName]="'settleIban'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'LEI'"
+                                 [controlName]="'settleLei'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Instructing Reimbursement Agent BIC'"
+                                 [controlName]="'instructingReimbursementAgent'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Account Id'"
+                                 [controlName]="'instructingAccountId'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'IBAN'"
+                                 [controlName]="'instructingIban'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'LEI'"
+                                 [controlName]="'instructingLei'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Instructed Reimbursement Agent BIC'"
+                                 [controlName]="'instructedReimbursementAgent'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Account Id'"
+                                 [controlName]="'instructedAccountId'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'IBAN'"
+                                 [controlName]="'instructedIban'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'LEI'"
+                                 [controlName]="'instructedLei'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Third Reimbursement Agent BIC'"
+                                 [controlName]="'thirdReimbursementAgent'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Account Id'"
+                                 [controlName]="'thirdAccountId'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'IBAN'"
+                                 [controlName]="'thirdIban'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'LEI'"
+                                 [controlName]="'thirdLei'"/>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Credit Transfer Transaction Information -->
+    <div class="form-section-card p-6">
+      <app-form-panel [panelTitle]="'Credit Transfer Transaction Information'"/>
+      <div class="form-grid-3-col">
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Interbank Settlement Amount '"
+                             [controlName]="'interbankSettlementAmount'"/>
+
+        <app-date-input [frmGroup]="frmGroup"
+                        [label]="'Settlement Date'"
+                        [controlName]="'settlementDate'"/>
+
+        <app-select-option-field [frmGroup]="frmGroup"
+                                 [options]="duplicateOptions"
+                                 [label]="'Settlement Priority'"
+                                 [controlName]="'settlementPriority'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Settlement Time Indication'"
+                             [controlName]="'settlementTimeIndication'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Settlement Time Request'"
+                             [controlName]="'settlementTimeRequest'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Instructed Amount'"
+                             [controlName]="'instructedAmount'"/>
+
+        <app-select-option-field [frmGroup]="frmGroup"
+                                 [options]="chargeBearerOptions"
+                                 [label]="'Charge Bearer'"
+                                 [controlName]="'chargeBearer'"/>
+
+        <app-select-option-field [frmGroup]="frmGroup"
+                                 [options]="priorityOptions"
+                                 [label]="'Exchange Rate'"
+                                 [controlName]="'exchangeRate'"/>
+      </div>
+
+      <!--Payment Identification-->
+      <div class="form-sub-section-card">
+        <div class="form-sub-section-header">Payment Identification</div>
+        <div class="form-grid-3-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Instruction Identification'"
+                               [controlName]="'instructionIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'End To End Identification'"
+                               [controlName]="'endToEndIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Transaction Identification'"
+                               [controlName]="'transactionIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Clearing System Reference'"
+                               [controlName]="'clearingSystemReference'"/>
+        </div>
+      </div>
+
+      <!--Payment Type Information-->
+      <div class="form-sub-section-card mt-3">
+        <div class="form-sub-section-header">Payment Type Information</div>
+        <div class="form-grid-3-col">
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="priorityOptions"
+                                   [label]="'Instruction Priority'"
+                                   [controlName]="'instructionPriority'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Clearing Channel'"
+                               [controlName]="'clearingChannel'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Local Instrument'"
+                               [controlName]="'localInstrument'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Category Purpose'"
+                               [controlName]="'categoryPurpose'"/>
+        </div>
+
+        <!--Service Level-->
+        <div class="form-sub-section-card mt-3">
+          <div class="form-sub-section-header flex justify-between">
+            Service Level
+            <button (click)="addServiceRow()" class="add-row-btn">
+              Add Row
+            </button>
+          </div>
+
+          <ng-container formArrayName="serviceLevels">
+            @for (group of serviceLevels.controls; track $index) {
+              <div [formGroupName]="$index" class="form-grid-3-col mb-3">
+                <app-text-base-input
+                  [frmGroup]="group"
+                  [label]="'Code'"
+                  [controlName]="'serviceCode'"/>
+
+                <app-select-option-field
+                  [frmGroup]="group"
+                  [options]="priorityOptions"
+                  [label]="'Priority'"
+                  [controlName]="'servicePriority'"/>
+                <button (click)="removeServiceRow($index)" class="remove-row-btn mt-8">
+                  Remove
+                </button>
+              </div>
+            }
+          </ng-container>
+        </div>
+      </div>
+
+      <!--Normal-->
+      <div class="form-grid-4-col mt-3">
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Instructing Agent BIC (1)'"
+                             [controlName]="'instructingAgentBic1'"/>
+
+        <app-date-input [frmGroup]="frmGroup"
+                        [label]="'Account ID'"
+                        [controlName]="'instructingAccountId1'"/>
+
+        <app-date-input [frmGroup]="frmGroup"
+                        [label]="'IBAN'"
+                        [controlName]="'instructingIban1'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'LEI'"
+                             [controlName]="'instructingLei1'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Instructing Agent BIC (2)'"
+                             [controlName]="'instructingAgentBic2'"/>
+
+        <app-date-input [frmGroup]="frmGroup"
+                        [label]="'Account ID'"
+                        [controlName]="'instructingAccountId2'"/>
+
+        <app-date-input [frmGroup]="frmGroup"
+                        [label]="'IBAN'"
+                        [controlName]="'instructingIban2'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'LEI'"
+                             [controlName]="'instructingLei2'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Instructing Agent BIC (3)'"
+                             [controlName]="'instructingAgentBic3'"/>
+
+        <app-date-input [frmGroup]="frmGroup"
+                        [label]="'Account ID'"
+                        [controlName]="'instructingAccountId3'"/>
+
+        <app-date-input [frmGroup]="frmGroup" [label]="'IBAN'"
+                        [controlName]="'instructingIban3'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'LEI'"
+                             [controlName]="'instructingLei3'"/>
+
+      </div>
+
+      <!--Debitor-->
+      <div class="form-sub-section-card">
+        <div class="form-sub-section-header">Debitor</div>
+        <div class="form-grid-3-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Name'"
+                               [controlName]="'debitorName'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Postal Address'"
+                               [controlName]="'debitorPostalAddress'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Organisation Identification'"
+                               [controlName]="'debitorOrganisationIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Private Identification'"
+                               [controlName]="'debitorPrivateIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Country Of Residence'"
+                               [controlName]="'debitorCountryOfResidence'"/>
+
+        </div>
+
+        <div class="form-grid-4-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Agent BIC'"
+                               [controlName]="'debitorAgentBic'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Account ID'"
+                               [controlName]="'debitorAccountId'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'IBAN'"
+                               [controlName]="'debitorIban'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'LEI'"
+                               [controlName]="'debitorLei'"/>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,6 +1,5 @@
 import {Component, input} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatInput} from '@angular/material/input';
 import {NgClass} from '@angular/common';
 
 type Option = { key: any; value: string };
@@ -10,7 +9,6 @@ type Option = { key: any; value: string };
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    MatInput,
     NgClass
   ],
   templateUrl: './select-option-field.html',

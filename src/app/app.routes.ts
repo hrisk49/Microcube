@@ -12,6 +12,15 @@ export const routes: Routes = [
     children: [
       {path: '', loadChildren: () => import('./modules/message/message.routing').then(m => m.messageRouting)},
     ]
+  },
+  {
+    path: 'mx', component: Layout,
+    data: {
+      layout: 'empty'
+    },
+    children: [
+      {path: '', loadChildren: () => import('./modules/swift-messaging/swift-messaging.routing').then(m => m.swiftMessagingRouting)},
+    ]
   }
 
 ];
