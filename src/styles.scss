@@ -218,12 +218,20 @@ $text-inverse: #FFFFFF;        // White text
   cursor: not-allowed;
 }
 
-.form-layout {
-  @apply grid grid-cols-1 md:grid-cols-3 gap-6 gap-x-20 mb-4;
+.page-wrapper {
+  @apply w-full bg-white mx-auto shadow-lg rounded-lg;
 }
 
-.form-card {
+.form-wrapper {
+  @apply space-y-4 p-2;
+}
+
+.form-section-card {
   @apply rounded-lg border border-gray-200;
+}
+
+.form-grid {
+  @apply grid grid-cols-1 md:grid-cols-3 gap-6 gap-x-20 mb-4;
 }
 
 

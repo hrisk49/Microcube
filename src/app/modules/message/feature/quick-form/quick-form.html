@@ -1,11 +1,11 @@
-<div class="w-full bg-white mx-auto shadow-lg rounded-lg p-2">
-  <form [formGroup]="frmGroup" class="space-y-4">
+<div class="page-wrapper">
+  <form [formGroup]="frmGroup" class="form-wrapper">
 
     <!-- Personal Information Section -->
-    <div class="form-card">
+    <div class="form-section-card">
       <mat-card class="p-6">
         <app-form-panel [panelTitle]="'Personal Information'"></app-form-panel>
-        <div class="form-layout">
+        <div class="form-grid">
           <app-text-base-input [frmGroup]="frmGroup" [label]="'Full Name'"
                                [controlName]="'name'"></app-text-base-input>
           <app-date-input [frmGroup]="frmGroup" [label]="'Date of Birth'" [isReadonly]="true"
@@ -37,45 +37,45 @@
                                [controlName]="'fatherName'"></app-text-base-input>
         </div>
       </mat-card>
-
     </div>
 
     <!-- Contact Information Section -->
-    <div class="form-card">
-    <mat-card class="p-6">
-      <app-form-panel [panelTitle]="'Personal Information'"></app-form-panel>
-      <div class="form-layout">
+    <div class="form-section-card">
+      <mat-card class="p-6">
+        <app-form-panel [panelTitle]="'Personal Information'"></app-form-panel>
+        <div class="form-grid">
 
-        <app-text-base-input [frmGroup]="frmGroup" [label]="'Email Address'" [isReadonly]="true"
-                             [controlName]="'email'"></app-text-base-input>
-        <app-text-base-input [frmGroup]="frmGroup" [label]="'Phone Number'"
-                             [controlName]="'phone'"></app-text-base-input>
-        <app-text-base-input [frmGroup]="frmGroup" [label]="'Alternative Phone Number'"
-                             [controlName]="'alternativePhone'"></app-text-base-input>
-        <app-text-base-input [frmGroup]="frmGroup" [label]="'Emergency Contact Name'"
-                             [controlName]="'emergencyContactName'"></app-text-base-input>
-        <app-text-base-input [frmGroup]="frmGroup" [label]="'Emergency Contact Phone'"
-                             [controlName]="'emergencyContactPhone'"></app-text-base-input>
-        <app-text-base-input [frmGroup]="frmGroup" [label]="'Income'" [type]="'number'"
-                             [controlName]="'income'"></app-text-base-input>
+          <app-text-base-input [frmGroup]="frmGroup" [label]="'Email Address'" [isReadonly]="true"
+                               [controlName]="'email'"></app-text-base-input>
+          <app-text-base-input [frmGroup]="frmGroup" [label]="'Phone Number'"
+                               [controlName]="'phone'"></app-text-base-input>
+          <app-text-base-input [frmGroup]="frmGroup" [label]="'Alternative Phone Number'"
+                               [controlName]="'alternativePhone'"></app-text-base-input>
+          <app-text-base-input [frmGroup]="frmGroup" [label]="'Emergency Contact Name'"
+                               [controlName]="'emergencyContactName'"></app-text-base-input>
+          <app-text-base-input [frmGroup]="frmGroup" [label]="'Emergency Contact Phone'"
+                               [controlName]="'emergencyContactPhone'"></app-text-base-input>
+          <app-text-base-input [frmGroup]="frmGroup" [label]="'Income'" [type]="'number'"
+                               [controlName]="'income'"></app-text-base-input>
 
-      </div>
-    </mat-card>
+        </div>
+      </mat-card>
     </div>
 
     <!-- Address Information Section -->
-    <div class="form-card">
-    <mat-card class="p-6">
-      <app-form-panel [panelTitle]="'Address Information'"></app-form-panel>
-      <div class="form-layout">
-        <app-text-base-input [frmGroup]="frmGroup" [label]="'Street Address'"
-                             [controlName]="'streetAddress'"></app-text-base-input>
-        <app-text-base-input [frmGroup]="frmGroup" [label]="'City'" [controlName]="'city'"></app-text-base-input>
-        <app-text-base-input [frmGroup]="frmGroup" [label]="'State'" [controlName]="'state'"></app-text-base-input>
-        <app-text-base-input [frmGroup]="frmGroup" [label]="'Zip Code'" [controlName]="'zipCode'"></app-text-base-input>
+    <div class="form-section-card">
+      <mat-card class="p-6">
+        <app-form-panel [panelTitle]="'Address Information'"></app-form-panel>
+        <div class="form-grid">
+          <app-text-base-input [frmGroup]="frmGroup" [label]="'Street Address'"
+                               [controlName]="'streetAddress'"></app-text-base-input>
+          <app-text-base-input [frmGroup]="frmGroup" [label]="'City'" [controlName]="'city'"></app-text-base-input>
+          <app-text-base-input [frmGroup]="frmGroup" [label]="'State'" [controlName]="'state'"></app-text-base-input>
+          <app-text-base-input [frmGroup]="frmGroup" [label]="'Zip Code'"
+                               [controlName]="'zipCode'"></app-text-base-input>
 
-      </div>
-    </mat-card>
+        </div>
+      </mat-card>
     </div>
   </form>
 </div>
