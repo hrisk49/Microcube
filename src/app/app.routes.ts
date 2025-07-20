@@ -10,7 +10,7 @@ export const routes: Routes = [
       layout: 'empty'
     },
     children: [
-      {path: '', loadChildren: () => import('./modules/message/message.routing').then(m => m.messageRouting)},
+      {path: '', loadChildren: () => import('./modules/landing/landing.routing').then(m => m.landingRouting)},
     ]
   },
   {
@@ -19,7 +19,10 @@ export const routes: Routes = [
       layout: 'empty'
     },
     children: [
-      {path: '', loadChildren: () => import('./modules/swift-messaging/swift-messaging.routing').then(m => m.swiftMessagingRouting)},
+      {
+        path: '',
+        loadChildren: () => import('./modules/swift-messaging/swift-messaging.routing').then(m => m.swiftMessagingRouting)
+      },
     ]
   }
 
