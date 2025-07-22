@@ -3,7 +3,7 @@
 
     <!--Business Application Header-->
     <div class="panel p-6">
-      <app-form-panel [panelTitle]="'Business Application Header'"/>
+      <app-panel-header [panelTitle]="'Business Application Header'"/>
       <div class="form-grid-3-col">
         <app-text-base-input [frmGroup]="frmGroup"
                              [label]="'From BIC'"
@@ -38,7 +38,7 @@
       </div>
 
       <div class="sub-panel">
-        <div class="sub-panel-header">Related</div>
+        <app-sub-panel-header [subPanelTitle]="'Related'"></app-sub-panel-header>
         <div class="form-grid-3-col">
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'From BIC'"
@@ -75,11 +75,11 @@
 
     <!--FI To FI Customer Credit Transfer-->
     <div class="panel p-6">
-      <app-form-panel [panelTitle]="'FI To FI Customer Credit Transfer'"/>
+      <app-panel-header [panelTitle]="'FI To FI Customer Credit Transfer'"/>
 
       <!--Group Header-->
       <div class="sub-panel">
-        <div class="sub-panel-header">Group Header</div>
+        <app-sub-panel-header [subPanelTitle]="'Group Header'"></app-sub-panel-header>
         <div class="form-grid-3-col">
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'Message Identification'"
@@ -92,7 +92,7 @@
 
         <!--Settlement Information-->
         <div class="sub-panel">
-          <div class="sub-panel-header">Settlement Information</div>
+          <app-sub-panel-header [subPanelTitle]="'Settlement Information'"></app-sub-panel-header>
           <div class="form-grid-4-col">
             <app-select-option-field [frmGroup]="frmGroup"
                                      [options]="settlementOptions"
@@ -167,7 +167,7 @@
 
     <!-- Credit Transfer Transaction Information -->
     <div class="panel p-6">
-      <app-form-panel [panelTitle]="'Credit Transfer Transaction Information'"/>
+      <app-panel-header [panelTitle]="'Credit Transfer Transaction Information'"/>
       <div class="form-grid-3-col">
         <app-text-base-input [frmGroup]="frmGroup"
                              [label]="'Interbank Settlement Amount '"
@@ -207,7 +207,7 @@
 
       <!--Payment Identification-->
       <div class="sub-panel">
-        <div class="sub-panel-header">Payment Identification</div>
+        <app-sub-panel-header [subPanelTitle]="'Payment Identification'"></app-sub-panel-header>
         <div class="form-grid-3-col">
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'Instruction Identification'"
@@ -229,7 +229,7 @@
 
       <!--Payment Type Information-->
       <div class="sub-panel mt-3">
-        <div class="sub-panel-header">Payment Type Information</div>
+        <app-sub-panel-header [subPanelTitle]="'Payment Type Information'"></app-sub-panel-header>
         <div class="form-grid-3-col">
           <app-select-option-field [frmGroup]="frmGroup"
                                    [options]="priorityOptions"
@@ -252,7 +252,7 @@
         <!--Service Level-->
         <div class="sub-panel mt-3">
           <div class="sub-panel-header flex justify-between">
-            Service Level
+            <app-sub-panel-header [subPanelTitle]="'Service Level'"></app-sub-panel-header>
             <button (click)="addServiceRow()" class="add-row-btn">
               Add Service
             </button>
@@ -333,7 +333,7 @@
 
       <!--Debitor-->
       <div class="sub-panel">
-        <div class="sub-panel-header">Debitor</div>
+        <app-sub-panel-header [subPanelTitle]="'Debitor'"></app-sub-panel-header>
         <div class="form-grid-3-col">
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'Name'"

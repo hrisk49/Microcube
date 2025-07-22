@@ -1,5 +1,4 @@
 import {Component, effect, inject, OnInit} from '@angular/core';
-import {FormPanel} from "../../../../shared/components/form-panel/form-panel";
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
@@ -8,15 +7,18 @@ import {SelectOptions} from '../../../../shared/models/select-options';
 import {ButtonActions} from '../../../../shared/constant/button-actions';
 import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
 import {ToastrService} from 'ngx-toastr';
+import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
+import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
 
 @Component({
   selector: 'app-pacs-008',
   imports: [
-    FormPanel,
     ReactiveFormsModule,
     SelectOptionField,
     TextBaseInput,
     DateInput,
+    PanelHeader,
+    SubPanelHeader,
   ],
   templateUrl: './pacs-008.html',
   styleUrl: './pacs-008.scss'
