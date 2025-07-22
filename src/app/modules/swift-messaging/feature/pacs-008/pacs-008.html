@@ -2,7 +2,7 @@
   <form [formGroup]="frmGroup" class="form-wrapper">
 
     <!--Business Application Header-->
-    <div class="form-section-card p-6">
+    <div class="panel p-6">
       <app-form-panel [panelTitle]="'Business Application Header'"/>
       <div class="form-grid-3-col">
         <app-text-base-input [frmGroup]="frmGroup"
@@ -37,8 +37,8 @@
 
       </div>
 
-      <div class="form-sub-section-card">
-        <div class="form-sub-section-header">Related</div>
+      <div class="sub-panel">
+        <div class="sub-panel-header">Related</div>
         <div class="form-grid-3-col">
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'From BIC'"
@@ -74,12 +74,12 @@
     </div>
 
     <!--FI To FI Customer Credit Transfer-->
-    <div class="form-section-card p-6">
+    <div class="panel p-6">
       <app-form-panel [panelTitle]="'FI To FI Customer Credit Transfer'"/>
 
       <!--Group Header-->
-      <div class="form-sub-section-card">
-        <div class="form-sub-section-header">Group Header</div>
+      <div class="sub-panel">
+        <div class="sub-panel-header">Group Header</div>
         <div class="form-grid-3-col">
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'Message Identification'"
@@ -91,8 +91,8 @@
         </div>
 
         <!--Settlement Information-->
-        <div class="form-sub-section-card">
-          <div class="form-sub-section-header">Settlement Information</div>
+        <div class="sub-panel">
+          <div class="sub-panel-header">Settlement Information</div>
           <div class="form-grid-4-col">
             <app-select-option-field [frmGroup]="frmGroup"
                                      [options]="settlementOptions"
@@ -166,7 +166,7 @@
 
 
     <!-- Credit Transfer Transaction Information -->
-    <div class="form-section-card p-6">
+    <div class="panel p-6">
       <app-form-panel [panelTitle]="'Credit Transfer Transaction Information'"/>
       <div class="form-grid-3-col">
         <app-text-base-input [frmGroup]="frmGroup"
@@ -206,8 +206,8 @@
       </div>
 
       <!--Payment Identification-->
-      <div class="form-sub-section-card">
-        <div class="form-sub-section-header">Payment Identification</div>
+      <div class="sub-panel">
+        <div class="sub-panel-header">Payment Identification</div>
         <div class="form-grid-3-col">
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'Instruction Identification'"
@@ -228,8 +228,8 @@
       </div>
 
       <!--Payment Type Information-->
-      <div class="form-sub-section-card mt-3">
-        <div class="form-sub-section-header">Payment Type Information</div>
+      <div class="sub-panel mt-3">
+        <div class="sub-panel-header">Payment Type Information</div>
         <div class="form-grid-3-col">
           <app-select-option-field [frmGroup]="frmGroup"
                                    [options]="priorityOptions"
@@ -250,8 +250,8 @@
         </div>
 
         <!--Service Level-->
-        <div class="form-sub-section-card mt-3">
-          <div class="form-sub-section-header flex justify-between">
+        <div class="sub-panel mt-3">
+          <div class="sub-panel-header flex justify-between">
             Service Level
             <button (click)="addServiceRow()" class="add-row-btn">
               Add Service
@@ -332,8 +332,8 @@
       </div>
 
       <!--Debitor-->
-      <div class="form-sub-section-card">
-        <div class="form-sub-section-header">Debitor</div>
+      <div class="sub-panel">
+        <div class="sub-panel-header">Debitor</div>
         <div class="form-grid-3-col">
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'Name'"

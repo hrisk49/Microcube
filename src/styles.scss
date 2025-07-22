@@ -2,213 +2,9 @@
 @import "../node_modules/ngx-toastr/toastr.css";
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-/*
-// Color Palette
-$primary: #2563EB;     // Corporate blue (trust, stability)
-$success: #16A34A;     // Process success (softer green)
-$info: #0EA5E9;        // Information/view (calming blue)
-$warning: #EA580C;     // Alert/caution (muted orange)
-$danger: #DC2626;      // Critical/delete (reserved red)
-$neutral: #64748B;     // Secondary actions (soft gray)
-
-// Background colors
-$bg-primary: #F8FAFC;          // Very light blue-gray
-$bg-surface: #FFFFFF;          // Pure white
-$bg-hover: #F1F5F9;            // Subtle hover background
-
-// Text colors
-$text-primary: #1E293B;        // Dark blue-gray (easier than pure black)
-$text-secondary: #475569;      // Medium gray
-$text-inverse: #FFFFFF;        // White text
-
-// specific button base
-.banking-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  min-width: 100px;
-  height: 38px;
-  padding: 0 18px;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-
-  // Optimized transitions
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.6, 1);
-
-  // standard typography
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  font-size: 13.5px;             // Balanced readability
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  line-height: 1.2;
-  text-decoration: none;
-
-  // Reduce subtle shadows
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-
-  // Accessibility & UX
-  &:focus {
-    outline: 2px solid currentColor;
-    outline-offset: 2px;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none !important;
-  }
-
-  // Subtle hover effect
-  &:hover:not(:disabled) {
-    transform: translateY(-0.5px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  &:active:not(:disabled) {
-    transform: translateY(0);
-    transition-duration: 0.05s;
-  }
-
-  // Icon styling
-  //.icon {
-  //  width: 16px;
-  //  height: 16px;
-  //  flex-shrink: 0;
-  //}
-}
-
-.save-btn {
-  @extend .banking-btn;
-  background-color: $bg-surface;
-  color: $success;
-  border-color: $success;
-
-  &:hover:not(:disabled) {
-    background-color: $success;
-    color: $text-inverse;
-    border-color: darken($success, 10%);
-  }
-
-  &:focus {
-    outline-color: $success;
-    box-shadow: 0 0 0 3px rgba($success, 0.2);
-  }
-
-  &:active:not(:disabled) {
-    background-color: darken($success, 8%);
-  }
-}
-
-// SECONDARY: View Records, Reports
-.view-btn {
-  @extend .banking-btn;
-
-  background-color: $bg-surface;
-  color: $info;
-  border-color: $info;
-
-  //background-color: $info;
-  //color: $text-inverse;
-  //border-color: darken($info, 5%);
-
-  &:hover:not(:disabled) {
-    //background-color: darken($info, 6%);
-    //border-color: darken($info, 10%);
-    background-color: $info;
-    color: $text-inverse;
-    border-color: darken($info, 10%);
-  }
-
-  &:focus {
-    outline-color: $info;
-    box-shadow: 0 0 0 3px rgba($info, 0.2);
-  }
-
-  &:active:not(:disabled) {
-    background-color: darken($info, 8%);
-  }
-}
-
-// DANGER: Delete Records, Cancel Transactions
-.delete-btn {
-  @extend .banking-btn;
-  background-color: $bg-surface;
-  color: $danger;
-  border-color: $danger;
-
-  &:hover:not(:disabled) {
-    background-color: $danger;
-    color: $text-inverse;
-    border-color: darken($danger, 5%);
-  }
-
-  &:focus {
-    outline-color: $danger;
-    box-shadow: 0 0 0 3px rgba($danger, 0.2);
-  }
-
-  &:active:not(:disabled) {
-    background-color: darken($danger, 5%);
-  }
-}
-
-// NEUTRAL: Reset Forms, Clear Data
-.reset-btn {
-  @extend .banking-btn;
-  background-color: $bg-surface;
-  color: $neutral;
-  border-color: lighten($neutral, 20%);
-
-  &:hover:not(:disabled) {
-    //background-color: $bg-hover;
-    //color: darken($neutral, 20%);
-    background-color: $neutral;
-    color: $bg-surface;
-    border-color: $neutral;
-  }
-
-  &:focus {
-    outline-color: $neutral;
-    box-shadow: 0 0 0 3px rgba($neutral, 0.15);
-  }
-
-  &:active:not(:disabled) {
-    background-color: darken($bg-hover, 3%);
-  }
-}
-
-// WARNING: Exit, Logout, Cancel
-.exit-btn {
-  @extend .banking-btn;
-  //background-color: $warning;
-  //color: $text-inverse;
-  //border-color: darken($warning, 5%);
-
-  background-color: $bg-surface;
-  color: $warning;
-  border-color: $warning;
-
-  &:hover:not(:disabled) {
-    //background-color: darken($warning, 6%);
-    //border-color: darken($warning, 10%);
-    background-color: $warning;
-    color: $text-inverse;
-    border-color: darken($warning, 5%);
-  }
-
-  &:focus {
-    outline-color: $warning;
-    box-shadow: 0 0 0 3px rgba($warning, 0.2);
-  }
-
-  &:active:not(:disabled) {
-    background-color: darken($warning, 8%);
-  }
-}*/
+//body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+//body { margin: 0; font-family: "IBM Plex Sans", "Helvetica Neue", sans-serif;}
+body { margin: 0; font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;}
 
 .mat-mdc-card {
   background-color: white !important;
@@ -224,14 +20,14 @@ $text-inverse: #FFFFFF;        // White text
 }
 
 .form-wrapper {
-  @apply space-y-6 p-2;
+  @apply space-y-6;
 }
 
-.form-section-card {
+.panel {
   @apply rounded-lg border border-gray-200 p-6 border border-l-3 border-l-slate-400 border-b-3 border-b-slate-400;
 }
 
-.form-sub-section-card {
+.sub-panel {
   @apply rounded-lg border border-gray-200 p-6 border border-l-3 border-l-slate-300 bg-[#f8fafc];
 }
 
@@ -250,7 +46,7 @@ $text-inverse: #FFFFFF;        // White text
 }
 
 /* Sub-section header/title */
-.form-sub-section-header {
+.sub-panel-header {
   font-size: 1rem;
   font-weight: 500;
   color: #2563EB;
