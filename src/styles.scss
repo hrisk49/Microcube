@@ -28,7 +28,7 @@ body { margin: 0; font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;}
 }
 
 .sub-panel {
-  @apply rounded-lg border border-gray-200 p-6 border border-l-2 border-l-slate-300 bg-[#ECEFFE];
+  @apply rounded-lg border border-gray-200 p-6 border border-l-2 border-l-slate-300 bg-[#F5F8FF];
 }
 
 .form-grid {
@@ -52,7 +52,7 @@ body { margin: 0; font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;}
   color: #2563EB;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #C3D4FF;
   display: flex;
   align-items: center;
   gap: 0.5rem;

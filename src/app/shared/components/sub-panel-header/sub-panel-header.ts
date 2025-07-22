@@ -1,4 +1,4 @@
-import {Component, input} from '@angular/core';
+import {Component, input, output} from '@angular/core';
 
 @Component({
   selector: 'app-sub-panel-header',
@@ -8,4 +8,10 @@ import {Component, input} from '@angular/core';
 })
 export class SubPanelHeader {
   subPanelTitle = input<string>();
+  isButton = input<boolean>();
+  addAction = output();
+
+  add() {
+    this.addAction.emit();
+  }
 }

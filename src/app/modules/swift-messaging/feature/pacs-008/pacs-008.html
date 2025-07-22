@@ -251,12 +251,9 @@
 
         <!--Service Level-->
         <div class="sub-panel mt-3">
-          <div class="sub-panel-header flex justify-between">
-            <app-sub-panel-header [subPanelTitle]="'Service Level'"></app-sub-panel-header>
-            <button (click)="addServiceRow()" class="add-row-btn">
-              Add Service
-            </button>
-          </div>
+          <app-sub-panel-header [subPanelTitle]="'Service Level'"
+                                [isButton]="true"
+                                (addAction)="addServiceRow()"></app-sub-panel-header>
 
           <ng-container formArrayName="serviceLevels">
             @for (group of serviceLevels.controls; track $index) {
