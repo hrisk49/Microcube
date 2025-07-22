@@ -24,11 +24,11 @@ body { margin: 0; font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;}
 }
 
 .panel {
-  @apply rounded-lg border border-gray-200 p-6 border border-l-3 border-l-slate-400 border-b-3 border-b-slate-400;
+  @apply rounded-lg border border-gray-200 p-6 border border-l-2 border-l-slate-400 border-b-3 border-b-slate-400;
 }
 
 .sub-panel {
-  @apply rounded-lg border border-gray-200 p-6 border border-l-3 border-l-slate-300 bg-[#ECEFFE];
+  @apply rounded-lg border border-gray-200 p-6 border border-l-2 border-l-slate-300 bg-[#ECEFFE];
 }
 
 .form-grid {
