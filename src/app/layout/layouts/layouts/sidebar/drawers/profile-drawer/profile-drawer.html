@@ -1,218 +1,202 @@
-<div class="h-full overflow-y-auto pb-16">
-  <div class="p-6 space-y-4">
+<div class="h-full overflow-y-auto pb-16 bg-white">
+  <div class="p-6 space-y-4 pt-2">
 
     <!-- Profile Section -->
     <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
       <div class="flex items-center space-x-3 mb-3">
-        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-          <i class="fas fa-user text-white text-lg"></i>
+        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+          <mat-icon class="text-white">person</mat-icon>
         </div>
         <div>
-          <h3 class="font-semibold text-gray-800">Mahfuz</h3>
+          <h3 class="font-medium text-gray-800">Mahfuz</h3>
           <p class="text-sm text-gray-600">mahfuz.gmail.com</p>
         </div>
       </div>
-      <button class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors">
-        <i class="fas fa-edit mr-2"></i>Edit Profile
+      <button class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center">
+        <mat-icon class="mr-2">edit</mat-icon>
+        Edit Profile
       </button>
     </div>
 
     <!-- Service Request -->
     <div class="border-b border-gray-200 pb-2">
-      <button class="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+      <button class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer">
         <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-          <i class="fas fa-clipboard-list text-green-600"></i>
+          <mat-icon class="text-green-600">list_alt</mat-icon>
         </div>
         <div class="flex-1 text-left">
           <p class="font-medium text-gray-800">Service Request</p>
           <p class="text-sm text-gray-600">Request new services</p>
         </div>
-        <i class="fas fa-chevron-right text-gray-400"></i>
+        <mat-icon class="text-gray-400">chevron_right</mat-icon>
       </button>
     </div>
 
     <!-- Branch -->
     <div class="border-b border-gray-200 pb-2">
-      <button class="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+      <button class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer">
         <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-          <i class="fas fa-code-branch text-orange-600"></i>
+          <mat-icon class="text-orange-600">account_tree</mat-icon>
         </div>
         <div class="flex-1 text-left">
           <p class="font-medium text-gray-800">Branch</p>
           <p class="text-sm text-gray-600">Current: Dhanmondi</p>
         </div>
-        <i class="fas fa-chevron-right text-gray-400"></i>
+        <mat-icon class="text-gray-400">chevron_right</mat-icon>
       </button>
     </div>
 
     <!-- Notifications (Expandable) -->
     <div class="border-b border-gray-200 pb-2">
-      <button
-        class="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors relative"
-        (click)="isNotificationsOpen = !isNotificationsOpen"
-      >
-        <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-          <i class="fas fa-bell text-blue-600"></i>
-        </div>
-        <div class="flex-1 text-left">
-          <p class="font-medium text-gray-800">Notifications</p>
-          <p class="text-sm text-gray-600">Latest alerts</p>
+      <div class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer cursor-pointer"
+           (click)="toggleSection('notifications')">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+            <mat-icon class="text-blue-600">notifications</mat-icon>
+          </div>
+          <div>
+            <p class="font-medium text-gray-800">Notifications</p>
+            <p class="text-sm text-gray-600">Latest alerts</p>
+          </div>
         </div>
         <div class="flex items-center space-x-2">
           <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">3</span>
-          <i [ngClass]="isNotificationsOpen ? 'fa-chevron-down' : 'fa-chevron-right'" class="text-gray-400"></i>
+          <mat-icon class="text-slate-400">{{ isSectionOpen('mxMessages') ? 'expand_less' : 'expand_more' }}</mat-icon>
         </div>
-      </button>
+      </div>
 
-      <div class="mt-2 overflow-hidden transition-[max-height] duration-700 ease-in-out space-y-3"
-        [style.max-height]="isNotificationsOpen ? '1500px' : '0px'"
-        style="will-change: max-height;">
-
-        <!-- Notification Items -->
-        <div class="max-w-md mx-auto bg-gray-0 p-4 rounded-lg">
-          <!-- Notification List -->
-          <div class="space-y-3">
-            <!-- Item 1: Password Expiry -->
-            <div class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-              <div class="mt-0.5 text-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <div class="flex-1">
-                <div class="flex justify-between">
-                  <p class="text-sm font-medium text-gray-800">Password Expiry</p>
-                  <span class="text-xs text-gray-500">3m ago</span>
+      <div [@expandCollapse]="isSectionOpen('notifications') ? 'open' : 'closed'" class="overflow-hidden">
+        <div class="mt-2 space-y-3">
+          <!-- Notification Items -->
+          <div class="max-w-md mx-auto bg-gray-0 p-4 rounded-lg">
+            <!-- Notification List -->
+            <div class="space-y-3">
+              <!-- Item 1: Password Expiry -->
+              <div class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
+                <mat-icon class="text-blue-600">lock</mat-icon>
+                <div class="flex-1">
+                  <div class="flex justify-between">
+                    <p class="text-sm font-medium text-gray-800">Password Expiry</p>
+                    <span class="text-xs text-gray-500">3m ago</span>
+                  </div>
+                  <p class="text-xs text-gray-600">Expires in 3 days. Update now.</p>
                 </div>
-                <p class="text-xs text-gray-600">Expires in 3 days. Update now.</p>
+              </div>
+
+              <!-- Item 2: Dashboard Update -->
+              <div class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
+                <mat-icon class="text-purple-600">dashboard</mat-icon>
+                <div class="flex-1">
+                  <div class="flex justify-between">
+                    <p class="text-sm font-medium text-gray-800">System Updated</p>
+                    <span class="text-xs text-gray-500">30m ago</span>
+                  </div>
+                  <p class="text-xs text-gray-600">New dashboard features released.</p>
+                </div>
+              </div>
+
+              <!-- Item 3: Request Approved -->
+              <div class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
+                <mat-icon class="text-green-600">check_circle</mat-icon>
+                <div class="flex-1">
+                  <div class="flex justify-between">
+                    <p class="text-sm font-medium text-gray-800">Request Approved</p>
+                    <span class="text-xs text-gray-500">2h ago</span>
+                  </div>
+                  <p class="text-xs text-gray-600">Request #1234 has been approved.</p>
+                </div>
               </div>
             </div>
 
-            <!-- Item 2: Dashboard Update -->
-            <div class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-              <div class="mt-0.5 text-purple-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div class="flex-1">
-                <div class="flex justify-between">
-                  <p class="text-sm font-medium text-gray-800">System Updated</p>
-                  <span class="text-xs text-gray-500">30m ago</span>
-                </div>
-                <p class="text-xs text-gray-600">New dashboard features released.</p>
-              </div>
+            <!-- View More Button -->
+            <div class="flex justify-between items-center mt-4 px-6">
+              <div class="text-xs text-blue-600 cursor-pointer">View More</div>
+              <div class="text-xs text-blue-600 cursor-pointer">Mark all as read</div>
             </div>
-
-            <!-- Item 3: Request Approved -->
-            <div class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-              <div class="mt-0.5 text-green-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <div class="flex-1">
-                <div class="flex justify-between">
-                  <p class="text-sm font-medium text-gray-800">Request Approved</p>
-                  <span class="text-xs text-gray-500">2h ago</span>
-                </div>
-                <p class="text-xs text-gray-600">Request #1234 has been approved.</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- View More Button -->
-          <div class="flex justify-between items-center mt-4 px-6">
-            <div class="text-xs text-blue-600 cursor-pointer">View More</div>
-            <div class="text-xs text-blue-600 cursor-pointer">Mark all as read</div>
           </div>
         </div>
       </div>
     </div>
 
-
-
     <!-- Messaging (Expandable) -->
     <div class="border-b border-gray-200 pb-2">
-      <button
-        class="w-full flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
-        (click)="isMessagingOpen = !isMessagingOpen">
-        <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-          <i class="fas fa-envelope text-indigo-600"></i>
-        </div>
-        <div class="flex-1 text-left">
-          <p class="font-medium text-gray-800">Messaging</p>
-          <p class="text-sm text-gray-600">Send and receive messages</p>
+      <div class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer cursor-pointer"
+           (click)="toggleSection('messaging')">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+            <mat-icon class="text-indigo-600">mail</mat-icon>
+          </div>
+          <div>
+            <p class="font-medium text-gray-800">Messaging</p>
+            <p class="text-sm text-gray-600">Send and receive messages</p>
+          </div>
         </div>
         <div class="flex items-center space-x-2">
-          <span class="bg-indigo-500 text-white text-xs px-2 py-1 rounded-full">{{ 2 }}</span>
-          <i [ngClass]="isMessagingOpen ? 'fa-chevron-down' : 'fa-chevron-right'" class="text-gray-400"></i>
+          <span class="bg-indigo-500 text-white text-xs px-2 py-1 rounded-full">2</span>
+          <mat-icon class="text-slate-400">{{ isSectionOpen('mxMessages') ? 'expand_less' : 'expand_more' }}</mat-icon>
         </div>
-      </button>
+      </div>
 
-      <!-- Messenger Style Inbox Box -->
-      <div
-        class="mt-2 space-y-2 overflow-hidden transition-[max-height] duration-700 ease-in-out bg-gray-50"
-        [style.max-height]="isMessagingOpen ? '1000px' : '0px'"
-        style="will-change: max-height;"
-      >
-        <!-- COO Chat -->
-        <div (click)="toggleChat('hello')" class="flex items-center p-2 hover:bg-gray-50 border-b border-gray-100 cursor-pointer">
-          <div class="relative mr-3">
-            <div class="w-12 h-12 rounded-full bg-green-200 flex items-center justify-center">
-              <span class="text-green-800 font-semibold">A</span>
+      <div [@expandCollapse]="isSectionOpen('messaging') ? 'open' : 'closed'" class="overflow-hidden">
+        <div class="mt-2 space-y-2 p-4">
+          <!-- COO Chat -->
+          <div (click)="toggleChat('hello')" class="flex items-center p-2 hover:bg-gray-100 cursor-pointer rounded-lg">
+            <div class="relative mr-3">
+              <div class="w-8 h-8 rounded-full bg-green-200 flex items-center justify-center">
+                <span class="text-green-800 font-semibold">A</span>
+              </div>
+              <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
             </div>
-            <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between items-center">
-              <p class="font-medium text-gray-900">COO</p>
-              <span class="text-xs text-gray-500">2 min</span>
-            </div>
-            <div class="flex items-center">
-              <i class="fas fa-check-double text-xs text-blue-500 mr-1"></i>
-              <p class="text-sm text-gray-600 truncate font-semibold">Hey! Did you check the latest files?</p>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-center">
+                <p class="font-medium text-gray-900">COO</p>
+                <span class="text-xs text-gray-500">2 min</span>
+              </div>
+              <div class="flex items-center">
+                <mat-icon class="text-blue-500 mr-1" style="font-size: 16px;">done_all</mat-icon>
+                <p class="text-sm text-gray-600 truncate font-semibold">Hey! Did you check the latest files?</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Chat 1 -->
-        <div class="flex items-center p-2 hover:bg-gray-50 border-b border-gray-100 cursor-pointer bg-gray-50">
-          <div class="relative mr-3">
-            <div class="w-12 h-12 rounded-full bg-blue-200 flex items-center justify-center">
-              <span class="text-blue-800 font-semibold">R</span>
+          <!-- Chat 1 -->
+          <div class="flex items-center p-2 hover:bg-gray-100 cursor-pointer rounded-lg">
+            <div class="relative mr-3">
+              <div class="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center">
+                <span class="text-blue-800 font-semibold">R</span>
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-center">
+                <p class="font-medium text-gray-900">HR Team</p>
+                <span class="text-xs text-gray-500">10 min</span>
+              </div>
+              <p class="text-sm text-gray-600 truncate">Thank you! Got the report. 👍</p>
             </div>
           </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between items-center">
-              <p class="font-medium text-gray-900">HR Team</p>
-              <span class="text-xs text-gray-500">10 min</span>
-            </div>
-            <p class="text-sm text-gray-600 truncate">Thank you! Got the report. 👍</p>
-          </div>
-        </div>
 
-        <!-- Chat 2 -->
-        <div class="flex items-center p-2 hover:bg-gray-50 border-b border-gray-100 cursor-pointer">
-          <div class="relative mr-3">
-            <div class="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center">
-              <span class="text-purple-800 font-semibold">S</span>
+          <!-- Chat 2 -->
+          <div class="flex items-center p-2 hover:bg-gray-100 cursor-pointer rounded-lg">
+            <div class="relative mr-3">
+              <div class="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center">
+                <span class="text-purple-800 font-semibold">S</span>
+              </div>
+              <span class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 rounded-full border-2 border-white"></span>
             </div>
-            <span class="absolute bottom-0 right-0 w-3 h-3 bg-gray-400 rounded-full border-2 border-white"></span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between items-center">
-              <p class="font-medium text-gray-900">Support</p>
-              <span class="text-xs text-gray-500">Yesterday</span>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-center">
+                <p class="font-medium text-gray-900">Support</p>
+                <span class="text-xs text-gray-500">Yesterday</span>
+              </div>
+              <p class="text-sm text-gray-600 truncate">Password update reminder</p>
             </div>
-            <p class="text-sm text-gray-600 truncate">Password update reminder</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!--Drawer start-->
+  <!-- Chat Drawer -->
   <div
     class="fixed bottom-[20px] right-[10px] w-[400px] bg-white shadow-2xl transform transition-all duration-300 ease-in-out border border-gray-200
     rounded-lg overflow-hidden flex flex-col z-50"

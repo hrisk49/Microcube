@@ -1,16 +1,24 @@
 import {Component, signal} from '@angular/core';
-import {NgClass} from '@angular/common';
 import {ChatBox} from './drawers/chat-box/chat-box';
+import {MatIcon} from '@angular/material/icon';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'app-profile-drawer',
   imports: [
-    NgClass,
     ChatBox,
+    MatIcon,
   ],
   templateUrl: './profile-drawer.html',
   standalone: true,
-  styleUrl: './profile-drawer.scss'
+  styleUrl: './profile-drawer.scss',
+  animations: [
+    trigger('expandCollapse', [
+      state('open', style({ height: '*', opacity: 1 })),
+      state('closed', style({ height: '0px', opacity: 0 })),
+      transition('open <=> closed', animate('300ms ease-in-out'))
+    ])
+  ]
 })
 export class ProfileDrawer {
 
@@ -31,5 +39,24 @@ export class ProfileDrawer {
     this.isChatOpen.set(false);
   }
 
+  openSections: { [key: string]: boolean } = {
+    notifications: false,
+    messaging: false
+    // Add other sections as needed
+  };
+
+  /**
+   * Toggle a section's open/closed state
+   */
+  toggleSection(section: string): void {
+    this.openSections[section] = !this.openSections[section];
+  }
+
+  /**
+   * Check if a section is open
+   */
+  isSectionOpen(section: string): boolean {
+    return this.openSections[section];
+  }
 
 }

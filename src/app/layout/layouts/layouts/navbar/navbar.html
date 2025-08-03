@@ -1,33 +1,104 @@
-<div
-  class="h-16 flex items-center justify-between px-6 border-b-[0.5px] border-gray-300 shadow-2xl shadow-black/10">
-  <div class="flex items-center space-x-4">
-    <h1 class="text-2xl font-bold">Dashboard</h1>
-<!--    <div class="flex items-center space-x-2">-->
-<!--      <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>-->
-<!--      <span class="text-sm opacity-90">Online</span>-->
-<!--    </div>-->
+<div class="relative">
+  <div
+    class="h-16 flex items-center justify-between px-6 border-b-[0.5px] border-gray-300 shadow-2xl shadow-black/10">
+    <div class="flex items-center space-x-4 hidden sm:block">
+      <h1 class="text-2xl font-bold">Dashboard</h1>
+      <!--    <div class="flex items-center space-x-2">-->
+      <!--      <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>-->
+      <!--      <span class="text-sm opacity-90">Online</span>-->
+      <!--    </div>-->
 
-    <!-- Search -->
+      <!-- Search -->
+    </div>
+
+    <div class="flex items-center gap-8">
+      <app-search></app-search>
+
+      <!-- Desktop Buttons -->
+      <div class="flex items-center space-x-[10px] hidden sm:flex">
+        <!-- Buttons -->
+
+        @if (buttons().save) {
+          <app-save></app-save>
+        }
+
+        @if (buttons().update) {
+          <app-update></app-update>
+        }
+
+        @if (buttons().view) {
+          <app-view></app-view>
+        }
+
+        @if (buttons().delete) {
+          <app-delete></app-delete>
+        }
+
+        @if (buttons().reset) {
+          <app-reset></app-reset>
+        }
+
+        @if (buttons().exit) {
+          <app-exit></app-exit>
+        }
+      </div>
+    </div>
+
+    <!-- Mobile Menu Toggle Button -->
+    <button class="sm:hidden p-2 rounded-md hover:bg-gray-100 transition-colors duration-200"
+            (click)="toggleMenu = !toggleMenu">
+      <div class="transform transition-transform duration-300"
+           [class.rotate-90]="toggleMenu">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </div>
+    </button>
   </div>
 
-  <div class="flex items-center gap-8">
-    <app-search></app-search>
+  <!-- Mobile Menu Dropdown -->
+  <div class="sm:hidden absolute top-full  right-0 z-50 bg-white border-b border-gray-200 shadow-lg overflow-hidden transition-all duration-300 ease-in-out"
+       [class]="toggleMenu ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'">
 
-    <div class="flex items-center space-x-[10px]">
-      <!-- Buttons -->
+    <div class="p-4 space-y-3 transform transition-transform duration-300"
+         [class]="toggleMenu ? 'translate-y-0' : '-translate-y-4'">
 
-      <app-save *ngIf="buttons().save"></app-save>
+      @if (buttons().save) {
+        <div class="w-full">
+          <app-save></app-save>
+        </div>
+      }
 
-      <app-update *ngIf="buttons().update"></app-update>
+      @if (buttons().update) {
+        <div class="w-full">
+          <app-update></app-update>
+        </div>
+      }
 
-      <app-view *ngIf="buttons().view"></app-view>
+      @if (buttons().view) {
+        <div class="w-full">
+          <app-view></app-view>
+        </div>
+      }
 
-      <app-delete *ngIf="buttons().delete"></app-delete>
+      @if (buttons().delete) {
+        <div class="w-full">
+          <app-delete></app-delete>
+        </div>
+      }
 
-      <app-reset *ngIf="buttons().reset"></app-reset>
+      @if (buttons().reset) {
+        <div class="w-full">
+          <app-reset></app-reset>
+        </div>
+      }
 
-      <app-exit *ngIf="buttons().exit"></app-exit>
+      @if (buttons().exit) {
+        <div class="w-full">
+          <app-exit></app-exit>
+        </div>
+      }
     </div>
   </div>
-
 </div>

@@ -1,5 +1,6 @@
 import {signal} from '@angular/core';
 import {ButtonActionsModel} from '../models/button.actions.model';
+import {FormGroup} from '@angular/forms';
 
 export const ButtonActions = signal<ButtonActionsModel>({
   save: false,
@@ -9,3 +10,6 @@ export const ButtonActions = signal<ButtonActionsModel>({
   exit: false,
   reset: false
 });
+
+
+export const FormGroupSignal = signal<FormGroup>(new FormGroup({}));

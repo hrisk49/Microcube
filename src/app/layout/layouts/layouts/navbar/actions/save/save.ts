@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import {Component, effect} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
+import {FormGroupSignal} from '../../../../../../shared/constant/button-actions';
+import {FormGroup} from '@angular/forms';
 
 @Component({
     selector: 'app-save',
@@ -12,4 +14,8 @@ import {MatIcon} from '@angular/material/icon';
 })
 export class Save {
 
+  frmGroup: FormGroup = FormGroupSignal();
+
+  constructor() {
+  }
 }

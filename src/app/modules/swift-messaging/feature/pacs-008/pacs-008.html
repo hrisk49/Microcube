@@ -2,9 +2,14 @@
   <form [formGroup]="frmGroup" class="form-wrapper">
 
     <!--Business Application Header-->
-    <div class="panel p-6">
+    <div class="panel">
       <app-panel-header [panelTitle]="'Business Application Header'"/>
       <div class="form-grid-3-col">
+
+        <app-amount-to-word-input [frmGroup]="frmGroup"
+                                  [label]="'Amount to Text'"
+                                  [controlName]="'amountToText'"/>
+
         <app-text-base-input [frmGroup]="frmGroup"
                              [label]="'From BIC'"
                              [controlName]="'fromBic'"/>
@@ -38,8 +43,10 @@
       </div>
 
       <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Related'"></app-sub-panel-header>
-        <div class="form-grid-3-col">
+        <app-sub-panel-header [subPanelTitle]="'Related'"
+                              [divElement]="related"
+                              [isOptional]="true"/>
+        <div #related class="form-grid-3-col">
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'From BIC'"
                                [controlName]="'relatedFromBic'"/>
@@ -74,7 +81,7 @@
     </div>
 
     <!--FI To FI Customer Credit Transfer-->
-    <div class="panel p-6">
+    <div class="panel">
       <app-panel-header [panelTitle]="'FI To FI Customer Credit Transfer'"/>
 
       <!--Group Header-->
@@ -166,7 +173,7 @@
 
 
     <!-- Credit Transfer Transaction Information -->
-    <div class="panel p-6">
+    <div class="panel">
       <app-panel-header [panelTitle]="'Credit Transfer Transaction Information'"/>
       <div class="form-grid-3-col">
         <app-text-base-input [frmGroup]="frmGroup"

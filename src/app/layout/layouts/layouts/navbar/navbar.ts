@@ -1,4 +1,4 @@
-import {Component, effect, inject} from '@angular/core';
+import {Component, effect} from '@angular/core';
 import {Search} from './actions/search/search';
 import {Save} from './actions/save/save';
 import {View} from './actions/view/view';
@@ -6,7 +6,6 @@ import {Delete} from './actions/delete/delete';
 import {Reset} from './actions/reset/reset';
 import {Exit} from './actions/exit/exit';
 import {Update} from './actions/update/update';
-import {NgIf} from '@angular/common';
 import {ButtonActions} from '../../../../shared/constant/button-actions';
 
 @Component({
@@ -18,8 +17,7 @@ import {ButtonActions} from '../../../../shared/constant/button-actions';
     Delete,
     Reset,
     Exit,
-    Update,
-    NgIf
+    Update
   ],
   templateUrl: './navbar.html',
   standalone: true,
@@ -28,6 +26,7 @@ import {ButtonActions} from '../../../../shared/constant/button-actions';
 export class Navbar {
 
   buttons = ButtonActions;
+  toggleMenu: boolean = false;
 
   constructor() {
     effect(() => {

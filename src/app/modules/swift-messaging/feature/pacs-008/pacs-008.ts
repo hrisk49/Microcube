@@ -4,11 +4,12 @@ import {SelectOptionField} from "../../../../shared/components/input-types/selec
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
 import {RESET_CLICK} from '../../../../shared/constant/button-click';
 import {SelectOptions} from '../../../../shared/models/select-options';
-import {ButtonActions} from '../../../../shared/constant/button-actions';
+import {ButtonActions, FormGroupSignal} from '../../../../shared/constant/button-actions';
 import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
 import {ToastrService} from 'ngx-toastr';
 import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
 import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
+import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
 
 @Component({
   selector: 'app-pacs-008',
@@ -19,6 +20,7 @@ import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub
     DateInput,
     PanelHeader,
     SubPanelHeader,
+    AmountToWordInput,
   ],
   templateUrl: './pacs-008.html',
   styleUrl: './pacs-008.scss'
@@ -79,6 +81,7 @@ export class Pacs008 implements OnInit {
     this.frmGroup = this.formBuilder.group({
 
       // Business Application Header
+      amountToText: ['',],
       fromBic: ['', Validators.required],
       toBic: ['', Validators.required],
       businessMessageIdentifier: [''],
@@ -99,7 +102,8 @@ export class Pacs008 implements OnInit {
       // FI To FI Customer Credit Transfer
       // FI To FI Customer -> Group Header
       messageIdentification: [''],
-      creationDate: [new Date()],
+      // creationDate: [new Date()],
+      creationDate: [],
 
       // FI To FI Customer -> Settlement Information
       settlementMethod: ['clrg'],
@@ -174,8 +178,9 @@ export class Pacs008 implements OnInit {
       debitorAccountId: [''],
       debitorIban: [''],
       debitorLei: [''],
-
     });
+
+    FormGroupSignal.set(this.frmGroup);
   }
 
   createServiceLevelGroup(): FormGroup {
