@@ -23,6 +23,7 @@ import {AmountToWordInput} from '../../../../shared/components/input-types/amoun
     AmountToWordInput,
   ],
   templateUrl: './pacs-008.html',
+  standalone: true,
   styleUrl: './pacs-008.scss'
 })
 export class Pacs008 implements OnInit {
