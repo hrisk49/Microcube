@@ -21,10 +21,22 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () => import('./modules/swift-messaging/swift-messaging.routing').then(m => m.swiftMessagingRouting)
+        loadChildren: () => import('./modules/swiftmx/swiftmx.routing').then(m => m.SwiftmxRouting)
       },
     ]
-  }
+  },
+  // {
+  //   path: 'mx', component: Layout,
+  //   data: {
+  //     layout: 'empty'
+  //   },
+  //   children: [
+  //     {
+  //       path: '',
+  //       loadChildren: () => import('./modules/swift-messaging/swift-messaging.routing').then(m => m.swiftMessagingRouting)
+  //     },
+  //   ]
+  // }
 
 ];
 
