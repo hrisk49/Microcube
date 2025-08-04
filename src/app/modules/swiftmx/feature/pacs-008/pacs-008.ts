@@ -2,14 +2,15 @@ import {Component, effect, inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
-import {RESET_CLICK} from '../../../../shared/constant/button-click';
+import {RESET_CLICK} from '../../../../shared/constant/button-click.constant';
 import {SelectOptions} from '../../../../shared/models/select-options';
-import {ButtonActions, FormGroupSignal} from '../../../../shared/constant/button-actions';
+import {ButtonActionsConstant, FormGroupSignal} from '../../../../shared/constant/button-actions.constant';
 import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
 import {ToastrService} from 'ngx-toastr';
 import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
 import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
 import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
+import {Mx008Service} from '../../service/mx008.service';
 
 @Component({
   selector: 'app-pacs-008',
@@ -30,6 +31,7 @@ export class Pacs008 implements OnInit {
 
   formBuilder = inject(FormBuilder);
   toastr = inject(ToastrService);
+  mx008Service = inject(Mx008Service);
   frmGroup: FormGroup;
   resetClick = RESET_CLICK;
   priorityOptions: SelectOptions[] = [
@@ -57,7 +59,7 @@ export class Pacs008 implements OnInit {
   ];
 
   constructor() {
-    ButtonActions.set({
+    ButtonActionsConstant.set({
       save: true,
       update: false,
       view: true,
@@ -76,6 +78,13 @@ export class Pacs008 implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    this.save();
+  }
+
+  save() {
+    this.mx008Service.save({}).subscribe(res => {
+      console.log(res);
+    })
   }
 
   initForm(): void {

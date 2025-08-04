@@ -2,7 +2,7 @@ import {signal} from '@angular/core';
 import {ButtonActionsModel} from '../models/button.actions.model';
 import {FormGroup} from '@angular/forms';
 
-export const ButtonActions = signal<ButtonActionsModel>({
+export const ButtonActionsConstant = signal<ButtonActionsModel>({
   save: false,
   update: false,
   view: false,

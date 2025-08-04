@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import Highcharts from 'highcharts';
 import 'highcharts/highcharts-3d';
 import {HighchartsChartModule} from 'highcharts-angular';
-import {ButtonActions} from '../../../../shared/constant/button-actions';
+import {ButtonActionsConstant} from '../../../../shared/constant/button-actions.constant';
 
 @Component({
   selector: 'app-dashboard',
@@ -51,7 +51,7 @@ export class Dashboard implements OnInit {
   }
 
   ngOnInit(): void {
-    ButtonActions.set({
+    ButtonActionsConstant.set({
       save: true,
       update: false,
       view: true,

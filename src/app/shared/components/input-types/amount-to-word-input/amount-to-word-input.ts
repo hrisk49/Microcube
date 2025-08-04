@@ -11,6 +11,7 @@ import {NgClass} from '@angular/common';
     NgClass
   ],
   templateUrl: './amount-to-word-input.html',
+  standalone: true,
   styleUrl: './amount-to-word-input.scss'
 })
 export class AmountToWordInput {

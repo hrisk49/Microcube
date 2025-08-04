@@ -1,18 +1,14 @@
-import {inject, Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {Injectable} from '@angular/core';
+import {ApiService} from "../../../core/service/api.service";
+import {MX008} from "../../../shared/constant/api.constant";
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
-export class Mx008Service {
+export class Mx008Service extends ApiService<Mx008Model> {
 
-  url: string = 'http://localhost:8095/swiftFusionAPI/';
-  http = inject(HttpClient);
+    constructor() {
+        super(MX008); // base path declaration for mx008
+    }
 
-  constructor() { }
-
-  save008(model: Mx008Model): Observable<Mx008Model> {
-    return this.http.post<Mx008Model>('/api/v1/pacs/mx008/save', model);
-  }
 }

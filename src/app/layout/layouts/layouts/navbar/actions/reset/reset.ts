@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
-import {RESET_CLICK} from '../../../../../../shared/constant/button-click';
+import {RESET_CLICK} from '../../../../../../shared/constant/button-click.constant';
 
 @Component({
     selector: 'app-reset',

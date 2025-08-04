@@ -4,14 +4,15 @@ import {MatIconButton} from '@angular/material/button';
 import {MatTooltip} from '@angular/material/tooltip';
 
 @Component({
-  selector: 'app-sub-panel-header',
-  imports: [
-    MatIcon,
-    MatIconButton,
-    MatTooltip
-  ],
-  templateUrl: './sub-panel-header.html',
-  styleUrl: './sub-panel-header.scss'
+    selector: 'app-sub-panel-header',
+    imports: [
+        MatIcon,
+        MatIconButton,
+        MatTooltip
+    ],
+    templateUrl: './sub-panel-header.html',
+    standalone: true,
+    styleUrl: './sub-panel-header.scss'
 })
 export class SubPanelHeader {
   subPanelTitle = input<string>();
