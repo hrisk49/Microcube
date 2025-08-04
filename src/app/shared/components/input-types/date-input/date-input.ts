@@ -6,7 +6,7 @@ import {NgClass} from '@angular/common';
 import {DateAdapter, MAT_DATE_FORMATS} from '@angular/material/core';
 import {CustomDateAdapter} from '../../../adapter/custom-date.adapter';
 import {APP_DATE_FORMATS} from '../../../constant/app_date_formats';
-import {NgxMaskDirective, provideNgxMask} from 'ngx-mask';
+import {provideNgxMask} from 'ngx-mask';
 
 @Component({
   selector: 'app-date-input',
@@ -18,16 +18,15 @@ import {NgxMaskDirective, provideNgxMask} from 'ngx-mask';
     MatInput,
     ReactiveFormsModule,
     MatSuffix,
-    NgClass,
-    NgxMaskDirective
+    NgClass
   ],
   templateUrl: './date-input.html',
   standalone: true,
   styleUrl: './date-input.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
-    { provide: DateAdapter, useClass: CustomDateAdapter },
-    { provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS },
+    {provide: DateAdapter, useClass: CustomDateAdapter},
+    {provide: MAT_DATE_FORMATS, useValue: APP_DATE_FORMATS},
     provideNgxMask()
   ],
 })
