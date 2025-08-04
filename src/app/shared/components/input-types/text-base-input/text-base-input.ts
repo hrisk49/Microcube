@@ -22,6 +22,7 @@ export class TextBaseInput {
   readonly label = input.required<string>();
   readonly type = input<string>();
   readonly isReadonly = input<boolean>();
+  readonly placeholder = input<any>();
 
   isRequired(): boolean {
     const control = this.frmGroup().get(this.controlName());

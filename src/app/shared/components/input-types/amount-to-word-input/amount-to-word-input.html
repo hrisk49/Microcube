@@ -1,0 +1,37 @@
+<div [formGroup]="frmGroup()" class="w-full">
+  <label class="input-label relative">
+    {{ label() }}
+    @if (isRequired()) {
+      <span class="text-red-500">*</span>
+    }
+
+    @if (isInvalid()) {
+      <div class="text-red-500 text-sm mt-1 absolute right-0 top-0">
+        @if (hasError('required')) {
+        <ng-container>
+          {{ label() }} is required..!
+        </ng-container>
+        }
+
+<!--        @if (hasError('min')) {-->
+<!--          <ng-container>-->
+<!--            Minimum length required is {{ getErrorValue('min') }}-->
+<!--          </ng-container>-->
+<!--        }-->
+
+<!--        @if (hasError('max')) {-->
+<!--          <ng-container>-->
+<!--            Maximum length allowed is {{ getErrorValue('max') }}-->
+<!--          </ng-container>-->
+<!--        }-->
+
+      </div>
+    }
+  </label>
+  <input [formControlName]="controlName()" [ngClass]="{'readonly-input': isReadonly() }" type="number" (keyup)="onChangeInput()"
+         [readonly]="isReadonly()" matInput [placeholder]="placeholder() ?? 'Enter ' + label()" class="custom-input"/>
+
+  <div class="text-sm mt-1">
+    {{ amountToWord() }}
+  </div>
+</div>

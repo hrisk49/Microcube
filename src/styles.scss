@@ -10,6 +10,24 @@ body { margin: 0; font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;}
   background-color: white !important;
 }
 
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"],
+input.number-align,
+.number-align {
+  text-align: right;
+  direction: ltr;
+}
+
+input[type="number"]::placeholder {
+  text-align: left;
+  direction: ltr;
+}
+
 .readonly-input {
   background-color: #e5e7eb !important;
   cursor: not-allowed;
@@ -24,20 +42,20 @@ body { margin: 0; font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;}
 }
 
 .panel {
-  @apply rounded-lg border border-gray-200 p-6 border border-l-2 border-b-3 border-b-slate-400;
+  @apply rounded-lg border border-gray-200 p-4 sm:p-6 border border-l-2 border-b-3 border-b-slate-400;
 }
 
 .sub-panel {
-  @apply rounded-lg border border-gray-200 p-6 border border-l-2 border-l-slate-300 bg-[#F5F8FF];
+  @apply rounded-lg border border-gray-200 p-4 sm:p-6 border-l-2 -mx-6;
 }
 
 .form-grid {
-  @apply grid grid-cols-1 gap-6 mb-4;
+  @apply grid grid-cols-1 gap-4 sm:gap-6 mb-4;
 }
 
 .form-grid-3-col {
   @extend .form-grid;
-  @apply md:grid-cols-3 ;
+  @apply md:grid-cols-3;
 }
 
 .form-grid-4-col {
@@ -45,19 +63,19 @@ body { margin: 0; font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;}
   @apply md:grid-cols-4;
 }
 
+.panel-header {
+  @apply text-lg sm:text-xl font-medium tracking-[0.8px]
+  -mx-4 sm:-mx-6 md:-mx-6
+  -mt-4 sm:-mt-6
+  p-4 mb-4 sm:mb-6 bg-[#106ebe] text-white rounded-t-lg;
+}
 /* Sub-section header/title */
 .sub-panel-header {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #2563EB;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid #C3D4FF;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  @apply text-base sm:text-lg font-medium tracking-[0.8px]
+  -mx-4 sm:-mx-6 md:-mx-6
+  -mt-4 sm:-mt-6
+  p-2 sm:px-4 mb-4 sm:mb-6 bg-[#106ebe] text-white rounded-t-md;
 }
-
 
 // Color Palette
 $btn-primary: #2563EB;        // Softer blue (less harsh than previous)
@@ -75,7 +93,7 @@ $btn-bg-hover: #F3F4F6;       // Subtle hover background
 $btn-bg-disabled: #F9FAFB;    // Disabled state background
 
 // Border colors
-$btn-border-default: #E5E7EB;
+$btn-border-default: #c5c8ca;
 $btn-border-hover: #D1D5DB;
 $btn-border-focus: #93C5FD;   // Soft blue for focus
 
@@ -90,11 +108,11 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: 110px;
+  width: 110px;
   height: 42px;           // Slightly taller
   padding: 0 20px;        // More padding
   border: 1px solid $btn-border-default;
-  border-radius: 8px;     // Slightly less rounded
+  border-radius: 20px;     // Slightly less rounded
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -426,38 +444,17 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 // Input Label
 .input-label {
   @apply block mb-1 font-medium text-gray-900;
+  @apply text-sm sm:text-base md:text-lg;
 }
+
 // input fields
 .custom-input {
-  width: 100%;
-  padding: 12px 12px;
-  //font-size: 14px;
-  line-height: 20px;
-  //color: #374151;
-  background-color: #fff;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  @apply w-full px-3 py-3 text-base leading-5 bg-white border border-gray-400 rounded-md placeholder-gray-400;
+  @apply focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400;
+  @apply disabled:bg-gray-50 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-500;
 
-  &:focus,
-  &:focus-visible {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-  }
-
-  &::placeholder {
-    color: #9ca3af;
-    opacity: 1;
-  }
-
-  &:disabled {
-    background-color: #f9fafb;
-    cursor: not-allowed;
-    border-color: #d1d5db;
-    color: #6b7280;
-  }
+  /* Responsive example */
+  @apply sm:text-sm md:text-base lg:text-lg;
 }
 
 /* mat-select or other select inputs */
