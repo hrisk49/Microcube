@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
-import {RESET_CLICK} from '../../../../../../shared/constant/button-click.constant';
+import {ONCLICK_RESET} from '../../../../../../shared/constant/button-signals.constant';
 
 @Component({
     selector: 'app-reset',
@@ -14,6 +14,6 @@ import {RESET_CLICK} from '../../../../../../shared/constant/button-click.consta
 export class Reset {
 
   reset() {
-    RESET_CLICK.set(true);
+    ONCLICK_RESET.set(true);
   }
 }

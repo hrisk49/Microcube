@@ -1,6 +1,6 @@
 import {Component, effect} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
-import {FormGroupSignal} from '../../../../../../shared/constant/button-actions.constant';
+import {FormGroupSignal, ONCLICK_RESET, ONCLICK_SAVE} from '../../../../../../shared/constant/button-signals.constant';
 import {FormGroup} from '@angular/forms';
 
 @Component({
@@ -17,5 +17,9 @@ export class Save {
   frmGroup: FormGroup = FormGroupSignal();
 
   constructor() {
+  }
+
+  save() {
+    ONCLICK_SAVE.set(true);
   }
 }

@@ -5,7 +5,7 @@ import {MatInput, MatSuffix} from '@angular/material/input';
 import {NgClass} from '@angular/common';
 import {DateAdapter, MAT_DATE_FORMATS} from '@angular/material/core';
 import {CustomDateAdapter} from '../../../adapter/custom-date.adapter';
-import {App_date_formatsConstant} from '../../../constant/app_date_formats.constant';
+import {AppDateFormatsConstant} from '../../../constant/app-date-formats.constant';
 import {provideNgxMask} from 'ngx-mask';
 
 @Component({
@@ -26,7 +26,7 @@ import {provideNgxMask} from 'ngx-mask';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {provide: DateAdapter, useClass: CustomDateAdapter},
-    {provide: MAT_DATE_FORMATS, useValue: App_date_formatsConstant},
+    {provide: MAT_DATE_FORMATS, useValue: AppDateFormatsConstant},
     provideNgxMask()
   ],
 })
