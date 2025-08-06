@@ -2,7 +2,7 @@ import {Component, effect, inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
-import {SelectOptions} from '../../../../shared/models/select-options';
+import {SelectOptionsModel} from '../../../../shared/models/select-options-model';
 import {
     BUTTON_VISIBILITY,
     FormGroupSignal,
@@ -14,7 +14,7 @@ import {ToastrService} from 'ngx-toastr';
 import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
 import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
 import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
-import {Mx008Service} from '../../service/mx008.service';
+import {Pacs008Service} from '../../service/pacs008.service';
 
 @Component({
     selector: 'app-pacs-008',
@@ -35,29 +35,29 @@ export class Pacs008 implements OnInit {
 
     formBuilder = inject(FormBuilder);
     toastr = inject(ToastrService);
-    mx008Service = inject(Mx008Service);
+    pacs008Service = inject(Pacs008Service);
     frmGroup: FormGroup;
     onClickReset = ONCLICK_RESET;
     onClickSave = ONCLICK_SAVE;
-    priorityOptions: SelectOptions[] = [
+    priorityOptions: SelectOptionsModel[] = [
         {key: 'high', value: 'High'},
         {key: 'normal', value: 'Normal'}
     ];
 
-    duplicateOptions: SelectOptions[] = [
+    duplicateOptions: SelectOptionsModel[] = [
         {key: 'codu', value: 'CODU'},
         {key: 'copy', value: 'COPY'},
         {key: 'dupl', value: 'DUPL'}
     ];
 
-    settlementOptions: SelectOptions[] = [
+    settlementOptions: SelectOptionsModel[] = [
         {key: 'clrg', value: 'CLRG'},
         {key: 'cove', value: 'COVE'},
         {key: 'inda', value: 'INDA'},
         {key: 'inga', value: 'INGA'}
     ];
 
-    chargeBearerOptions: SelectOptions[] = [
+    chargeBearerOptions: SelectOptionsModel[] = [
         {key: 'debt', value: 'Debitor'},
         {key: 'cred', value: 'Creditor'},
         {key: 'shar', value: 'Shared'}
@@ -234,7 +234,7 @@ export class Pacs008 implements OnInit {
     }
 
     save() {
-        this.mx008Service.save(this.frmGroup.value).subscribe(res => {
+        this.pacs008Service.save(this.frmGroup.value).subscribe(res => {
             console.log(res);
         })
     }
