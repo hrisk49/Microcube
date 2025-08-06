@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import {PACS_002} from '../../../shared/constant/api.constant';
 import {ApiService} from '../../../core/service/api.service';
 import {Mx002Model} from '../model/mx002.model';
+import {PACS_002} from '../../../shared/constant/api.constant';
 
 @Injectable({
   providedIn: 'root'

@@ -1,15 +1,20 @@
 import {Component, effect, inject, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {SelectOptionField} from '../../../../shared/components/input-types/select-option-field/select-option-field';
-import {TextBaseInput} from '../../../../shared/components/input-types/text-base-input/text-base-input';
-import {ToastrService} from 'ngx-toastr';
-import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
-import {BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE} from '../../../../shared/constant/button-signals.constant';
-import {Mx002Service} from '../../service/mx002.service';
+import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
+import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
 import {SelectOptionsModel} from '../../../../shared/models/select-options-model';
+import {
+  BUTTON_VISIBILITY,
+  FormGroupSignal,
+  ONCLICK_RESET,
+  ONCLICK_SAVE
+} from '../../../../shared/constant/button-signals.constant';
+import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
+import {ToastrService} from 'ngx-toastr';
 import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
-import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
 import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
+import {Mx002Service} from '../../service/mx002.service';
+import {AmountToWordInput} from "../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input";
 
 @Component({
   selector: 'app-pacs-002',
@@ -19,11 +24,12 @@ import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub
     TextBaseInput,
     DateInput,
     PanelHeader,
-    AmountToWordInput,
     SubPanelHeader,
+    AmountToWordInput,
 
   ],
   templateUrl: './pacs-002.html',
+  standalone: true,
   styleUrl: './pacs-002.scss'
 })
 export class Pacs002 implements OnInit {
@@ -31,7 +37,7 @@ export class Pacs002 implements OnInit {
   formBuilder = inject(FormBuilder);
   mx002Service = inject(Mx002Service);
   toastr = inject(ToastrService);
-  frmGroup: FormGroup;
+  frmGroup : FormGroup;
   onClickReset = ONCLICK_RESET;
   onClickSave = ONCLICK_SAVE;
 
@@ -42,7 +48,7 @@ export class Pacs002 implements OnInit {
     {key: 'urgent', value: 'Urgent'}
   ];
 
-  duplicateOptions: SelectOptionsModel[] = [
+  duplicateOptions : SelectOptionsModel[] = [
     {key: 'codu', value: 'CODU'},
     {key: 'copy', value: 'COPY'},
     {key: 'dupl', value: 'DUPL'}
@@ -83,14 +89,15 @@ export class Pacs002 implements OnInit {
   }
 
 
-  ngOnInit(): void {
+
+  ngOnInit():void {
     this.initForm();
   }
 
   initForm(): void {
     this.frmGroup = this.formBuilder.group({
       // Business Application Header
-      fromBic: ['', Validators.required],
+      fromBic:['',Validators.required],
       toBic: ['', Validators.required],
       businessMessageIdentifier: [''],
       messageDefinitionIdentifier: [''],
@@ -112,21 +119,75 @@ export class Pacs002 implements OnInit {
       creationDate: [new Date()],
 
       // Transaction Information And Status
-      TxInfAndSts: ['', Validators.required],
-      OrgnlGrpInf: [''],
+      TxInfAndSts :['',Validators.required],
+
+      // original Group Information
+      OrgnlGrpInf:['',Validators.required],
+      OrgnlMsgId:['',Validators.required],
+      OrgnlMsgNmId:['',Validators.required],
+      orgnlCreDtTm: ['', Validators.required],
+
       OrgnlInstrId: ['', Validators.required],
-      OrgnlEndToEndId: ['', Validators.required],
+      OrgnlEndToEndId: ['',Validators.required],
       OrgnlTxId: [''],
       OrgnlUETR: ['', Validators.required],
       TxSts: ['', Validators.required],
+
+      // Status Reason Information block StsRsnInf
+      Orgtr:[''],
+      Nm:[''],
+      PstlAdr:[''],
+      Id:[''],
+      CtryOfRes:[''],
+
+      // Address Information
+      dept:[''],
+      subDept:[''],
+      strtNm:[''],
+      bldgNb:[''],
+      bldgNm:[''],
+      flr:[''],
+      pstBx:[''],
+      room:[''],
+      pstCd:[''],
+      twnNm:[''],
+      twnLctnNm:[''],
+      dstrctNm:[''],
+      ctrySubDvsn:[''],
+      ctry:[''],
+      adrLine:[''],
+
+      orgIdBic:[''],
+      orgIdLei:[''],
+      orgIdOthrId:[''],
+      orgIdOthrScNmCd:[''],
+      orgIdOthrIssr:[''],
+
+      birthDt:[''],
+      prvcOfBirth:[''],
+      cityOfBirth:[''],
+      ctryOfBirth:[''],
+      prvtOthId1:[''],
+      prvtOthIdSchNmCd1:[''],
+      prvtOthIdIssr1:[''],
+      prvtOthId2:[''],
+      prvtOthIdSchNmCd2:[''],
+      prvtOthIdIssr2:[''],
+
+      // Status Reason Information block StsRsnInf
       StsRsnInf: [''],
+      rsnCd:[''],
+      rsnPrtry :[''],
+      addtlInf1:[''],
+      addtlInf2:[''],
+
       ClrSysRef: [''],
-      InstgAgt: ['', Validators.required],
-      InstdAgt: ['', Validators.required],
+      InstgAgt: ['',Validators.required],
+      InstdAgt: ['',Validators.required],
     });
   }
 
-  resetForm(): void {
+  resetForm(): void{
     this.frmGroup.reset();
     this.frmGroup.patchValue({
       date: new Date()

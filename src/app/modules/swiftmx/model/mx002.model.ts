@@ -1,6 +1,6 @@
 import {partyModel} from './party.model';
-import {AgentModel} from './agentModel';
-import {RelatedModel} from './relatedModel';
+import {agentModel} from './agent.model';
+import {relatedModel} from './related.model';
 
 export interface Mx002Model {
   bizMsgIdr: string;              // BusinessMessageIdentifier max 35
@@ -31,7 +31,7 @@ export interface Mx002Model {
   // END
   fctvIntrBkSttlmDt: string;      // EffectiveInterbankSettlementDate
   clrSysRef: string;              // ClearingSystemReference
-  instgAgt: AgentModel;                // InstructingAgent (custom type)
-  instdAgt: AgentModel;                // InstructedAgent (custom type)
-  rltd: RelatedModel;                  // Related info
+  instgAgt: agentModel;                // InstructingAgent (custom type)
+  instdAgt: agentModel;                // InstructedAgent (custom type)
+  rltd: relatedModel;                  // Related info
 }

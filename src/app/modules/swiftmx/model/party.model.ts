@@ -1,8 +1,6 @@
 import {addressModel} from './address.model';
 
 export  interface  partyModel {
-  nM:string; // Name
-  // Party or Customer Info
   nm: string;                          // Name, max 140, allowed chars defined externally
   address: addressModel;                   // Address object
   ctryOfRes: string;                  // Country of Residence (2-letter ISO code)
