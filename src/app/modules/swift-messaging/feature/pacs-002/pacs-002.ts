@@ -1,23 +1,25 @@
-import { Component, effect, inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SelectOptionField } from '../../../../shared/components/input-types/select-option-field/select-option-field';
-import { TextBaseInput } from '../../../../shared/components/input-types/text-base-input/text-base-input';
-import { ToastrService } from 'ngx-toastr';
-import { RESET_CLICK } from '../../../../shared/constant/button-click';
-import { SelectOptions } from '../../../../shared/models/select-options';
-import { ButtonActions } from '../../../../shared/constant/button-actions';
-import { FormPanel } from '../../../../shared/components/form-panel/form-panel';
-import { DateInput } from '../../../../shared/components/input-types/date-input/date-input';
-import { from } from 'rxjs';
+import {Component, effect, inject, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {SelectOptionField} from '../../../../shared/components/input-types/select-option-field/select-option-field';
+import {TextBaseInput} from '../../../../shared/components/input-types/text-base-input/text-base-input';
+import {ToastrService} from 'ngx-toastr';
+import {RESET_CLICK} from '../../../../shared/constant/button-click';
+import {SelectOptions} from '../../../../shared/models/select-options';
+import {ButtonActions} from '../../../../shared/constant/button-actions';
+import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
+import {from} from 'rxjs';
+import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
+import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
 
 @Component({
   selector: 'app-pacs-002',
   imports: [
-    FormPanel,
-        ReactiveFormsModule,
-        SelectOptionField,
-        TextBaseInput,
-        DateInput,
+    ReactiveFormsModule,
+    SelectOptionField,
+    TextBaseInput,
+    DateInput,
+    PanelHeader,
+    SubPanelHeader,
   ],
   templateUrl: './pacs-002.html',
   styleUrl: './pacs-002.scss'
@@ -26,7 +28,7 @@ export class Pacs002 implements OnInit {
   form: FormGroup;
   formBuilder = inject(FormBuilder);
   toastr = inject(ToastrService);
-  frmGroup : FormGroup;
+  frmGroup: FormGroup;
   resetClick = RESET_CLICK;
 
   priorityOptions: SelectOptions[] = [
@@ -36,10 +38,10 @@ export class Pacs002 implements OnInit {
     {key: 'urgent', value: 'Urgent'}
   ];
 
-  duplicateOptions : SelectOptions[] = [
+  duplicateOptions: SelectOptions[] = [
     {key: 'codu', value: 'CODU'},
     {key: 'copy', value: 'COPY'},
-    {key: 'dupl', value: 'DUPL'} 
+    {key: 'dupl', value: 'DUPL'}
   ];
 
   settlementOptions: SelectOptions[] = [
@@ -55,7 +57,7 @@ export class Pacs002 implements OnInit {
     {key: 'shar', value: 'Shared'}
   ];
 
-  constructor(){
+  constructor() {
     ButtonActions.set({
       save: true,
       update: false,
@@ -72,19 +74,18 @@ export class Pacs002 implements OnInit {
       }
     });
 
-    
+
   }
 
 
-  
-  ngOnInit():void {
+  ngOnInit(): void {
     this.initForm();
   }
 
   initForm(): void {
     this.frmGroup = this.formBuilder.group({
-       // Business Application Header
-      fromBic:['',Validators.required],
+      // Business Application Header
+      fromBic: ['', Validators.required],
       toBic: ['', Validators.required],
       businessMessageIdentifier: [''],
       messageDefinitionIdentifier: [''],
@@ -92,7 +93,7 @@ export class Pacs002 implements OnInit {
       copyDuplicate: ['codu'],
       priority: ['high'],
 
-       // Business Application Header -> related
+      // Business Application Header -> related
       relatedFromBic: ['', Validators.required],
       relatedToBic: ['', Validators.required],
       relatedBusinessMessageIdentifier: [''],
@@ -106,21 +107,21 @@ export class Pacs002 implements OnInit {
       creationDate: [new Date()],
 
       // Transaction Information And Status
-      TxInfAndSts :['',Validators.required],
-      OrgnlGrpInf:[''],
+      TxInfAndSts: ['', Validators.required],
+      OrgnlGrpInf: [''],
       OrgnlInstrId: ['', Validators.required],
-      OrgnlEndToEndId: ['',Validators.required],
+      OrgnlEndToEndId: ['', Validators.required],
       OrgnlTxId: [''],
       OrgnlUETR: ['', Validators.required],
       TxSts: ['', Validators.required],
       StsRsnInf: [''],
       ClrSysRef: [''],
-      InstgAgt: ['',Validators.required],
-      InstdAgt: ['',Validators.required],
+      InstgAgt: ['', Validators.required],
+      InstdAgt: ['', Validators.required],
     });
   }
 
-  resetForm(): void{
+  resetForm(): void {
     this.frmGroup.reset();
     this.frmGroup.patchValue({
       date: new Date()
