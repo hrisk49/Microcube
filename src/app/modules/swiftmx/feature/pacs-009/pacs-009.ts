@@ -119,7 +119,7 @@ export class Pacs009 implements OnInit {
       txId: [''],//TransactionIdentification max 35 Mandatory
       /// If the pacs.009 is used to settle a pacs.009 Advice, the UETR should transport
       /// the UETR of the underlying pacs.009 Advice
-      uETR: [''],//Mandatory
+      uetr: [''],//Mandatory
       clrSysRef: [''], //ClearingSystemReference max 35 pattern [0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+
       //End PaymentIdentification tag
       instrPrty: [''],//InstructionPriority value can be HIGH/NORM
@@ -179,12 +179,12 @@ export class Pacs009 implements OnInit {
       // Related Rltd;//InstructedAgent todo
 
       //Account
-      iBAN: [''],//MAX 30
+      iban: [''],//MAX 30
       iD: [''], ///OTHER/ID MAX 34
       schmeNmCD: [''],//OTHER/SchemeName CODE MAX 4 ExternalAccountIdentification1Code
       schmeNmPrtry: [''],//OTHER/SchemeName PRIORITY
       issr: [''],//OTHER/Issuer MAX 35
-      tpCD: [''],//Type/CD
+      tpCd: [''],//Type/CD
       tpPrtry: [''],//TYPE/PRIORITY
       ccy: [''],//Currency MAX 3
       nmAccount: [''],//Name 70 PTRN [0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+ todo variable name will be changed to nm
@@ -193,10 +193,10 @@ export class Pacs009 implements OnInit {
       prxyId: [''],//PROXY ID MAX 320
 
       //Agent
-      bICFI: [''],//BICFI max 12
+      bIcfi: [''],//BICFI max 12
       clrSysIdCd: [''],//ClearingSystemIdentification Code ExternalClearingSystemIdentification1Code
       mmbId: [''],//MemberIdentification max 28 [0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+
-      lEI: [''],//LEI Max 20 [A-Z0-9]{18,18}[0-9]{2,2}
+      lei: [''],//LEI Max 20 [A-Z0-9]{18,18}[0-9]{2,2}
       nmAgent: [''],//Name of the agent max 140 todo variable name will be changed to nm
       adrLine1: [''],//AddressLine max 35 [0-9a-zA-Z/\-\?:\(\)\.,'\+ !#$%&\*=^_`\{\|\}~";<>@\[\\\]]+
       adrLine2: [''],//AddressLine max 35  [0-9a-zA-Z/\-\?:\(\)\.,'\+ !#$%&\*=^_`\{\|\}~";<>@\[\\\]]+
