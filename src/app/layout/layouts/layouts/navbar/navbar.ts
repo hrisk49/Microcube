@@ -6,7 +6,7 @@ import {Delete} from './actions/delete/delete';
 import {Reset} from './actions/reset/reset';
 import {Exit} from './actions/exit/exit';
 import {Update} from './actions/update/update';
-import {ButtonActions} from '../../../../shared/constant/button-actions';
+import {BUTTON_VISIBILITY} from '../../../../shared/constant/button-signals.constant';
 
 @Component({
   selector: 'app-navbar',
@@ -25,7 +25,7 @@ import {ButtonActions} from '../../../../shared/constant/button-actions';
 })
 export class Navbar {
 
-  buttons = ButtonActions;
+  buttons = BUTTON_VISIBILITY;
   toggleMenu: boolean = false;
 
   constructor() {
