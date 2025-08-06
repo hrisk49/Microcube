@@ -1,6 +1,6 @@
 import {addressModel} from './address.model';
 
-export interface agentModel {
+export interface AgentModel {
   bIcfi: string;              // BICFI (max 12)
   clrSysIdCd: string;         // ClearingSystemIdentification Code (ExternalClearingSystemIdentification1Code)
   mmbId: string;              // MemberIdentification (max 28)

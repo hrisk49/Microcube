@@ -1,5 +1,5 @@
 import {Component, effect, inject, OnInit} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
 import {
   BUTTON_VISIBILITY,
@@ -11,6 +11,7 @@ import {SelectOptionsModel} from '../../../../shared/models/select-options-model
 import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
 import {TextBaseInput} from '../../../../shared/components/input-types/text-base-input/text-base-input';
 import {Pacs009Service} from '../../service/pacs009.service';
+import {Mx009Model} from '../../model/mx009.model';
 
 @Component({
   selector: 'app-pacs-009',
@@ -83,7 +84,7 @@ export class Pacs009 implements OnInit {
   initForm(): void {
     this.frmGroup = this.formBuilder.group({
 
-      timeIndi13C: [''],
+      timeIndi13C: ['', Validators.required],
       timeSign13C: [''],
       timeOffset13C: [''],
       valDate32A: [0], // todo date
@@ -257,8 +258,22 @@ export class Pacs009 implements OnInit {
     });
   }
 
+  generatePayload(): Mx009Model {
+    let payload: any = {};
+    let frmValue = this.frmGroup.value;
+
+    payload.timeIndi13C = frmValue.timeIndi13C;
+    payload.timeSign13C = frmValue.timeSign13C;
+    payload.timeOffset13C = frmValue.timeOffset13C;
+    payload.valCurr32A = frmValue.valCurr32A;
+    payload.valAmt32A = frmValue.valAmt32A;
+
+    return payload;
+  }
+
   save() {
-    this.pacs009Service.save(this.frmGroup.value).subscribe(res => {
+    const payload = this.generatePayload();
+    this.pacs009Service.save(payload).subscribe(res => {
       console.log(res);
     })
   }

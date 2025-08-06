@@ -1,8 +1,8 @@
-import {agentModel} from './agent.model';
-export  interface  relatedModel {
+import {AgentModel} from './agentModel';
+export  interface RelatedModel {
     charSet: string;                 // CharacterSet
-    fr: agentModel;                       // From Agent (OriginalEndToEndIdentification)
-    to: agentModel;                       // To Agent (OriginalEndToEndIdentification)
+    fr: AgentModel;                       // From Agent (OriginalEndToEndIdentification)
+    to: AgentModel;                       // To Agent (OriginalEndToEndIdentification)
     bizMsgIdr: string;              // BusinessMessageIdentifier (max 35)
     msgDefIdr: string;              // MessageDefinitionIdentifier (e.g., PACS.009.01.08)
     bizSvc: string;                 // BusinessService (max 35)
