@@ -1,7 +1,6 @@
 import {Component, effect, inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
-import {Pacs008Service} from '../../service/pacs008.service';
 import {
   BUTTON_VISIBILITY,
   FormGroupSignal,
@@ -9,23 +8,15 @@ import {
   ONCLICK_SAVE
 } from '../../../../shared/constant/button-signals.constant';
 import {SelectOptionsModel} from '../../../../shared/models/select-options-model';
-import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
-import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
 import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
-import {SelectOptionField} from '../../../../shared/components/input-types/select-option-field/select-option-field';
-import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
 import {TextBaseInput} from '../../../../shared/components/input-types/text-base-input/text-base-input';
 import {Pacs009Service} from '../../service/pacs009.service';
 
 @Component({
   selector: 'app-pacs-009',
   imports: [
-    AmountToWordInput,
-    DateInput,
     PanelHeader,
     ReactiveFormsModule,
-    SelectOptionField,
-    SubPanelHeader,
     TextBaseInput
   ],
   templateUrl: './pacs-009.html',
@@ -95,7 +86,7 @@ export class Pacs009 implements OnInit {
       timeIndi13C: [''],
       timeSign13C: [''],
       timeOffset13C: [''],
-      valDate32A: [], // todo date
+      valDate32A: [0], // todo date
       valCurr32A: [''],
       valAmt32A: [],
       bizMsgIdr: [''],//BusinessMessageIdentifier max 35
