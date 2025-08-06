@@ -8,6 +8,8 @@ import {BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE} from '../../../../shared
 import {Mx002Service} from '../../service/mx002.service';
 import {SelectOptionsModel} from '../../../../shared/models/select-options-model';
 import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
+import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
+import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
 
 @Component({
   selector: 'app-pacs-002',
@@ -17,6 +19,8 @@ import {PanelHeader} from '../../../../shared/components/panel-header/panel-head
     TextBaseInput,
     DateInput,
     PanelHeader,
+    AmountToWordInput,
+    SubPanelHeader,
 
   ],
   templateUrl: './pacs-002.html',
