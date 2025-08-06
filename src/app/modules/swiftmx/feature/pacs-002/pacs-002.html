@@ -1,9 +1,15 @@
 <div class="page-wrapper">
-  <form [formGroup] = "frmGroup" class="form-wrapper">
+  <form [formGroup]="frmGroup" class="form-wrapper">
+
     <!--Business Application Header-->
-    <div class="form-section-card p-6">
+    <div class="panel">
       <app-panel-header [panelTitle]="'Business Application Header'"/>
       <div class="form-grid-3-col">
+
+        <app-amount-to-word-input [frmGroup]="frmGroup"
+                                  [label]="'Amount to Text'"
+                                  [controlName]="'amountToText'"/>
+
         <app-text-base-input [frmGroup]="frmGroup"
                              [label]="'From BIC'"
                              [controlName]="'fromBic'"/>
@@ -13,6 +19,7 @@
                              [controlName]="'toBic'"/>
 
         <app-text-base-input [frmGroup]="frmGroup"
+                             [isReadonly]="true"
                              [label]="'Business Message Identifier'"
                              [controlName]="'businessMessageIdentifier'"/>
 
@@ -23,6 +30,7 @@
         <app-text-base-input [frmGroup]="frmGroup"
                              [label]="'Business Service'"
                              [controlName]="'businessService'"/>
+
         <app-select-option-field [frmGroup]="frmGroup"
                                  [options]="duplicateOptions"
                                  [label]="'Copy Duplicate'"
@@ -34,9 +42,11 @@
                                  [controlName]="'priority'"/>
 
       </div>
-      <div class="form-sub-section-card">
-        <div class="form-sub-section-header">Related</div>
+
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Related'"/>
         <div class="form-grid-3-col">
+
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'From BIC'"
                                [controlName]="'relatedFromBic'"/>
@@ -66,66 +76,67 @@
                                    [options]="priorityOptions"
                                    [label]="'Priority'"
                                    [controlName]="'relatedPriority'"/>
+
         </div>
+
       </div>
     </div>
 
-    <!-- FI To FI Payment Status -->
-    <div class="form-section-card p-6">
+    <div class="panel">
       <app-panel-header [panelTitle]="'FI To FI Payment Status'"/>
-      <div class="form-sub-section-card">
-        <div class="form-sub-section-header">Group Header</div>
+      <div class="form-grid-3-col">
 
-        <div class="form-grid-3-col">
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Message Identification'"
-                               [controlName]="'msgId'"/>
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Message Identification'"
+                             [controlName]="'msgId'"/>
 
-          <app-date-input [frmGroup]="frmGroup"
-                          [label]="'Creation Date'"
-                          [controlName]="'creationDate'"/>
-        </div>
+        <app-date-input [frmGroup]="frmGroup"
+                        [label]="'Creation Date'"
+                        [controlName]="'creationDate'"/>
+
       </div>
-      <br/> <br/>
-      <div class="form-sub-section-card">
-        <div class="form-sub-section-header"> Transaction Information And Status</div>
-        <div class="form-grid-3-col">
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Transaction Information And Status'"
-                               [controlName]="'TxInfAndSts'"/>
 
-          <app-text-base-input  [frmGroup]="frmGroup"
-                                [label]="' Original Group Information'"
-                                [controlName]="'OrgnlGrpInf'"/>
+    </div>
 
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="' Original Instruction Identification'"
-                               [controlName]="'OrgnlInstrId'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="' Original End To End Identification'"
-                               [controlName]="'OrgnlEndToEndId'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="' Original Transaction Identification'"
-                               [controlName]="'OrgnlTxId'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="' Original UTER'"
-                               [controlName]="'OrgnlUETR'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="' Transaction Status'"
-                               [controlName]="'TxSts'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="' Status Reason Information'"
-                               [controlName]="'StsRsnInf'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="' Clearing System Reference'"
-                               [controlName]="'ClrSysRef'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="' Instructing Agent'"
-                               [controlName]="'InstgAgt'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="' Instructed Agent'"
-                               [controlName]="'InstdAgt'"/>
-        </div>
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Transaction Information And Status'"/>
+      <div class="form-grid-3-col">
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Transaction Information And Status'"
+                             [controlName]="'TxInfAndSts'"/>
+
+        <app-text-base-input  [frmGroup]="frmGroup"
+                              [label]="' Original Group Information'"
+                              [controlName]="'OrgnlGrpInf'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="' Original Instruction Identification'"
+                             [controlName]="'OrgnlInstrId'"/>
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="' Original End To End Identification'"
+                             [controlName]="'OrgnlEndToEndId'"/>
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="' Original Transaction Identification'"
+                             [controlName]="'OrgnlTxId'"/>
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="' Original UTER'"
+                             [controlName]="'OrgnlUETR'"/>
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="' Transaction Status'"
+                             [controlName]="'TxSts'"/>
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="' Status Reason Information'"
+                             [controlName]="'StsRsnInf'"/>
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="' Clearing System Reference'"
+                             [controlName]="'ClrSysRef'"/>
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="' Instructing Agent'"
+                             [controlName]="'InstgAgt'"/>
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="' Instructed Agent'"
+                             [controlName]="'InstdAgt'"/>
       </div>
     </div>
   </form>
