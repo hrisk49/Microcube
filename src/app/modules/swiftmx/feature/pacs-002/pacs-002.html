@@ -2,7 +2,7 @@
   <form [formGroup] = "frmGroup" class="form-wrapper">
     <!--Business Application Header-->
     <div class="form-section-card p-6">
-      <app-form-panel [panelTitle]="'Business Application Header'"/>
+      <app-panel-header [panelTitle]="'Business Application Header'"/>
       <div class="form-grid-3-col">
         <app-text-base-input [frmGroup]="frmGroup"
                              [label]="'From BIC'"
@@ -72,7 +72,7 @@
 
     <!-- FI To FI Payment Status -->
     <div class="form-section-card p-6">
-      <app-form-panel [panelTitle]="'FI To FI Payment Status'"/>
+      <app-panel-header [panelTitle]="'FI To FI Payment Status'"/>
       <div class="form-sub-section-card">
         <div class="form-sub-section-header">Group Header</div>
 

@@ -7,6 +7,7 @@ import {DateInput} from '../../../../shared/components/input-types/date-input/da
 import {BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE} from '../../../../shared/constant/button-signals.constant';
 import {Mx002Service} from '../../service/mx002.service';
 import {SelectOptionsModel} from '../../../../shared/models/select-options-model';
+import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
 
 @Component({
   selector: 'app-pacs-002',
@@ -15,6 +16,7 @@ import {SelectOptionsModel} from '../../../../shared/models/select-options-model
     SelectOptionField,
     TextBaseInput,
     DateInput,
+    PanelHeader,
 
   ],
   templateUrl: './pacs-002.html',
