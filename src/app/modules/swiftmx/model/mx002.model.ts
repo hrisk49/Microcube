@@ -1,0 +1,2 @@
+interface  Mx002Model {
+}

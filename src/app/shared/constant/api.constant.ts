@@ -6,3 +6,4 @@ export const GET_BY_TYPE_ID: string = "get-by-type-id";
 export const PACS: string = "pacs/";
 export const PACS008: string = PACS + "008";
 export const PACS009: string = PACS + "009";
+export const PACS002: string = PACS + "002";

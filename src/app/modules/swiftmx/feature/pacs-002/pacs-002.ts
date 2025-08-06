@@ -3,21 +3,24 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { SelectOptionField } from '../../../../shared/components/input-types/select-option-field/select-option-field';
 import { TextBaseInput } from '../../../../shared/components/input-types/text-base-input/text-base-input';
 import { ToastrService } from 'ngx-toastr';
-import { RESET_CLICK } from '../../../../shared/constant/button-click';
 import { SelectOptions } from '../../../../shared/models/select-options';
-import { ButtonActions } from '../../../../shared/constant/button-actions';
-import { FormPanel } from '../../../../shared/components/form-panel/form-panel';
 import { DateInput } from '../../../../shared/components/input-types/date-input/date-input';
 import { from } from 'rxjs';
+import {BUTTON_VISIBILITY, ONCLICK_RESET, ONCLICK_SAVE} from '../../../../shared/constant/button-signals.constant';
+import {Mx008Service} from '../../service/mx008.service';
+import {Mx002Service} from '../../service/mx002.service';
+import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
+import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
+import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
 
 @Component({
   selector: 'app-pacs-002',
   imports: [
-    FormPanel,
-        ReactiveFormsModule,
-        SelectOptionField,
-        TextBaseInput,
-        DateInput,
+    ReactiveFormsModule,
+    SelectOptionField,
+    TextBaseInput,
+    DateInput,
+
   ],
   templateUrl: './pacs-002.html',
   styleUrl: './pacs-002.scss'
@@ -25,9 +28,11 @@ import { from } from 'rxjs';
 export class Pacs002 implements OnInit {
   form: FormGroup;
   formBuilder = inject(FormBuilder);
+  mx002Service = inject(Mx002Service);
   toastr = inject(ToastrService);
   frmGroup : FormGroup;
-  resetClick = RESET_CLICK;
+  onClickReset = ONCLICK_RESET;
+  onClickSave = ONCLICK_SAVE;
 
   priorityOptions: SelectOptions[] = [
     {key: 'high', value: 'High'},
@@ -55,24 +60,25 @@ export class Pacs002 implements OnInit {
     {key: 'shar', value: 'Shared'}
   ];
 
-  constructor(){
-    ButtonActions.set({
+  constructor() {
+    BUTTON_VISIBILITY.set({
       save: true,
       update: false,
       view: true,
       delete: true,
       exit: true,
-      reset: false
+      reset: true
     });
 
     effect(() => {
-      if (this.resetClick()) {
+      if (this.onClickReset()) {
         this.resetForm();
-        RESET_CLICK.set(false);
+        ONCLICK_RESET.set(false);
+      } else if (this.onClickSave()) {
+        this.save();
+        ONCLICK_SAVE.set(false);
       }
     });
-
-
   }
 
 
@@ -83,7 +89,7 @@ export class Pacs002 implements OnInit {
 
   initForm(): void {
     this.frmGroup = this.formBuilder.group({
-       // Business Application Header
+      // Business Application Header
       fromBic:['',Validators.required],
       toBic: ['', Validators.required],
       businessMessageIdentifier: [''],
@@ -92,7 +98,7 @@ export class Pacs002 implements OnInit {
       copyDuplicate: ['codu'],
       priority: ['high'],
 
-       // Business Application Header -> related
+      // Business Application Header -> related
       relatedFromBic: ['', Validators.required],
       relatedToBic: ['', Validators.required],
       relatedBusinessMessageIdentifier: [''],
@@ -125,6 +131,12 @@ export class Pacs002 implements OnInit {
     this.frmGroup.patchValue({
       date: new Date()
     });
+  }
+
+  save() {
+    this.mx002Service.save(this.frmGroup.value).subscribe(res => {
+      console.log(res);
+    })
   }
 
 }
