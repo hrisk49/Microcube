@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {PACS002} from '../../../shared/constant/api.constant';
+import {PACS_002} from '../../../shared/constant/api.constant';
 import {ApiService} from '../../../core/service/api.service';
 
 @Injectable({
@@ -8,6 +8,6 @@ import {ApiService} from '../../../core/service/api.service';
 export class Mx002Service extends  ApiService<Mx002Model> {
 
   constructor() {
-    super(PACS002);
+    super(PACS_002);
   }
 }
