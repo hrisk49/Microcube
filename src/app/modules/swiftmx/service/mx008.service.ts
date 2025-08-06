@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from "../../../core/service/api.service";
-import {MX008} from "../../../shared/constant/api.constant";
+import {PACS008} from "../../../shared/constant/api.constant";
 
 @Injectable({
     providedIn: 'root'
@@ -8,7 +8,7 @@ import {MX008} from "../../../shared/constant/api.constant";
 export class Mx008Service extends ApiService<Mx008Model> {
 
     constructor() {
-        super(MX008); // base path declaration for mx008
+        super(PACS008); // base path declaration for mx008
     }
 
 }
