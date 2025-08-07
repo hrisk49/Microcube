@@ -272,7 +272,172 @@ export class Pacs009 implements OnInit {
   }
 
   save() {
-    const payload = this.generatePayload();
+    // const payload = this.generatePayload();
+    const payload = {
+      "timeIndi13C": "IND123",
+      "timeSign13C": "SIGN456",
+      "timeOffset13C": "+0600",
+      "valDate32A": "2025-08-07",
+      "valCurr32A": "USD",
+      "valAmt32A": 10000,
+
+      "bizMsgIdr": "MSG20250807123456",
+      "msgDefIdr": "camt.001.001.03",
+      "bizSvc": "swift.cbprplus.02",
+      "creDt": "2025-08-07",
+      "cpyDplct": "COPY",
+      "psblDplct": "NO",
+      "priority": "HIGH",
+      "msgId": "MSG1234567890",
+      "creDtTm": "2025-08-07T14:30:00Z",
+      "nbOfTxs": "1",
+
+      "sttlmMtd": "INGA",
+      "sttlmAcct": {
+        "ccy": "USD",
+        "id": "ACCT123456",
+        "type": "CURRENT"
+      },
+
+      "instrId": "INSTR20250807",
+      "endToEndId": "E2E20250807",
+      "txId": "TX20250807",
+      "uetr": "123e4567-e89b-12d3-a456-426614174000",
+      "clrSysRef": "CLRSYS001",
+
+      "instrPrty": "URGT",
+      "clrChanl": "RTGS",
+      "svcLvlCD": ["SLCD1", "SLCD2", null],
+      "svcLvlPrtry": ["SLP1", null, "SLP3"],
+      "lclInstrmCD": "LOCINSTR01",
+      "lclInstrmPrtry": "LOCINSTRPRTRY",
+      "ctgyPurpCd": "SALA",
+      "ctgyPurpPrtry": "Salary Payment",
+
+      "intrBkSttlmAmtCcy": "USD",
+      "intrBkSttlmAmt": 10000,
+      "intrBkSttlmDt": "2025-08-07",
+      "sttlmPrty": "URGT",
+
+      "prvsInstgAgt1": {
+        "bic": "AGTBIC001",
+        "name": "Previous Instructing Agent 1"
+      },
+      "prvsInstgAgt1Acct": {
+        "ccy": "EUR",
+        "id": "AGTACCT001"
+      },
+      "prvsInstgAgt2": {
+        "bic": "AGTBIC002",
+        "name": "Previous Instructing Agent 2"
+      },
+      "prvsInstgAgt2Acct": {
+        "ccy": "GBP",
+        "id": "AGTACCT002"
+      },
+      "prvsInstgAgt3": {
+        "bic": "AGTBIC003",
+        "name": "Previous Instructing Agent 3"
+      },
+      "prvsInstgAgt3Acct": {
+        "ccy": "JPY",
+        "id": "AGTACCT003"
+      },
+
+      "instgAgt": {
+        "bic": "INSTGBIC01",
+        "name": "Instructing Agent"
+      },
+      "instdAgt": {
+        "bic": "INSTDBIC01",
+        "name": "Instructed Agent"
+      },
+
+      "intrmyAgt1": {
+        "bic": "INTRMYBIC1",
+        "name": "Intermediary Agent 1"
+      },
+      "intrmyAgt1Acct": {
+        "ccy": "AUD",
+        "id": "INTRMYACCT1"
+      },
+      "intrmyAgt2": {
+        "bic": "INTRMYBIC2",
+        "name": "Intermediary Agent 2"
+      },
+      "intrmyAgt2Acct": {
+        "ccy": "CAD",
+        "id": "INTRMYACCT2"
+      },
+      "intrmyAgt3": {
+        "bic": "INTRMYBIC3",
+        "name": "Intermediary Agent 3"
+      },
+      "intrmyAgt3Acct": {
+        "ccy": "CHF",
+        "id": "INTRMYACCT3"
+      },
+
+      "dbtr": {
+        "name": "Debtor Name",
+        "address": "Debtor Address"
+      },
+      "dbtrAcct": {
+        "ccy": "USD",
+        "id": "DBTRACCT01"
+      },
+      "dbtrAgt": {
+        "bic": "DBTRBIC01",
+        "name": "Debtor Agent"
+      },
+      "dbtrAgtAcct": {
+        "ccy": "USD",
+        "id": "DBTRAGTACCT"
+      },
+
+      "cdtrAgt": {
+        "bic": "CDTRBIC01",
+        "name": "Creditor Agent"
+      },
+      "cdtrAgtAcct": {
+        "ccy": "EUR",
+        "id": "CDTRAGTACCT"
+      },
+      "cdtr": {
+        "name": "Creditor Name",
+        "address": "Creditor Address"
+      },
+      "cdtrAcct": {
+        "ccy": "EUR",
+        "id": "CDTRACCT01"
+      },
+
+      "instrForCdtrAgtCD": "TELB",
+      "instrForCdtrAgtInf": "Please call beneficiary upon payment",
+      "instrForNxtAgt1": "Forward to next agent urgently",
+      "instrForNxtAgt2": "Verify beneficiary details",
+      "instrForNxtAgt3": "Notify sender when completed",
+
+      "purpCD": "SALA",
+      "purpPrtry": "Monthly Salary Payment",
+      "rmtInf": "Salary for August 2025",
+
+      "auth1stBy": "USER001",
+      "makeDt": "2025-08-07T10:00:00Z",
+      "auth1stDt": "2025-08-07T10:15:00Z",
+      "auth2ndBy": "USER002",
+      "auth2ndDt": "2025-08-07T10:30:00Z",
+      "lastAction": "APPROVED",
+
+      "branchId": "BRANCH123",
+      "trnRefNo20": "REF20250807",
+      "relatedRef21": "RELREF20250807",
+
+      "rltd": {
+        "ref": "RELATEDREF001",
+        "type": "PREVIOUS_PAYMENT"
+      }
+    };
     this.pacs009Service.save(payload).subscribe(res => {
       console.log(res);
     })
