@@ -9,6 +9,7 @@ import {Pacs054} from './feature/pacs-054/pacs-054';
 import {Pacs055} from './feature/pacs-055/pacs-055';
 import {Pacs056} from './feature/pacs-056/pacs-056';
 import { Pacs029 } from './feature/pacs-029/pacs-029';
+
 export const SwiftmxRouting: Routes = [
   {path: 'pacs-008', component: Pacs008},
   {path: 'pacs-009', component: Pacs009},
@@ -19,4 +20,5 @@ export const SwiftmxRouting: Routes = [
   {path: 'pacs-056', component: Pacs056},
   {path: 'pacs-003', component: Pacs003},
   {path: 'pacs-029', component: Pacs029}
+
 ];

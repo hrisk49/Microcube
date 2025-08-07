@@ -50,17 +50,50 @@ duplicateOptions: SelectOptionsModel[] = [
 {key: 'dupl', value: 'DUPL'}
 ];
 
-settlementOptions: SelectOptionsModel[] = [
-{key: 'clrg', value: 'CLRG'},
-{key: 'cove', value: 'COVE'},
-{key: 'inda', value: 'INDA'},
-{key: 'inga', value: 'INGA'}
-];
 
 chargeBearerOptions: SelectOptionsModel[] = [
 {key: 'debt', value: 'Debitor'},
 {key: 'cred', value: 'Creditor'},
 {key: 'shar', value: 'Shared'}
+];
+
+IdentificationOptions: SelectOptionsModel[] =[
+{key: 'iban', value: 'IBAN'},
+{key: 'other', value: 'Other'}
+];
+
+SchmeNmOptions: SelectOptionsModel[] =[
+{key: 'Cd', value: 'Code'},
+{key: 'Prtry', value: 'Proprietary'}
+];
+TypeOptions: SelectOptionsModel[] =[
+{key: 'Cd', value: 'Code'},
+{key: 'Prtry', value: 'Proprietary'}
+];
+CurrencyOptions: SelectOptionsModel[] =[
+{key: '001', value: 'USD'},
+{key: '000', value: 'BDT'}
+];
+ProxyOptions: SelectOptionsModel[] =[
+{key: 'PrxyTp', value: 'Type'},
+{key: 'PrxyId', value: 'Identification'}
+];
+
+ProxcyTpOptions: SelectOptionsModel[] =[
+{key: 'PrxyTpCd', value: 'Code'},
+{key: 'PrxyTpPrtry', value: 'Proprietary'}
+];
+SttlmPrtyOptions: SelectOptionsModel[] =[
+{key: 'HIGH', value: 'High'},
+{key: 'NORM', value: 'Normal'},
+{key: 'URGT', value: 'Urgent'},
+];
+
+ChrgBrOptions: SelectOptionsModel[] =[
+{key: 'CRED', value: 'BorneBy Creditor'},
+{key: 'DEBT', value: 'BorneBy Debtor'},
+{key: 'SHAR', value: 'Shared'},
+{key: 'SLEV', value: 'Following Service Level'},
 ];
 
 constructor() {
@@ -107,62 +140,65 @@ constructor() {
             // Business Application Header -> related
             // relatedFromBic: ['', Validators.required],
             relatedFromBic: [''],
-            // relatedToBic: ['', Validators.required],
             relatedToBic: [''],
             relatedBusinessMessageIdentifier: [''],
             relatedMessageDefinitionIdentifier: [''],
-            // relatedBusinessService: ['', Validators.required],
             relatedBusinessService: [''],
             relatedCopyDuplicate: ['codu'],
             relatedPriority: ['high'],
 
-            // FI To FI Customer Credit Transfer
-            // FI To FI Customer -> Group Header
-            messageIdentification: [''],
-            // creationDate: [new Date()],
-            creationDate: [],
 
-            // FI To FI Customer -> Settlement Information
-            settlementMethod: ['clrg'],
-            settleAccountId: [''],
-            settleIban: [''],
-            settleLei: [''],
-            instructingReimbursementAgent: [''],
-            instructingAccountId: [''],
-            instructingIban: [''],
-            instructingLei: [''],
-            instructedReimbursementAgent: [''],
-            instructedAccountId: [''],
-            instructedIban: [''],
-            instructedLei: [''],
-            thirdReimbursementAgent: [''],
-            thirdAccountId: [''],
+            // Payment Return V09
+            // Payment Return V09 -> Group Header
+            messageIdentification: [''],
+            creationDate: [],
+            numberOfTransactions: [],
+
+            //Payment Return V09 -> Group Header-> Settlement Information
+            Id: ['iban'],
+            otherId: [''],
+            otherSchmeNm: [''],
+            otherIssr: [''],
+            Tp: ['Cd'],
+            Ccy: ['001'],
+            Nm: [''],
+            Prxy:['PrxyId'],
+            ProxcyTp:['PrxyTpCd'],
+
+
+            // Payment Return V09 -> TransactionInformation
+            RtrId: [''],
+            orgnlInstrId: [''],
+            orgnlEndToEndId: [''],
+            orgnlTxId:[''],
+            orgnlUETR: [''],
+            OrgnlClrSysRef: [''],
+            OrgnlIntrBkSttlmAmt: [ ],
+            OrgnlIntrBkSttlmDt: [],
+            RtrdIntrBkSttlmAmt: [],
+            IntrBkSttlmDt: [],
+            SttlmPrty: ['HIGH'],
+            DbtDtTm: [],
+            CdtDtTm: [],
+            InstructingAgentBICFI: [],
+            InstructedAgentBICFI: [],
+
+
+            //Payment Return V09 -> TransactionInformation -> Original Group Information
+            OrgnlMsgId : [''],
+            OrgnlMsgNmId : [''],
+            OrgnlCreDtTm : [],
+
+            RtrdInstdAmt: [],
+            XchgRate: [],
+            ChrgBr: ['CRED'],
+            ClrSysRef: [''],
             thirdIban: [''],
             thirdLei: [''],
 
-            //  Credit Transfer Transaction Information
-            interbankSettlementAmount: [''],
-            // settlementDate: ['', Validators.required],
-            settlementDate: [''],
-            settlementPriority: [''],
-            settlementTimeIndication: [''],
-            settlementTimeRequest: [''],
-            instructedAmount: [''],
-            chargeBearer: ['debt'],
-            exchangeRate: [''],
-
-            // Credit Transfer -> Payment Identification
-            // instructionIdentification: ['', Validators.required],
-            instructionIdentification: [''],
-            endToEndIdentification: [''],
-            transactionIdentification: [''],
-            clearingSystemReference: [''],
-
-            // Credit Transfer -> Payment Type Info
-            instructionPriority: ['high'],
-            clearingChannel: [''],
-            localInstrument: [''],
-            categoryPurpose: [''],
+            OrgnlTxRefIntrBkSttlmAmt:[],
+            InstdAmt:[],
+            EqvtAmtAmt:[],
 
             // Payment Type Info -> Service Level
 
@@ -170,38 +206,12 @@ constructor() {
                 this.createServiceLevelGroup()
             ]),
 
-            serviceCode: [''],
-            servicePriority: ['high'],
 
-            // Credit Transfer -> Normal
-            instructingAgentBic1: [''],
-            instructingAccountId1: [''],
-            instructingIban1: [''],
-            instructingLei1: [''],
-            instructingAgentBic2: [''],
-            instructingAccountId2: [''],
-            instructingIban2: [''],
-            instructingLei2: [''],
-            instructingAgentBic3: [''],
-            instructingAccountId3: [''],
-            instructingIban3: [''],
-            instructingLei3: [''],
-
-            // Credit Transfer -> Debitor
-            // debitorName: ['', Validators.required],
-            debitorName: [''],
-            debitorPostalAddress: [''],
-            debitorOrganisationIdentification: [''],
-            debitorPrivateIdentification: [''],
-            debitorCountryOfResidence: [''],
-            debitorAgentBic: [''],
-            debitorAccountId: [''],
-            debitorIban: [''],
-            debitorLei: [''],
         });
 
         FormGroupSignal.set(this.frmGroup);
     }
+
 
     createServiceLevelGroup(): FormGroup {
         return this.formBuilder.group({
