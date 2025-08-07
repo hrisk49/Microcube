@@ -1,0 +1,88 @@
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatIcon } from '@angular/material/icon';
+
+export interface SuccessModalConfig {
+  title?: string;
+  message?: string;
+  showCloseButton?: boolean;
+  showBackdrop?: boolean;
+  customClass?: string;
+  buttons?: SuccessModalButton[];
+}
+
+export interface SuccessModalButton {
+  text: string;
+  action?: string;
+  disabled?: boolean;
+}
+
+@Component({
+  selector: 'app-alert-success',
+  imports: [CommonModule],
+  templateUrl: './alert-success.html'
+})
+export class AlertSuccessComponent {
+  @Input() isOpen: boolean = false;
+  @Input() config: SuccessModalConfig = {};
+  @Input() title: string = 'Success!';
+  @Input() message: string = '';
+  @Input() showCloseButton: boolean = true;
+  @Input() showBackdrop: boolean = true;
+  @Input() customClass: string = '';
+
+  @Output() close = new EventEmitter<void>();
+  @Output() buttonClick = new EventEmitter<{ action: string; button: SuccessModalButton }>();
+
+  get titleText(): string {
+    return this.config.title || this.title;
+  }
+
+  get messageText(): string {
+    return this.config.message || this.message;
+  }
+
+  get showClose(): boolean {
+    return this.config.showCloseButton !== undefined ? this.config.showCloseButton : this.showCloseButton;
+  }
+
+  get showBackdropValue(): boolean {
+    return this.config.showBackdrop !== undefined ? this.config.showBackdrop : this.showBackdrop;
+  }
+
+  get buttons(): SuccessModalButton[] {
+    return this.config.buttons || this.getDefaultButtons();
+  }
+
+  getButtonClasses(button: SuccessModalButton, index: number): string {
+    // Primary button (first button) - green for success (like Delete button)
+    if (index === 0) {
+      return 'border-transparent text-white bg-green-600 hover:bg-green-700 focus:ring-green-500';
+    }
+    
+    // Secondary button (second button) - gray border (like Cancel button)
+    return 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-gray-500';
+  }
+
+  private getDefaultButtons(): SuccessModalButton[] {
+    return [
+      { text: 'OK', action: 'ok' }
+    ];
+  }
+
+  onClose(): void {
+    this.close.emit();
+  }
+
+  onButtonClick(button: SuccessModalButton): void {
+    if (!button.disabled) {
+      this.buttonClick.emit({ action: button.action || 'click', button });
+    }
+  }
+
+  onBackdropClick(event: Event): void {
+    if (event.target === event.currentTarget && this.showBackdropValue) {
+      this.onClose();
+    }
+  }
+} 

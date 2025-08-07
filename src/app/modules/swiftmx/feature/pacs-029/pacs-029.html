@@ -1,0 +1,427 @@
+<div class="page-wrapper">
+  <form [formGroup]="frmGroup" class="form-wrapper">
+
+    <!--Business Application Header V02-->
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Business Application Header V02'"/>
+      <div class="form-grid-4-col">
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Character Set'"
+                             [controlName]="'characterSet'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'From BIC'"
+                             [controlName]="'fromBic'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'To BIC'"
+                             [controlName]="'toBic'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Business Message Identifier'"
+                             [controlName]="'businessMessageIdentifier'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Message Definition Identifier'"
+                             [controlName]="'messageDefinitionIdentifier'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Business Service'"
+                             [controlName]="'businessService'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Market Practice'"
+                             [controlName]="'marketPractice'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Registry Identification'"
+                             [controlName]="'registryIdentification'"/>
+
+        <app-date-input [frmGroup]="frmGroup"
+                        [label]="'Creation Date'"
+                        [controlName]="'creationDate'"/>
+
+        <app-date-input [frmGroup]="frmGroup"
+                        [label]="'Business Processing Date'"
+                        [controlName]="'businessProcessingDate'"/>
+
+        <app-select-option-field [frmGroup]="frmGroup"
+                                 [options]="duplicateOptions"
+                                 [label]="'Copy Duplicate'"
+                                 [controlName]="'copyDuplicate'"/>
+
+        <app-select-option-field [frmGroup]="frmGroup"
+                                 [options]="duplicateOptions"
+                                 [label]="'Possible Duplicate'"
+                                 [controlName]="'possibleDuplicate'"/>
+
+        <app-select-option-field [frmGroup]="frmGroup"
+                                 [options]="priorityOptions"
+                                 [label]="'Priority'"
+                                 [controlName]="'priority'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Signature'"
+                             [controlName]="'signature'"/>
+
+      </div>
+
+      <!--Related Sub-Panel-->
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Related'"
+                              [isOptional]="true"/>
+        <div class="form-grid-4-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Character Set'"
+                               [controlName]="'relatedCharacterSet'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'From BIC'"
+                               [controlName]="'relatedFromBic'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'To BIC'"
+                               [controlName]="'relatedToBic'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Business Message Identifier'"
+                               [controlName]="'relatedBusinessMessageIdentifier'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Message Definition Identifier'"
+                               [controlName]="'relatedMessageDefinitionIdentifier'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Business Service'"
+                               [controlName]="'relatedBusinessService'"/>
+
+          <app-date-input [frmGroup]="frmGroup"
+                          [label]="'Creation Date'"
+                          [controlName]="'relatedCreationDate'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="duplicateOptions"
+                                   [label]="'Copy Duplicate'"
+                                   [controlName]="'relatedCopyDuplicate'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="duplicateOptions"
+                                   [label]="'Possible Duplicate'"
+                                   [controlName]="'relatedPossibleDuplicate'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="priorityOptions"
+                                   [label]="'Priority'"
+                                   [controlName]="'relatedPriority'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Signature'"
+                               [controlName]="'relatedSignature'"/>
+        </div>
+      </div>
+    </div>
+
+    <!--Resolution Of Investigation V09-->
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Resolution Of Investigation V09'"/>
+
+      <!--Assignment-->
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Assignment'"></app-sub-panel-header>
+        <div class="form-grid-4-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Identification'"
+                               [controlName]="'assignmentIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Assigner BIC'"
+                               [controlName]="'assignerBIC'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Assignee BIC'"
+                               [controlName]="'assigneeBIC'"/>
+
+          <app-date-input [frmGroup]="frmGroup"
+                          [label]="'Creation Date Time'"
+                          [controlName]="'assignmentCreationDateTime'"/>
+        </div>
+      </div>
+
+      <!--Resolved Case-->
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Resolved Case'"></app-sub-panel-header>
+        <div class="form-grid-4-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Identification'"
+                               [controlName]="'resolvedCaseIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Creator'"
+                               [controlName]="'resolvedCaseCreator'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="[{key: 'true', value: 'True'}, {key: 'false', value: 'False'}]"
+                                   [label]="'Reopen Case Indication'"
+                                   [controlName]="'reopenCaseIndication'"/>
+        </div>
+      </div>
+
+      <!--Status-->
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Status'"></app-sub-panel-header>
+        <div class="form-grid-4-col">
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="statusOptions"
+                                   [label]="'Status Type'"
+                                   [controlName]="'statusType'"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cancellation Details -->
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Cancellation Details'"/>
+      
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Cancellation Details'"
+                              [isButton]="true"
+                              (addAction)="addCancellationDetail()"></app-sub-panel-header>
+
+        <ng-container formArrayName="cancellationDetails">
+          @for (cancellationGroup of cancellationDetails.controls; track $index) {
+            <div [formGroupName]="$index" class="cancellation-group mb-4 p-3 border">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+
+              </div>
+
+              <!--Original Group Information And Status-->
+              <div class="form-grid-4-col mb-3">
+                <app-text-base-input [frmGroup]="cancellationGroup"
+                                     [label]="'Original Group Information And Status'"
+                                     [controlName]="'originalGroupInformationAndStatus'"/>
+              </div>
+
+              <!--Transaction Information And Status-->
+              <div class="sub-panel">
+                <app-sub-panel-header [subPanelTitle]="'Transaction Information And Status'"
+                                      [isButton]="true"
+                                      (addAction)="addTransactionInfo($index)"></app-sub-panel-header>
+
+                <ng-container formArrayName="transactionInformationAndStatus">
+                  @for (transactionGroup of getTransactionInfoArray($index).controls; track $index; let j = $index) {
+                    <div [formGroupName]="j" class="transaction-info-group mb-3 p-2 bg-light border">
+                      
+
+                      <div class="form-grid-4-col">
+                        <app-text-base-input [frmGroup]="transactionGroup"
+                                             [label]="'Original Instruction ID'"
+                                             [controlName]="'originalInstructionId'"/>
+
+                        <app-text-base-input [frmGroup]="transactionGroup"
+                                             [label]="'Original End To End ID'"
+                                             [controlName]="'originalEndToEndId'"/>
+
+                        <app-text-base-input [frmGroup]="transactionGroup"
+                                             [label]="'Original Transaction ID'"
+                                             [controlName]="'originalTransactionId'"/>
+
+                        <app-text-base-input [frmGroup]="transactionGroup"
+                                             [label]="'Original UETR'"
+                                             [controlName]="'originalUETR'"/>
+
+                        <app-select-option-field [frmGroup]="transactionGroup"
+                                                 [options]="investigationStatusOptions"
+                                                 [label]="'Transaction Status'"
+                                                 [controlName]="'transactionStatus'"/>
+
+                        <app-text-base-input [frmGroup]="transactionGroup"
+                                             [label]="'Status Reason Code'"
+                                             [controlName]="'statusReasonCode'"/>
+
+                        <app-text-base-input [frmGroup]="transactionGroup"
+                                             [label]="'Additional Status Reason Information'"
+                                             [controlName]="'additionalStatusReasonInformation'"/>
+                      </div>
+                    </div>
+                  }
+                </ng-container>
+              </div>
+            </div>
+          }
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Modification Details -->
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Modification Details'"/>
+      
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Modification Status Information'"
+                              [isOptional]="true"></app-sub-panel-header>
+        <div class="form-grid-4-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Modification Status Identification'"
+                               [controlName]="'modificationStatusIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Resolved Case ID'"
+                               [controlName]="'modificationResolvedCaseId'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Original Group Information'"
+                               [controlName]="'originalGroupInformation'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Original Payment Information ID'"
+                               [controlName]="'originalPaymentInformationIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Original Instruction Identification'"
+                               [controlName]="'originalInstructionIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Original End To End Identification'"
+                               [controlName]="'originalEndToEndIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Original Transaction Identification'"
+                               [controlName]="'originalTransactionIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Original Clearing System Reference'"
+                               [controlName]="'originalClearingSystemReference'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Original UETR'"
+                               [controlName]="'originalUETR'"/>
+
+          <app-amount-to-word-input [frmGroup]="frmGroup"
+                                    [label]="'Original Interbank Settlement Amount'"
+                                    [controlName]="'originalInterbankSettlementAmount'"/>
+
+          <app-date-input [frmGroup]="frmGroup"
+                          [label]="'Original Interbank Settlement Date'"
+                          [controlName]="'originalInterbankSettlementDate'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Assigner'"
+                               [controlName]="'modificationAssigner'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Assignee'"
+                               [controlName]="'modificationAssignee'"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Claim Non Receipt Details -->
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Claim Non Receipt Details'"/>
+      
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Non Receipt Status'"
+                              [isOptional]="true"></app-sub-panel-header>
+        <div class="form-grid-4-col">
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="investigationStatusOptions"
+                                   [label]="'Claim Non Receipt Status'"
+                                   [controlName]="'claimNonReceiptStatus'"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statement Details -->
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Statement Details'"/>
+      
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Statement Information'"
+                              [isOptional]="true"></app-sub-panel-header>
+        <div class="form-grid-4-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Original Group Information'"
+                               [controlName]="'statementOriginalGroupInformation'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Original Statement Identification'"
+                               [controlName]="'statementOriginalStatementIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'UETR'"
+                               [controlName]="'statementUETR'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Account Servicer Reference'"
+                               [controlName]="'statementAccountServicerReference'"/>
+
+          <app-amount-to-word-input [frmGroup]="frmGroup"
+                                    [label]="'Corrected Amount'"
+                                    [controlName]="'statementCorrectedAmount'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Purpose'"
+                               [controlName]="'statementPurpose'"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Correction Transaction -->
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Correction Transaction'"/>
+      
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Transaction Type'"
+                              [isOptional]="true"></app-sub-panel-header>
+        <div class="form-grid-4-col">
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="[{key: 'initn', value: 'Initiation'}, {key: 'intrk', value: 'Interbank'}]"
+                                   [label]="'Correction Transaction Type'"
+                                   [controlName]="'correctionTransactionType'"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resolution Related Information -->
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Resolution Related Information'"/>
+      
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Resolution Details'"
+                              [isOptional]="true"></app-sub-panel-header>
+        <div class="form-grid-4-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'End To End Identification'"
+                               [controlName]="'resolutionEndToEndIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Transaction Identification'"
+                               [controlName]="'resolutionTransactionIdentification'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'UETR'"
+                               [controlName]="'resolutionUETR'"/>
+
+          <app-amount-to-word-input [frmGroup]="frmGroup"
+                                    [label]="'Interbank Settlement Amount'"
+                                    [controlName]="'resolutionInterbankSettlementAmount'"/>
+
+          <app-date-input [frmGroup]="frmGroup"
+                          [label]="'Interbank Settlement Date'"
+                          [controlName]="'resolutionInterbankSettlementDate'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="clearingChannelOptions"
+                                   [label]="'Clearing Channel'"
+                                   [controlName]="'resolutionClearingChannel'"/>
+
+          <app-amount-to-word-input [frmGroup]="frmGroup"
+                                    [label]="'Compensation'"
+                                    [controlName]="'resolutionCompensation'"/>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>

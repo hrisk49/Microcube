@@ -1,0 +1,231 @@
+<div class="min-h-screen bg-gray-50 py-8 justify-center">
+  <div class="max-w-4xl mx-auto px-4">
+    <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center">
+      Modal Components Examples
+    </h1>
+
+    <!-- Success Modal Example -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Success Modal</h2>
+      <p class="text-gray-600 mb-4">
+        Shows success messages with green styling and checkmark icon.
+      </p>
+      <button
+        class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 cursor-pointer transition-colors duration-200"
+        (click)="showSuccessModal()"
+      >
+        Show Success Modal
+      </button>
+    </div>
+
+    <!-- Error Modal Example -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Error Modal</h2>
+      <p class="text-gray-600 mb-4">
+        Shows error messages with red styling and exclamation icon.
+      </p>
+      <button
+        class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer transition-colors duration-200"
+        (click)="showErrorModal()"
+      >
+        Show Error Modal
+      </button>
+    </div>
+
+    <!-- Warning Modal Example -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Warning Modal</h2>
+      <p class="text-gray-600 mb-4">
+        Shows warning messages with yellow styling and triangle icon.
+      </p>
+      <button
+        class="bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700 cursor-pointer transition-colors duration-200"
+        (click)="showWarningModal()"
+      >
+        Show Warning Modal
+      </button>
+    </div>
+
+    <!-- Info Modal Example -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Info Modal</h2>
+      <p class="text-gray-600 mb-4">
+        Shows informational messages with blue styling and info icon.
+      </p>
+      <button
+        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 cursor-pointer transition-colors duration-200"
+        (click)="showInfoModal()"
+      >
+        Show Info Modal
+      </button>
+    </div>
+    <!-- Delete Confirmation Modal Example -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        Delete Confirmation Modal
+      </h2>
+      <p class="text-gray-600 mb-4">
+        Shows delete confirmation messages with red styling and delete icon.
+      </p>
+      <button
+        class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 cursor-pointer transition-colors duration-200"
+        (click)="showDeleteConfirmationModal()"
+      >
+        Show Delete Confirmation Modal
+      </button>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <app-alert-success
+    [isOpen]="isSuccessModalOpen"
+    [title]="'Success!'"
+    [message]="successModalMessage"
+    (close)="closeSuccessModal()"
+    (buttonClick)="onSuccessModalButtonClick($event)"
+  >
+  </app-alert-success>
+
+  <!-- Error Modal -->
+  <app-alert-error
+    [isOpen]="isErrorModalOpen"
+    [title]="errorModalTitle"
+    [message]="errorModalMessage"
+    (close)="closeErrorModal()"
+    (buttonClick)="onErrorModalButtonClick($event)"
+  >
+  </app-alert-error>
+
+  <!-- Warning Modal -->
+  <app-alert-warning
+    [isOpen]="isWarningModalOpen"
+    [title]="warningModalTitle"
+    [message]="warningModalMessage"
+    (close)="closeWarningModal()"
+    (buttonClick)="onWarningModalButtonClick($event)"
+  >
+  </app-alert-warning>
+
+  <!-- Info Modal -->
+  <app-alert-info
+    [isOpen]="isInfoModalOpen"
+    [title]="infoModalTitle"
+    [message]="infoModalMessage"
+    (close)="closeInfoModal()"
+    (buttonClick)="onInfoModalButtonClick($event)"
+  >
+  </app-alert-info>
+
+  <!-- Delete Confirmation Modal -->
+  <app-delete-confirmation-dialogue
+    [isOpen]="isDeleteConfirmationModalOpen"
+    [title]="'Delete Confirmation'"
+    [message]="
+      'Are you sure you want to delete this item? This action cannot be undone.'
+    "
+    (close)="closeDeleteConfirmationModal()"
+    (buttonClick)="onDeleteConfirmationModalButtonClick($event)"
+  >
+  </app-delete-confirmation-dialogue>
+
+  <div class="bg-white rounded-lg shadow-md p-6 mb-6 w-1/2">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">Text Area</h2>
+    <div class="flex flex-col gap-4">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Usage</h3>
+      <p class="text-gray-600 mb-4">
+        <code class="text-sm bg-gray-100 p-2 rounded-md">
+          &lt;lds-txt-area [frmGroup]="frmGroup" [controlName]="'description'"
+          [labelText]="'Description'" [required]="true" [maxLen]="500"
+          [enable]="true" [visible]="true" [rows]="3"
+          (onChanged)="onTextAreaChanged($event)"> &lt;/lds-txt-area>
+        </code>
+      </p>
+    </div>
+
+    <lds-txt-area
+      [id]="'description'"
+      [frmGroup]="frmGroup"
+      [controlName]="'description'"
+      [labelText]="'Description'"
+      [placeholder]="'Enter description'"
+      [maxLen]="500"
+      [enable]="true"
+      [visible]="true"
+      [rows]="3"
+      (onChanged)="onTextAreaChanged($event)"
+    >
+    </lds-txt-area>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-md p-6 mb-6 w-1/2">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">Label</h2>
+    <div class="flex flex-col gap-4">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Usage</h3>
+      <p class="text-gray-600 mb-4">
+        <code class="text-sm bg-gray-100 p-2 rounded-md">
+          &lt;lds-label 
+          [labelValue]="'Optional Field'" 
+          [visible]="showOptionalFields">
+          &lt;/lds-label>
+        </code>
+      </p>
+    </div>
+
+    <!-- Basic usage -->
+    <lds-label [labelValue]="'Username'"></lds-label>
+    
+    <!-- Dynamic content -->
+    <lds-label [labelValue]="getLabelText()"></lds-label>
+  </div>
+  
+  <div class="bg-white rounded-lg shadow-md p-6 mb-6 w-1/2">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">Switch</h2>
+    <div class="flex flex-col gap-4">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Usage</h3>
+      <p class="text-gray-600 mb-4">
+        <code class="text-sm bg-gray-100 p-2 rounded-md">
+          &lt;lds-switch [frmGroup]="myFormGroup"
+          [controlName]="'notifications'" [labelText]="'Enable Notifications'"
+          [id]="'notifications-switch'"> &lt;/lds-switch>
+        </code>
+      </p>
+    </div>
+
+    <lds-switch
+      [frmGroup]="frmGroup"
+      [controlName]="'notifications'"
+      [labelText]="'Enable Notifications'"
+      [id]="'notifications-switch'"
+      [isChecked]="true"
+      (isCheckedChanged)="onSwitchChanged($event)"
+    >
+    </lds-switch>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-md p-6 mb-6 w-1/2">
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">
+      Amount to Word Input
+    </h2>
+    <div class="flex flex-col gap-4">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">Usage</h3>
+      <p class="text-gray-600 mb-4">
+        <code class="text-sm bg-gray-100 p-2 rounded-md">
+          &lt;app-amount-to-word-input [frmGroup]="frmGroup"
+          [controlName]="'amount'" [label]="'Amount'" [isReadonly]="false"
+          [placeholder]="'Enter amount'"
+          (valueChange)="onAmountToWordInputValueChange($event)">
+        </code>
+      </p>
+    </div>
+
+    <app-amount-to-word-input
+      [frmGroup]="frmGroup"
+      [controlName]="'amount'"
+      [label]="'Amount'"
+      [isReadonly]="false"
+      [placeholder]="'Enter amount'"
+      (valueChange)="onAmountToWordInputValueChange($event)"
+    >
+    </app-amount-to-word-input>
+  </div>
+</div>
