@@ -97,6 +97,7 @@ export class Pacs002 implements OnInit {
   initForm(): void {
     this.frmGroup = this.formBuilder.group({
       // Business Application Header
+      amountToText:[''],
       fromBic:['',Validators.required],
       toBic: ['', Validators.required],
       businessMessageIdentifier: [''],
@@ -144,7 +145,7 @@ export class Pacs002 implements OnInit {
       dept:[''],
       subDept:[''],
       strtNm:[''],
-      bldgNb:[''],
+      BldgNb:[''],
       bldgNm:[''],
       flr:[''],
       pstBx:[''],
@@ -162,6 +163,8 @@ export class Pacs002 implements OnInit {
       orgIdOthrId:[''],
       orgIdOthrScNmCd:[''],
       orgIdOthrIssr:[''],
+      orgIdOthrCd:[''], // added by developer
+      orgIdOthrIssrPtry:[''], // added by developer
 
       birthDt:[''],
       prvcOfBirth:[''],
@@ -184,6 +187,16 @@ export class Pacs002 implements OnInit {
       ClrSysRef: [''],
       InstgAgt: ['',Validators.required],
       InstdAgt: ['',Validators.required],
+
+      // Agent Information
+      bIcfi:[''],
+      clrSysIdCd:[''],
+      mmbId:[''],
+      lei:[''],
+      nm:[''],
+      adrLine1:[''],
+      adrLine2:[''],
+      adrLine3:[''],
     });
   }
 
