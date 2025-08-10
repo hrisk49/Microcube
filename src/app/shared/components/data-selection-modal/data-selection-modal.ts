@@ -7,8 +7,8 @@ import { DataSelectionConfig, DataSelectionItem, DataSelectionResult, DataSelect
   selector: 'app-data-selection-modal',
   standalone: true,
   imports: [
-    CommonModule, 
-    FormsModule, 
+    CommonModule,
+    FormsModule,
     ReactiveFormsModule
   ],
   templateUrl: './data-selection-modal.html',
@@ -111,7 +111,7 @@ export class DataSelectionModal implements OnInit, OnDestroy {
 
     // Force change detection to update the select element
     this.cdr.detectChanges();
-    
+
     // Additional delay to ensure DOM is updated
     setTimeout(() => {
       this.cdr.detectChanges();
@@ -169,13 +169,13 @@ export class DataSelectionModal implements OnInit, OnDestroy {
       };
 
       const result = await config.service[config.serviceMethod](serviceParams);
-      
+
       if (result && Array.isArray(result.data)) {
         this.data = result.data;
         this.pagination.totalRecords = result.totalRecords || result.data.length;
         this.pagination.totalPages = Math.ceil(this.pagination.totalRecords / this.pagination.pageSize);
         this.applyFilters();
-        
+
         if (config.onSuccess) {
           config.onSuccess(this.data);
         }
@@ -200,7 +200,7 @@ export class DataSelectionModal implements OnInit, OnDestroy {
     console.error('Data selection modal error:', error);
     const config = this.config();
     this.error = config.errorMessage || 'Error loading data';
-    
+
     // Use fallback data if available
     if (config.fallbackData && config.fallbackData.length > 0) {
       this.data = config.fallbackData;
@@ -261,7 +261,7 @@ export class DataSelectionModal implements OnInit, OnDestroy {
       filtered.sort((a: DataSelectionItem, b: DataSelectionItem) => {
         const aValue = a[this.currentSort!.field];
         const bValue = b[this.currentSort!.field];
-        
+
         if (aValue == null && bValue == null) return 0;
         if (aValue == null) return 1;
         if (bValue == null) return -1;
@@ -286,8 +286,10 @@ export class DataSelectionModal implements OnInit, OnDestroy {
     this.selectItem(item);
   }
 
-  onCheckboxChange(item: DataSelectionItem, checked: boolean): void {
-    if (checked) {
+  onCheckboxChange(item: DataSelectionItem, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const isChecked = input.checked;
+    if (isChecked) {
       this.selectedItems.push(item);
     } else {
       this.selectedItems = this.selectedItems.filter(selected => selected !== item);
@@ -401,7 +403,7 @@ export class DataSelectionModal implements OnInit, OnDestroy {
 
   getCellValue(item: DataSelectionItem, column: DataSelectionColumn): any {
     const value = item[column.field];
-    
+
     if (value == null) return '';
 
     switch (column.type) {
@@ -440,13 +442,13 @@ export class DataSelectionModal implements OnInit, OnDestroy {
   getDisplayedColumns(): string[] {
     const columns: string[] = [];
     const config = this.config();
-    
+
     if (config.enableSelection) {
       columns.push('select');
     }
-    
+
     columns.push(...this.getVisibleColumns().map(col => col.field));
-    
+
     return columns;
   }
 
@@ -472,4 +474,4 @@ export class DataSelectionModal implements OnInit, OnDestroy {
   get currentPageSize(): number {
     return this.pagination.pageSize || 10;
   }
-} 
+}
