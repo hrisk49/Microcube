@@ -1,14 +1,13 @@
 import { Component, input, output, signal, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'lds-switch',
   imports: [
     ReactiveFormsModule,
-    NgClass,
-    NgIf
-  ],
+    NgClass
+],
   templateUrl: './switch.html',
   styleUrl: './switch.scss'
 })

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, Inject, Optional } from '@angular/core';
+import { Component, EventEmitter, input, output, Inject, Optional } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 export interface DeleteConfirmationModalConfig {
@@ -26,16 +26,16 @@ export interface DeleteConfirmationModalButton {
 })
 export class DeleteConfirmationDialogue {
 
-  @Input() isOpen: boolean = false;
-  @Input() config: DeleteConfirmationModalConfig = {};
-  @Input() title: string = 'Delete Confirmation';
-  @Input() message: string = 'Are you sure you want to delete this item? This action cannot be undone.';
-  @Input() showCloseButton: boolean = true;
-  @Input() showBackdrop: boolean = true;
-  @Input() customClass: string = '';
+  readonly isOpen = input<boolean>(false);
+  readonly config = input<DeleteConfirmationModalConfig>({});
+  readonly title = input<string>('Delete Confirmation');
+  readonly message = input<string>('Are you sure you want to delete this item? This action cannot be undone.');
+  readonly showCloseButton = input<boolean>(true);
+  readonly showBackdrop = input<boolean>(true);
+  readonly customClass = input<string>('');
 
-  @Output() close = new EventEmitter<void>();
-  @Output() buttonClick = new EventEmitter<{ action: string; button: DeleteConfirmationModalButton }>();
+  readonly close = output<void>();
+  readonly buttonClick = output<{ action: string; button: DeleteConfirmationModalButton }>();
 
   constructor(
     @Optional() @Inject(MAT_DIALOG_DATA) public data: DeleteConfirmationModalConfig,
@@ -43,29 +43,30 @@ export class DeleteConfirmationDialogue {
   ) {
     // If used as MatDialog, merge data with config
     if (this.data) {
-      this.config = { ...this.config, ...this.data };
-      this.isOpen = true; // Always open when used as dialog
+      // For MatDialog usage, the config will be passed via the data parameter
+      // We don't need to modify the input signals here as they are read-only
+      // The template will handle the display based on the data
     }
   }
 
   get titleText(): string {
-    return this.config.title || this.title;
+    return this.config().title || this.title();
   }
 
   get messageText(): string {
-    return this.config.message || this.message;
+    return this.config().message || this.message();
   }
 
   get showClose(): boolean {
-    return this.config.showCloseButton !== undefined ? this.config.showCloseButton : this.showCloseButton;
+    return this.config().showCloseButton ?? this.showCloseButton();
   }
 
   get showBackdropValue(): boolean {
-    return this.config.showBackdrop !== undefined ? this.config.showBackdrop : this.showBackdrop;
+    return this.config().showBackdrop ?? this.showBackdrop();
   }
 
   get buttons(): DeleteConfirmationModalButton[] {
-    return this.config.buttons || this.getDefaultButtons();
+    return this.config().buttons || this.getDefaultButtons();
   }
 
   getButtonClasses(button: DeleteConfirmationModalButton, index: number): string {

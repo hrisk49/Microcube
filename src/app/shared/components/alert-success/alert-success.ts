@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, input, output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 
@@ -23,35 +23,35 @@ export interface SuccessModalButton {
   templateUrl: './alert-success.html'
 })
 export class AlertSuccessComponent {
-  @Input() isOpen: boolean = false;
-  @Input() config: SuccessModalConfig = {};
-  @Input() title: string = 'Success!';
-  @Input() message: string = '';
-  @Input() showCloseButton: boolean = true;
-  @Input() showBackdrop: boolean = true;
-  @Input() customClass: string = '';
+  readonly isOpen = input<boolean>(false);
+  readonly config = input<SuccessModalConfig>({});
+  readonly title = input<string>('Success!');
+  readonly message = input<string>('');
+  readonly showCloseButton = input<boolean>(true);
+  readonly showBackdrop = input<boolean>(true);
+  readonly customClass = input<string>('');
 
-  @Output() close = new EventEmitter<void>();
-  @Output() buttonClick = new EventEmitter<{ action: string; button: SuccessModalButton }>();
+  readonly close = output<void>();
+  readonly buttonClick = output<{ action: string; button: SuccessModalButton }>();
 
   get titleText(): string {
-    return this.config.title || this.title;
+    return this.config().title || this.title();
   }
 
   get messageText(): string {
-    return this.config.message || this.message;
+    return this.config().message || this.message();
   }
 
   get showClose(): boolean {
-    return this.config.showCloseButton !== undefined ? this.config.showCloseButton : this.showCloseButton;
+    return this.config().showCloseButton ?? this.showCloseButton();
   }
 
   get showBackdropValue(): boolean {
-    return this.config.showBackdrop !== undefined ? this.config.showBackdrop : this.showBackdrop;
+    return this.config().showBackdrop ?? this.showBackdrop();
   }
 
   get buttons(): SuccessModalButton[] {
-    return this.config.buttons || this.getDefaultButtons();
+    return this.config().buttons || this.getDefaultButtons();
   }
 
   getButtonClasses(button: SuccessModalButton, index: number): string {

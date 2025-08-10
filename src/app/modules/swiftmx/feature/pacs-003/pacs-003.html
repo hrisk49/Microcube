@@ -61,9 +61,10 @@
       <div class="sub-panel">
         <app-sub-panel-header
           [subPanelTitle]="'Related'"
+          [divElement]="related"
           [isOptional]="true"
         />
-        <div class="form-grid-4-col">
+        <div #related class="form-grid-4-col">
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Business Message Identifier'"
@@ -118,8 +119,12 @@
 
       <!--Group Header-->
       <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Group Header'" />
-        <div class="form-grid-4-col">
+        <app-sub-panel-header 
+          [subPanelTitle]="'Group Header'" 
+          [divElement]="groupHeader"
+          [isOptional]="true"
+        />
+        <div #groupHeader class="form-grid-4-col">
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Message Identification'"
@@ -141,8 +146,12 @@
 
         <!--Settlement Information-->
         <div class="sub-panel">
-          <app-sub-panel-header [subPanelTitle]="'Settlement Information'" />
-          <div class="form-grid-4-col">
+          <app-sub-panel-header 
+            [subPanelTitle]="'Settlement Information'" 
+            [divElement]="settlementInfo"
+            [isOptional]="true"
+          />
+          <div #settlementInfo class="form-grid-4-col">
             <app-select-option-field 
               [frmGroup]="frmGroup"
               [options]="settlementMethodOptions"
@@ -167,65 +176,21 @@
         </div>
 
         <!-- Settlement Account Details -->
-        <div class="sub-panel">
-          <app-sub-panel-header [subPanelTitle]="'Settlement Account Details'" />
-          <div class="form-grid-4-col">
-            <app-text-base-input 
-              [frmGroup]="frmGroup"
-              [label]="'Scheme Name Code'"
-              [controlName]="'SttlmAcctSchmeNmCd'"/>
-
-            <app-text-base-input 
-              [frmGroup]="frmGroup"
-              [label]="'Scheme Name Proprietary'"
-              [controlName]="'SttlmAcctSchmeNmPrtry'"/>
-
-            <app-text-base-input 
-              [frmGroup]="frmGroup"
-              [label]="'Issuer'"
-              [controlName]="'SttlmAcctIssr'"/>
-
-            <app-text-base-input 
-              [frmGroup]="frmGroup"
-              [label]="'Type Code'"
-              [controlName]="'SttlmAcctTpCd'"/>
-          </div>
-
-          <div class="form-grid-4-col">
-            <app-text-base-input 
-              [frmGroup]="frmGroup"
-              [label]="'Type Proprietary'"
-              [controlName]="'SttlmAcctTpPrtry'"/>
-
-            <app-text-base-input 
-              [frmGroup]="frmGroup"
-              [label]="'Currency'"
-              [controlName]="'SttlmAcctCcy'"/>
-
-            <app-text-base-input 
-              [frmGroup]="frmGroup"
-              [label]="'Proxy Type Code'"
-              [controlName]="'SttlmAcctPrxyTpCd'"/>
-
-            <app-text-base-input 
-              [frmGroup]="frmGroup"
-              [label]="'Proxy Type Proprietary'"
-              [controlName]="'SttlmAcctPrxyTpPrtry'"/>
-          </div>
-
-          <div class="form-grid-4-col">
-            <app-text-base-input 
-              [frmGroup]="frmGroup"
-              [label]="'Proxy ID'"
-              [controlName]="'SttlmAcctPrxyId'"/>
-          </div>
-        </div>
+        <app-account
+          [frmGroup]="frmGroup"
+          [prefix]="'SttlmAcct'"
+          [title]="'Settlement Account Details'"
+        />
       </div>
 
       <!-- Payment Identification -->
       <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Payment Identification'" />
-        <div class="form-grid-4-col">
+        <app-sub-panel-header 
+          [subPanelTitle]="'Payment Identification'" 
+          [divElement]="paymentIdentification"
+          [isOptional]="true"
+        />
+        <div #paymentIdentification class="form-grid-4-col">
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Instruction Identification'"
@@ -260,8 +225,12 @@
 
       <!-- Payment Type Information -->
       <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Payment Type Information'" />
-        <div class="form-grid-4-col">
+        <app-sub-panel-header 
+          [subPanelTitle]="'Payment Type Information'" 
+          [divElement]="paymentTypeInfo"
+          [isOptional]="true"
+        />
+        <div #paymentTypeInfo class="form-grid-4-col">
           <app-select-option-field
             [frmGroup]="frmGroup"
             [options]="priorityOptions"
@@ -316,8 +285,12 @@
 
       <!-- Settlement Information -->
       <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Settlement Information'" />
-        <div class="form-grid-4-col">
+        <app-sub-panel-header 
+          [subPanelTitle]="'Settlement Information'" 
+          [divElement]="settlementInfo2"
+          [isOptional]="true"
+        />
+        <div #settlementInfo2 class="form-grid-4-col">
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Settlement Currency'"
@@ -345,124 +318,76 @@
         </div>
       </div>
 
-      <!-- Previous Instructing Agents -->
-      <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Previous Instructing Agents'" />
-        <div class="form-grid-4-col">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Previous Instructing Agent 1 BICFI'"
-            [controlName]="'PrvsInstgAgt1Bic'"
-          />
+      <!-- Previous Instructing Agent 1 -->
+      <app-agent
+        [frmGroup]="frmGroup"
+        [prefix]="'PrvsInstgAgt1'"
+        [title]="'Previous Instructing Agent 1'"
+        [isOptional]="true"
+      />
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Previous Instructing Agent 1 Name'"
-            [controlName]="'PrvsInstgAgt1Nm'"
-          />
+      <!-- Previous Instructing Agent 2 -->
+      <app-agent
+        [frmGroup]="frmGroup"
+        [prefix]="'PrvsInstgAgt2'"
+        [title]="'Previous Instructing Agent 2'"
+        [isOptional]="true"
+      />
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Previous Instructing Agent 2 BICFI'"
-            [controlName]="'PrvsInstgAgt2Bic'"
-          />
+      <!-- Previous Instructing Agent 3 -->
+      <app-agent
+        [frmGroup]="frmGroup"
+        [prefix]="'PrvsInstgAgt3'"
+        [title]="'Previous Instructing Agent 3'"
+        [isOptional]="true"
+      />
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Previous Instructing Agent 2 Name'"
-            [controlName]="'PrvsInstgAgt2Nm'"
-          />
+      <!-- Instructing Agent -->
+      <app-agent
+        [frmGroup]="frmGroup"
+        [prefix]="'InstgAgt'"
+        [title]="'Instructing Agent'"
+      />
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Previous Instructing Agent 3 BICFI'"
-            [controlName]="'PrvsInstgAgt3Bic'"
-          />
+      <!-- Instructed Agent -->
+      <app-agent
+        [frmGroup]="frmGroup"
+        [prefix]="'InstdAgt'"
+        [title]="'Instructed Agent'"
+      />
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Previous Instructing Agent 3 Name'"
-            [controlName]="'PrvsInstgAgt3Nm'"
-          />
-        </div>
-      </div>
+      <!-- Intermediary Agent 1 -->
+      <app-agent
+        [frmGroup]="frmGroup"
+        [prefix]="'IntrmyAgt1'"
+        [title]="'Intermediary Agent 1'"
+        [isOptional]="true"
+      />
 
-      <!-- Agents -->
-      <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Agents'" />
-        <div class="form-grid-4-col">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Instructing Agent BICFI'"
-            [controlName]="'InstgAgtBIcfi'"
-          />
+      <!-- Intermediary Agent 2 -->
+      <app-agent
+        [frmGroup]="frmGroup"
+        [prefix]="'IntrmyAgt2'"
+        [title]="'Intermediary Agent 2'"
+        [isOptional]="true"
+      />
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Instructing Agent Name'"
-            [controlName]="'InstgAgtNm'"
-          />
-
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Instructed Agent BICFI'"
-            [controlName]="'InstdAgtBIcfi'"
-          />
-
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Instructed Agent Name'"
-            [controlName]="'InstdAgtNm'"
-          />
-        </div>
-      </div>
-
-      <!-- Intermediary Agents -->
-      <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Intermediary Agents'" />
-        <div class="form-grid-4-col">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Intermediary Agent 1 BICFI'"
-            [controlName]="'IntrmyAgt1Bic'"
-          />
-
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Intermediary Agent 1 Name'"
-            [controlName]="'IntrmyAgt1Nm'"
-          />
-
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Intermediary Agent 2 BICFI'"
-            [controlName]="'IntrmyAgt2Bic'"
-          />
-
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Intermediary Agent 2 Name'"
-            [controlName]="'IntrmyAgt2Nm'"
-          />
-
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Intermediary Agent 3 BICFI'"
-            [controlName]="'IntrmyAgt3Bic'"
-          />
-
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Intermediary Agent 3 Name'"
-            [controlName]="'IntrmyAgt3Nm'"
-          />
-        </div>
-      </div>
+      <!-- Intermediary Agent 3 -->
+      <app-agent
+        [frmGroup]="frmGroup"
+        [prefix]="'IntrmyAgt3'"
+        [title]="'Intermediary Agent 3'"
+        [isOptional]="true"
+      />
 
       <!-- Debtor -->
       <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Debtor'" />
-        <div class="form-grid-4-col">
+        <app-sub-panel-header 
+          [subPanelTitle]="'Debtor'" 
+          [divElement]="debtor"
+          [isOptional]="true"
+        />
+        <div #debtor class="form-grid-4-col">
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Debtor Name'"
@@ -515,8 +440,12 @@
 
       <!-- Creditor -->
       <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Creditor'" />
-        <div class="form-grid-4-col">
+        <app-sub-panel-header 
+          [subPanelTitle]="'Creditor'" 
+          [divElement]="creditor"
+          [isOptional]="true"
+        />
+        <div #creditor class="form-grid-4-col">
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Creditor Name'"
@@ -569,54 +498,58 @@
 
       <!-- Instructions -->
       <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Instructions'" />
-        <div class="form-grid-4-col">
+        <app-sub-panel-header 
+          [subPanelTitle]="'Instructions'" 
+          [divElement]="instructions"
+          [isOptional]="true"
+        />
+        <div #instructions class="form-grid-4-col">
           <app-select-option-field
             [frmGroup]="frmGroup"
             [options]="instructionForCreditorAgentOptions"
-            [label]="'Instruction For Creditor Agent Code'"
+            [label]="'Creditor Agent Code'"
             [controlName]="'InstrForCdtrAgtCD'"
           />
 
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Instruction For Creditor Agent Info'"
+            [label]="'Creditor Agent Info'"
             [controlName]="'InstrForCdtrAgtInf'"
           />
 
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Instruction For Next Agent 1'"
+            [label]="'Next Agent 1'"
             [controlName]="'InstrForNxtAgt1'"
           />
 
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Instruction For Next Agent 2'"
+            [label]="'Next Agent 2'"
             [controlName]="'InstrForNxtAgt2'"
           />
 
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Instruction For Next Agent 3'"
+            [label]="'Next Agent 3'"
             [controlName]="'InstrForNxtAgt3'"
           />
 
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Instruction For Next Agent 4'"
+            [label]="'Next Agent 4'"
             [controlName]="'InstrForNxtAgt4'"
           />
 
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Instruction For Next Agent 5'"
+            [label]="'Next Agent 5'"
             [controlName]="'InstrForNxtAgt5'"
           />
 
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Instruction For Next Agent 6'"
+            [label]="'Next Agent 6'"
             [controlName]="'InstrForNxtAgt6'"
           />
         </div>
@@ -624,8 +557,12 @@
 
       <!-- Purpose and Remittance -->
       <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Purpose and Remittance'" />
-        <div class="form-grid-4-col">
+        <app-sub-panel-header 
+          [subPanelTitle]="'Purpose and Remittance'" 
+          [divElement]="purposeRemittance"
+          [isOptional]="true"
+        />
+        <div #purposeRemittance class="form-grid-4-col">
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Purpose Code'"
@@ -648,8 +585,12 @@
 
       <!-- Charges -->
       <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Charges'" />
-        <div class="form-grid-4-col">
+        <app-sub-panel-header 
+          [subPanelTitle]="'Charges'" 
+          [divElement]="charges"
+          [isOptional]="true"
+        />
+        <div #charges class="form-grid-4-col">
           <app-select-option-field
             [frmGroup]="frmGroup"
             [options]="chargeBearerOptions"

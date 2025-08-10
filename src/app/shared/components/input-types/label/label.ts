@@ -1,10 +1,8 @@
 import { Component, input } from '@angular/core';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'lds-label',
   imports: [
-    NgIf
   ],
   templateUrl: './label.html',
   styleUrl: './label.scss'

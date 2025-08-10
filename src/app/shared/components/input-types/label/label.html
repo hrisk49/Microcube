@@ -1,3 +1,5 @@
-<div *ngIf="!isHidden" class="input-label relative">
-  {{ labelValue() }}
-</div> 
+@if (!isHidden) {
+  <div class="input-label relative">
+    {{ labelValue() }}
+  </div>
+} 

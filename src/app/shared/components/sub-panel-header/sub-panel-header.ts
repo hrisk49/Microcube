@@ -15,11 +15,11 @@ import {MatTooltip} from '@angular/material/tooltip';
     styleUrl: './sub-panel-header.scss'
 })
 export class SubPanelHeader {
-  subPanelTitle = input<string>();
-  isButton = input<boolean>();
-  addAction = output();
-  isOptional = input<boolean>();
-  divElement = input<any>();
+  readonly subPanelTitle = input<string>();
+  readonly isButton = input<boolean>();
+  readonly addAction = output();
+  readonly isOptional = input<boolean>();
+  readonly divElement = input<any>();
   cd = inject(ChangeDetectorRef);
 
 

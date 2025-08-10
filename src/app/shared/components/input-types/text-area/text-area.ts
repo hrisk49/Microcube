@@ -1,14 +1,13 @@
 import { Component, input, output, signal, OnInit, OnChanges, computed } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'lds-txt-area',
   imports: [
     ReactiveFormsModule,
-    NgClass,
-    NgIf
-  ],
+    NgClass
+],
   templateUrl: './text-area.html',
   styleUrl: './text-area.scss'
 })

@@ -1,11 +1,10 @@
 import { Component, input, output, EventEmitter } from '@angular/core';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'lds-btn',
   imports: [
-    NgClass,
-    NgIf
+    NgClass
   ],
   templateUrl: './button.html',
   styleUrl: './button.scss'
