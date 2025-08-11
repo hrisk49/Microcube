@@ -4,11 +4,7 @@
     <!--Business Application Header-->
     <div class="panel">
       <app-panel-header [panelTitle]="'Business Application Header'"/>
-      <div class="form-grid-3-col">
-
-        <app-amount-to-word-input [frmGroup]="frmGroup"
-                                  [label]="'Amount to Text'"
-                                  [controlName]="'amountToText'"/>
+      <div class="form-grid-4-col">
 
         <app-text-base-input [frmGroup]="frmGroup"
                              [label]="'From BIC'"
@@ -79,6 +75,260 @@
                                    [controlName]="'relatedPriority'"/>
         </div>
       </div>
+    </div>
+
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Cheque Cancellation Or Stop Report'"></app-panel-header>
+
+      <fieldset class="custom-fieldset">
+        <legend>Group Header</legend>
+        <div class="form-grid-4-col">
+
+          <app-date-input [frmGroup]="frmGroup"
+                          [label]="'Creation Date'"
+                          [controlName]="'creDtTm'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="' Number of Cheques'"
+                               [controlName]="'nbOfChqs'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="' Control Sum'"
+                               [controlName]="'ctrlSum'"/>
+
+
+        </div>
+
+      </fieldset>
+
+      <!--Cheque Information-->
+      <div>
+        <fieldset class="custom-fieldset">
+          <legend>Cheque Information</legend>
+          <div class="form-grid-4-col">
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Instruction Identification'"
+                                 [controlName]="'InstrId'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Organization Instruction'"
+                                 [controlName]="'orgnlInstrId'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Cheque Number'"
+                                 [controlName]="'chqNb'"/>
+
+            <app-date-input [frmGroup]="frmGroup"
+                            [label]="'Issue Date'"
+                            [controlName]="'isseDt'"/>
+
+            <app-date-input [frmGroup]="frmGroup"
+                            [label]="'Settlement Date'"
+                            [controlName]="'stlDt'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Amount'"
+                                 [controlName]="'amt'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Effective Date'"
+                                 [controlName]="'fctvDt'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Drawee Agent'"
+                                 [controlName]="'drwrAgt'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Drawee Agent Account'"
+                                 [controlName]="'chqNb'"/>
+
+          </div>
+        </fieldset>
+
+        <fieldset class="custom-fieldset">
+          <legend>Payee Information</legend>
+          <div class="form-grid-4-col">
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Payee Name'"
+                                 [controlName]="'payeeNm'"/>
+
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Adress Type'"
+                                 [controlName]="'adrTp'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Department'"
+                                 [controlName]="'dept'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Sub Department'"
+                                 [controlName]="'subDept'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Street Name'"
+                                 [controlName]="'strtNm'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Building Number'"
+                                 [controlName]="'BldgNb'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Floor'"
+                                 [controlName]="'flr'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Post Box'"
+                                 [controlName]="'pstBx'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Room'"
+                                 [controlName]="'room'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Town Name'"
+                                 [controlName]="'twnNm'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Post Code'"
+                                 [controlName]="'pstCd'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Town Location Name'"
+                                 [controlName]="'twnLctnNm'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'District Name'"
+                                 [controlName]="'dstrctNm'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Country Sub Division'"
+                                 [controlName]="'ctrySubDvsn'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Country'"
+                                 [controlName]="'ctry'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Address Line'"
+                                 [controlName]="'adrLine'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Additional Information 1'"
+                                 [controlName]="'addtlInf1'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Additional Information 2'"
+                                 [controlName]="'addtlInf2'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Reason Code'"
+                                 [controlName]="'rsnCd'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Reson propietary'"
+                                 [controlName]="'rsnPrtry'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Additional Information 1'"
+                                 [controlName]="'addtlInf1'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Additional Information 2'"
+                                 [controlName]="'addtlInf2'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Country Of Residence'"
+                                 [controlName]="'ctryOfRes'"/>
+          </div>
+        </fieldset>
+
+        <fieldset class="custom-fieldset" >
+          <legend > Organization Identification </legend>
+
+          <div class="form-grid-4-col">
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Organization Identification BIC'"
+                                 [controlName]="'orgIdBic'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Organization Identification LEI'"
+                                 [controlName]="'orgIdLei'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Organization Other Identification'"
+                                 [controlName]="'orgIdOthrId'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Identification Other Issuer'"
+                                 [controlName]="'orgIdOthrIssr'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Organization Other Code'"
+                                 [controlName]="'orgIdOthrCd'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Organization Other Propietary'"
+                                 [controlName]="'orgIdOthrIssrPtry'"/>
+
+
+            </div>
+
+        </fieldset>
+        <fieldset class="custom-fieldset" >
+          <legend > Private Identification </legend>
+        <div class="form-grid-4-col">
+          <app-date-input [frmGroup]="frmGroup"
+                          [label]="'Birth Date'"
+                          [controlName]="'birthDt'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Place of Birth'"
+                               [controlName]="'prvcOfBirth'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Private Other Identification'"
+                               [controlName]="'prvtOthId1'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'City of Birth'"
+                               [controlName]="'cityOfBirth'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Country of Birth'"
+                               [controlName]="'ctryOfBirth'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Private Other Identification 1'"
+                               [controlName]="'prvtOthId1'"/>
+          <app-date-input [frmGroup]="frmGroup"
+                          [label]="'Private Other Identification 2'"
+                          [controlName]="'prvtOthId2'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Private Identification Scheme Name Code1'"
+                               [controlName]="'prvtOthIdSchNmCd1'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Private Identification Scheme Name Code2'"
+                               [controlName]="'prvtOthIdSchNmCd2'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Private Other Identification Issuer'"
+                               [controlName]="'prvtOthIdIssr1'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Private Other Identification Issuer2'"
+                               [controlName]="'prvtOthIdIssr2'"/>
+        </div>
+        </fieldset>
+
+      </div>
+
+      <fieldset class="custom-fieldset">
+        <legend>Cheque Cancellation Or Stop Status</legend>
+
+        <div class="form-grid-4-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Originator'"
+                               [controlName]="'orgtr'"/>
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="StsOptions"
+                                   [label]="'Type'"
+                                   [controlName]="'sts'"/>
+        </div>
+      </fieldset>
     </div>
   </form>
 </div>

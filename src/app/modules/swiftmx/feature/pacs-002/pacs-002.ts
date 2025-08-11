@@ -15,6 +15,7 @@ import {PanelHeader} from '../../../../shared/components/panel-header/panel-head
 import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
 import {Mx002Service} from '../../service/mx002.service';
 import {AmountToWordInput} from "../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input";
+import {AgentComponent} from '../../components/agent/agent';
 
 @Component({
   selector: 'app-pacs-002',
@@ -25,7 +26,7 @@ import {AmountToWordInput} from "../../../../shared/components/input-types/amoun
     DateInput,
     PanelHeader,
     SubPanelHeader,
-    AmountToWordInput,
+    AgentComponent,
 
   ],
   templateUrl: './pacs-002.html',
@@ -33,7 +34,6 @@ import {AmountToWordInput} from "../../../../shared/components/input-types/amoun
   styleUrl: './pacs-002.scss'
 })
 export class Pacs002 implements OnInit {
-  form: FormGroup;
   formBuilder = inject(FormBuilder);
   mx002Service = inject(Mx002Service);
   toastr = inject(ToastrService);
@@ -67,6 +67,10 @@ export class Pacs002 implements OnInit {
     {key: 'shar', value: 'Shared'}
   ];
 
+  possibleDuplicateOptions: SelectOptionsModel[] = [
+    {key: 'YES', value: 'Yes'},
+    {key: 'NO', value: 'No'}
+  ];
   constructor() {
     BUTTON_VISIBILITY.set({
       save: true,
@@ -98,49 +102,60 @@ export class Pacs002 implements OnInit {
     this.frmGroup = this.formBuilder.group({
       // Business Application Header
       amountToText:[''],
-      fromBic:['',Validators.required],
-      toBic: ['', Validators.required],
-      businessMessageIdentifier: [''],
-      messageDefinitionIdentifier: [''],
-      businessService: ['', Validators.required],
-      copyDuplicate: ['codu'],
-      priority: ['high'],
+      fromBic:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      toBic: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      bizMsgIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
+      msgDefIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
+      bizSvc: ['',[Validators.required, Validators.minLength(6),Validators.maxLength(35),Validators.pattern(/^[a-z0-9]{1,10}(\.[a-z0-9]{1,10})+\.\d\d$/)]],
+      CreDt: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
+
+      cpyDplct: [null],
+      psblDplct: [null],
+      prty: ['high'],
 
       // Business Application Header -> related
-      relatedFromBic: ['', Validators.required],
-      relatedToBic: ['', Validators.required],
-      relatedBusinessMessageIdentifier: [''],
-      relatedMessageDefinitionIdentifier: [''],
-      relatedBusinessService: ['', Validators.required],
-      relatedCopyDuplicate: ['codu'],
-      relatedPriority: ['high'],
+      rltdFrBic: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      rltdToBic: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      rltdBizMsgIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
+      rltdMsgDefIdr: [''],
+      rltdBizSvc: ['',[Validators.required, Validators.minLength(6),Validators.maxLength(35),Validators.pattern(/^[a-z0-9]{1,10}(\.[a-z0-9]{1,10})+\.\d\d$/)]],
+      rltdCpyDplct: ['codu'],
+      rltdPrty: ['high'],
 
       //  FI To FI Payment Status Report
-      msgId: [''],
-      creationDate: [new Date()],
+      msgId: ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
+
+      creDtTm: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
 
       // Transaction Information And Status
-      TxInfAndSts :['',Validators.required],
 
-      // original Group Information
-      OrgnlGrpInf:['',Validators.required],
-      OrgnlMsgId:['',Validators.required],
-      OrgnlMsgNmId:['',Validators.required],
-      orgnlCreDtTm: ['', Validators.required],
+      // -> original Group Information orgnlGrpInf
+      orgnlMsgId:['', [Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
+      orgnlMsgNmId:['', [Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
+      orgnlCreDtTm: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
 
-      OrgnlInstrId: ['', Validators.required],
-      OrgnlEndToEndId: ['',Validators.required],
-      OrgnlTxId: [''],
-      OrgnlUETR: ['', Validators.required],
-      TxSts: ['', Validators.required],
+      orgnlNbOfTxs:['',[Validators.pattern(/^[0-9]{1,15}$/)]],
+
+      orgnlInstrId: ['', Validators.required],
+      orgnlEndToEndId: ['',Validators.required],
+      orgnlTxId: [''],
+
+
+
+      orgnlUETR: ['', Validators.required],
+      txSts: ['', Validators.required],
 
       // Status Reason Information block StsRsnInf
-      Orgtr:[''],
-      Nm:[''],
-      PstlAdr:[''],
-      Id:[''],
-      CtryOfRes:[''],
+      orgtr:[''],
+      nm:[''],
+      pstlAdr:[''],
+      id:[''],
+      ctryOfRes:[''],
 
+      //  Number of transaction per status
+      dtldNbOfTxs:['',Validators.required],
+      dtldSts : ['',Validators.required],
+      dtldCtrlSum: [],
       // Address Information
       dept:[''],
       subDept:[''],
@@ -158,7 +173,7 @@ export class Pacs002 implements OnInit {
       ctry:[''],
       adrLine:[''],
 
-      orgIdBic:[''],
+      orgIdBic:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
       orgIdLei:[''],
       orgIdOthrId:[''],
       orgIdOthrScNmCd:[''],
@@ -179,24 +194,47 @@ export class Pacs002 implements OnInit {
 
       // Status Reason Information block StsRsnInf
       StsRsnInf: [''],
-      rsnCd:[''],
-      rsnPrtry :[''],
+      rsnCd:['',Validators.required],
+      rsnPrtry :['',Validators.required],
       addtlInf1:[''],
       addtlInf2:[''],
 
-      ClrSysRef: [''],
-      InstgAgt: ['',Validators.required],
-      InstdAgt: ['',Validators.required],
+      clrSysRef: [''],
+      instgAgtBic: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      instdAgt: ['',Validators.required],
 
       // Agent Information
-      bIcfi:[''],
+      bIcfi:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
       clrSysIdCd:[''],
       mmbId:[''],
       lei:[''],
-      nm:[''],
+      agentNm:[''],
       adrLine1:[''],
       adrLine2:[''],
       adrLine3:[''],
+    });
+
+    this.frmGroup.get('rsnCd')?.valueChanges.subscribe(value => {
+      const prtryControl = this.frmGroup.get('rsnPrtry');
+      if (value) {
+        prtryControl?.setValue('');
+        prtryControl?.clearValidators();
+      } else {
+        prtryControl?.setValidators(Validators.required);
+      }
+      prtryControl?.updateValueAndValidity({ emitEvent: false });
+    });
+
+    // 🔹 Watch othrSchmPrtry changes
+    this.frmGroup.get('rsnPrtry')?.valueChanges.subscribe(value => {
+      const cdControl = this.frmGroup.get('rsnCd');
+      if (value) {
+        cdControl?.setValue('');
+        cdControl?.clearValidators();
+      } else {
+        cdControl?.setValidators(Validators.required);
+      }
+      cdControl?.updateValueAndValidity({ emitEvent: false });
     });
   }
 
