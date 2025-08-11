@@ -27,13 +27,8 @@ export class BusinessApplicationHeader {
   readonly duplicateOptions = input<Option[] | null>(null);
   readonly priorityOptions = input<Option[] | null>(null);
 
-  isPickTableDialogOpen = signal<boolean>(false);
-  // pickTablePair: Map<string, string> = new Map<string, string>;
-  // pickTableDataSource: any[] = [];
 
   onPickClick(): void {
-    // this.pickTableDataSource = []
-    // this.pickTablePair = new Map<string, string>;
 
     this.branchInfoService.getBySwiftCodePrefix('MTBLBDDH').subscribe({
       next: response => {
