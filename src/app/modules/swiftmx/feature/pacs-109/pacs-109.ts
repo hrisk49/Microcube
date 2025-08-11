@@ -107,6 +107,11 @@ export class Pacs109 implements OnInit {
     this.frmGroup = this.formBuilder.group({
 
       // Business Application Header
+      InstrId: [''],
+      adrLine: [''],
+      rsnCd: [''],
+      rsnPrtry: [''],
+
       amountToText: ['',],
       // fromBic: ['', Validators.required],
       fromBic: [''],

@@ -11,6 +11,7 @@ import {Pacs105} from "./feature/pacs-105/pacs-105";
 import {Pacs106} from "./feature/pacs-106/pacs-106";
 import {Pacs109} from "./feature/pacs-109/pacs-109";
 import {Pacs003} from './feature/pacs-003/pacs-003';
+import {PrimeTable} from '../../shared/components/prime-table/prime-table';
 export const SwiftmxRouting: Routes = [
   {path: 'pacs-002', component: Pacs002},
   {path: 'pacs-003', component: Pacs003},

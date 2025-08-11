@@ -4,40 +4,11 @@
     <!--Business Application Header-->
     <div class="panel">
       <app-panel-header [panelTitle]="'Business Application Header'"/>
-      <div class="form-grid-4-col">
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'From BIC'"
-                             [controlName]="'fromBic'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'To BIC'"
-                             [controlName]="'toBic'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [isReadonly]="true"
-                             [label]="'Business Message Identifier'"
-                             [controlName]="'businessMessageIdentifier'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Message Definition Identifier'"
-                             [controlName]="'messageDefinitionIdentifier'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Business Service'"
-                             [controlName]="'businessService'"/>
-
-        <app-select-option-field [frmGroup]="frmGroup"
-                                 [options]="duplicateOptions"
-                                 [label]="'Copy Duplicate'"
-                                 [controlName]="'copyDuplicate'"/>
-
-        <app-select-option-field [frmGroup]="frmGroup"
-                                 [options]="priorityOptions"
-                                 [label]="'Priority'"
-                                 [controlName]="'priority'"/>
-
-      </div>
+      <app-business-application-header
+        [frmGroup]="frmGroup"
+        [priorityOptions]="priorityOptions"
+        [duplicateOptions]="duplicateOptions"
+      />
 
       <div class="sub-panel">
         <app-sub-panel-header [subPanelTitle]="'Related'"
