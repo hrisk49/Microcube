@@ -1,10 +1,10 @@
 <div class="sub-panel">
-  <app-sub-panel-header 
+  <app-sub-panel-header
     [subPanelTitle]="title()"
     [divElement]="agentDetails"
     [isOptional]="isOptional()"
   />
-  
+
   <div #agentDetails class="form-grid-4-col">
     @if (controlExists('Bic')) {
       <app-text-base-input
@@ -74,12 +74,12 @@
 
   <!-- Address Details -->
   <div class="sub-panel">
-    <app-sub-panel-header 
+    <app-sub-panel-header
       [subPanelTitle]="'Address Details'"
       [divElement]="addressDetails"
       [isOptional]="true"
     />
-    
+
     <div #addressDetails class="form-grid-4-col">
       @if (controlExists('AdrDept')) {
         <app-text-base-input
@@ -218,13 +218,11 @@
       }
     </div>
   </div>
-  @if (modalConfig()) {
-    <app-data-selection-modal
-    [isOpen]="isModalOpen()"
-    [config]="modalConfig()!"
-    (close)="closeModal()"
-    (result)="onDataSelected($event)"
-    >
-    </app-data-selection-modal>
+  @if (isPickTableDialogOpen()) {
+    <app-data-selection-modal [isPickTableDialogOpen]="isPickTableDialogOpen()"
+                              [dataSource]="pickTableDataSource()"
+                              [pickTablePair]="pickTablePair()"
+                              (result)="closeDialog()"
+    />
    }
-</div> 
+</div>
