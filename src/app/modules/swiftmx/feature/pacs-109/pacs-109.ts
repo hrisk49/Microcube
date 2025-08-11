@@ -13,7 +13,6 @@ import {DateInput} from '../../../../shared/components/input-types/date-input/da
 import {ToastrService} from 'ngx-toastr';
 import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
 import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
-import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
 import {Mx054Service} from '../../service/mx054.service';
 import {BusinessApplicationHeader} from '../../components/business-application-header/business-application-header';
 
@@ -26,7 +25,6 @@ import {BusinessApplicationHeader} from '../../components/business-application-h
     DateInput,
     PanelHeader,
     SubPanelHeader,
-    AmountToWordInput,
     BusinessApplicationHeader,
   ],
   templateUrl: './pacs-109.html',
@@ -66,14 +64,14 @@ export class Pacs109 implements OnInit {
   ];
 
 
-  currencyOptions : SelectOptionsModel[] = [
-    {key:'000', value: 'BDT'},
-    {key:'001', value: 'USD'},
-    {key:'002', value: 'EUR'},
-    {key:'003', value: 'AED'}
+  currencyOptions: SelectOptionsModel[] = [
+    {key: '000', value: 'BDT'},
+    {key: '001', value: 'USD'},
+    {key: '002', value: 'EUR'},
+    {key: '003', value: 'AED'}
   ];
 
-  StsOptions: SelectOptionsModel[] =[
+  StsOptions: SelectOptionsModel[] = [
     {key: 'Cd', value: 'Code'},
     {key: 'Prtry', value: 'Proprietary'}
   ];
@@ -111,6 +109,13 @@ export class Pacs109 implements OnInit {
       adrLine: [''],
       rsnCd: [''],
       rsnPrtry: [''],
+      bizMsgIdr: [''],
+      msgDefIdr: [''],
+      bizSvc: [''],
+      cpyDplct: [''],
+      psblDplct: [''],
+      prty: [''],
+      CreDt: [''],
 
       amountToText: ['',],
       // fromBic: ['', Validators.required],
@@ -139,71 +144,70 @@ export class Pacs109 implements OnInit {
       // Cheque Cancellation Or Stop Report
       // -> Group Header
       messageIdentification: [''],
-      creDtTm: [new  Date()],
-      nbOfChqs :['',Validators.required],
-      ctrlSum : [Validators.required],
+      creDtTm: [new Date()],
+      nbOfChqs: ['', Validators.required],
+      ctrlSum: [Validators.required],
 
       // -> Cheque information
-      instrId:[''],
-      orgnlInstrId:[''],
-      chqNb :['',Validators.required],
-      isseDt :[new Date(), Validators.required],
+      instrId: [''],
+      orgnlInstrId: [''],
+      chqNb: ['', Validators.required],
+      isseDt: [new Date(), Validators.required],
       stlDt: [''],
-      amt:[],
-      fctvDt:[],
-      drwrAgt:[],
-      drwrAgtAcct:[],
+      amt: [],
+      fctvDt: [],
+      drwrAgt: [],
+      drwrAgtAcct: [],
 
       // Payee Information
-      payeeNm:[''],
+      payeeNm: [''],
       // Payee Information -> Postal Address
-      adrTp :[''],
-      dept:[''],
-      subDept:[''],
-      strtNm:[''],
+      adrTp: [''],
+      dept: [''],
+      subDept: [''],
+      strtNm: [''],
 
-      BldgNb:[''],
-      bldgNm:[''],
-      flr:[''],
-      pstBx:[''],
-      room:[''],
-      pstCd:[''],
-      twnNm:[''],
-      twnLctnNm:[''],
-      dstrctNm:[''],
-      ctrySubDvsn:[''],
-      ctry:[''],
-      addtlInf1:[''],
-      addtlInf2:[''],
+      BldgNb: [''],
+      bldgNm: [''],
+      flr: [''],
+      pstBx: [''],
+      room: [''],
+      pstCd: [''],
+      twnNm: [''],
+      twnLctnNm: [''],
+      dstrctNm: [''],
+      ctrySubDvsn: [''],
+      ctry: [''],
+      addtlInf1: [''],
+      addtlInf2: [''],
       // Organization Identification
 
-      orgIdBic:[''],
-      orgIdLei:[''],
-      orgIdOthrId:[''],
-      orgIdOthrScNmCd:[''],
-      orgIdOthrIssr:[''],
-      orgIdOthrCd:[''], // added by developer
-      orgIdOthrIssrPtry:[''], // added by developer
+      orgIdBic: [''],
+      orgIdLei: [''],
+      orgIdOthrId: [''],
+      orgIdOthrScNmCd: [''],
+      orgIdOthrIssr: [''],
+      orgIdOthrCd: [''], // added by developer
+      orgIdOthrIssrPtry: [''], // added by developer
 
       //   Private Information
-      birthDt:[''],
-      prvcOfBirth:[''],
-      cityOfBirth:[''],
-      ctryOfBirth:[''],
-      prvtOthId1:[''],
-      prvtOthIdSchNmCd1:[''],
-      prvtOthIdIssr1:[''],
-      prvtOthId2:[''],
-      prvtOthIdSchNmCd2:[''],
-      prvtOthIdIssr2:[''],
-      ctryOfRes:[''],
+      birthDt: [''],
+      prvcOfBirth: [''],
+      cityOfBirth: [''],
+      ctryOfBirth: [''],
+      prvtOthId1: [''],
+      prvtOthIdSchNmCd1: [''],
+      prvtOthIdIssr1: [''],
+      prvtOthId2: [''],
+      prvtOthIdSchNmCd2: [''],
+      prvtOthIdIssr2: [''],
+      ctryOfRes: [''],
 
 
       //  Cheque Cancellation Or Stop Status
-      orgtr : [''],
-      sts :['Cd'],
-      addtlInf:[''],
-
+      orgtr: [''],
+      sts: ['Cd'],
+      addtlInf: [''],
 
 
     });

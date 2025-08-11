@@ -20,10 +20,6 @@ export class AgentComponent {
   readonly title = input<string>('Agent Details');
   readonly isOptional = input<boolean>(false);
 
-  isPickTableDialogOpen = signal<boolean>(false);
-  pickTablePair = signal<Map<string, string>>(new Map());
-  pickTableDataSource = signal<any[]>([]);
-
   constructor(
     private branchInfoService: BranchInfoService
   ) {
@@ -40,35 +36,5 @@ export class AgentComponent {
     if (!control) {
     }
     return !!control;
-  }
-
-  onPickclick(): void {
-    this.isPickTableDialogOpen.set(true);
-    this.pickTableDataSource.set([]);
-    this.pickTablePair.set(new Map());
-
-    this.branchInfoService.getBySwiftCodePrefix('MTBLBDDH').subscribe({
-      next: data => {
-        if (data.status) {
-          this.pickTablePair.set(new Map([
-            ['branchId', 'Branch Id'],
-            ['branchName', 'Branch Name'],
-            ['swift', 'Swift']
-          ]));
-          this.pickTableDataSource.set(data?.payload);
-        }
-
-      }, error: err => {
-        console.error('Error:', err);
-      }
-    });
-  }
-
-  closeDialog(data: any) {
-    this.isPickTableDialogOpen.set(false);
-    if (data) {
-      const prefix = this.controlPrefix;
-      this.frmGroup().get(prefix + 'Bic')?.setValue(data?.swift);
-    }
   }
 }

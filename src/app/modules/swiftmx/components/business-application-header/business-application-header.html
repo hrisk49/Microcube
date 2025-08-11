@@ -7,7 +7,7 @@
   <app-text-base-input [frmGroup]="frmGroup()"
                        [label]="'To BIC'"
                        [controlName]="'toBic'"
-                       (onDoubleClick)="onPickclick()"/>
+                       (onDoubleClick)="onPickClick()"/>
 
   <app-text-base-input [frmGroup]="frmGroup()"
                        [isReadonly]="true"
@@ -37,18 +37,10 @@
                            [options]="priorityOptions()"
                            [label]="'Priority'"
                            [controlName]="'prty'"/>
-                      <app-date-input
-                        [frmGroup]="frmGroup()"
-                        [label]="'Creation Date'"
-                        [controlName]="'CreDt'"
-                      />
+  <app-date-input
+    [frmGroup]="frmGroup()"
+    [label]="'Creation Date'"
+    [controlName]="'CreDt'"
+  />
 
 </div>
-
-@if (isPickTableDialogOpen()) {
-  <app-data-selection-modal [isPickTableDialogOpen]="isPickTableDialogOpen()"
-                            [dataSource]="pickTableDataSource()"
-                            [pickTablePair]="pickTablePair()"
-                            (result)="closeDialog($event)"
-  />
-}

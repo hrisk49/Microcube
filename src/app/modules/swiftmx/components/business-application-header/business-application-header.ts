@@ -5,14 +5,15 @@ import {FormGroup} from '@angular/forms';
 import {BranchInfoService} from '../../../../shared/services/branch-info.service';
 import {DataSelectionModal} from '../../../../shared/components/data-selection-modal/data-selection-modal';
 import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
+import {DialogUtils} from '../../../../shared/service/dialog-utils';
 
 type Option = { key: any; value: string };
+
 @Component({
   selector: 'app-business-application-header',
   imports: [
     SelectOptionField,
     TextBaseInput,
-    DataSelectionModal,
     DateInput
   ],
   templateUrl: './business-application-header.html',
@@ -20,42 +21,41 @@ type Option = { key: any; value: string };
 })
 export class BusinessApplicationHeader {
 
+  dialog = inject(DialogUtils);
   branchInfoService = inject(BranchInfoService);
   readonly frmGroup = input.required<FormGroup>();
   readonly duplicateOptions = input<Option[] | null>(null);
   readonly priorityOptions = input<Option[] | null>(null);
 
   isPickTableDialogOpen = signal<boolean>(false);
-  pickTablePair = signal<Map<string, string>>(new Map());
-  pickTableDataSource = signal<any[]>([]);
+  // pickTablePair: Map<string, string> = new Map<string, string>;
+  // pickTableDataSource: any[] = [];
 
-  onPickclick(): void {
-    this.isPickTableDialogOpen.set(true);
-    this.pickTableDataSource.set([]);
-    this.pickTablePair.set(new Map());
+  onPickClick(): void {
+    // this.pickTableDataSource = []
+    // this.pickTablePair = new Map<string, string>;
 
     this.branchInfoService.getBySwiftCodePrefix('MTBLBDDH').subscribe({
-      next: data => {
-        if (data.status) {
-          this.pickTablePair.set(new Map([
+      next: response => {
+        if (response.status) {
+          let pickTablePair = new Map<string, string>([
             ['branchId', 'Branch Id'],
             ['branchName', 'Branch Name'],
             ['swift', 'Swift']
-          ]));
-          this.pickTableDataSource.set(data?.payload);
+          ]);
+          let pickTableDataSource = response?.payload;
+          const dialogRef = this.dialog.openDialog(DataSelectionModal, pickTablePair, pickTableDataSource);
+          dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+              this.frmGroup().get('toBic')?.setValue(result?.swift);
+            }
+          });
         }
 
       }, error: err => {
         console.error('Error:', err);
       }
     });
-  }
-
-  closeDialog(data: any) {
-    this.isPickTableDialogOpen.set(false);
-    if (data) {
-      this.frmGroup().get('toBic')?.setValue(data?.swift);
-    }
   }
 
 

@@ -11,7 +11,6 @@
         [frmGroup]="frmGroup()"
         [label]="'BICFI'"
         [controlName]="controlPrefix + 'Bic'"
-        (onDoubleClick)="onPickclick()"
       />
     }
 
@@ -218,11 +217,4 @@
       }
     </div>
   </div>
-  @if (isPickTableDialogOpen()) {
-    <app-data-selection-modal [isPickTableDialogOpen]="isPickTableDialogOpen()"
-                              [dataSource]="pickTableDataSource()"
-                              [pickTablePair]="pickTablePair()"
-                              (result)="closeDialog($event)"
-    />
-   }
 </div>

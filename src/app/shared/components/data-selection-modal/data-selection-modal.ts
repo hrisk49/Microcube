@@ -1,6 +1,7 @@
-import {Component, input, OnInit, output} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-data-selection-modal',
@@ -16,26 +17,33 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 export class DataSelectionModal implements OnInit {
 
   protected readonly Object = Object;
-  dataSource = input<any>();
-  pickTablePair = input<Map<string, string>>();
-  result = output<any | undefined>();
-  isPickTableDialogOpen = input<boolean>();
+  dataSource: any[] = [];
+  pickTablePair: Map<string, string> = new Map<string, string>();
+
+  // result = output<any | undefined>();
+
+  constructor(
+    public dialogRef: MatDialogRef<any>,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    this.dataSource = data?.pickTableDataSource ?? [];
+    this.pickTablePair = data?.pickTablePair ?? new Map<string, string>();
+  }
 
   ngOnInit(): void {
   }
 
   dialogClose(value: any) {
-    this.result.emit(value);
+    // this.result.emit(value);
+    this.dialogRef.close(value);
   }
 
   isPresentHead(key: string): boolean {
-    const map = this.pickTablePair();
-    return map ? map.has(key) : false;
+    return this.pickTablePair.has(key);
   }
 
   getHead(key: string): string {
-    const map = this.pickTablePair();
-    return map?.get(key) || key;
+    return this.pickTablePair.get(key) || key;
   }
 
 }
