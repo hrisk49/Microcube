@@ -63,6 +63,16 @@ chargeBearerOptions: SelectOptionsModel[] = [
 {key: 'shar', value: 'Shared'}
 ];
 
+NtfctnRltdAcctCcyOptions:SelectOptionsModel[] = [
+{key: '001', value: 'USD'},
+{key: '000', value: 'BDT'}
+];
+
+NtfctnIntrstRateVldtyRgCdtDbtCcyOptions:SelectOptionsModel[] = [
+{key: '001', value: 'USD'},
+{key: '000', value: 'BDT'}
+];
+
 constructor() {
         BUTTON_VISIBILITY.set({
             save: true,
@@ -104,65 +114,106 @@ constructor() {
             copyDuplicate: ['codu'],
             priority: ['high'],
 
-            // Business Application Header -> related
-            // relatedFromBic: ['', Validators.required],
+            // Business Application Header -> relate
             relatedFromBic: [''],
-            // relatedToBic: ['', Validators.required],
             relatedToBic: [''],
             relatedBusinessMessageIdentifier: [''],
             relatedMessageDefinitionIdentifier: [''],
-            // relatedBusinessService: ['', Validators.required],
             relatedBusinessService: [''],
             relatedCopyDuplicate: ['codu'],
             relatedPriority: ['high'],
 
-            // FI To FI Customer Credit Transfer
-            // FI To FI Customer -> Group Header
-            messageIdentification: [''],
-            // creationDate: [new Date()],
-            creationDate: [],
+            // Group Header
+            GrpHdrMsgId: [''],
+            GrpHdrCreDtTm: [],
+            GrpHdrMsgRcptNm:[],
+            MsgRcptPstlAdrCd:[''],
+            MsgRcptPstlAdrPrtry:[''],
+            MsgRcptPstlAdrDept:[''],
+            MsgRcptPstlAdrSubDept:[''],
+            MsgRcptPstlAdrStrtNm:[''],
+            MsgRcptPstlAdrBldgNb:[''],
+            MsgRcptCtctDtlsNm:[''],
+            MsgRcptOrgIdAnyBIC:[''],
+            MsgRcptOrgIdLEI:[''],
+            MsgRcptOrgIdOthrId:[''],
+            MsgRcptOrgIdOthrSchmeNmCode:[''],
+            MsgRcptOrgIdOthrSchmeNmPrtry:[''],
+            MsgRcptOrgIdOthrSchmeNmIssr:[''],
+            OrgnlBizQryMsgId:[''],
+            OrgnlBizQryMsgNmId:[''],
+            OrgnlBizQryCreDtTm:[],
+            AddtlInf:[''],
 
-            // FI To FI Customer -> Settlement Information
-            settlementMethod: ['clrg'],
-            settleAccountId: [''],
-            settleIban: [''],
-            settleLei: [''],
-            instructingReimbursementAgent: [''],
-            instructingAccountId: [''],
-            instructingIban: [''],
-            instructingLei: [''],
-            instructedReimbursementAgent: [''],
-            instructedAccountId: [''],
-            instructedIban: [''],
-            instructedLei: [''],
-            thirdReimbursementAgent: [''],
-            thirdAccountId: [''],
-            thirdIban: [''],
-            thirdLei: [''],
 
-            //  Credit Transfer Transaction Information
-            interbankSettlementAmount: [''],
-            // settlementDate: ['', Validators.required],
-            settlementDate: [''],
-            settlementPriority: [''],
-            settlementTimeIndication: [''],
-            settlementTimeRequest: [''],
-            instructedAmount: [''],
-            chargeBearer: ['debt'],
-            exchangeRate: [''],
+            // Notification Header
+            NtfctnId:[''],
+            NtfctnNtfctnPgntnPgNb:[''],
+            NtfctnNtfctnPgntnLastPgInd:[],
+            NtfctnElctrncSeqNb:[''],
+            NtfctnRptgSeqFrSeq:[''],
+            NtfctnRptgToSeq:[''],
+            NtfctnRptgEQSeq:[],
+            NtfctnRptgNEQSeq:[''],
+            NtfctnCreDtTm:[],
+            NtfctnFrToDtFrDtTm:[],
+            NtfctnCpyDplctInd:[''],
+            NtfctnRptgSrcCd:[''],
+            NtfctnRptgSrcPrtry:[''],
+            NtfctnLglSeqNb:[''],
+            NtfctnAcctOthrId:[''],
+            NtfctnAcctOthrSchmeNm:[''],
+            NtfctnAcctTpCd:[''],
+            NtfctnAcctTpPrtry:[''],
+            NtfctnFrToDtToDtTm:[],
+            NtfctnRltdAcctOthrId:[''],
+            NtfctnRltdAcctOthrSchmeNm:[],
+            NtfctnRltdAcctTp:[''],
+            NtfctnRltdAcctCcy:['001'],
+            NtfctnRltdAcctNm:[''],
+            NtfctnRltdAcctPrxyTp:[''],
+            NtfctnRltdAcctPrxyId:[''],
+            NtfctnAcctIdIBAN  :[''],
+            NtfctnIntrstTp:[''],
+            NtfctnIntrstRateTpPctg:[''],
+            NtfctnIntrstRateVldtyRgAmtFrAmt:[''],
+            NtfctnIntrstRateVldtyRgAmtToAmtBdryAmt  :[''],
+            NtfctnIntrstRateVldtyRgAmtToAmtIncl:[''],
+            NtfctnIntrstRateVldtyRgFrToAmtBdryAmt:[''],
+            NtfctnIntrstRateVldtyRgFrToAmtIncl:[''],
+            NtfctnIntrstRateVldtyRgEQAmt  :[''],
+            NtfctnIntrstRateVldtyRgNEQAmt  :[''],
+            NtfctnIntrstRateVldtyRgCdtDbtInd  :[''],
+            NtfctnIntrstRateVldtyRgCdtDbtCcy:['001'],
+            NtfctnIntrstFrToDtFrDtTm:[],
+            NtfctnIntrstFrToDtToDtTm:[],
+            NtfctnRltdAcctIdIBAN:[],
+            NtfctnTtlTxsSummryNtriesNbOfNtries:[],
+            NtfctnTtlTxsSummryNtriesSum:[],
+            NtfctnTtlTxsSummryNtriesTtlNetNtryAmt:[],
+            NtfctnTtlTxsSummryTtlDbtNtriesNbOfNtries:[],
+            NtfctnTtlTxsSummryTtlDbtNtriesSum:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxCdNbOfNtries:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxCdSum:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlNetNtryAmt:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlNetNtryCdtDbtInd:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlCdtNtriesNbOfNtries:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlCdtNtriesSum:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlDbtNtriesNbOfNtries:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlDbtNtriesSum:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlFcstInd:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlBkTxCd:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxAvlbtyDtNbOfDays:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxAvlbtyDtActlDt:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxAvlbtyAmt:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxAvlbtyCdtDbtInd:[],
+            NtfctnTtlTxsSummryTtlNtriesPerBkTxDt:[],
+            NtfctnNtry:[],
+            NtfctnAddtlNtfctnInf:[],
 
-            // Credit Transfer -> Payment Identification
-            // instructionIdentification: ['', Validators.required],
-            instructionIdentification: [''],
-            endToEndIdentification: [''],
-            transactionIdentification: [''],
-            clearingSystemReference: [''],
 
-            // Credit Transfer -> Payment Type Info
-            instructionPriority: ['high'],
-            clearingChannel: [''],
-            localInstrument: [''],
-            categoryPurpose: [''],
+
+
 
             // Payment Type Info -> Service Level
 
@@ -173,31 +224,7 @@ constructor() {
             serviceCode: [''],
             servicePriority: ['high'],
 
-            // Credit Transfer -> Normal
-            instructingAgentBic1: [''],
-            instructingAccountId1: [''],
-            instructingIban1: [''],
-            instructingLei1: [''],
-            instructingAgentBic2: [''],
-            instructingAccountId2: [''],
-            instructingIban2: [''],
-            instructingLei2: [''],
-            instructingAgentBic3: [''],
-            instructingAccountId3: [''],
-            instructingIban3: [''],
-            instructingLei3: [''],
 
-            // Credit Transfer -> Debitor
-            // debitorName: ['', Validators.required],
-            debitorName: [''],
-            debitorPostalAddress: [''],
-            debitorOrganisationIdentification: [''],
-            debitorPrivateIdentification: [''],
-            debitorCountryOfResidence: [''],
-            debitorAgentBic: [''],
-            debitorAccountId: [''],
-            debitorIban: [''],
-            debitorLei: [''],
         });
 
         FormGroupSignal.set(this.frmGroup);

@@ -62,7 +62,23 @@ chargeBearerOptions: SelectOptionsModel[] = [
 {key: 'cred', value: 'Creditor'},
 {key: 'shar', value: 'Shared'}
 ];
+AssgnmtAssgnePtyPstlAdrCtryOptions: SelectOptionsModel[] = [
+{key: '010', value: 'Bangladesh'},
+{key: '011', value: 'India'},
+{key: '012', value: 'USA'}
+];
 
+UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdDtAndPlcOfBirthCtryOfBirthOptions: SelectOptionsModel[] = [
+{key: '010', value: 'Bangladesh'},
+{key: '011', value: 'India'},
+{key: '012', value: 'USA'}
+];
+
+UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrCtryOptions: SelectOptionsModel[] = [
+{key: '010', value: 'Bangladesh'},
+{key: '011', value: 'India'},
+{key: '012', value: 'USA'}
+];
 constructor() {
         BUTTON_VISIBILITY.set({
             save: true,
@@ -116,53 +132,80 @@ constructor() {
             relatedCopyDuplicate: ['codu'],
             relatedPriority: ['high'],
 
-            // FI To FI Customer Credit Transfer
-            // FI To FI Customer -> Group Header
-            messageIdentification: [''],
-            // creationDate: [new Date()],
-            creationDate: [],
+            // Customer Payment Cancellation Request V08
+           // Customer Payment Cancellation Request V08 ->Assignment
+            Identification: [''],
+            AssgnmtAssgnr: [],
+            AssgnmtId: [],
+            AssgnmtAssgneAgtFinInstnIdBICFI: [],
+            AssgnmtAssgneAgtFinInstnIdClrSysMmbIdClrSysIdCd: [],
+            AssgnmtAssgneAgtFinInstnIdClrSysMmbIdMmbId: [],
+            AssgnmtAssgneAgtFinInstnIdLEI: [],
+            AssgnmtCreDtTm: [],
 
-            // FI To FI Customer -> Settlement Information
-            settlementMethod: ['clrg'],
-            settleAccountId: [''],
-            settleIban: [''],
-            settleLei: [''],
-            instructingReimbursementAgent: [''],
-            instructingAccountId: [''],
-            instructingIban: [''],
-            instructingLei: [''],
-            instructedReimbursementAgent: [''],
-            instructedAccountId: [''],
-            instructedIban: [''],
-            instructedLei: [''],
-            thirdReimbursementAgent: [''],
-            thirdAccountId: [''],
-            thirdIban: [''],
-            thirdLei: [''],
+            // Customer Payment Cancellation Request V08 ->Underlying
 
-            //  Credit Transfer Transaction Information
-            interbankSettlementAmount: [''],
-            // settlementDate: ['', Validators.required],
-            settlementDate: [''],
-            settlementPriority: [''],
-            settlementTimeIndication: [''],
-            settlementTimeRequest: [''],
-            instructedAmount: [''],
-            chargeBearer: ['debt'],
-            exchangeRate: [''],
+            UndrlygOrgnlPmtInfAndCxlOrgnlPmtInfId: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlGrpInfOrgnlMsgId: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlGrpInfOrgnlOrgnlMsgNmId: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlGrpInfOrgnlOrgnlOrgnlCreDtTm: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlTxInfCxlId: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseId: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyNm: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrDept: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrSubDept: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrStrtNm: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrBldgNb: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrBldgNm: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrFlr: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrPstBx: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrRoom: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrPstCd: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrTwnNm: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrTwnLctnNm: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrDstrctNm: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrCtrySubDvsn: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrCtry: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrAdrLine: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlOrgnlInstrId: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlOrgnlEndToEndId: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlOrgnlUETR: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlOrgnlInstdAmt: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlOrgnlReqdExctnDtDt: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlOrgnlReqdExctnDtDtTm: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlOrgnlOrgnlReqdColltnDt: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrNm: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrDept: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrSubDept: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrStrtNm: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrBldgNb: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrBldgNm: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrFlr: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrPstBx: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrRoom: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrPstCd: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrTwnNm: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrTwnLctnNm: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrDstrctNm: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrCtrySubDvsn: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrCtry: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrAdrLine: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdOrgId: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdLEI: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdDtAndPlcOfBirthBirthDt: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdDtAndPlcOfBirthPrvcOfBirth: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdDtAndPlcOfBirthCityOfBirth: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdDtAndPlcOfBirthCtryOfBirth: ['010'],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdOthrId: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdOthrSchmeNmCd: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdOthrIssr: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrCtryOfRes: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnRsnCd: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnAddtlInf: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlGrpInfOrgnlMsgId: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlGrpInfOrgnlOrgnlMsgNmId: [],
+            UndrlygOrgnlPmtInfAndCxlOrgnlGrpInfOrgnlOrgnlCreDtTm: [],
 
-            // Credit Transfer -> Payment Identification
-            // instructionIdentification: ['', Validators.required],
-            instructionIdentification: [''],
-            endToEndIdentification: [''],
-            transactionIdentification: [''],
-            clearingSystemReference: [''],
-
-            // Credit Transfer -> Payment Type Info
-            instructionPriority: ['high'],
-            clearingChannel: [''],
-            localInstrument: [''],
-            categoryPurpose: [''],
 
             // Payment Type Info -> Service Level
 

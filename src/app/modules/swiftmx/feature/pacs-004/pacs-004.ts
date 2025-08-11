@@ -2,7 +2,7 @@ import {Component, effect, inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
-import {SelectOptionsModel} from '../../../../shared/models/select-options-model';
+import {SelectOptionsModel} from "../../../../shared/models/select-options-model";
 import {
 BUTTON_VISIBILITY,
 FormGroupSignal,
@@ -15,6 +15,10 @@ import {PanelHeader} from '../../../../shared/components/panel-header/panel-head
 import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
 import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
 import {Mx004Service} from '../../service/mx004.service';
+
+import { CurrencyService  } from '../../../../shared/services/currency.service';
+import { CurrencyModel  } from '../../../../shared/models/currency.model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
 selector: 'app-pacs-004',
@@ -32,6 +36,11 @@ standalone: true,
 styleUrl: './pacs-004.scss'
 })
 export class Pacs004 implements OnInit {
+
+private currencyService = inject(CurrencyService);  // Currency Service
+currencies: CurrencyModel[] = [];  // Currency Models
+errorMessage = '';
+
 
 formBuilder = inject(FormBuilder);
 toastr = inject(ToastrService);
@@ -70,10 +79,8 @@ TypeOptions: SelectOptionsModel[] =[
 {key: 'Cd', value: 'Code'},
 {key: 'Prtry', value: 'Proprietary'}
 ];
-CurrencyOptions: SelectOptionsModel[] =[
-{key: '001', value: 'USD'},
-{key: '000', value: 'BDT'}
-];
+CurrencyOptions: SelectOptionsModel[] =[];
+
 ProxyOptions: SelectOptionsModel[] =[
 {key: 'PrxyTp', value: 'Type'},
 {key: 'PrxyId', value: 'Identification'}
@@ -97,6 +104,7 @@ ChrgBrOptions: SelectOptionsModel[] =[
 ];
 
 constructor() {
+
         BUTTON_VISIBILITY.set({
             save: true,
             update: false,
@@ -119,6 +127,7 @@ constructor() {
 
     ngOnInit(): void {
         this.initForm();
+        this.loadCurrencies();
     }
 
     initForm(): void {
@@ -160,7 +169,7 @@ constructor() {
             otherSchmeNm: [''],
             otherIssr: [''],
             Tp: ['Cd'],
-            Ccy: ['001'],
+            Ccy: [null],
             Nm: [''],
             Prxy:['PrxyId'],
             ProxcyTp:['PrxyTpCd'],
@@ -232,6 +241,7 @@ constructor() {
         this.serviceLevels.push(this.createServiceLevelGroup());
     }
 
+
     removeServiceRow(index: number): void {
         this.serviceLevels.removeAt(index);
     }
@@ -248,5 +258,35 @@ constructor() {
       //      console.log(res);
     //    })
   //  }
+
+
+  loadCurrencies(): void {
+    debugger;
+    this.currencyService.getAllCurrency().subscribe({
+      next: (response:any) => {
+        debugger;
+       // console.log('Data received:', response);
+        if(response.payload.length > 0){
+        this.currencies = response.payload;
+                this.errorMessage = '';
+                 debugger;
+                       // Map CurrencyModel[] to SelectOptionsModel[]
+                      this.CurrencyOptions = this.currencies.map(c => ({
+                        key: c.isoSwiftCode,      // or any unique id like isoSwiftCode
+                        value: c.currencyFullNm // or short code like 'USD', 'BDT'
+                      }));
+                   // debugger;
+                  console.log(this.CurrencyOptions);
+        }
+
+
+      },
+      error: (err: any) => {
+        console.log('Error occurred:');
+        this.errorMessage = 'Failed to load currencies. Please try again later.';
+      }
+    });
+  }
+
 
 }
