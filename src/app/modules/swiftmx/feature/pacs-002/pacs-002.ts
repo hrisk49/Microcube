@@ -16,6 +16,7 @@ import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub
 import {Mx002Service} from '../../service/mx002.service';
 import {AmountToWordInput} from "../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input";
 import {AgentComponent} from '../../components/agent/agent';
+import {BusinessApplicationHeader} from '../../components/business-application-header/business-application-header';
 
 @Component({
   selector: 'app-pacs-002',
@@ -27,6 +28,7 @@ import {AgentComponent} from '../../components/agent/agent';
     PanelHeader,
     SubPanelHeader,
     AgentComponent,
+    BusinessApplicationHeader,
 
   ],
   templateUrl: './pacs-002.html',
@@ -70,6 +72,10 @@ export class Pacs002 implements OnInit {
   possibleDuplicateOptions: SelectOptionsModel[] = [
     {key: 'YES', value: 'Yes'},
     {key: 'NO', value: 'No'}
+  ];
+  TypeOptions: SelectOptionsModel[] =[
+    {key: 'Cd', value: 'Code'},
+    {key: 'Prtry', value: 'Proprietary'}
   ];
   constructor() {
     BUTTON_VISIBILITY.set({
@@ -136,19 +142,31 @@ export class Pacs002 implements OnInit {
 
       orgnlNbOfTxs:['',[Validators.pattern(/^[0-9]{1,15}$/)]],
 
-      orgnlInstrId: ['', Validators.required],
-      orgnlEndToEndId: ['',Validators.required],
-      orgnlTxId: [''],
-
-
-
-      orgnlUETR: ['', Validators.required],
-      txSts: ['', Validators.required],
+      orgnlInstrId: ['',[Validators.minLength(1),Validators.maxLength(16)]],
+      orgnlEndToEndId: ['',[Validators.required,Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+$/)]],
+      orgnlTxId: ['', [Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]],
+      orgnlUETR: ['', [Validators.required,Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/)]],
+      txSts: ['', [Validators.required],Validators.minLength(1),Validators.maxLength(4)],
 
       // Status Reason Information block StsRsnInf
-      orgtr:[''],
-      nm:[''],
-      pstlAdr:[''],
+      orgtrNm:['',[Validators.minLength(1),Validators.maxLength(140)]],
+      addrTp:['',Validators.required],
+      // Address Information
+      dept:['',[Validators.minLength(1),Validators.maxLength(70)]],
+      subDept:['',[Validators.minLength(1),Validators.maxLength(70)]],
+      strtNm:['',[Validators.minLength(1),Validators.maxLength(70)]],
+      BldgNb:['',[Validators.maxLength(16)]],
+      bldgNm:['',[Validators.maxLength(35)]],
+      flr:['',Validators.maxLength(70)],
+      pstBx:['',[Validators.maxLength(16)]],
+      room:['',[Validators.maxLength(70)]],
+      pstCd:['',[Validators.maxLength(16)]],
+      twnNm:['',[Validators.maxLength(35)]],
+      twnLctnNm:['',[Validators.maxLength(35)]],
+      dstrctNm:['',[Validators.maxLength(35)]],
+      ctrySubDvsn:['',[Validators.maxLength(35)]],
+      ctry:[''],
+      adrLine:['',[Validators.maxLength(70)]],
       id:[''],
       ctryOfRes:[''],
 
@@ -156,22 +174,7 @@ export class Pacs002 implements OnInit {
       dtldNbOfTxs:['',Validators.required],
       dtldSts : ['',Validators.required],
       dtldCtrlSum: [],
-      // Address Information
-      dept:[''],
-      subDept:[''],
-      strtNm:[''],
-      BldgNb:[''],
-      bldgNm:[''],
-      flr:[''],
-      pstBx:[''],
-      room:[''],
-      pstCd:[''],
-      twnNm:[''],
-      twnLctnNm:[''],
-      dstrctNm:[''],
-      ctrySubDvsn:[''],
-      ctry:[''],
-      adrLine:[''],
+
 
       orgIdBic:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
       orgIdLei:[''],

@@ -12,25 +12,36 @@
   <app-text-base-input [frmGroup]="frmGroup()"
                        [isReadonly]="true"
                        [label]="'Business Message Identifier'"
-                       [controlName]="'businessMessageIdentifier'"/>
+                       [controlName]="'bizMsgIdr'"/>
 
   <app-text-base-input [frmGroup]="frmGroup()"
                        [label]="'Message Definition Identifier'"
-                       [controlName]="'messageDefinitionIdentifier'"/>
+                       [controlName]="'msgDefIdr'"/>
 
   <app-text-base-input [frmGroup]="frmGroup()"
                        [label]="'Business Service'"
-                       [controlName]="'businessService'"/>
+                       [controlName]="'bizSvc'"/>
 
   <app-select-option-field [frmGroup]="frmGroup()"
                            [options]="duplicateOptions()"
                            [label]="'Copy Duplicate'"
-                           [controlName]="'copyDuplicate'"/>
+                           [controlName]="'cpyDplct'"/>
+
+  <app-select-option-field [frmGroup]="frmGroup()"
+                           [options]="duplicateOptions()"
+                           [label]="'Possible Duplicate'"
+                           [controlName]="'psblDplct'"/>
+
 
   <app-select-option-field [frmGroup]="frmGroup()"
                            [options]="priorityOptions()"
                            [label]="'Priority'"
-                           [controlName]="'priority'"/>
+                           [controlName]="'prty'"/>
+                      <app-date-input
+                        [frmGroup]="frmGroup()"
+                        [label]="'Creation Date'"
+                        [controlName]="'CreDt'"
+                      />
 
 </div>
 

@@ -3,53 +3,11 @@
 
         <!--Business Application Header-->
         <div class="panel">
-            <app-panel-header [panelTitle]="'Business Application Header'"/>
-            <div class="form-grid-3-col">
-
-                 <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'From BIC'"
-                                     [controlName]="'fromBic'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'To BIC'"
-                                     [controlName]="'toBic'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [isReadonly]="true"
-                                     [label]="'Business Message Identifier'"
-                                     [controlName]="'bizMsgIdr'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Message Definition Identifier'"
-                                     [controlName]="'msgDefIdr'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Business Service'"
-                                     [controlName]="'bizSvc'"/>
-              <app-date-input
-                [frmGroup]="frmGroup"
-                [label]="'Creation Date'"
-                [controlName]="'CreDt'"
-              />
-
-                <app-select-option-field [frmGroup]="frmGroup"
-                                         [options]="duplicateOptions"
-                                         [label]="'Copy Duplicate'"
-                                         [controlName]="'cpyDplct'"/>
-
-              <app-select-option-field
-                [frmGroup]="frmGroup"
-                [options]="possibleDuplicateOptions"
-                [label]="'Possible Duplicate'"
-                [controlName]="'psblDplct'"
-              />
-
-                <app-select-option-field [frmGroup]="frmGroup"
-                                         [options]="priorityOptions"
-                                         [label]="'Priority'"
-                                         [controlName]="'prty'"/>
-
-            </div>
+          <app-business-application-header
+            [frmGroup]="frmGroup"
+            [priorityOptions]="priorityOptions"
+            [duplicateOptions]="duplicateOptions"
+          />
 
             <div class="sub-panel">
                 <app-sub-panel-header [subPanelTitle]="'Related'"/>
@@ -122,10 +80,10 @@
 <!--                                       [controlName]="'orgnlGrpInf'"/>-->
 
                   <app-text-base-input [frmGroup]="frmGroup"
-                                       [label]="' Original Message Identification'"
-                                       [controlName]="'orgnlMsgNmId'"/>
+                                       [label]="'Message Identification'"
+                                       [controlName]="'orgnlMsgId'"/>
                   <app-text-base-input [frmGroup]="frmGroup"
-                                       [label]="'Original Message Name Identification'"
+                                       [label]="'Message Name Identification'"
                                        [controlName]="'orgnlMsgNmId'"/>
 
                   <app-date-input [frmGroup]="frmGroup"
@@ -169,6 +127,14 @@
               <fieldset class="custom-fieldset">
                 <legend>Status Reason Information</legend>
                 <div class="form-grid-4-col">
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Orginator Name'"
+                                       [controlName]="'orgtrNm'"/>
+
+                  <app-select-option-field [frmGroup]="frmGroup"
+                                           [options]="TypeOptions"
+                                           [label]="'Type'"
+                                           [controlName]="'addrTp'"/>
                   <app-text-base-input [frmGroup]="frmGroup"
                                        [label]="'Department'"
                                        [controlName]="'dept'"/>
@@ -327,7 +293,6 @@
                                        [label]="'Detailed Number of transaction'"
                                        [controlName]="'dtldNbOfTxs'"/>
                   <app-text-base-input [frmGroup]="frmGroup"
-                                       [label]="'Detailed Status'"
                                        [label]="'Detailed Status'"
                                        [controlName]="'dtldSts'"/>
                   <app-text-base-input [frmGroup]="frmGroup"

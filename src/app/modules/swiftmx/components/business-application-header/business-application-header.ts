@@ -4,6 +4,7 @@ import {TextBaseInput} from "../../../../shared/components/input-types/text-base
 import {FormGroup} from '@angular/forms';
 import {BranchInfoService} from '../../../../shared/services/branch-info.service';
 import {DataSelectionModal} from '../../../../shared/components/data-selection-modal/data-selection-modal';
+import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
 
 type Option = { key: any; value: string };
 @Component({
@@ -11,7 +12,8 @@ type Option = { key: any; value: string };
   imports: [
     SelectOptionField,
     TextBaseInput,
-    DataSelectionModal
+    DataSelectionModal,
+    DateInput
   ],
   templateUrl: './business-application-header.html',
   styleUrl: './business-application-header.scss'
