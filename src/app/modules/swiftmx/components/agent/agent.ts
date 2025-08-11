@@ -42,7 +42,7 @@ export class AgentComponent {
     return !!control;
   }
 
-  onBizMsgIdrDblClick(): void {
+  onPickclick(): void {
     this.isPickTableDialogOpen.set(true);
     this.pickTableDataSource.set([]);
     this.pickTablePair.set(new Map());

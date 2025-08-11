@@ -23,4 +23,5 @@ export const SwiftmxRouting: Routes = [
   {path: 'pacs-105', component: Pacs105},
   {path: 'pacs-106', component: Pacs106},
   {path: 'pacs-109', component: Pacs109},
+  {path: 'optimus-prime', component: PrimeTable},
 ];

@@ -15,6 +15,7 @@ import {PanelHeader} from '../../../../shared/components/panel-header/panel-head
 import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
 import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
 import {Mx054Service} from '../../service/mx054.service';
+import {BusinessApplicationHeader} from '../../components/business-application-header/business-application-header';
 
 @Component({
   selector: 'app-pacs-109',
@@ -25,6 +26,8 @@ import {Mx054Service} from '../../service/mx054.service';
     DateInput,
     PanelHeader,
     SubPanelHeader,
+    AmountToWordInput,
+    BusinessApplicationHeader,
   ],
   templateUrl: './pacs-109.html',
   standalone: true,
