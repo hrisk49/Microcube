@@ -1,4 +1,4 @@
-import {Component, input} from '@angular/core';
+import {Component, input, output} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatInput} from "@angular/material/input";
 import {NgClass} from '@angular/common';
@@ -23,6 +23,7 @@ export class TextBaseInput {
   readonly type = input<string>();
   readonly isReadonly = input<boolean>();
   readonly placeholder = input<any>();
+  readonly onDoubleClick = output<void>();
 
   isRequired(): boolean {
     const control = this.frmGroup().get(this.controlName());

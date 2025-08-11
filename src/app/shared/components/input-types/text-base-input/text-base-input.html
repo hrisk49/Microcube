@@ -6,7 +6,8 @@
     }
   </label>
   <input [formControlName]="controlName()" [ngClass]="{'readonly-input': isReadonly() }"
-         [readonly]="isReadonly()" matInput [placeholder]="placeholder() ?? 'Enter ' + label()" [type]="type() ?? 'text'" class="custom-input"/>
+         [readonly]="isReadonly()" matInput [placeholder]="placeholder() ?? 'Enter ' + label()" [type]="type() ?? 'text'" class="custom-input"
+         (dblclick)="onDoubleClick.emit()"/>
   @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
     <div class="text-red-500 text-sm mt-1">
       {{label()}} is required..!

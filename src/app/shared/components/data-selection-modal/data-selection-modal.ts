@@ -84,14 +84,14 @@ export class DataSelectionModal implements OnInit, OnDestroy {
     const updatedConfig = {
       ...config,
       pageSize: config.pageSize || 10,
-      enablePagination: config.enablePagination ?? true,
-      enableSorting: config.enableSorting ?? true,
-      enableFiltering: config.enableFiltering ?? true,
-      enableSelection: config.enableSelection ?? true,
+      enablePagination: config.enablePagination ?? false,
+      enableSorting: config.enableSorting ?? false,
+      enableFiltering: config.enableFiltering ?? false,
+      enableSelection: config.enableSelection ?? false,
       enableSearch: config.enableSearch ?? true,
       showInsertButton: config.showInsertButton ?? true,
       showCloseButton: config.showCloseButton ?? true,
-      showSelectIcon: config.showSelectIcon ?? true,
+      showSelectIcon: config.showSelectIcon ?? false,
       insertButtonText: config.insertButtonText || 'Insert',
       closeButtonText: config.closeButtonText || 'Close',
       selectIconText: config.selectIconText || 'Insert this item',
@@ -116,16 +116,6 @@ export class DataSelectionModal implements OnInit, OnDestroy {
     setTimeout(() => {
       this.cdr.detectChanges();
     }, 50);
-  }
-
-  private getDefaultConfig(): DataSelectionConfig {
-    return {
-      title: 'Select Data',
-      service: null,
-      serviceMethod: '',
-      columns: [],
-      fallbackData: []
-    };
   }
 
   private setupSearchForm(): void {
@@ -168,11 +158,28 @@ export class DataSelectionModal implements OnInit, OnDestroy {
         sort: this.currentSort
       };
 
-      const result = await config.service[config.serviceMethod](serviceParams);
+      const serviceCall = config.service[config.serviceMethod](serviceParams);
+      let result: any;
 
-      if (result && Array.isArray(result.data)) {
-        this.data = result.data;
-        this.pagination.totalRecords = result.totalRecords || result.data.length;
+      // Handle both Observable and Promise responses
+      if (serviceCall && typeof serviceCall.subscribe === 'function') {
+        // Observable response
+        result = await new Promise<any>((resolve, reject) => {
+          serviceCall.subscribe({
+            next: (data: any) => resolve(data),
+            error: (error: any) => reject(error)
+          });
+        });
+      } else {
+        // Promise response
+        result = await serviceCall;
+      }
+
+      // Handle the response data
+      if (result && Array.isArray(result.payload)) {
+        // Standard API response format: { payload: [...], totalRecords: number }
+        this.data = result.payload;
+        this.pagination.totalRecords = result.totalRecords || result.payload.length;
         this.pagination.totalPages = Math.ceil(this.pagination.totalRecords / this.pagination.pageSize);
         this.applyFilters();
 
@@ -185,6 +192,16 @@ export class DataSelectionModal implements OnInit, OnDestroy {
         this.pagination.totalRecords = result.length;
         this.pagination.totalPages = Math.ceil(this.pagination.totalRecords / this.pagination.pageSize);
         this.applyFilters();
+      } else if (result && result.data && Array.isArray(result.data)) {
+        // Alternative API response format: { data: [...], totalRecords: number }
+        this.data = result.data;
+        this.pagination.totalRecords = result.totalRecords || result.data.length;
+        this.pagination.totalPages = Math.ceil(this.pagination.totalRecords / this.pagination.pageSize);
+        this.applyFilters();
+
+        if (config.onSuccess) {
+          config.onSuccess(this.data);
+        }
       } else {
         throw new Error('Invalid data format received from service');
       }
