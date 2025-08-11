@@ -222,7 +222,7 @@
     <app-data-selection-modal [isPickTableDialogOpen]="isPickTableDialogOpen()"
                               [dataSource]="pickTableDataSource()"
                               [pickTablePair]="pickTablePair()"
-                              (result)="closeDialog()"
+                              (result)="closeDialog($event)"
     />
    }
 </div>

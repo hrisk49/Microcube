@@ -126,18 +126,20 @@
               <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
             </th>
 
-            @for (key of Object.keys(dataSource()[0]); track $index) {
-              @if (isPresentHead(key)) {
-                <th
-                  class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
-                  <div class="flex items-center justify-between">
-                    <span>{{ getHead(key) }}</span>
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
-                    </svg>
-                  </div>
-                </th>
+            @if (dataSource()?.length > 0) {
+              @for (key of Object.keys(dataSource()[0]); track $index) {
+                @if (isPresentHead(key)) {
+                  <th
+                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+                    <div class="flex items-center justify-between">
+                      <span>{{ getHead(key) }}</span>
+                      <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                      </svg>
+                    </div>
+                  </th>
+                }
               }
             }
 
@@ -149,29 +151,32 @@
 
           <!-- Table Body -->
           <tbody class="bg-white divide-y divide-gray-200">
-            @for (row of dataSource(); track $index) {
-              <tr class="hover:bg-gray-50 cursor-pointer">
-                <td class="px-4 py-3 whitespace-nowrap">
-                  <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                </td>
 
-                @for (key of Object.keys(dataSource()[0]); track $index) {
-                  @if (isPresentHead(key)) {
-                    <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                      {{ row?.[key] }}
-                    </td>
+            @if (dataSource()?.length > 0) {
+              @for (row of dataSource(); track $index) {
+                <tr class="hover:bg-gray-50 cursor-pointer">
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                  </td>
+
+                  @for (key of Object.keys(dataSource()[0]); track $index) {
+                    @if (isPresentHead(key)) {
+                      <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                        {{ row?.[key] }}
+                      </td>
+                    }
                   }
-                }
 
-                <td (click)="dialogClose(row)" class="px-4 py-3 whitespace-nowrap">
-                  <button
-                    class="text-green-600 hover:text-green-800 p-2 rounded-md hover:bg-green-100 transition-colors duration-200 cursor-pointer border border-green-300 hover:border-green-400">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                  </button>
-                </td>
-              </tr>
+                  <td (click)="dialogClose(row)" class="px-4 py-3 whitespace-nowrap">
+                    <button
+                      class="text-green-600 hover:text-green-800 p-2 rounded-md hover:bg-green-100 transition-colors duration-200 cursor-pointer border border-green-300 hover:border-green-400">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              }
             }
 
           </tbody>

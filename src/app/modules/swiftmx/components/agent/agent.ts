@@ -19,6 +19,7 @@ export class AgentComponent {
   readonly prefix = input<string>(''); // For different agent types like 'InstgAgt', 'InstdAgt', etc.
   readonly title = input<string>('Agent Details');
   readonly isOptional = input<boolean>(false);
+
   isPickTableDialogOpen = signal<boolean>(false);
   pickTablePair = signal<Map<string, string>>(new Map());
   pickTableDataSource = signal<any[]>([]);
@@ -63,7 +64,11 @@ export class AgentComponent {
     });
   }
 
-  closeDialog() {
+  closeDialog(data: any) {
     this.isPickTableDialogOpen.set(false);
+    if (data) {
+      const prefix = this.controlPrefix;
+      this.frmGroup().get(prefix + 'Bic')?.setValue(data?.swift);
+    }
   }
 }
