@@ -16,6 +16,10 @@ import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub
 import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
 import {Mx054Service} from '../../service/mx054.service';
 
+import { CurrencyService  } from '../../../../shared/services/currency.service';
+import { CurrencyModel  } from '../../../../shared/models/currency.model';
+import { HttpErrorResponse } from '@angular/common/http';
+
 @Component({
 selector: 'app-pacs-054',
 imports: [
@@ -32,6 +36,11 @@ standalone: true,
 styleUrl: './pacs-054.scss'
 })
 export class Pacs054 implements OnInit {
+
+private currencyService = inject(CurrencyService);  // Currency Service
+currencies: CurrencyModel[] = [];  // Currency Models
+errorMessage = '';
+
 
 formBuilder = inject(FormBuilder);
 toastr = inject(ToastrService);
@@ -63,15 +72,9 @@ chargeBearerOptions: SelectOptionsModel[] = [
 {key: 'shar', value: 'Shared'}
 ];
 
-NtfctnRltdAcctCcyOptions:SelectOptionsModel[] = [
-{key: '001', value: 'USD'},
-{key: '000', value: 'BDT'}
-];
+NtfctnRltdAcctCcyOptions:SelectOptionsModel[] = [];
 
-NtfctnIntrstRateVldtyRgCdtDbtCcyOptions:SelectOptionsModel[] = [
-{key: '001', value: 'USD'},
-{key: '000', value: 'BDT'}
-];
+NtfctnIntrstRateVldtyRgCdtDbtCcyOptions:SelectOptionsModel[] = [];
 
 constructor() {
         BUTTON_VISIBILITY.set({
@@ -96,6 +99,8 @@ constructor() {
 
     ngOnInit(): void {
         this.initForm();
+        this.loadNtfctnRltdAcctCcy();
+        this.loadNtfctnIntrstRateVldtyRgCdtDbtCcy();
     }
 
     initForm(): void {
@@ -169,7 +174,7 @@ constructor() {
             NtfctnRltdAcctOthrId:[''],
             NtfctnRltdAcctOthrSchmeNm:[],
             NtfctnRltdAcctTp:[''],
-            NtfctnRltdAcctCcy:['001'],
+            NtfctnRltdAcctCcy:[null],
             NtfctnRltdAcctNm:[''],
             NtfctnRltdAcctPrxyTp:[''],
             NtfctnRltdAcctPrxyId:[''],
@@ -184,7 +189,7 @@ constructor() {
             NtfctnIntrstRateVldtyRgEQAmt  :[''],
             NtfctnIntrstRateVldtyRgNEQAmt  :[''],
             NtfctnIntrstRateVldtyRgCdtDbtInd  :[''],
-            NtfctnIntrstRateVldtyRgCdtDbtCcy:['001'],
+            NtfctnIntrstRateVldtyRgCdtDbtCcy:[null],
             NtfctnIntrstFrToDtFrDtTm:[],
             NtfctnIntrstFrToDtToDtTm:[],
             NtfctnRltdAcctIdIBAN:[],
@@ -265,5 +270,68 @@ constructor() {
       //      console.log(res);
     //    })
   //  }
+
+    // Related Account Currency Start
+    loadNtfctnRltdAcctCcy(): void {
+        debugger;
+        this.currencyService.getAllCurrency().subscribe({
+          next: (response:any) => {
+            debugger;
+           // console.log('Data received:', response);
+            if(response.payload.length > 0){
+            this.currencies = response.payload;
+                    this.errorMessage = '';
+                     debugger;
+                           // Map CurrencyModel[] to SelectOptionsModel[]
+                          this.NtfctnRltdAcctCcyOptions = this.currencies.map(c => ({
+                            key: c.isoSwiftCode,      // or any unique id like isoSwiftCode
+                            value: c.currencyFullNm // or short code like 'USD', 'BDT'
+                          }));
+                       // debugger;
+                      console.log(this.NtfctnRltdAcctCcyOptions);
+            }
+
+
+          },
+          error: (err: any) => {
+            console.log('Error occurred:');
+            this.errorMessage = 'Failed to load currencies. Please try again later.';
+          }
+        });
+      }
+
+    // Related Account Currency END
+
+
+    // Interest Rate ValidityRange Currency Start
+    loadNtfctnIntrstRateVldtyRgCdtDbtCcy(): void {
+        debugger;
+        this.currencyService.getAllCurrency().subscribe({
+          next: (response:any) => {
+            debugger;
+           // console.log('Data received:', response);
+            if(response.payload.length > 0){
+            this.currencies = response.payload;
+                    this.errorMessage = '';
+                     debugger;
+                           // Map CurrencyModel[] to SelectOptionsModel[]
+                          this.NtfctnIntrstRateVldtyRgCdtDbtCcyOptions = this.currencies.map(c => ({
+                            key: c.isoSwiftCode,      // or any unique id like isoSwiftCode
+                            value: c.currencyFullNm // or short code like 'USD', 'BDT'
+                          }));
+                       // debugger;
+                      console.log(this.NtfctnIntrstRateVldtyRgCdtDbtCcyOptions);
+            }
+
+
+          },
+          error: (err: any) => {
+            console.log('Error occurred:');
+            this.errorMessage = 'Failed to load currencies. Please try again later.';
+          }
+        });
+      }
+
+    // Interest Rate ValidityRange Currency Start
 
 }
