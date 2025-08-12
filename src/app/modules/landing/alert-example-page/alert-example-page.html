@@ -14,7 +14,7 @@
     <!-- Alert Components Section -->
     <section class="mb-16">
       <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Alert & Modal Components</h2>
-      
+
       <!-- Success Modal -->
       <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
         <div class="flex items-start justify-between mb-6">
@@ -240,7 +240,7 @@
                 Select Product
               </button>
             </div>
-            
+
             <!-- Selected Data Display -->
             <div class="w-full">
               <label class="block text-sm font-medium text-gray-700 mb-2">Selected Data:</label>
@@ -284,7 +284,7 @@
     <!-- Form Components Section -->
     <section class="mb-16">
       <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Form Components</h2>
-      
+
       <!-- Text Area Component -->
       <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
         <div class="flex items-start justify-between mb-6">
@@ -447,15 +447,15 @@
     </section>
 
     <!-- Data Selection Modal -->
-    @if (dataSelectionConfig()) {
-      <app-data-selection-modal
-        [isOpen]="isDataSelectionModalOpen()"
-        [config]="dataSelectionConfig()!"
-        (close)="closeDataSelectionModal()"
-        (result)="onDataSelectionResult($event)"
-      >
-      </app-data-selection-modal>
-    }
+<!--    @if (dataSelectionConfig()) {-->
+<!--      <app-data-selection-modal-->
+<!--        [isOpen]="isDataSelectionModalOpen()"-->
+<!--        [config]="dataSelectionConfig()!"-->
+<!--        (close)="closeDataSelectionModal()"-->
+<!--        (result)="onDataSelectionResult($event)"-->
+<!--      >-->
+<!--      </app-data-selection-modal>-->
+<!--    }-->
 
     <!-- Alert Modals -->
     <app-alert-success

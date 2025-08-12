@@ -13,3 +13,13 @@ export const PACS_054: string = PACS + "054";
 export const PACS_055: string = PACS + "055";
 export const PACS_056: string = PACS + "056";
 
+
+
+
+
+//Currency Api
+export const CURRENCY: string = "currency/";
+export const GET_ALL: string = "get-all";
+
+
+

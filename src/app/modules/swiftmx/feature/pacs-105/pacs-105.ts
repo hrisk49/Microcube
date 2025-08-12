@@ -22,16 +22,16 @@ import {Mx054Service} from '../../service/mx054.service';
     ReactiveFormsModule,
     SelectOptionField,
     TextBaseInput,
-    DateInput,
     PanelHeader,
     SubPanelHeader,
     AmountToWordInput,
+    DateInput,
   ],
   templateUrl: './pacs-105.html',
   standalone: true,
   styleUrl: './pacs-105.scss'
 })
-export class Pacs054 implements OnInit {
+export class Pacs105 implements OnInit {
 
   formBuilder = inject(FormBuilder);
   toastr = inject(ToastrService);
@@ -62,6 +62,14 @@ export class Pacs054 implements OnInit {
     {key: 'cred', value: 'Creditor'},
     {key: 'shar', value: 'Shared'}
   ];
+
+  currencyOptions : SelectOptionsModel[] = [
+    {key:'000', value: 'BDT'},
+    {key:'001', value: 'USD'},
+    {key:'002', value: 'EUR'},
+    {key:'003', value: 'AED'}
+  ];
+
 
   constructor() {
     BUTTON_VISIBILITY.set({
@@ -116,11 +124,6 @@ export class Pacs054 implements OnInit {
       relatedCopyDuplicate: ['codu'],
       relatedPriority: ['high'],
 
-      // FI To FI Customer Credit Transfer
-      // FI To FI Customer -> Group Header
-      messageIdentification: [''],
-      // creationDate: [new Date()],
-      creationDate: [],
 
       // FI To FI Customer -> Settlement Information
       settlementMethod: ['clrg'],
@@ -198,6 +201,116 @@ export class Pacs054 implements OnInit {
       debitorAccountId: [''],
       debitorIban: [''],
       debitorLei: [''],
+
+      // Charges Payment Notification
+      msgId: [''],
+      creDtTm: [new Date()],
+      // charges Requestor
+      bicfi:[''],
+      ClrSysMmbId:['',Validators.required],
+      lei:[''],
+      nm: [''],
+
+      // Postal address
+      dept: [''],
+      subDept: [''],
+      strtNm: [''],
+      bldgNb: [''],
+      blggNm: [''],
+      flr: [''],
+      pstBx: [''],
+      room: [''],
+      pstCd: [''],
+      twnNm: [''],
+      ctrySubDvsn: [''],
+      ctry:[''],
+      twnLctnNm: [''],
+      dstrctNm: [''],
+      adrLine1:[''],
+      adrLine2:[''],
+      adrLine3:[''],
+
+
+      //  other Schem Information
+      othrSchmCd:['', Validators.required],
+      othrSchmPrtry: ['', Validators.required],
+      finOthrIssr: ['',Validators.required],
+
+      // Total Charges
+      nbOfChrgsRcrds:[Validators.required],
+      ctrlSum :[],
+      ttlChrgsAmt:[],
+      cdtDbtInd: [''],
+
+      //charges Information
+      iban: [''],
+      crgsAccTypeCd: ['',Validators.required],
+      crgsAccTypePrtry: ['',Validators.required],
+      ccy: ['001'],
+
+      // Charges Per-Transaction Information
+      ChrgsId : ['',Validators.required],
+      rcrdId: [''],
+      msgNmId: ['',Validators.required],
+      acctSvcrRef:[''],
+      pmtInfId:[''],
+      instrId:[''],
+      txnId:[''],
+      mndtId: [''],
+      chqNb: [''],
+      acctOwnrTxId:[''],
+      acctSvcrTxId: [''],
+
+      // Total Charges Per Record
+      valDt: [''],
+      nbOfChrgsBrkdwnItms: ['', Validators.required],
+
+
+    });
+
+
+    this.frmGroup.get('othrSchmCd')?.valueChanges.subscribe(value => {
+      const othrSchmPrtryControl = this.frmGroup.get('othrSchmPrtry');
+      if (value) {
+        othrSchmPrtryControl?.setValue('');
+        othrSchmPrtryControl?.clearValidators();
+      } else {
+        othrSchmPrtryControl?.setValidators(Validators.required);
+      }
+      othrSchmPrtryControl?.updateValueAndValidity({ emitEvent: false });
+    });
+
+    this.frmGroup.get('othrSchmPrtry')?.valueChanges.subscribe(value => {
+      const othrSchmCdControl = this.frmGroup.get('othrSchmCd');
+      if (value) {
+        othrSchmCdControl?.setValue('');
+        othrSchmCdControl?.clearValidators();
+      } else {
+        othrSchmCdControl?.setValidators(Validators.required);
+      }
+      othrSchmCdControl?.updateValueAndValidity({ emitEvent: false });
+    });
+
+    this.frmGroup.get('crgsAccTypeCd')?.valueChanges.subscribe(value => {
+      const crgsAccTypePrtryControl = this.frmGroup.get('crgsAccTypePrtry');
+      if (value) {
+        crgsAccTypePrtryControl?.setValue('');
+        crgsAccTypePrtryControl?.clearValidators();
+      } else {
+        crgsAccTypePrtryControl?.setValidators(Validators.required);
+      }
+      crgsAccTypePrtryControl?.updateValueAndValidity({ emitEvent: false });
+    });
+
+    this.frmGroup.get('othrSchmPrtry')?.valueChanges.subscribe(value => {
+      const crgsAccTypeCdControl = this.frmGroup.get('crgsAccTypeCd');
+      if (value) {
+        crgsAccTypeCdControl?.setValue('');
+        crgsAccTypeCdControl?.clearValidators();
+      } else {
+        crgsAccTypeCdControl?.setValidators(Validators.required);
+      }
+      crgsAccTypeCdControl?.updateValueAndValidity({ emitEvent: false });
     });
 
     FormGroupSignal.set(this.frmGroup);

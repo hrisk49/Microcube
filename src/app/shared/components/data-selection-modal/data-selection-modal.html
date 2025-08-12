@@ -1,337 +1,242 @@
-<!-- Custom Dialog -->
-@if (isOpen()) {
-  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2">
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[80vh] flex flex-col border-4 border-white overflow-hidden"
-         [style.width]="config().width"
-         [style.height]="config().height"
-         [style.max-height]="config().maxHeight">
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2">
+  <div
+    class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[80vh] flex flex-col border-4 border-white overflow-hidden">
 
-      <!-- Dialog Header -->
-      <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50 rounded-t-3xl">
-        <h2 class="text-lg font-semibold text-gray-900">{{ config().title }}</h2>
-        <button
-          (click)="closeModal()"
-          class="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1 rounded-full hover:bg-gray-100"
-          aria-label="Close"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
+    <!-- Dialog Header -->
+    <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50 rounded-t-3xl">
+      <h2 class="text-lg font-semibold text-gray-900">Select Items</h2>
+      <button
+        class="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1 rounded-full hover:bg-gray-100"
+        aria-label="Close">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
 
-      <!-- Dialog Content -->
-      <div class="flex-1 overflow-hidden flex flex-col">
+    <!-- Dialog Content -->
+    <div class="flex-1 overflow-hidden flex flex-col">
 
-        <!-- Search and Filter Bar -->
-        <div class="p-3 border-b border-gray-200 bg-gray-50">
-          <div class="flex flex-wrap gap-3 items-center">
+      <!-- Search and Filter Bar -->
+      <div class="p-3 border-b border-gray-200 bg-gray-50">
+        <div class="flex flex-wrap gap-3 items-center">
 
-            <!-- Search Input -->
-            @if (config().enableSearch) {
-              <div class="flex-1 min-w-48">
-                <div class="relative">
-                  <input
-                    type="text"
-                    [formControl]="searchTermControl"
-                    [placeholder]="config().searchPlaceholder"
-                    class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                  >
-                  <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                  </svg>
-                </div>
-              </div>
-            }
-
-            <!-- Filter Toggle -->
-            @if (config().enableFiltering) {
-              <button
-                (click)="showFilters = !showFilters"
-                class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
-                </svg>
-                Filters
-              </button>
-            }
-
-            <!-- Clear Filters -->
-            @if (activeFilters.length > 0 || searchTerm) {
-              <button
-                (click)="clearFilters()"
-                class="px-3 py-2 text-sm font-medium text-red-600 bg-white border border-red-300 rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500"
-              >
-                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-                Clear All
-              </button>
-            }
-          </div>
-
-          <!-- Advanced Filters -->
-          @if (showFilters && config().enableFiltering) {
-            <div class="mt-3 p-3 bg-white border border-gray-200 rounded-md">
-              <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Field</label>
-                  <select [formControl]="filterFieldControl" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
-                    <option value="">Select field</option>
-                    @for (column of getVisibleColumns(); track column.field) {
-                      <option [value]="column.field">{{ column.header }}</option>
-                    }
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Operator</label>
-                  <select [formControl]="filterOperatorControl" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
-                    <option value="contains">Contains</option>
-                    <option value="equals">Equals</option>
-                    <option value="startsWith">Starts with</option>
-                    <option value="endsWith">Ends with</option>
-                    <option value="greaterThan">Greater than</option>
-                    <option value="lessThan">Less than</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Value</label>
-                  <input
-                    type="text"
-                    [formControl]="filterValueControl"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                    placeholder="Enter value"
-                  >
-                </div>
-                <div class="flex items-end">
-                  <button
-                    (click)="addFilter()"
-                    class="w-full px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                  >
-                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    Add Filter
-                  </button>
-                </div>
-              </div>
-
-              <!-- Active Filters -->
-              @if (activeFilters.length > 0) {
-                <div class="mt-3">
-                  <h4 class="text-sm font-medium text-gray-700 mb-2">Active Filters:</h4>
-                  <div class="flex flex-wrap gap-2">
-                    @for (filter of activeFilters; track $index) {
-                      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                        {{ filter.field }} {{ filter.operator }} {{ filter.value }}
-                        <button
-                          (click)="removeFilter($index)"
-                          class="ml-2 text-blue-600 hover:text-blue-800"
-                        >
-                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                          </svg>
-                        </button>
-                      </span>
-                    }
-                  </div>
-                </div>
-              }
+          <!-- Search Input -->
+          <div class="flex-1 min-w-48">
+            <div class="relative">
+              <input type="text" placeholder="Search items..."
+                     class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">
+              <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                   viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
             </div>
-          }
-        </div>
-
-        <!-- Loading State -->
-        @if (loading) {
-          <div class="flex items-center justify-center p-8">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span class="ml-3 text-gray-600 text-sm">{{ config().loadingMessage }}</span>
           </div>
-        }
 
-        <!-- Error State -->
-        @if (error && !loading) {
-          <div class="flex items-center justify-center p-8">
-            <svg class="w-6 h-6 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          <!-- Filter Toggle -->
+          <!--          <button class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">-->
+          <!--            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
+          <!--              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>-->
+          <!--            </svg>-->
+          <!--            Filters-->
+          <!--          </button>-->
+
+          <!-- Clear Filters -->
+          <button
+            class="px-3 py-2 text-sm font-medium text-red-600 bg-white border border-red-300 rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500">
+            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
-            <span class="text-red-600 text-sm">{{ error }}</span>
-          </div>
-        }
-
-        <!-- Data Table -->
-        @if (!loading && !error) {
-          <div class="flex-1 overflow-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <!-- Table Header -->
-              <thead class="bg-gray-50">
-                <tr>
-                  @if (config().enableSelection) {
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      <input
-                        type="checkbox"
-                        [checked]="selectedItems.length === filteredData.length && filteredData.length > 0"
-                        (change)="onSelectAllChange($event)"
-                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                      >
-                    </th>
-                  }
-                  @for (column of getVisibleColumns(); track column.field) {
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                        [class.cursor-default]="!column.sortable"
-                        (click)="column.sortable ? onSort(column) : null">
-                      <div class="flex items-center justify-between">
-                        <span>{{ column.header }}</span>
-                        @if (column.sortable) {
-                          <span class="ml-1">{{ getSortIcon(column) }}</span>
-                        }
-                      </div>
-                    </th>
-                  }
-                  @if (config().showSelectIcon !== false) {
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
-                      Insert
-                    </th>
-                  }
-                </tr>
-              </thead>
-
-              <!-- Table Body -->
-              <tbody class="bg-white divide-y divide-gray-200">
-                @for (item of filteredData; track trackByItem($index, item)) {
-                  <tr class="hover:bg-gray-50 cursor-pointer"
-                      [class.bg-blue-50]="isSelected(item)"
-                      (click)="onRowClick(item)"
-                      (dblclick)="onRowDoubleClick(item)">
-
-                    @if (config().enableSelection) {
-                      <td class="px-4 py-3 whitespace-nowrap">
-                        <input
-                          type="checkbox"
-                          [checked]="isSelected(item)"
-                          (change)="onCheckboxChange(item, $event)"
-                          (click)="$event.stopPropagation()"
-                          class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        >
-                      </td>
-                    }
-
-                    @for (column of getVisibleColumns(); track column.field) {
-                      <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                        {{ getCellValue(item, column) }}
-                      </td>
-                    }
-
-                    @if (config().showSelectIcon !== false) {
-                      <td class="px-4 py-3 whitespace-nowrap">
-                        <button
-                          (click)="selectItem(item); $event.stopPropagation()"
-                          class="text-green-600 hover:text-green-800 p-2 rounded-md hover:bg-green-100 transition-colors duration-200 cursor-pointer border border-green-300 hover:border-green-400"
-                          [title]="config().selectIconText || 'Insert this item'"
-                        >
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                          </svg>
-                        </button>
-                      </td>
-                    }
-                  </tr>
-                }
-              </tbody>
-            </table>
-
-            <!-- No Data Message -->
-            @if (filteredData.length === 0 && !loading) {
-              <div class="text-center py-8">
-                <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                <p class="text-gray-500 text-sm">{{ config().noDataMessage }}</p>
-              </div>
-            }
-          </div>
-        }
-
-        <!-- Pagination -->
-        @if (config().enablePagination) {
-          <div class="p-3 border-t border-gray-200 bg-gray-50">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-2">
-                <span class="text-sm text-gray-700">
-                  Showing {{ (pagination.page - 1) * pagination.pageSize + 1 }} to
-                  {{ Math.min(pagination.page * pagination.pageSize, pagination.totalRecords) }} of
-                  {{ pagination.totalRecords }} results
-                </span>
-              </div>
-
-              <div class="flex items-center space-x-2">
-                <select
-                  (change)="onPageSizeChange({pageSize: $any($event.target).value})"
-                  class="px-3 py-1 border border-gray-300 rounded-md text-sm"
-                >
-                  <option value="5" [selected]="currentPageSize === 5">5</option>
-                  <option value="10" [selected]="currentPageSize === 10">10</option>
-                  <option value="25" [selected]="currentPageSize === 25">25</option>
-                  <option value="50" [selected]="currentPageSize === 50">50</option>
-                  <option value="100" [selected]="currentPageSize === 100">100</option>
-                </select>
-
-                <div class="flex items-center space-x-1">
-                  <button
-                    (click)="onPageChange(pagination.page - 2)"
-                    [disabled]="pagination.page <= 1"
-                    class="px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-                  >
-                    Previous
-                  </button>
-
-                  <span class="px-3 py-1 text-sm text-gray-700">
-                    Page {{ pagination.page }} of {{ pagination.totalPages }}
-                  </span>
-
-                  <button
-                    (click)="onPageChange(pagination.page)"
-                    [disabled]="pagination.page >= pagination.totalPages"
-                    class="px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        }
-      </div>
-
-      <!-- Dialog Actions -->
-      <div class="flex items-center justify-between p-4 border-t border-gray-200 bg-gray-50 rounded-b-3xl">
-        <div class="text-sm text-gray-600">
-          @if (config().enableSelection) {
-            <span>{{ selectedItems.length }} item(s) selected</span>
-          }
+            Clear
+          </button>
         </div>
 
-        <div class="flex items-center space-x-2">
-          @if (config().showCloseButton) {
-            <button
-              (click)="closeModal()"
-              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-            >
-              {{ config().closeButtonText }}
-            </button>
-          }
+        <!-- Advanced Filters -->
+        <!--        <div class="mt-3 p-3 bg-white border border-gray-200 rounded-md">-->
+        <!--          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">-->
+        <!--            <div>-->
+        <!--              <label class="block text-sm font-medium text-gray-700 mb-1">Field</label>-->
+        <!--              <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">-->
+        <!--                <option value="">Select field</option>-->
+        <!--                <option value="name">Name</option>-->
+        <!--                <option value="category">Category</option>-->
+        <!--                <option value="status">Status</option>-->
+        <!--                <option value="price">Price</option>-->
+        <!--              </select>-->
+        <!--            </div>-->
+        <!--            <div>-->
+        <!--              <label class="block text-sm font-medium text-gray-700 mb-1">Operator</label>-->
+        <!--              <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm">-->
+        <!--                <option value="contains">Contains</option>-->
+        <!--                <option value="equals">Equals</option>-->
+        <!--                <option value="startsWith">Starts with</option>-->
+        <!--                <option value="endsWith">Ends with</option>-->
+        <!--                <option value="greaterThan">Greater than</option>-->
+        <!--                <option value="lessThan">Less than</option>-->
+        <!--              </select>-->
+        <!--            </div>-->
+        <!--            <div>-->
+        <!--              <label class="block text-sm font-medium text-gray-700 mb-1">Value</label>-->
+        <!--              <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Enter value">-->
+        <!--            </div>-->
+        <!--            <div class="flex items-end">-->
+        <!--              <button class="w-full px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">-->
+        <!--                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
+        <!--                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>-->
+        <!--                </svg>-->
+        <!--                Add Filter-->
+        <!--              </button>-->
+        <!--            </div>-->
+        <!--          </div>-->
 
-          @if (config().showInsertButton && selectedItems.length > 0) {
-            <button
-              (click)="insertSelected()"
-              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {{ config().insertButtonText }}
-            </button>
-          }
+        <!--          &lt;!&ndash; Active Filters &ndash;&gt;-->
+        <!--          <div class="mt-3">-->
+        <!--            <h4 class="text-sm font-medium text-gray-700 mb-2">Active Filters:</h4>-->
+        <!--            <div class="flex flex-wrap gap-2">-->
+        <!--                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-800">-->
+        <!--                                    Name contains "Product"-->
+        <!--                                    <button class="ml-2 text-blue-600 hover:text-blue-800">-->
+        <!--                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
+        <!--                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>-->
+        <!--                                        </svg>-->
+        <!--                                    </button>-->
+        <!--                                </span>-->
+        <!--              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-800">-->
+        <!--                                    Status equals "Active"-->
+        <!--                                    <button class="ml-2 text-blue-600 hover:text-blue-800">-->
+        <!--                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
+        <!--                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>-->
+        <!--                                        </svg>-->
+        <!--                                    </button>-->
+        <!--                                </span>-->
+        <!--            </div>-->
+        <!--          </div>-->
+        <!--        </div>-->
+      </div>
+
+      <!-- Data Table -->
+      <div class="flex-1 overflow-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <!-- Table Header -->
+          <thead class="bg-gray-50">
+
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+            </th>
+
+            @if (dataSource.length > 0) {
+              @for (key of Object.keys(dataSource[0]); track $index) {
+                @if (isPresentHead(key)) {
+                  <th
+                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+                    <div class="flex items-center justify-between">
+                      <span>{{ getHead(key) }}</span>
+                      <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                      </svg>
+                    </div>
+                  </th>
+                }
+              }
+            }
+
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+              Action
+            </th>
+          </tr>
+          </thead>
+
+          <!-- Table Body -->
+          <tbody class="bg-white divide-y divide-gray-200">
+
+            @if (dataSource.length > 0) {
+              @for (row of dataSource; track $index) {
+                <tr class="hover:bg-gray-50 cursor-pointer">
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                  </td>
+
+                  @for (key of Object.keys(dataSource[0]); track $index) {
+                    @if (isPresentHead(key)) {
+                      <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                        {{ row?.[key] }}
+                      </td>
+                    }
+                  }
+
+                  <td (click)="dialogClose(row)" class="px-4 py-3 whitespace-nowrap">
+                    <button
+                      class="text-green-600 hover:text-green-800 p-2 rounded-md hover:bg-green-100 transition-colors duration-200 cursor-pointer border border-green-300 hover:border-green-400">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              }
+            }
+
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="p-3 border-t border-gray-200 bg-gray-50">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-700">
+                                Showing 1 to 8 of 25 results
+                            </span>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <select class="px-3 py-1 border border-gray-300 rounded-md text-sm">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+
+            <div class="flex items-center space-x-1">
+              <button disabled
+                      class="px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50">
+                Previous
+              </button>
+
+              <span class="px-3 py-1 text-sm text-gray-700">
+                  Page 1 of 3
+              </span>
+
+              <button class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50">
+                Next
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Dialog Actions -->
+    <div class="flex items-center justify-between p-4 border-t border-gray-200 bg-gray-50 rounded-b-3xl">
+      <div class="text-sm text-gray-600">
+        <span>2 item(s) selected</span>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button (click)="dialogClose(null)"
+                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+          Close
+        </button>
+
+        <button
+          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          Select (2)
+        </button>
+      </div>
+    </div>
   </div>
-}
+</div>

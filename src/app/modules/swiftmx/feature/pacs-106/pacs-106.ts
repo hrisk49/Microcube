@@ -63,6 +63,13 @@ export class Pacs106 implements OnInit {
     {key: 'shar', value: 'Shared'}
   ];
 
+  currencyOptions : SelectOptionsModel[] = [
+    {key:'000', value: 'BDT'},
+    {key:'001', value: 'USD'},
+    {key:'002', value: 'EUR'},
+    {key:'003', value: 'AED'}
+  ];
+
   constructor() {
     BUTTON_VISIBILITY.set({
       save: true,
@@ -119,8 +126,7 @@ export class Pacs106 implements OnInit {
       // FI To FI Customer Credit Transfer
       // FI To FI Customer -> Group Header
       messageIdentification: [''],
-      // creationDate: [new Date()],
-      creationDate: [],
+      creDtTm: [new Date()],
 
       // FI To FI Customer -> Settlement Information
       settlementMethod: ['clrg'],
@@ -164,17 +170,9 @@ export class Pacs106 implements OnInit {
       localInstrument: [''],
       categoryPurpose: [''],
 
-      // Payment Type Info -> Service Level
-
-      serviceLevels: this.formBuilder.array([
-        this.createServiceLevelGroup()
-      ]),
-
-      serviceCode: [''],
       servicePriority: ['high'],
 
       // Credit Transfer -> Normal
-      instructingAgentBic1: [''],
       instructingAccountId1: [''],
       instructingIban1: [''],
       instructingLei1: [''],
@@ -186,6 +184,73 @@ export class Pacs106 implements OnInit {
       instructingAccountId3: [''],
       instructingIban3: [''],
       instructingLei3: [''],
+      // Charges Payment Notification
+      msgId: [''],
+      // charges Requestor
+      bicfi:[''],
+      ClrSysMmbId:['',Validators.required],
+      lei:[''],
+      nm: [''],
+
+      // Postal address
+      dept: [''],
+      subDept: [''],
+      strtNm: [''],
+      bldgNb: [''],
+      blggNm: [''],
+      flr: [''],
+      pstBx: [''],
+      room: [''],
+      pstCd: [''],
+      twnNm: [''],
+      ctrySubDvsn: [''],
+      ctry:[''],
+      twnLctnNm: [''],
+      dstrctNm: [''],
+      adrLine1:[''],
+      adrLine2:[''],
+      adrLine3:[''],
+
+
+      //  other Schem Information
+      othrSchmCd:['', Validators.required],
+      othrSchmPrtry: ['', Validators.required],
+      finOthrIssr: ['',Validators.required],
+
+      // Total Charges
+      nbOfChrgsRcrds:[Validators.required],
+      ctrlSum :[],
+      ttlChrgsAmt:[],
+      cdtDbtInd: [''],
+
+      //charges Information
+      iban: [''],
+      crgsAccTypeCd: ['',Validators.required],
+      crgsAccTypePrtry: ['',Validators.required],
+      ccy: ['001'],
+
+      // Charges Per-Transaction Information
+      ChrgsId : ['',Validators.required],
+      rcrdId: [''],
+      msgNmId: ['',Validators.required],
+      acctSvcrRef:[''],
+      pmtInfId:[''],
+      instrId:[''],
+      txnId:[''],
+      mndtId: [''],
+      chqNb: [''],
+      acctOwnrTxId:[''],
+      acctSvcrTxId: [''],
+
+      // Total Charges Per Record
+      valDt: [''],
+      nbOfChrgsBrkdwnItms: ['', Validators.required],
+
+      // Payment Type Info -> Service Level
+
+      serviceLevels: this.formBuilder.array([
+        this.createServiceLevelGroup()
+      ]),
 
       // Credit Transfer -> Debitor
       // debitorName: ['', Validators.required],
@@ -198,6 +263,8 @@ export class Pacs106 implements OnInit {
       debitorAccountId: [''],
       debitorIban: [''],
       debitorLei: [''],
+
+
     });
 
     FormGroupSignal.set(this.frmGroup);

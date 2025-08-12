@@ -13,11 +13,11 @@ import {DateInput} from '../../../../shared/components/input-types/date-input/da
 import {ToastrService} from 'ngx-toastr';
 import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
 import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
-import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
 import {Mx054Service} from '../../service/mx054.service';
+import {BusinessApplicationHeader} from '../../components/business-application-header/business-application-header';
 
 @Component({
-  selector: 'app-pacs-106',
+  selector: 'app-pacs-109',
   imports: [
     ReactiveFormsModule,
     SelectOptionField,
@@ -25,7 +25,7 @@ import {Mx054Service} from '../../service/mx054.service';
     DateInput,
     PanelHeader,
     SubPanelHeader,
-    AmountToWordInput,
+    BusinessApplicationHeader,
   ],
   templateUrl: './pacs-109.html',
   standalone: true,
@@ -63,6 +63,19 @@ export class Pacs109 implements OnInit {
     {key: 'shar', value: 'Shared'}
   ];
 
+
+  currencyOptions: SelectOptionsModel[] = [
+    {key: '000', value: 'BDT'},
+    {key: '001', value: 'USD'},
+    {key: '002', value: 'EUR'},
+    {key: '003', value: 'AED'}
+  ];
+
+  StsOptions: SelectOptionsModel[] = [
+    {key: 'Cd', value: 'Code'},
+    {key: 'Prtry', value: 'Proprietary'}
+  ];
+
   constructor() {
     BUTTON_VISIBILITY.set({
       save: true,
@@ -92,6 +105,18 @@ export class Pacs109 implements OnInit {
     this.frmGroup = this.formBuilder.group({
 
       // Business Application Header
+      InstrId: [''],
+      adrLine: [''],
+      rsnCd: [''],
+      rsnPrtry: [''],
+      bizMsgIdr: [''],
+      msgDefIdr: [''],
+      bizSvc: [''],
+      cpyDplct: [''],
+      psblDplct: [''],
+      prty: [''],
+      CreDt: [''],
+
       amountToText: ['',],
       // fromBic: ['', Validators.required],
       fromBic: [''],
@@ -116,88 +141,75 @@ export class Pacs109 implements OnInit {
       relatedCopyDuplicate: ['codu'],
       relatedPriority: ['high'],
 
-      // FI To FI Customer Credit Transfer
-      // FI To FI Customer -> Group Header
+      // Cheque Cancellation Or Stop Report
+      // -> Group Header
       messageIdentification: [''],
-      // creationDate: [new Date()],
-      creationDate: [],
+      creDtTm: [new Date()],
+      nbOfChqs: ['', Validators.required],
+      ctrlSum: [Validators.required],
 
-      // FI To FI Customer -> Settlement Information
-      settlementMethod: ['clrg'],
-      settleAccountId: [''],
-      settleIban: [''],
-      settleLei: [''],
-      instructingReimbursementAgent: [''],
-      instructingAccountId: [''],
-      instructingIban: [''],
-      instructingLei: [''],
-      instructedReimbursementAgent: [''],
-      instructedAccountId: [''],
-      instructedIban: [''],
-      instructedLei: [''],
-      thirdReimbursementAgent: [''],
-      thirdAccountId: [''],
-      thirdIban: [''],
-      thirdLei: [''],
+      // -> Cheque information
+      instrId: [''],
+      orgnlInstrId: [''],
+      chqNb: ['', Validators.required],
+      isseDt: [new Date(), Validators.required],
+      stlDt: [''],
+      amt: [],
+      fctvDt: [],
+      drwrAgt: [],
+      drwrAgtAcct: [],
 
-      //  Credit Transfer Transaction Information
-      interbankSettlementAmount: [''],
-      // settlementDate: ['', Validators.required],
-      settlementDate: [''],
-      settlementPriority: [''],
-      settlementTimeIndication: [''],
-      settlementTimeRequest: [''],
-      instructedAmount: [''],
-      chargeBearer: ['debt'],
-      exchangeRate: [''],
+      // Payee Information
+      payeeNm: [''],
+      // Payee Information -> Postal Address
+      adrTp: [''],
+      dept: [''],
+      subDept: [''],
+      strtNm: [''],
 
-      // Credit Transfer -> Payment Identification
-      // instructionIdentification: ['', Validators.required],
-      instructionIdentification: [''],
-      endToEndIdentification: [''],
-      transactionIdentification: [''],
-      clearingSystemReference: [''],
+      BldgNb: [''],
+      bldgNm: [''],
+      flr: [''],
+      pstBx: [''],
+      room: [''],
+      pstCd: [''],
+      twnNm: [''],
+      twnLctnNm: [''],
+      dstrctNm: [''],
+      ctrySubDvsn: [''],
+      ctry: [''],
+      addtlInf1: [''],
+      addtlInf2: [''],
+      // Organization Identification
 
-      // Credit Transfer -> Payment Type Info
-      instructionPriority: ['high'],
-      clearingChannel: [''],
-      localInstrument: [''],
-      categoryPurpose: [''],
+      orgIdBic: [''],
+      orgIdLei: [''],
+      orgIdOthrId: [''],
+      orgIdOthrScNmCd: [''],
+      orgIdOthrIssr: [''],
+      orgIdOthrCd: [''], // added by developer
+      orgIdOthrIssrPtry: [''], // added by developer
 
-      // Payment Type Info -> Service Level
+      //   Private Information
+      birthDt: [''],
+      prvcOfBirth: [''],
+      cityOfBirth: [''],
+      ctryOfBirth: [''],
+      prvtOthId1: [''],
+      prvtOthIdSchNmCd1: [''],
+      prvtOthIdIssr1: [''],
+      prvtOthId2: [''],
+      prvtOthIdSchNmCd2: [''],
+      prvtOthIdIssr2: [''],
+      ctryOfRes: [''],
 
-      serviceLevels: this.formBuilder.array([
-        this.createServiceLevelGroup()
-      ]),
 
-      serviceCode: [''],
-      servicePriority: ['high'],
+      //  Cheque Cancellation Or Stop Status
+      orgtr: [''],
+      sts: ['Cd'],
+      addtlInf: [''],
 
-      // Credit Transfer -> Normal
-      instructingAgentBic1: [''],
-      instructingAccountId1: [''],
-      instructingIban1: [''],
-      instructingLei1: [''],
-      instructingAgentBic2: [''],
-      instructingAccountId2: [''],
-      instructingIban2: [''],
-      instructingLei2: [''],
-      instructingAgentBic3: [''],
-      instructingAccountId3: [''],
-      instructingIban3: [''],
-      instructingLei3: [''],
 
-      // Credit Transfer -> Debitor
-      // debitorName: ['', Validators.required],
-      debitorName: [''],
-      debitorPostalAddress: [''],
-      debitorOrganisationIdentification: [''],
-      debitorPrivateIdentification: [''],
-      debitorCountryOfResidence: [''],
-      debitorAgentBic: [''],
-      debitorAccountId: [''],
-      debitorIban: [''],
-      debitorLei: [''],
     });
 
     FormGroupSignal.set(this.frmGroup);

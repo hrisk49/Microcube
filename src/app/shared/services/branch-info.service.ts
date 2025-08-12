@@ -11,9 +11,10 @@ export class BranchInfoService extends ApiService<any>{
   constructor() {
     super(BRANCH_INFO);
   }
-  private endPoint=environment.apiBaseUrl + API_VERSION + BRANCH_INFO ;
 
   getBySwiftCodePrefix(swiftCode: any): Observable<any> {
-    return this.http.get<any>(`${this.endPoint}get-by-swift-prefix?swiftCode=${swiftCode.swiftCode}`);
+    return this.http.get<any>(this.baseUrl + `get-by-swift-prefix?swiftCode=${swiftCode}`,);
   }
+
+
 }
