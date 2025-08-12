@@ -5,6 +5,7 @@ import {TextBaseInput} from '../../../../shared/components/input-types/text-base
 import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
 import {DataSelectionModal} from '../../../../shared/components/data-selection-modal/data-selection-modal';
 import {BranchInfoService} from '../../../../shared/services/branch-info.service';
+import { DataSelectionConfig, DataSelectionItem } from '../../../../shared/models/data-selection.interface';
 
 @Component({
   selector: 'app-agent',
@@ -19,6 +20,9 @@ export class AgentComponent {
   readonly prefix = input<string>(''); // For different agent types like 'InstgAgt', 'InstdAgt', etc.
   readonly title = input<string>('Agent Details');
   readonly isOptional = input<boolean>(false);
+  isModalOpen = signal<boolean>(false);
+  modalConfig = signal<DataSelectionConfig | null>(null);
+  selectedData = signal<DataSelectionItem | null>(null);
 
   constructor(
     private branchInfoService: BranchInfoService
@@ -36,5 +40,18 @@ export class AgentComponent {
     if (!control) {
     }
     return !!control;
+  }
+
+  onBizMsgIdrDblClick(){
+    this.isModalOpen.set(true);
+    this.modalConfig.set({
+      title: 'Select Agent',
+      service: this.branchInfoService,
+      serviceMethod: 'getBySwiftCodePrefix',
+      columns: [
+        { field: 'swiftCode', header: 'Swift Code' },
+        { field: 'name', header: 'Name' },
+      ],
+    });
   }
 }
