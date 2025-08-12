@@ -1,55 +1,57 @@
 import {Component, effect, inject, OnInit} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
+import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
 import {SelectOptionsModel} from '../../../../shared/models/select-options-model';
 import {
-  BUTTON_VISIBILITY,
-  FormGroupSignal,
-  ONCLICK_RESET,
-  ONCLICK_SAVE
+BUTTON_VISIBILITY,
+FormGroupSignal,
+ONCLICK_RESET,
+ONCLICK_SAVE
 } from '../../../../shared/constant/button-signals.constant';
 import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
 import {ToastrService} from 'ngx-toastr';
 import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
 import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
+import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
 import {Mx054Service} from '../../service/mx054.service';
 
-import {CurrencyService} from '../../../../shared/services/currency.service';
-import {CurrencyModel} from '../../../../shared/models/currency.model';
+import { CurrencyService  } from '../../../../shared/services/currency.service';
+import { CurrencyModel  } from '../../../../shared/models/currency.model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  selector: 'app-pacs-054',
-  imports: [
-    ReactiveFormsModule,
-    SelectOptionField,
-    TextBaseInput,
-    DateInput,
-    PanelHeader,
-    SubPanelHeader,
-
-  ],
-  templateUrl: './pacs-054.html',
-  standalone: true,
-  styleUrl: './pacs-054.scss'
+selector: 'app-pacs-054',
+imports: [
+ReactiveFormsModule,
+SelectOptionField,
+TextBaseInput,
+DateInput,
+PanelHeader,
+SubPanelHeader,
+AmountToWordInput,
+],
+templateUrl: './pacs-054.html',
+standalone: true,
+styleUrl: './pacs-054.scss'
 })
 export class Pacs054 implements OnInit {
 
-  private currencyService = inject(CurrencyService);  // Currency Service
-  currencies: CurrencyModel[] = [];  // Currency Models
-  errorMessage = '';
+private currencyService = inject(CurrencyService);  // Currency Service
+currencies: CurrencyModel[] = [];  // Currency Models
+errorMessage = '';
 
 
-  formBuilder = inject(FormBuilder);
-  toastr = inject(ToastrService);
-  mx054Service = inject(Mx054Service);
-  frmGroup: FormGroup;
-  onClickReset = ONCLICK_RESET;
-  onClickSave = ONCLICK_SAVE;
-  priorityOptions: SelectOptionsModel[] = [
-    {key: 'high', value: 'High'},
-    {key: 'normal', value: 'Normal'}
-  ];
+formBuilder = inject(FormBuilder);
+toastr = inject(ToastrService);
+mx054Service = inject(Mx054Service);
+frmGroup: FormGroup;
+onClickReset = ONCLICK_RESET;
+onClickSave = ONCLICK_SAVE;
+priorityOptions: SelectOptionsModel[] = [
+{key: 'high', value: 'High'},
+{key: 'normal', value: 'Normal'}
+];
 
   duplicateOptions: SelectOptionsModel[] = [
     {key: 'codu', value: 'CODU'},
