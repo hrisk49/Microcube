@@ -1,4 +1,4 @@
-import {Component, effect, inject, OnInit} from '@angular/core';
+import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ToastrService} from 'ngx-toastr';
 import {
@@ -16,6 +16,10 @@ import { SubPanelHeader } from "../../../../shared/components/sub-panel-header/s
 import { SelectOptionField } from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import { DateInput } from "../../../../shared/components/input-types/date-input/date-input";
 import { AmountToWordInput } from "../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input";
+import {ExpansionPanelHeader} from '../../../../shared/components/expansion-panel-header/expansion-panel-header';
+import {
+  ExpansionSubPanelHeader
+} from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
 
 @Component({
   selector: 'app-pacs-009',
@@ -26,8 +30,10 @@ import { AmountToWordInput } from "../../../../shared/components/input-types/amo
     SubPanelHeader,
     SelectOptionField,
     DateInput,
-    AmountToWordInput
-],
+    AmountToWordInput,
+    ExpansionPanelHeader,
+    ExpansionSubPanelHeader
+  ],
   templateUrl: './pacs-009.html',
   standalone: true,
   styleUrl: './pacs-009.scss'
@@ -64,6 +70,9 @@ export class Pacs009 implements OnInit {
     {key: 'SHAR', value: 'Shared'}
   ];
 
+  timeDatePanel: WritableSignal<boolean> = signal(true);
+  subPanelOpen: WritableSignal<boolean> = signal(true);
+
   constructor() {
     BUTTON_VISIBILITY.set({
       save: true,
@@ -88,7 +97,7 @@ export class Pacs009 implements OnInit {
   ngOnInit(): void {
     try {
       this.initForm();
-      
+
       if (!this.frmGroup) {
         console.error('Form initialization failed');
         this.toastr.error('Form initialization failed', 'Error');
@@ -123,7 +132,7 @@ export class Pacs009 implements OnInit {
 
       // Settlement Information
       sttlmMtd: ['INGA'],
-      
+
       // Settlement Account (flat)
       sttlmAcctId: [''],
       sttlmAcctCcy: [''],
@@ -178,7 +187,7 @@ export class Pacs009 implements OnInit {
       prvsInstgAgt1AdrCtrySubDvsn: [''],
       prvsInstgAgt1AdrCtry: [''],
       prvsInstgAgt1AdrLine: [''],
-      
+
       // Previous Instructing Agent 1 Account (flat)
       prvsInstgAgt1AcctId: [''],
       prvsInstgAgt1AcctCcy: [''],
@@ -211,7 +220,7 @@ export class Pacs009 implements OnInit {
       prvsInstgAgt2AdrCtrySubDvsn: [''],
       prvsInstgAgt2AdrCtry: [''],
       prvsInstgAgt2AdrLine: [''],
-      
+
       // Previous Instructing Agent 2 Account (flat)
       prvsInstgAgt2AcctId: [''],
       prvsInstgAgt2AcctCcy: [''],
@@ -244,7 +253,7 @@ export class Pacs009 implements OnInit {
       prvsInstgAgt3AdrCtrySubDvsn: [''],
       prvsInstgAgt3AdrCtry: [''],
       prvsInstgAgt3AdrLine: [''],
-      
+
       // Previous Instructing Agent 3 Account (flat)
       prvsInstgAgt3AcctId: [''],
       prvsInstgAgt3AcctCcy: [''],
@@ -326,7 +335,7 @@ export class Pacs009 implements OnInit {
       intrmyAgt1AdrCtrySubDvsn: [''],
       intrmyAgt1AdrCtry: [''],
       intrmyAgt1AdrLine: [''],
-      
+
       // Intermediary Agent 1 Account (flat)
       intrmyAgt1AcctId: [''],
       intrmyAgt1AcctCcy: [''],
@@ -359,7 +368,7 @@ export class Pacs009 implements OnInit {
       intrmyAgt2AdrCtrySubDvsn: [''],
       intrmyAgt2AdrCtry: [''],
       intrmyAgt2AdrLine: [''],
-      
+
       // Intermediary Agent 2 Account (flat)
       intrmyAgt2AcctId: [''],
       intrmyAgt2AcctCcy: [''],
@@ -392,7 +401,7 @@ export class Pacs009 implements OnInit {
       intrmyAgt3AdrCtrySubDvsn: [''],
       intrmyAgt3AdrCtry: [''],
       intrmyAgt3AdrLine: [''],
-      
+
       // Intermediary Agent 3 Account (flat)
       intrmyAgt3AcctId: [''],
       intrmyAgt3AcctCcy: [''],
@@ -418,7 +427,7 @@ export class Pacs009 implements OnInit {
       dbtrAdrCtrySubDvsn: [''],
       dbtrAdrCtry: [''],
       dbtrAdrLine: [''],
-      
+
       // Debtor Account (flat)
       dbtrAcctId: [''],
       dbtrAcctCcy: [''],
@@ -451,7 +460,7 @@ export class Pacs009 implements OnInit {
       dbtrAgtAdrCtrySubDvsn: [''],
       dbtrAgtAdrCtry: [''],
       dbtrAgtAdrLine: [''],
-      
+
       // Debtor Agent Account (flat)
       dbtrAgtAcctId: [''],
       dbtrAgtAcctCcy: [''],
@@ -484,7 +493,7 @@ export class Pacs009 implements OnInit {
       cdtrAgtAdrCtrySubDvsn: [''],
       cdtrAgtAdrCtry: [''],
       cdtrAgtAdrLine: [''],
-      
+
       // Creditor Agent Account (flat)
       cdtrAgtAcctId: [''],
       cdtrAgtAcctCcy: [''],
@@ -510,7 +519,7 @@ export class Pacs009 implements OnInit {
       cdtrAdrCtrySubDvsn: [''],
       cdtrAdrCtry: [''],
       cdtrAdrLine: [''],
-      
+
       // Creditor Account (flat)
       cdtrAcctId: [''],
       cdtrAcctCcy: [''],
@@ -574,7 +583,7 @@ export class Pacs009 implements OnInit {
       rltdFrAdrCtrySubDvsn: [''],
       rltdFrAdrCtry: [''],
       rltdFrAdrLine: [''],
-      
+
       rltdToBicfi: [''],
       rltdToClrSysIdCd: [''],
       rltdToMmbId: [''],
@@ -598,7 +607,7 @@ export class Pacs009 implements OnInit {
       rltdToAdrCtrySubDvsn: [''],
       rltdToAdrCtry: [''],
       rltdToAdrLine: [''],
-      
+
       rltdBizMsgIdr: [''],
       rltdMsgDefIdr: [''],
       rltdBizSvc: [''],
@@ -633,10 +642,10 @@ export class Pacs009 implements OnInit {
   isNestedGroupEmpty(path: string): boolean {
     const group = this.getNestedFormGroup(path);
     if (!group) return true;
-    
+
     const values = group.value;
-    return Object.values(values).every(value => 
-      value === '' || value === null || value === undefined || 
+    return Object.values(values).every(value =>
+      value === '' || value === null || value === undefined ||
       (Array.isArray(value) && value.every(v => v === ''))
     );
   }
@@ -686,7 +695,7 @@ export class Pacs009 implements OnInit {
   // Helper method to validate required fields
   validateRequiredFields(): boolean {
     const requiredFields = ['bizMsgIdr', 'txId', 'uetr'];
-    
+
     for (const field of requiredFields) {
       const control = this.frmGroup.get(field);
       if (control && control.invalid) {
@@ -694,7 +703,7 @@ export class Pacs009 implements OnInit {
         return false;
       }
     }
-    
+
     return true;
   }
 
@@ -724,7 +733,7 @@ export class Pacs009 implements OnInit {
 
     // Settlement Information
     payload.sttlmMtd = frmValue.sttlmMtd;
-    
+
     // Map flat settlement account to nested structure
     payload.sttlmAcct = {
       id: frmValue.sttlmAcctId,
@@ -749,7 +758,7 @@ export class Pacs009 implements OnInit {
     const serviceLevels = frmValue.serviceLevels || [];
     const serviceCodes = serviceLevels.map((level: any) => level.serviceCode).filter((code: string) => code);
     const servicePriorities = serviceLevels.map((level: any) => level.servicePriority).filter((priority: string) => priority);
-    
+
     // Ensure arrays have exactly 3 elements as per model specification
     payload.svcLvlCD = [
       serviceCodes[0] || '',
@@ -761,7 +770,7 @@ export class Pacs009 implements OnInit {
       servicePriorities[1] || '',
       servicePriorities[2] || ''
     ];
-    
+
     payload.lclInstrmCD = frmValue.lclInstrmCD;
     payload.lclInstrmPrtry = frmValue.lclInstrmPrtry;
     payload.ctgyPurpCd = frmValue.ctgyPurpCd;
@@ -1317,10 +1326,10 @@ export class Pacs009 implements OnInit {
     }
 
     const payload = this.generatePayload();
-    
+
     // Log the payload for debugging
     console.log('Generated payload:', payload);
-    
+
     this.pacs009Service.save(payload).subscribe({
       next: (res) => {
         console.log('Success response:', res);
@@ -1331,13 +1340,13 @@ export class Pacs009 implements OnInit {
       error: (error) => {
         console.error('Error saving PACS.009:', error);
         let errorMessage = 'Failed to save PACS.009 message';
-        
+
         if (error.error && error.error.message) {
           errorMessage = error.error.message;
         } else if (error.message) {
           errorMessage = error.message;
         }
-        
+
         this.toastr.error(errorMessage, 'Error');
       }
     });
