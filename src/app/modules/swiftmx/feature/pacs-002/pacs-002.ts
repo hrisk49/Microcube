@@ -31,8 +31,6 @@ import {
     SelectOptionField,
     TextBaseInput,
     DateInput,
-    PanelHeader,
-    SubPanelHeader,
     BusinessApplicationHeader,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader
