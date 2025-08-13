@@ -1,0 +1,17 @@
+<div class="expansion-sub-header" (click)="togglePanel()">
+  <div class="flex gap-2 items-center relative">
+    <div class="w-5 h-5 mr-3 -mt-[1px]">
+      <!-- Modern panel icon using SVG -->
+      <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" stroke-width="2"
+           viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M13 16h-1v-4h-1m1-4h.01M12 20.5C6.753 20.5 2.5 16.247 2.5 11S6.753 1.5 12 1.5 21.5 5.753 21.5 11 17.247 20.5 12 20.5z" />
+      </svg>
+    </div>
+    <h2>
+      <span>{{subPanelTitle()}}</span>
+    </h2>
+
+    <mat-icon class="absolute right-0">keyboard_arrow_down</mat-icon>
+  </div>
+</div>

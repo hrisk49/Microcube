@@ -1,0 +1,46 @@
+import {Component, input, WritableSignal} from '@angular/core';
+import {MatIcon} from '@angular/material/icon';
+
+@Component({
+  selector: 'app-expansion-sub-panel-header',
+  imports: [
+    MatIcon
+  ],
+  templateUrl: './expansion-sub-panel-header.html',
+  styleUrl: './expansion-sub-panel-header.scss'
+})
+export class ExpansionSubPanelHeader {
+
+  // htmlElement = input.required<any>();
+  readonly subPanelTitle = input<string>();
+  isOpenSignal = input.required<WritableSignal<boolean>>();
+
+  togglePanel() {
+    const sig = this.isOpenSignal();
+    sig.set(!sig());
+  }
+
+
+  // togglePanel() {
+  //
+  //   if (!this.htmlElement) return;
+  //   const element = this.htmlElement();
+  //
+  //   const currentMaxHeight = window.getComputedStyle(element).maxHeight;
+  //
+  //   if (currentMaxHeight !== '0px') {
+  //     // Hide
+  //     element.style.transition = 'max-height 0.3s ease-out, opacity 0.3s ease-out';
+  //     element.style.maxHeight = '0';
+  //     element.style.opacity = '0';
+  //     element.style.overflow = 'hidden';
+  //   } else {
+  //     // Show
+  //     element.style.transition = 'max-height 0.3s ease-in, opacity 0.3s ease-in';
+  //     element.style.maxHeight = element.scrollHeight + 'px';
+  //     element.style.opacity = '1';
+  //     element.style.overflow = 'visible';
+  //   }
+  // }
+
+}

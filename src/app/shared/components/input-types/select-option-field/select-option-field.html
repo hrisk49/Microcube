@@ -1,20 +1,22 @@
-<div [formGroup]="frmGroup()" class="form-group w-full">
+<div [formGroup]="frmGroup()" class="input-container">
   <label class="input-label">
-    {{label()}}
+    {{ label() }}
     @if (isRequired()) {
       <span class="text-red-500">*</span>
     }
   </label>
-  <select [formControlName]="controlName()" [ngClass]="{'readonly-input': isReadonly() }"
-          class="custom-select">
-    <option [value]="null">Select {{label()}}</option>
-    @for (option of options(); track $index) {
-      <option [value]="option.key">{{ option.value }}</option>
+
+    <select [formControlName]="controlName()" [ngClass]="{'readonly-input': isReadonly() }"
+            class="custom-select">
+      <option [value]="null">Select {{ label() }}</option>
+      @for (option of options(); track $index) {
+        <option [value]="option.key">{{ option.value }}</option>
+      }
+    </select>
+    @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
+      <div class="text-red-500 text-xs mt-1">
+        {{ label() }} is required..!
+      </div>
     }
-  </select>
-  @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
-    <div class="text-red-500 text-xs mt-1">
-      {{label()}} is required..!
-    </div>
-  }
+
 </div>
