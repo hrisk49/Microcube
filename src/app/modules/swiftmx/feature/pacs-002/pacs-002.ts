@@ -1,4 +1,4 @@
-import {Component, effect, inject, OnInit, signal} from '@angular/core';
+import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
@@ -19,6 +19,10 @@ import {AgentComponent} from '../../components/agent/agent';
 import {BusinessApplicationHeader} from '../../components/business-application-header/business-application-header';
 import {DataSelectionModal} from '../../../../shared/components/data-selection-modal/data-selection-modal';
 import {BranchInfoService} from '../../../../shared/services/branch-info.service';
+import {ExpansionPanelHeader} from '../../../../shared/components/expansion-panel-header/expansion-panel-header';
+import {
+  ExpansionSubPanelHeader
+} from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
 
 @Component({
   selector: 'app-pacs-002',
@@ -30,7 +34,8 @@ import {BranchInfoService} from '../../../../shared/services/branch-info.service
     PanelHeader,
     SubPanelHeader,
     BusinessApplicationHeader,
-    DataSelectionModal
+    ExpansionPanelHeader,
+    ExpansionSubPanelHeader
   ],
   templateUrl: './pacs-002.html',
   standalone: true,
@@ -49,6 +54,13 @@ export class Pacs002 implements OnInit {
   isPickTableDialogOpen = signal<boolean>(false);
   pickTablePair = signal<Map<string, string>>(new Map());
   pickTableDataSource = signal<any[]>([]);
+
+  businessAppHeader: WritableSignal<boolean> = signal(true);
+  rltdPanelOpen: WritableSignal<boolean> = signal(true);
+  fiToFiPaymntSts : WritableSignal<boolean> = signal(true);
+  orgnlGrpInfAndSts : WritableSignal<boolean> = signal(true);
+  grpHeadr : WritableSignal<boolean> = signal(true);
+
   onPickclick(): void {
     this.isPickTableDialogOpen.set(true);
     this.pickTableDataSource.set([]);
@@ -113,6 +125,7 @@ export class Pacs002 implements OnInit {
     {key: 'Cd', value: 'Code'},
     {key: 'Prtry', value: 'Proprietary'}
   ];
+
   constructor() {
     BUTTON_VISIBILITY.set({
       save: true,
@@ -175,6 +188,7 @@ export class Pacs002 implements OnInit {
       orgnlCreDtTm: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
 
       orgnlNbOfTxs:['',[Validators.pattern(/^[0-9]{1,15}$/)]],
+      orgnlCtrlSum :[Validators.pattern(/^\d{1,17} \d{1,18}$/)],
 
       orgnlInstrId: ['',[Validators.minLength(1),Validators.maxLength(16)]],
       orgnlEndToEndId: ['',[Validators.required,Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+$/)]],
