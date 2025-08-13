@@ -23,21 +23,6 @@
           </mat-form-field>
         </div>
 
-
-         <!-- Message Type Dropdown -->
-        <div class="lg:col-span-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Message Type</label>
-          <mat-form-field appearance="outline" class="w-full">
-            <mat-select [(ngModel)]="selectedMessageType">
-              <mat-option value="">All Types</mat-option>
-              <mat-option *ngFor="let type of messageTypes" [value]="type.value">
-                {{type.label}}
-              </mat-option>
-            </mat-select>
-            <mat-hint>Select message type to filter</mat-hint>
-          </mat-form-field>
-        </div>
-
         <!-- Date Range Picker -->
         <div class="lg:col-span-4">
           <label class="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
@@ -52,7 +37,6 @@
           </mat-form-field>
         </div>
 
-       
        
         <!-- Action Buttons -->
       <button mat-icon-button
@@ -70,7 +54,6 @@
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="flex items-center">
           <div class="w-2 h-6 bg-blue-600 rounded-full mr-3"></div>
-          <h2 class="text-gray-900 font-semibold text-lg">Incoming Messages</h2>
           <h2 class="text-gray-900 font-semibold text-lg">Incoming Messages</h2>
         </div>
         <div class="relative w-full sm:w-auto">
@@ -108,10 +91,6 @@
             <td class="py-4 text-right px-6 text-gray-700 text-center font-mono bg-gray-50 rounded px-2 py-1">{{data?.mtId}}</td>
             <td class="py-4 text-left px-6 text-gray-700 font-mono">{{data?.senderBic}}</td>
             <td class="py-4 text-left px-6 text-gray-700">{{data?.makeBy}}</td>
-            <td class="py-4 text-left px-6 text-gray-900 font-mono">{{data?.msgRefNo}}</td>
-            <td class="py-4 text-right px-6 text-gray-700 text-center font-mono bg-gray-50 rounded px-2 py-1">{{data?.mtId}}</td>
-            <td class="py-4 text-left px-6 text-gray-700 font-mono">{{data?.senderBic}}</td>
-            <td class="py-4 text-left px-6 text-gray-700">{{data?.makeBy}}</td>
             <td class="py-4 px-6 text-gray-700 text-center text-sm">{{data?.makeDt}}</td>
             <td class="py-4 px-6">
               <div class="flex gap-2 justify-center">
@@ -141,20 +120,10 @@
                  </button>
               </div>
             </td>
-            <td class="py-4 px-6">
-              <div class="flex justify-center">
-                                 <button mat-icon-button matTooltip="Process"
-                   class="hover:bg-purple-100 transition-colors duration-200 text-purple-600 hover:text-purple-700"
-                   (click)="processData(data)">
-                   <mat-icon class="text-lg">settings</mat-icon>
-                 </button>
-              </div>
-            </td>
           </tr>
 
           <!-- Empty State -->
           <tr *ngIf="dataSource.length === 0">
-            <td colspan="8" class="py-16 text-center text-gray-500">
             <td colspan="8" class="py-16 text-center text-gray-500">
               <div class="flex flex-col items-center">
                 <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
@@ -170,19 +139,7 @@
     </div>
 
     <!-- Pagination Footer -->
-    <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 py-6 border-t border-gray-200">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div class="text-sm text-gray-600 font-medium">
-          Showing <span class="text-blue-600 font-semibold">{{getStartIndex()}}</span> to
-          <span class="text-blue-600 font-semibold">{{getEndIndex()}}</span> of
-          <span class="text-blue-600 font-semibold">{{getTotalResults()}}</span> results
-    <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 py-6 border-t border-gray-200">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div class="text-sm text-gray-600 font-medium">
-          Showing <span class="text-blue-600 font-semibold">{{getStartIndex()}}</span> to
-          <span class="text-blue-600 font-semibold">{{getEndIndex()}}</span> of
-          <span class="text-blue-600 font-semibold">{{getTotalResults()}}</span> results
-    <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 py-6 border-t border-gray-200">
+       <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 py-6 border-t border-gray-200">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="text-sm text-gray-600 font-medium">
           Showing <span class="text-blue-600 font-semibold">{{getStartIndex()}}</span> to
@@ -193,10 +150,6 @@
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <mat-form-field appearance="outline" class="text-sm w-full sm:w-auto">
             <mat-select [(value)]="pageSize" (selectionChange)="onPageSizeChange()">
-              <mat-option [value]="5">5 per page</mat-option>
-              <mat-option [value]="10">10 per page</mat-option>
-              <mat-option [value]="20">20 per page</mat-option>
-              <mat-option [value]="50">50 per page</mat-option>
               <mat-option [value]="5">5 per page</mat-option>
               <mat-option [value]="10">10 per page</mat-option>
               <mat-option [value]="20">20 per page</mat-option>
@@ -231,5 +184,3 @@
         </div>
       </div>
     </div>
-  </div>
-</div>
