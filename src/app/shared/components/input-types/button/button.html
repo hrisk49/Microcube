@@ -1,0 +1,14 @@
+@if (!isHidden) {
+  <button
+    [id]="id()"
+    [type]="'button'"
+    [disabled]="isDisabled"
+    [style]="styles()"
+    [ngClass]="buttonClasses"
+    (click)="onButtonClick($event)"
+    [attr.aria-label]="labelText() || value()"
+    class="inline-flex items-center justify-center">
+    
+    {{ value() }}
+  </button>
+} 

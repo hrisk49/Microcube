@@ -20,9 +20,26 @@ export class Delete {
 
   delete() {
     let dialogRef = this.dialog.open(DeleteConfirmationDialogue, {
-      // width: '450px',
-      // height: '300px',
-      // data: { name: this.name, animal: this.animal }
+      width: '450px',
+      data: { 
+        title: 'Confirm Delete',
+        message: 'Are you sure you want to delete this item? <br>This action cannot be undone.',
+        buttons: [
+          { text: 'Delete', action: 'confirm' },
+          { text: 'Cancel', action: 'cancel' }
+        ]
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        // User confirmed deletion
+        console.log('Item deleted!');
+        // Add your deletion logic here
+      } else {
+        // User cancelled
+        console.log('Deletion cancelled');
+      }
     });
 
     // dialogRef.afterClosed().subscribe(result => {

@@ -1,0 +1,347 @@
+<div class="page-wrapper">
+  <form [formGroup]="frmGroup" class="form-wrapper">
+
+    <!--Business Application Header-->
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Business Application Header'"/>
+      <div class="form-grid-3-col">
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'From BIC'"
+                             [controlName]="'fromBic'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'To BIC'"
+                             [controlName]="'toBic'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [isReadonly]="true"
+                             [label]="'Business Message Identifier'"
+                             [controlName]="'businessMessageIdentifier'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Message Definition Identifier'"
+                             [controlName]="'messageDefinitionIdentifier'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Business Service'"
+                             [controlName]="'businessService'"/>
+
+        <app-select-option-field [frmGroup]="frmGroup"
+                                 [options]="duplicateOptions"
+                                 [label]="'Copy Duplicate'"
+                                 [controlName]="'copyDuplicate'"/>
+
+        <app-select-option-field [frmGroup]="frmGroup"
+                                 [options]="priorityOptions"
+                                 [label]="'Priority'"
+                                 [controlName]="'priority'"/>
+
+      </div>
+
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Related'"
+                              [divElement]="related"
+                              [isOptional]="true"/>
+        <div #related class="form-grid-3-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'From BIC'"
+                               [controlName]="'relatedFromBic'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'To BIC'"
+                               [controlName]="'relatedToBic'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Business Message Identifier'"
+                               [controlName]="'relatedBusinessMessageIdentifier'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Message Definition Identifier'"
+                               [controlName]="'relatedMessageDefinitionIdentifier'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Business Service'"
+                               [controlName]="'relatedBusinessService'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="duplicateOptions"
+                                   [label]="'Copy Duplicate'"
+                                   [controlName]="'relatedCopyDuplicate'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="priorityOptions"
+                                   [label]="'Priority'"
+                                   [controlName]="'relatedPriority'"/>
+        </div>
+      </div>
+    </div>
+
+    <!--Payment Return V09 Start-->
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Payment Return V09'"/>
+
+      <!--Group Header Start-->
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Group Header'"></app-sub-panel-header>
+        <div class="form-grid-3-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Message Identification'"
+                               [controlName]="'messageIdentification'"/>
+
+          <app-date-input [frmGroup]="frmGroup"
+                          [label]="'Creation Date'"
+                          [controlName]="'creationDate'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                          [label]="'Number Of Transactions'"
+                          [controlName]="'numberOfTransactions'" [type]="'number'"/>
+        </div>
+        <!--Settlement Information Area Start-->
+        <div>
+          <fieldset class="custom-fieldset">
+            <legend>Settlement Information</legend>
+            <div class="form-grid-4-col">
+              <app-select-option-field [frmGroup]="frmGroup"
+                                       [options]="IdentificationOptions"
+                                       [label]="'Identification'"
+                                       [controlName]="'Id'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Identification'"
+                                   [controlName]="'otherId'"/>
+              <app-select-option-field [frmGroup]="frmGroup"
+                                       [options]="SchmeNmOptions"
+                                       [label]="'Schme Name'"
+                                       [controlName]="'otherSchmeNm'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Issuer'"
+                                   [controlName]="'otherIssr'"/>
+
+<!--              &lt;!&ndash; Show when Identification is 'other' &ndash;&gt;-->
+<!--              <div *ngIf="frmGroup.get('Id')?.value === 'other'">-->
+<!--                <app-text-base-input-->
+<!--                  [frmGroup]="frmGroup"-->
+<!--                  [label]="'Identification'"-->
+<!--                  [controlName]="'otherId'">-->
+<!--                </app-text-base-input>-->
+
+<!--                <app-select-option-field-->
+<!--                  [frmGroup]="frmGroup"-->
+<!--                  [options]="SchmeNmOptions"-->
+<!--                  [label]="'Schme Name'"-->
+<!--                  [controlName]="'otherSchmeNm'">-->
+<!--                </app-select-option-field>-->
+
+<!--                <app-text-base-input-->
+<!--                  [frmGroup]="frmGroup"-->
+<!--                  [label]="'Issuer'"-->
+<!--                  [controlName]="'otherIssr'">-->
+<!--                </app-text-base-input>-->
+<!--              </div>-->
+              <app-select-option-field [frmGroup]="frmGroup"
+                                       [options]="TypeOptions"
+                                       [label]="'Type'"
+                                       [controlName]="'Tp'"/>
+              <app-select-option-field [frmGroup]="frmGroup"
+                                       [options]="CurrencyOptions"
+                                       [label]="'Currency'"
+                                       [controlName]="'Ccy'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Name'"
+                                   [controlName]="'Nm'"/>
+              <app-select-option-field [frmGroup]="frmGroup"
+                                       [options]="ProxyOptions"
+                                       [label]="'Proxy'"
+                                       [controlName]="'Prxy'"/>
+              <app-select-option-field [frmGroup]="frmGroup"
+                                       [options]="ProxcyTpOptions"
+                                       [label]="'Type'"
+                                       [controlName]="'ProxcyTp'"/>
+            </div>
+          </fieldset>
+        </div>
+        <!--Settlement Information Area End-->
+        <!--Group Header END-->
+
+        <!--Transaction Information Start-->
+        <div class="sub-panel">
+          <app-sub-panel-header [subPanelTitle]="'Transaction Information'"></app-sub-panel-header>
+          <div class="form-grid-4-col">
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Return Identification'"
+                                 [controlName]="'RtrId'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+
+                                 [label]="'Original Instruction Identification'"
+                                 [controlName]="'orgnlInstrId'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+
+                                     [label]="'Original End To End Identification'"
+                                     [controlName]="'orgnlEndToEndId'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+
+                                     [label]="'Original Transaction Identification'"
+                                     [controlName]="'orgnlTxId'"/>
+
+          </div>
+          <!--Original Group Information Area Start-->
+          <div>
+            <fieldset class="custom-fieldset">
+              <legend>Original Group Information</legend>
+              <div class="form-grid-4-col">
+                 <app-text-base-input [frmGroup]="frmGroup"
+                                     [label]="'Original Message Identification'"
+                                     [controlName]="'OrgnlMsgId'"/>
+                <app-text-base-input [frmGroup]="frmGroup"
+                                     [label]="'Original MessageName Identification'"
+                                     [controlName]="'OrgnlMsgNmId'"/>
+                <app-date-input [frmGroup]="frmGroup"
+                                [label]="'Original Creation DateTime'"
+                                [controlName]="'OrgnlCreDtTm'"/>
+              </div>
+            </fieldset>
+          </div>
+          <!--Original Group Information Area End-->
+
+          <div class="form-grid-4-col">
+
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Original UETR'"
+                                 [controlName]="'orgnlUETR'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Original Clearing System Reference'"
+                                 [controlName]="'OrgnlClrSysRef'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Original Interbank Settlement Amount'"
+                                 [controlName]="'OrgnlIntrBkSttlmAmt'"
+                                 type="number"/>
+
+            <app-date-input [frmGroup]="frmGroup"
+                                 [label]="'Original Interbank Settlement Date'"
+                                 [controlName]="'OrgnlIntrBkSttlmDt'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Instructed Reimbursement Agent BIC'"
+                                 [controlName]="'instructedReimbursementAgent'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Returned Interbank Settlement Amount'"
+                                 [controlName]="'RtrdIntrBkSttlmAmt'"
+                                 type="number"/>
+
+            <app-date-input [frmGroup]="frmGroup"
+                                 [label]="'Interbank Settlement Date'"
+                                 [controlName]="'IntrBkSttlmDt'"/>
+
+            <app-select-option-field [frmGroup]="frmGroup"
+                                     [options]="SttlmPrtyOptions"
+                                     [label]="'Settlement Priority'"
+                                     [controlName]="'SttlmPrty'"/>
+
+
+            <app-date-input [frmGroup]="frmGroup"
+                            [label]="'Debit DateTime'"
+                            [controlName]="'DbtDtTm'"/>
+
+            <app-date-input [frmGroup]="frmGroup"
+                            [label]="'Credit DateTime'"
+                            [controlName]="'CdtDtTm'"/>
+<!--            <app-select-option-field [frmGroup]="frmGroup"-->
+<!--                                     [options]="SttlmTmIndctnOptions"-->
+<!--                                     [label]="'Settlement Time Indication'"-->
+<!--                                     [controlName]="'SttlmTmIndctn'"/>-->
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Returned Instructed Amount'"
+                                 [controlName]="'RtrdInstdAmt'"
+                                 type="number"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Exchange Rate'"
+                                 [controlName]="'XchgRate'"
+                                 type="number"/>
+
+            <app-select-option-field [frmGroup]="frmGroup"
+                                     [options]="ChrgBrOptions"
+                                     [label]="'Charge Bearer'"
+                                     [controlName]="'ChrgBr'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                     [label]="'Clearing System Reference'"
+                                     [controlName]="'ClrSysRef'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Instructing Agent BICFI'"
+                                 [controlName]="'InstructingAgentBICFI'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Instructed Agent BICFI'"
+                                 [controlName]="'InstructedAgentBICFI'"/>
+          </div>
+        </div>
+        <!--Return Chain Area Start-->
+        <div>
+          <fieldset class="custom-fieldset">
+            <legend>Return Chain</legend>
+            <div class="form-grid-4-col">
+<!--              <app-text-base-input [frmGroup]="frmGroup"-->
+<!--                                   [label]="'Original Message Identification'"-->
+<!--                                   [controlName]="'OrgnlMsgId'"/>-->
+<!--              <app-text-base-input [frmGroup]="frmGroup"-->
+<!--                                   [label]="'Original MessageName Identification'"-->
+<!--                                   [controlName]="'OrgnlMsgNmId'"/>-->
+<!--              <app-date-input [frmGroup]="frmGroup"-->
+<!--                              [label]="'Original Creation DateTime'"-->
+<!--                              [controlName]="'OrgnlCreDtTm'"/>-->
+            </div>
+          </fieldset>
+        </div>
+        <!--Return Chain Area End-->
+        <!--Return Reason Information Area Start-->
+        <div>
+          <fieldset class="custom-fieldset">
+            <legend>Return Reason Information</legend>
+            <div class="form-grid-4-col">
+              <!--              <app-text-base-input [frmGroup]="frmGroup"-->
+              <!--                                   [label]="'Original Message Identification'"-->
+              <!--                                   [controlName]="'OrgnlMsgId'"/>-->
+              <!--              <app-text-base-input [frmGroup]="frmGroup"-->
+              <!--                                   [label]="'Original MessageName Identification'"-->
+              <!--                                   [controlName]="'OrgnlMsgNmId'"/>-->
+              <!--              <app-date-input [frmGroup]="frmGroup"-->
+              <!--                              [label]="'Original Creation DateTime'"-->
+              <!--                              [controlName]="'OrgnlCreDtTm'"/>-->
+            </div>
+          </fieldset>
+        </div>
+        <!--Return Reason Information Area End-->
+        <!--Original Transaction Reference Area Start-->
+        <div>
+          <fieldset class="custom-fieldset">
+            <legend>Original Transaction Reference Information</legend>
+            <div class="form-grid-4-col">
+                            <app-text-base-input [frmGroup]="frmGroup"
+                                                 [label]="'Interbank Settlement Amount'"
+                                                 [controlName]="'OrgnlTxRefIntrBkSttlmAmt'"
+                                                 [type]="'number'"/>
+                            <app-text-base-input [frmGroup]="frmGroup"
+                                                 [label]="'Instructed Amount'"
+                                                 [controlName]="'InstdAmt'"
+                                                 [type]="'number'"/>
+                            <app-text-base-input [frmGroup]="frmGroup"
+                                                 [label]="'Equivalent Amount'"
+                                                 [controlName]="'EqvtAmtAmt'"
+                                                 [type]="'number'"/>
+
+            </div>
+          </fieldset>
+        </div>
+        <!--Original Transaction Reference Area End-->
+        <!--Transaction Information END-->
+      </div>
+    </div>
+    <!--Payment Return V09 END-->
+  </form>
+</div>

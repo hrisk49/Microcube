@@ -64,17 +64,17 @@ input[type="number"]::placeholder {
 }
 
 .panel-header {
-  @apply text-lg sm:text-xl font-medium tracking-[0.8px]
+  @apply font-medium tracking-[0.8px]
   -mx-4 sm:-mx-6 md:-mx-6
   -mt-4 sm:-mt-6
-  p-4 mb-4 sm:mb-6 bg-[#106ebe] text-white rounded-t-lg;
+  p-4 py-2.5 mb-4 sm:mb-6 bg-[#106ebe] text-white rounded-t-lg;
 }
 /* Sub-section header/title */
 .sub-panel-header {
-  @apply text-base sm:text-lg font-medium tracking-[0.8px]
+  @apply font-medium tracking-[0.8px]
   -mx-4 sm:-mx-6 md:-mx-6
   -mt-4 sm:-mt-6
-  p-2 sm:px-4 mb-4 sm:mb-6 bg-[#106ebe] text-white rounded-t-md;
+  p-4 py-1.5 mb-4 sm:mb-6 bg-[#106ebe] text-white rounded-t-md;
 }
 
 // Color Palette

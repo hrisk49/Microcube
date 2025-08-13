@@ -1,0 +1,355 @@
+<div class="page-wrapper">
+  <form [formGroup]="frmGroup" class="form-wrapper">
+
+    <!--Business Application Header-->
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Business Application Header'"/>
+      <div class="form-grid-3-col">
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'From BIC'"
+                             [controlName]="'fromBic'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'To BIC'"
+                             [controlName]="'toBic'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [isReadonly]="true"
+                             [label]="'Business Message Identifier'"
+                             [controlName]="'businessMessageIdentifier'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Message Definition Identifier'"
+                             [controlName]="'messageDefinitionIdentifier'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Business Service'"
+                             [controlName]="'businessService'"/>
+
+        <app-select-option-field [frmGroup]="frmGroup"
+                                 [options]="duplicateOptions"
+                                 [label]="'Copy Duplicate'"
+                                 [controlName]="'copyDuplicate'"/>
+
+        <app-select-option-field [frmGroup]="frmGroup"
+                                 [options]="priorityOptions"
+                                 [label]="'Priority'"
+                                 [controlName]="'priority'"/>
+
+      </div>
+
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Related'"
+                              [divElement]="related"
+                              [isOptional]="true"/>
+        <div #related class="form-grid-3-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'From BIC'"
+                               [controlName]="'relatedFromBic'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'To BIC'"
+                               [controlName]="'relatedToBic'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Business Message Identifier'"
+                               [controlName]="'relatedBusinessMessageIdentifier'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Message Definition Identifier'"
+                               [controlName]="'relatedMessageDefinitionIdentifier'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Business Service'"
+                               [controlName]="'relatedBusinessService'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="duplicateOptions"
+                                   [label]="'Copy Duplicate'"
+                                   [controlName]="'relatedCopyDuplicate'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="priorityOptions"
+                                   [label]="'Priority'"
+                                   [controlName]="'relatedPriority'"/>
+        </div>
+      </div>
+    </div>
+
+    <!--Customer Payment Cancellation Request V08-->
+   <div class="panel">
+      <app-panel-header [panelTitle]="'Customer Payment Cancellation Request V08'"/>
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Assignment'"
+                              [divElement]="Assgnmt"
+                              [isOptional]="true"/>
+        <div #Assgnmt class="form-grid-4-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Identification'"
+                               [controlName]="'AssgnmtId'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Assigner'"
+                               [controlName]="'AssgnmtAssgnr'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Assignee Agent  BICFI'"
+                               [controlName]="'AssgnmtAssgneAgtFinInstnIdBICFI'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Assignee Agent Code'"
+                               [controlName]="'AssgnmtAssgneAgtFinInstnIdClrSysMmbIdClrSysIdCd'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Assignee Agent MemberIdentification'"
+                               [controlName]="'AssgnmtAssgneAgtFinInstnIdClrSysMmbIdMmbId'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Assignee Agent  LEI'"
+                               [controlName]="'AssgnmtAssgneAgtFinInstnIdLEI'"/>
+          <app-date-input [frmGroup]="frmGroup"
+                               [label]="'Creation DateTime'"
+                               [controlName]="'AssgnmtCreDtTm'"/>
+
+        </div>
+      </div>
+     <div class="sub-panel">
+       <app-sub-panel-header [subPanelTitle]="'Underlying'"
+                             [divElement]="Undrlyg"
+                             [isOptional]="true"/>
+       <div #Undrlyg class="form-grid-4-col">
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Original PaymentInformation Identification'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlPmtInfId'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Original Message Identification'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlGrpInfOrgnlMsgId'"/>
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Original MessageName Identification'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlGrpInfOrgnlOrgnlMsgNmId'"/>
+         <app-date-input [frmGroup]="frmGroup"
+                              [label]="'Original Creation DateTime'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlGrpInfOrgnlOrgnlOrgnlCreDtTm'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'Cancellation Identification'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlTxInfCxlId'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'Identification'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseId'"/>
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'Name'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyNm'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'PostalAddress Department'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrDept'"/>
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'PostalAddress SubDepartment'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrSubDept'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'PostalAddress StreetName'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrStrtNm'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'PostalAddress BuildingNumber'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrBldgNb'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'PostalAddress BuildingName'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrBldgNm'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'PostalAddress Floor'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrFlr'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'PostalAddress PostBox'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrPstBx'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'PostalAddress Room'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrRoom'"/>
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'PostalAddress PostCode'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrPstCd'"/>
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'PostalAddress TownName'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrTwnNm'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'PostalAddress TownLocationName'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrTwnLctnNm'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'PostalAddress DistrictName'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrDstrctNm'"/>
+         <app-text-base-input [frmGroup]="frmGroup"
+                         [label]="'PostalAddress CountrySubDivision'"
+                         [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrCtrySubDvsn'"/>
+         <app-select-option-field [frmGroup]="frmGroup"
+                                  [options]="UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrCtryOptions"
+                                  [label]="'PostalAddress Country'"
+                                  [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrCtry'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                                  [label]="'PostalAddress AddressLine'"
+                                  [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCaseCretrPtyPstlAdrAdrLine'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Original Instruction Identification'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlOrgnlInstrId'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Original EndToEnd Identification'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlOrgnlEndToEndId'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Original UETR'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlOrgnlUETR'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Original InstructedAmount'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlOrgnlInstdAmt'"/>
+
+         <app-date-input [frmGroup]="frmGroup"
+                              [label]="'Original Requested Execution Date'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlOrgnlReqdExctnDtDt'"/>
+
+         <app-date-input [frmGroup]="frmGroup"
+                              [label]="'Original Requested Execution DateTime'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlOrgnlReqdExctnDtDtTm'"/>
+
+         <app-date-input [frmGroup]="frmGroup"
+                              [label]="'Original Requested Collection Date'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlOrgnlOrgnlReqdColltnDt'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason Information Originator Name'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrNm'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason PostalAddress Department'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrDept'"/>
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason PostalAddress SubDepartment'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrSubDept'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason PostalAddress StreetName'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrStrtNm'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason PostalAddress BuildingNumber'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrBldgNb'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason PostalAddress BuildingName'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrBldgNm'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason PostalAddress Floor'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrFlr'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason PostalAddress PostBox'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrPstBx'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason PostalAddress Room'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrRoom'"/>
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason PostalAddress PostCode'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrPstCd'"/>
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason PostalAddress TownName'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrTwnNm'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason PostalAddress TownLocationName'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrTwnLctnNm'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason PostalAddress DistrictName'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrDstrctNm'"/>
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason PostalAddress CountrySubDivision'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrCtrySubDvsn'"/>
+
+<!--         <app-select-option-field [frmGroup]="frmGroup"-->
+<!--                                  [options]="UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrCtryOptions"-->
+<!--                                  [label]="'Cancellation Reason PostalAddress Country'"-->
+<!--                                  [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrCtry'"/>-->
+
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason PostalAddress AddressLine'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrPstlAdrAdrLine'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason Identification AnyBIC'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdOrgId'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason Identification LEI'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdLEI'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason Identification BirthDate'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdDtAndPlcOfBirthBirthDt'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason Identification ProvinceOfBirth'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdDtAndPlcOfBirthPrvcOfBirth'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason Identification CityOfBirth'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdDtAndPlcOfBirthCityOfBirth'"/>
+
+         <app-select-option-field [frmGroup]="frmGroup"
+                                  [options]="UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdDtAndPlcOfBirthCtryOfBirthOptions"
+                              [label]="'Cancellation Reason Identification CountryOfBirth'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdDtAndPlcOfBirthCtryOfBirth'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason Identification'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdOthrId'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason Code'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdOthrSchmeNmCd'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason Issuer'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrIdPrvtIdOthrIssr'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason Country Of Residence'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnInfOrgtrCtryOfRes'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason ReasonCode'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnRsnCd'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Cancellation Reason AdditionalInformation'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlOrgnlCxlRsnAddtlInf'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Original Message Identification'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlGrpInfOrgnlMsgId'"/>
+
+         <app-text-base-input [frmGroup]="frmGroup"
+                              [label]="'Original MessageName Identification'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlGrpInfOrgnlOrgnlMsgNmId'"/>
+
+         <app-date-input [frmGroup]="frmGroup"
+                              [label]="'Original Creation DateTime'"
+                              [controlName]="'UndrlygOrgnlPmtInfAndCxlOrgnlGrpInfOrgnlOrgnlCreDtTm'"/>
+
+
+       </div>
+     </div>
+   </div>
+  </form>
+</div>

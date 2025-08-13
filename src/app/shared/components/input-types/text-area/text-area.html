@@ -1,0 +1,43 @@
+@if (!isHidden) {
+  <div class="w-full" [formGroup]="frmGroup()">
+    <!-- Label -->
+    @if (labelText()) {
+      <label class="input-label relative">
+        {{ labelText() }}
+        @if (isRequired()) {
+          <span class="text-red-500">*</span>
+        }
+
+        @if (isInvalidState()) {
+          <div class="text-red-500 text-sm mt-1 absolute right-0 top-0">
+            <ng-container>
+              {{ labelText() }} is required..!
+            </ng-container>
+            
+            <!-- Character Count (optional) -->
+            @if (maxLen() < 2147483647) {
+              <div class="mt-3 mr-1 text-xs text-gray-500 text-right">
+                {{ characterCount }} / {{ maxLen() }}
+              </div>
+            }
+          </div>
+        }
+      </label>
+    }
+    
+    <!-- Textarea -->
+    <textarea
+      [id]="id()"
+      [formControlName]="controlName()"
+      [rows]="rows()"
+      [placeholder]="placeholder()"
+      [style]="styles()"
+      [ngClass]="inputClasses()"
+      (input)="onInputChange($event)"
+      class="transition-colors duration-200 placeholder-gray-400">
+    </textarea>
+
+    <!-- Error Message -->
+   
+  </div>
+}

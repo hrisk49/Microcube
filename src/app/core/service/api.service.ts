@@ -2,27 +2,30 @@ import {inject} from '@angular/core';
 import {environment} from '../../../environments/environment';
 import {Observable} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {API_VERSION} from '../../shared/constant/api.constant';
 
 export class ApiService<I> {
 
   protected http = inject(HttpClient);
-  private readonly fullBaseUrl: string;
+  public readonly baseUrl: string;
 
   constructor(basePath: string) {
-    this.fullBaseUrl = environment.apiBaseUrl + API_VERSION + basePath;
+    this.baseUrl = environment.apiBaseUrl + basePath;
+  }
+
+  protected getFullUrl(path: string = ''): string {
+    return this.baseUrl + (path ? '/' + path : '');
   }
 
   save(data: I): Observable<I> {
-    return this.http.post<I>(this.fullBaseUrl, data);
+    return this.http.post<I>(this.baseUrl, data);
   }
 
   update(i: I): Observable<I> {
-    return this.http.put<I>(this.fullBaseUrl, i);
+    return this.http.put<I>(this.baseUrl, i);
   }
 
   delete(uuid: any): Observable<I> {
-    return this.http.delete<I>(this.fullBaseUrl + '/' + uuid);
+    return this.http.delete<I>(this.baseUrl + '/' + uuid);
   }
 
 }

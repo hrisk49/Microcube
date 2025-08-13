@@ -1,0 +1,439 @@
+<div class="page-wrapper">
+  <form [formGroup]="frmGroup" class="form-wrapper">
+
+    <!--Business Application Header-->
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Business Application Header'"/>
+      <div class="form-grid-3-col">
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'From BIC'"
+                             [controlName]="'fromBic'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'To BIC'"
+                             [controlName]="'toBic'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [isReadonly]="true"
+                             [label]="'Business Message Identifier'"
+                             [controlName]="'businessMessageIdentifier'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Message Definition Identifier'"
+                             [controlName]="'messageDefinitionIdentifier'"/>
+
+        <app-text-base-input [frmGroup]="frmGroup"
+                             [label]="'Business Service'"
+                             [controlName]="'businessService'"/>
+
+        <app-select-option-field [frmGroup]="frmGroup"
+                                 [options]="duplicateOptions"
+                                 [label]="'Copy Duplicate'"
+                                 [controlName]="'copyDuplicate'"/>
+
+        <app-select-option-field [frmGroup]="frmGroup"
+                                 [options]="priorityOptions"
+                                 [label]="'Priority'"
+                                 [controlName]="'priority'"/>
+
+      </div>
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Related'"
+                              [divElement]="related"
+                              [isOptional]="true"/>
+        <div #related class="form-grid-3-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'From BIC'"
+                               [controlName]="'relatedFromBic'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'To BIC'"
+                               [controlName]="'relatedToBic'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Business Message Identifier'"
+                               [controlName]="'relatedBusinessMessageIdentifier'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Message Definition Identifier'"
+                               [controlName]="'relatedMessageDefinitionIdentifier'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Business Service'"
+                               [controlName]="'relatedBusinessService'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="duplicateOptions"
+                                   [label]="'Copy Duplicate'"
+                                   [controlName]="'relatedCopyDuplicate'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="priorityOptions"
+                                   [label]="'Priority'"
+                                   [controlName]="'relatedPriority'"/>
+        </div>
+      </div>
+    </div>
+
+
+    <!--Bank To Customer Debit Notification V08 Start-->
+    <div class="panel">
+      <app-panel-header [panelTitle]="'Bank To Customer Debit Notification V08'"/>
+      <!--Group Header Start-->
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Group Header'"
+                              [divElement]="GrpHdr"
+                              [isOptional]="true"/>
+        <div #GrpHdr class="form-grid-4-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Message Identification'"
+                               [controlName]="'GrpHdrMsgId'"/>
+
+          <app-date-input [frmGroup]="frmGroup"
+                               [label]="'CreationDateTime'"
+                               [controlName]="'GrpHdrCreDtTm'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Name'"
+                               [controlName]="'GrpHdrMsgRcptNm'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Code'"
+                               [controlName]="'MsgRcptPstlAdrCd'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Proprietary'"
+                               [controlName]="'MsgRcptPstlAdrPrtry'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Department'"
+                               [controlName]="'MsgRcptPstlAdrDept'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'SubDepartment'"
+                               [controlName]="'MsgRcptPstlAdrSubDept'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Street Name'"
+                               [controlName]="'MsgRcptPstlAdrStrtNm'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Building Number'"
+                               [controlName]="'MsgRcptPstlAdrBldgNb'"/>
+<!--          <app-select-option-field [frmGroup]="frmGroup"-->
+<!--                                   [options]="priorityOptions"-->
+<!--                                   [label]="'Priority'"-->
+<!--                                   [controlName]="'relatedPriority'"/>-->
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'AnyBIC'"
+                               [controlName]="'MsgRcptOrgIdAnyBIC'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'LEI'"
+                               [controlName]="'MsgRcptOrgIdLEI'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Identification'"
+                               [controlName]="'MsgRcptOrgIdOthrId'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Code'"
+                               [controlName]="'MsgRcptOrgIdOthrSchmeNmCode'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Proprietary'"
+                               [controlName]="'MsgRcptOrgIdOthrSchmeNmPrtry'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Issuer'"
+                               [controlName]="'MsgRcptOrgIdOthrSchmeNmIssr'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Contact Details Name'"
+                               [controlName]="'MsgRcptCtctDtlsNm'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Message Identification'"
+                               [controlName]="'OrgnlBizQryMsgId'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Message Name Identification'"
+                               [controlName]="'OrgnlBizQryMsgNmId'"/>
+
+          <app-date-input [frmGroup]="frmGroup"
+                               [label]="'CreationDateTime'"
+                               [controlName]="'OrgnlBizQryCreDtTm'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Additional Information'"
+                               [controlName]="'AddtlInf'"/>
+
+        </div>
+      </div>
+      <!--Group Header End-->
+      <!--Notification Start-->
+      <div class="sub-panel">
+        <app-sub-panel-header [subPanelTitle]="'Notification'"
+                              [divElement]="Ntfctn"
+                              [isOptional]="true"/>
+        <div #Ntfctn class="form-grid-4-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Identification'"
+                               [controlName]="'NtfctnId'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Page Number'"
+                               [controlName]="'NtfctnNtfctnPgntnPgNb'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Last Page Indicator'"
+                               [controlName]="'NtfctnNtfctnPgntnLastPgInd'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Electronic SequenceNumber'"
+                               [controlName]="'NtfctnElctrncSeqNb'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'From Sequence'"
+                               [controlName]="'NtfctnRptgSeqFrSeq'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'To Sequence'"
+                               [controlName]="'NtfctnRptgToSeq'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Equal Sequence'"
+                               [controlName]="'NtfctnRptgEQSeq'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Not Equal Sequence'"
+                               [controlName]="'NtfctnRptgNEQSeq'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Legal Sequence Number'"
+                               [controlName]="'NtfctnLglSeqNb'"/>
+
+          <app-date-input [frmGroup]="frmGroup"
+                               [label]="'Creation DateTime'"
+                               [controlName]="'NtfctnCreDtTm'"/>
+
+          <app-date-input [frmGroup]="frmGroup"
+                               [label]="'From DateTime'"
+                               [controlName]="'NtfctnFrToDtFrDtTm'"/>
+
+          <app-date-input [frmGroup]="frmGroup"
+                               [label]="'To DateTime'"
+                               [controlName]="'NtfctnFrToDtToDtTm'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Copy Duplicate Indicator'"
+                               [controlName]="'NtfctnCpyDplctInd'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Code'"
+                               [controlName]="'NtfctnRptgSrcCd'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Proprietary'"
+                               [controlName]="'NtfctnRptgSrcPrtry'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Account IBAN'"
+                               [controlName]="'NtfctnAcctIdIBAN'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Account Other Identification'"
+                               [controlName]="'NtfctnAcctOthrId'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Account Other Scheme Name'"
+                               [controlName]="'NtfctnAcctOthrSchmeNm'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Account Type Code'"
+                               [controlName]="'NtfctnAcctTpCd'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Account Type Proprietary'"
+                               [controlName]="'NtfctnAcctTpPrtry'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Related Account IBAN'"
+                               [controlName]="'NtfctnRltdAcctIdIBAN'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Related Account Other Identification'"
+                               [controlName]="'NtfctnRltdAcctOthrId'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Related Account Other Scheme Name'"
+                               [controlName]="'NtfctnRltdAcctOthrSchmeNm'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Related Account Type'"
+                               [controlName]="'NtfctnRltdAcctTp'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="NtfctnRltdAcctCcyOptions"
+                                   [label]="'Related Account Currency'"
+                                   [controlName]="'NtfctnRltdAcctCcy'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Related Account Name'"
+                               [controlName]="'NtfctnRltdAcctNm'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Related Account Proxy Type'"
+                               [controlName]="'NtfctnRltdAcctPrxyTp'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Related Account Proxy Identification'"
+                               [controlName]="'NtfctnRltdAcctPrxyId'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Interest Type'"
+                               [controlName]="'NtfctnIntrstTp'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Interest Rate Type Percentage'"
+                               [controlName]="'NtfctnIntrstRateTpPctg'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Interest Rate Type Other'"
+                               [controlName]="'NtfctnIntrstRateTpOthr'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Interest Rate ValidityRange FromAmount'"
+                               [controlName]="'NtfctnIntrstRateVldtyRgAmtFrAmt'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Interest Rate ValidityRange BoundaryAmount'"
+                               [controlName]="'NtfctnIntrstRateVldtyRgAmtToAmtBdryAmt'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Interest Rate ValidityRange Included'"
+                               [controlName]="'NtfctnIntrstRateVldtyRgAmtToAmtIncl'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Interest Rate ValidityRange FromToAmount BoundaryAmount'"
+                               [controlName]="'NtfctnIntrstRateVldtyRgFrToAmtBdryAmt'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Interest Rate ValidityRange FromToAmount Included'"
+                               [controlName]="'NtfctnIntrstRateVldtyRgFrToAmtIncl'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Interest Rate ValidityRange EqualAmount'"
+                               [controlName]="'NtfctnIntrstRateVldtyRgEQAmt'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Interest Rate ValidityRange NotEqualAmount'"
+                               [controlName]="'NtfctnIntrstRateVldtyRgNEQAmt'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Interest Rate ValidityRange CreditDebitIndicator'"
+                               [controlName]="'NtfctnIntrstRateVldtyRgCdtDbtInd'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="NtfctnIntrstRateVldtyRgCdtDbtCcyOptions"
+                                   [label]="'Interest Rate ValidityRange Currency'"
+                                   [controlName]="'NtfctnIntrstRateVldtyRgCdtDbtCcy'"/>
+
+
+          <app-date-input [frmGroup]="frmGroup"
+                          [label]="'Interest  From DateTime'"
+                          [controlName]="'NtfctnIntrstFrToDtFrDtTm'"/>
+
+          <app-date-input [frmGroup]="frmGroup"
+                          [label]="'Interest  To DateTime'"
+                          [controlName]="'NtfctnIntrstFrToDtToDtTm'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary Total Entries NumberOfEntries'"
+                               [controlName]="'NtfctnTtlTxsSummryNtriesNbOfNtries'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary Total Entries Sum'"
+                               [controlName]="'NtfctnTtlTxsSummryNtriesSum'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries TN Entry Amount'"
+                               [controlName]="'NtfctnTtlTxsSummryNtriesTtlNetNtryAmt'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary TotalDebitEntries NumberOfEntries'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlDbtNtriesNbOfNtries'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary TotalDebitEntries Sum'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlDbtNtriesSum'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode NumberOfEntries'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxCdNbOfNtries'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode Sum'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxCdSum'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode TotalNetEntry Amount'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlNetNtryAmt'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode TotalNetEntry CreditDebitIndicator'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlNetNtryCdtDbtInd'"/>
+
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode TotalNetEntry CreditDebitIndicator'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlNetNtryCdtDbtInd'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode CreditEntries NumberOfEntries'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlCdtNtriesNbOfNtries'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode CreditEntries Sum'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlCdtNtriesSum'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode DebitEntries NumberOfEntries'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlDbtNtriesNbOfNtries'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode DebitEntries Sum'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlDbtNtriesSum'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode ForecastIndicator'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlFcstInd'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode BankTransactionCode'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxCdTtlBkTxCd'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode Availability Date NumberOfDays'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxAvlbtyDtNbOfDays'"/>
+          <app-date-input  [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode Availability Date ActualDate'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxAvlbtyDtActlDt'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode Availability Amount'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxAvlbtyAmt'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries PerBank TransactionCode Availability CreditDebitIndicator'"
+                               [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxAvlbtyCdtDbtInd'"/>
+
+          <app-date-input  [frmGroup]="frmGroup"
+                           [label]="'Ts Summary T Entries PerBank TransactionCode  Date '"
+                           [controlName]="'NtfctnTtlTxsSummryTtlNtriesPerBkTxDt'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary T Entries Entry'"
+                               [controlName]="'NtfctnNtry'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Ts Summary AdditionalNotificationInformation'"
+                               [controlName]="'NtfctnAddtlNtfctnInf'"/>
+
+        </div>
+      </div>
+      <!--Notification End-->
+    </div>
+    <!--Bank To Customer Debit Notification V08 END-->
+  </form>
+</div>

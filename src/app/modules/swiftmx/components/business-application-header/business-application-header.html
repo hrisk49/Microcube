@@ -1,0 +1,46 @@
+<div class="form-grid-3-col">
+
+  <app-text-base-input [frmGroup]="frmGroup()"
+                       [label]="'From BIC'"
+                       [controlName]="'fromBic'"/>
+
+  <app-text-base-input [frmGroup]="frmGroup()"
+                       [label]="'To BIC'"
+                       [controlName]="'toBic'"
+                       (onDoubleClick)="onPickClick()"/>
+
+  <app-text-base-input [frmGroup]="frmGroup()"
+                       [isReadonly]="true"
+                       [label]="'Business Message Identifier'"
+                       [controlName]="'bizMsgIdr'"/>
+
+  <app-text-base-input [frmGroup]="frmGroup()"
+                       [label]="'Message Definition Identifier'"
+                       [controlName]="'msgDefIdr'"/>
+
+  <app-text-base-input [frmGroup]="frmGroup()"
+                       [label]="'Business Service'"
+                       [controlName]="'bizSvc'"/>
+
+  <app-select-option-field [frmGroup]="frmGroup()"
+                           [options]="duplicateOptions()"
+                           [label]="'Copy Duplicate'"
+                           [controlName]="'cpyDplct'"/>
+
+  <app-select-option-field [frmGroup]="frmGroup()"
+                           [options]="duplicateOptions()"
+                           [label]="'Possible Duplicate'"
+                           [controlName]="'psblDplct'"/>
+
+
+  <app-select-option-field [frmGroup]="frmGroup()"
+                           [options]="priorityOptions()"
+                           [label]="'Priority'"
+                           [controlName]="'prty'"/>
+  <app-date-input
+    [frmGroup]="frmGroup()"
+    [label]="'Creation Date'"
+    [controlName]="'CreDt'"
+  />
+
+</div>
