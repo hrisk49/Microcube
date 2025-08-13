@@ -2,594 +2,629 @@
   @if (frmGroup) {
     <form [formGroup]="frmGroup" class="form-wrapper">
 
-    <!-- Time and Value Information -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Time and Value Information'"/>
-      <div class="form-grid-col-1">
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Time Indicator 13C'"
-                             [controlName]="'timeIndi13C'"/>
+      <!-- Time and Value Information -->
+      <div class="panel">
+        <app-expansion-panel-header [isOpenSignal]="timeDatePanel" [panelTitle]="'Time and Value Information'"/>
+        @if (timeDatePanel()) {
+          <div class="form-grid-col-1">
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Time Indicator 13C'"
+                                 [controlName]="'timeIndi13C'"/>
 
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Time Sign 13C'"
-                             [controlName]="'timeSign13C'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Time Sign 13C'"
+                                 [controlName]="'timeSign13C'"/>
 
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Time Offset 13C'"
-                             [controlName]="'timeOffset13C'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Time Offset 13C'"
+                                 [controlName]="'timeOffset13C'"/>
 
-        <app-date-input [frmGroup]="frmGroup"
-                        [label]="'Value Date 32A'"
-                        [controlName]="'valDate32A'"/>
+            <app-date-input [frmGroup]="frmGroup"
+                            [label]="'Value Date 32A'"
+                            [controlName]="'valDate32A'"/>
 
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Value Currency 32A'"
-                             [controlName]="'valCurr32A'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Value Currency 32A'"
+                                 [controlName]="'valCurr32A'"/>
 
-        <app-amount-to-word-input [frmGroup]="frmGroup"
-                                  [label]="'Value Amount 32A'"
-                                  [controlName]="'valAmt32A'"/>
+            <app-amount-to-word-input [frmGroup]="frmGroup"
+                                      [label]="'Value Amount 32A'"
+                                      [controlName]="'valAmt32A'"/>
+          </div>
+
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header [isOpenSignal]="subPanelOpen"
+                                            [subPanelTitle]="'Time and Value Information'"/>
+
+            @if (subPanelOpen()) {
+              <div class="form-grid-col-1">
+                <app-text-base-input [frmGroup]="frmGroup"
+                                     [label]="'Time Indicator 13C'"
+                                     [controlName]="'timeIndi13C'"/>
+
+                <app-text-base-input [frmGroup]="frmGroup"
+                                     [label]="'Time Sign 13C'"
+                                     [controlName]="'timeSign13C'"/>
+
+                <app-text-base-input [frmGroup]="frmGroup"
+                                     [label]="'Time Offset 13C'"
+                                     [controlName]="'timeOffset13C'"/>
+
+                <app-date-input [frmGroup]="frmGroup"
+                                [label]="'Value Date 32A'"
+                                [controlName]="'valDate32A'"/>
+
+                <app-text-base-input [frmGroup]="frmGroup"
+                                     [label]="'Value Currency 32A'"
+                                     [controlName]="'valCurr32A'"/>
+
+                <app-amount-to-word-input [frmGroup]="frmGroup"
+                                          [label]="'Value Amount 32A'"
+                                          [controlName]="'valAmt32A'"/>
+              </div>
+            }
+          </div>
+        }
       </div>
-    </div>
 
-    <!-- Business Message Header -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Business Message Header'"/>
-      <div class="form-grid-col-1">
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Business Message Identifier'"
-                             [controlName]="'bizMsgIdr'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [isReadonly]="true"
-                             [label]="'Message Definition Identifier'"
-                             [controlName]="'msgDefIdr'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [isReadonly]="true"
-                             [label]="'Business Service'"
-                             [controlName]="'bizSvc'"/>
-
-        <app-date-input [frmGroup]="frmGroup"
-                        [label]="'Creation Date'"
-                        [controlName]="'creDt'"/>
-
-        <app-select-option-field [frmGroup]="frmGroup"
-                                 [options]="duplicateOptions"
-                                 [label]="'Copy Duplicate'"
-                                 [controlName]="'cpyDplct'"/>
-
-        <app-select-option-field [frmGroup]="frmGroup"
-                                 [options]="duplicateOptions"
-                                 [label]="'Possible Duplicate'"
-                                 [controlName]="'psblDplct'"/>
-
-        <app-select-option-field [frmGroup]="frmGroup"
-                                 [options]="priorityOptions"
-                                 [label]="'Priority'"
-                                 [controlName]="'priority'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Message ID'"
-                             [controlName]="'msgId'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Creation Date Time'"
-                             [controlName]="'creDtTm'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Number of Transactions'"
-                             [controlName]="'nbOfTxs'"/>
-      </div>
-    </div>
-
-    <!-- Settlement Information -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Settlement Information'"/>
-      @if (frmGroup) {
+      <!-- Business Message Header -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Business Message Header'"/>
         <div class="form-grid-col-1">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Business Message Identifier'"
+                               [controlName]="'bizMsgIdr'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [isReadonly]="true"
+                               [label]="'Message Definition Identifier'"
+                               [controlName]="'msgDefIdr'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [isReadonly]="true"
+                               [label]="'Business Service'"
+                               [controlName]="'bizSvc'"/>
+
+          <app-date-input [frmGroup]="frmGroup"
+                          [label]="'Creation Date'"
+                          [controlName]="'creDt'"/>
+
           <app-select-option-field [frmGroup]="frmGroup"
-                                   [options]="settlementOptions"
-                                   [label]="'Settlement Method'"
-                                   [controlName]="'sttlmMtd'"/>
+                                   [options]="duplicateOptions"
+                                   [label]="'Copy Duplicate'"
+                                   [controlName]="'cpyDplct'"/>
 
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Settlement Account Currency'"
-                               [controlName]="'sttlmAcctCcy'"/>
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="duplicateOptions"
+                                   [label]="'Possible Duplicate'"
+                                   [controlName]="'psblDplct'"/>
 
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Settlement Account ID'"
-                               [controlName]="'sttlmAcctId'"/>
-
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Settlement Account Type'"
-                               [controlName]="'sttlmAcctTp'"/>
-
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Settlement Account Name'"
-                               [controlName]="'sttlmAcctNm'"/>
-
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Settlement Account Scheme Name'"
-                               [controlName]="'sttlmAcctSchmeNm'"/>
-
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Settlement Account Issuer'"
-                               [controlName]="'sttlmAcctIssr'"/>
-        </div>
-      }
-    </div>
-
-    <!-- Payment Identification -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Payment Identification'"/>
-      @if (frmGroup) {
-        <div class="form-grid-col-1">
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Instruction ID'"
-                               [controlName]="'instrId'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'End to End ID'"
-                             [controlName]="'endToEndId'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Transaction ID'"
-                             [controlName]="'txId'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'UETR'"
-                             [controlName]="'uetr'"/>
-
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Clearing System Reference'"
-                               [controlName]="'clrSysRef'"/>
-        </div>
-      }
-    </div>
-
-    <!-- Payment Type Information -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Payment Type Information'"/>
-      @if (frmGroup) {
-        <div class="form-grid-col-1">
           <app-select-option-field [frmGroup]="frmGroup"
                                    [options]="priorityOptions"
-                                   [label]="'Instruction Priority'"
-                                   [controlName]="'instrPrty'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Clearing Channel'"
-                             [controlName]="'clrChanl'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Local Instrument Code'"
-                             [controlName]="'lclInstrmCD'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Local Instrument Proprietary'"
-                             [controlName]="'lclInstrmPrtry'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Category Purpose Code'"
-                             [controlName]="'ctgyPurpCd'"/>
+                                   [label]="'Priority'"
+                                   [controlName]="'priority'"/>
 
           <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Category Purpose Proprietary'"
-                               [controlName]="'ctgyPurpPrtry'"/>
+                               [label]="'Message ID'"
+                               [controlName]="'msgId'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Creation Date Time'"
+                               [controlName]="'creDtTm'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Number of Transactions'"
+                               [controlName]="'nbOfTxs'"/>
         </div>
-      }
-    </div>
+      </div>
 
-    <!-- Service Level -->
-    <div class="panel">
-      <app-sub-panel-header [subPanelTitle]="'Service Level'"
-                            [isButton]="true"
-                            (addAction)="addServiceRow()"/>
-      @if (frmGroup) {
-        <ng-container formArrayName="serviceLevels">
-          @for (group of serviceLevels.controls; track $index) {
-            <div [formGroupName]="$index" class="form-grid-col-1 mb-3">
-              <app-text-base-input
-                [frmGroup]="getServiceLevelGroup($index)"
-                [label]="'Code'"
-                [controlName]="'serviceCode'"/>
+      <!-- Settlement Information -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Settlement Information'"/>
+        @if (frmGroup) {
+          <div class="form-grid-col-1">
+            <app-select-option-field [frmGroup]="frmGroup"
+                                     [options]="settlementOptions"
+                                     [label]="'Settlement Method'"
+                                     [controlName]="'sttlmMtd'"/>
 
-              <app-select-option-field
-                [frmGroup]="getServiceLevelGroup($index)"
-                [options]="priorityOptions"
-                [label]="'Priority'"
-                [controlName]="'servicePriority'"/>
-              @if (serviceLevels.controls.length > 1) {
-                <button (click)="removeServiceRow($index)" class="remove-row-btn mt-8">
-                  Remove
-                </button>
-              }
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Settlement Account Currency'"
+                                 [controlName]="'sttlmAcctCcy'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Settlement Account ID'"
+                                 [controlName]="'sttlmAcctId'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Settlement Account Type'"
+                                 [controlName]="'sttlmAcctTp'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Settlement Account Name'"
+                                 [controlName]="'sttlmAcctNm'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Settlement Account Scheme Name'"
+                                 [controlName]="'sttlmAcctSchmeNm'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Settlement Account Issuer'"
+                                 [controlName]="'sttlmAcctIssr'"/>
+          </div>
+        }
+      </div>
+
+      <!-- Payment Identification -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Payment Identification'"/>
+        @if (frmGroup) {
+          <div class="form-grid-col-1">
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Instruction ID'"
+                                 [controlName]="'instrId'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'End to End ID'"
+                                 [controlName]="'endToEndId'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Transaction ID'"
+                                 [controlName]="'txId'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'UETR'"
+                                 [controlName]="'uetr'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Clearing System Reference'"
+                                 [controlName]="'clrSysRef'"/>
+          </div>
+        }
+      </div>
+
+      <!-- Payment Type Information -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Payment Type Information'"/>
+        @if (frmGroup) {
+          <div class="form-grid-col-1">
+            <app-select-option-field [frmGroup]="frmGroup"
+                                     [options]="priorityOptions"
+                                     [label]="'Instruction Priority'"
+                                     [controlName]="'instrPrty'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Clearing Channel'"
+                                 [controlName]="'clrChanl'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Local Instrument Code'"
+                                 [controlName]="'lclInstrmCD'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Local Instrument Proprietary'"
+                                 [controlName]="'lclInstrmPrtry'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Category Purpose Code'"
+                                 [controlName]="'ctgyPurpCd'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Category Purpose Proprietary'"
+                                 [controlName]="'ctgyPurpPrtry'"/>
+          </div>
+        }
+      </div>
+
+      <!-- Service Level -->
+      <div class="panel">
+        <app-sub-panel-header [subPanelTitle]="'Service Level'"
+                              [isButton]="true"
+                              (addAction)="addServiceRow()"/>
+        @if (frmGroup) {
+          <ng-container formArrayName="serviceLevels">
+            @for (group of serviceLevels.controls; track $index) {
+              <div [formGroupName]="$index" class="form-grid-col-1 mb-3">
+                <app-text-base-input
+                  [frmGroup]="getServiceLevelGroup($index)"
+                  [label]="'Code'"
+                  [controlName]="'serviceCode'"/>
+
+                <app-select-option-field
+                  [frmGroup]="getServiceLevelGroup($index)"
+                  [options]="priorityOptions"
+                  [label]="'Priority'"
+                  [controlName]="'servicePriority'"/>
+                @if (serviceLevels.controls.length > 1) {
+                  <button (click)="removeServiceRow($index)" class="remove-row-btn mt-8">
+                    Remove
+                  </button>
+                }
+              </div>
+            }
+          </ng-container>
+        }
+      </div>
+
+      <!-- Interbank Settlement -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Interbank Settlement'"/>
+        @if (frmGroup) {
+          <div class="form-grid-col-1">
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Interbank Settlement Amount Currency'"
+                                 [controlName]="'intrBkSttlmAmtCcy'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Interbank Settlement Amount'"
+                                 [controlName]="'intrBkSttlmAmt'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Interbank Settlement Date'"
+                                 [controlName]="'intrBkSttlmDt'"/>
+
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Settlement Priority'"
+                                 [controlName]="'sttlmPrty'"/>
+          </div>
+        }
+      </div>
+
+      <!-- Previous Instructing Agents -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Previous Instructing Agents'"/>
+
+        <!-- Agent 1 -->
+        <div class="sub-panel mb-4">
+          <h4 class="text-md font-semibold mb-2">Previous Instructing Agent 1</h4>
+          @if (frmGroup) {
+            <div class="form-grid-col-1">
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'BIC'"
+                                   [controlName]="'prvsInstgAgt1Bicfi'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Name'"
+                                   [controlName]="'prvsInstgAgt1Nm'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Account Currency'"
+                                   [controlName]="'prvsInstgAgt1AcctCcy'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Account ID'"
+                                   [controlName]="'prvsInstgAgt1AcctId'"/>
             </div>
           }
-        </ng-container>
-      }
-    </div>
-
-    <!-- Interbank Settlement -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Interbank Settlement'"/>
-      @if (frmGroup) {
-        <div class="form-grid-col-1">
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Interbank Settlement Amount Currency'"
-                               [controlName]="'intrBkSttlmAmtCcy'"/>
-
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Interbank Settlement Amount'"
-                               [controlName]="'intrBkSttlmAmt'"/>
-
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Interbank Settlement Date'"
-                               [controlName]="'intrBkSttlmDt'"/>
-
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Settlement Priority'"
-                               [controlName]="'sttlmPrty'"/>
         </div>
-      }
-    </div>
 
-    <!-- Previous Instructing Agents -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Previous Instructing Agents'"/>
+        <!-- Agent 2 -->
+        <div class="sub-panel mb-4">
+          <h4 class="text-md font-semibold mb-2">Previous Instructing Agent 2</h4>
+          @if (frmGroup) {
+            <div class="form-grid-col-1">
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'BIC'"
+                                   [controlName]="'prvsInstgAgt2Bicfi'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Name'"
+                                   [controlName]="'prvsInstgAgt2Nm'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Account Currency'"
+                                   [controlName]="'prvsInstgAgt2AcctCcy'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Account ID'"
+                                   [controlName]="'prvsInstgAgt2AcctId'"/>
+            </div>
+          }
+        </div>
 
-      <!-- Agent 1 -->
-      <div class="sub-panel mb-4">
-        <h4 class="text-md font-semibold mb-2">Previous Instructing Agent 1</h4>
+        <!-- Agent 3 -->
+        <div class="sub-panel mb-4">
+          <h4 class="text-md font-semibold mb-2">Previous Instructing Agent 3</h4>
+          @if (frmGroup) {
+            <div class="form-grid-col-1">
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'BIC'"
+                                   [controlName]="'prvsInstgAgt3Bicfi'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Name'"
+                                   [controlName]="'prvsInstgAgt3Nm'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Account Currency'"
+                                   [controlName]="'prvsInstgAgt3AcctCcy'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Account ID'"
+                                   [controlName]="'prvsInstgAgt3AcctId'"/>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Agents -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Agents'"/>
         @if (frmGroup) {
           <div class="form-grid-col-1">
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'BIC'"
-                                 [controlName]="'prvsInstgAgt1Bicfi'"/>
+                                 [label]="'Instructing Agent BIC'"
+                                 [controlName]="'instgAgtBicfi'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Name'"
-                                 [controlName]="'prvsInstgAgt1Nm'"/>
+                                 [label]="'Instructing Agent Name'"
+                                 [controlName]="'instgAgtNm'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Account Currency'"
-                                 [controlName]="'prvsInstgAgt1AcctCcy'"/>
+                                 [label]="'Instructed Agent BIC'"
+                                 [controlName]="'instdAgtBicfi'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Account ID'"
-                                 [controlName]="'prvsInstgAgt1AcctId'"/>
+                                 [label]="'Instructed Agent Name'"
+                                 [controlName]="'instdAgtNm'"/>
           </div>
         }
       </div>
 
-      <!-- Agent 2 -->
-      <div class="sub-panel mb-4">
-        <h4 class="text-md font-semibold mb-2">Previous Instructing Agent 2</h4>
+      <!-- Intermediary Agents -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Intermediary Agents'"/>
+
+        <!-- Agent 1 -->
+        <div class="sub-panel mb-4">
+          <h4 class="text-md font-semibold mb-2">Intermediary Agent 1</h4>
+          @if (frmGroup) {
+            <div class="form-grid-col-1">
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'BIC'"
+                                   [controlName]="'intrmyAgt1Bicfi'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Name'"
+                                   [controlName]="'intrmyAgt1Nm'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Account Currency'"
+                                   [controlName]="'intrmyAgt1AcctCcy'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Account ID'"
+                                   [controlName]="'intrmyAgt1AcctId'"/>
+            </div>
+          }
+        </div>
+
+        <!-- Agent 2 -->
+        <div class="sub-panel mb-4">
+          <h4 class="text-md font-semibold mb-2">Intermediary Agent 2</h4>
+          @if (frmGroup) {
+            <div class="form-grid-col-1">
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'BIC'"
+                                   [controlName]="'intrmyAgt2Bicfi'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Name'"
+                                   [controlName]="'intrmyAgt2Nm'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Account Currency'"
+                                   [controlName]="'intrmyAgt2AcctCcy'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Account ID'"
+                                   [controlName]="'intrmyAgt2AcctId'"/>
+            </div>
+          }
+        </div>
+
+        <!-- Agent 3 -->
+        <div class="sub-panel mb-4">
+          <h4 class="text-md font-semibold mb-2">Intermediary Agent 3</h4>
+          @if (frmGroup) {
+            <div class="form-grid-col-1">
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'BIC'"
+                                   [controlName]="'intrmyAgt3Bicfi'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Name'"
+                                   [controlName]="'intrmyAgt3Nm'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Account Currency'"
+                                   [controlName]="'intrmyAgt3AcctCcy'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Account ID'"
+                                   [controlName]="'intrmyAgt3AcctId'"/>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Debtor Information -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Debtor Information'"/>
         @if (frmGroup) {
           <div class="form-grid-col-1">
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'BIC'"
-                                 [controlName]="'prvsInstgAgt2Bicfi'"/>
+                                 [label]="'Debtor Name'"
+                                 [controlName]="'dbtrNm'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Name'"
-                                 [controlName]="'prvsInstgAgt2Nm'"/>
+                                 [label]="'Debtor Address Department'"
+                                 [controlName]="'dbtrAdrDept'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Account Currency'"
-                                 [controlName]="'prvsInstgAgt2AcctCcy'"/>
+                                 [label]="'Debtor Address Street Name'"
+                                 [controlName]="'dbtrAdrStrtNm'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Account ID'"
-                                 [controlName]="'prvsInstgAgt2AcctId'"/>
+                                 [label]="'Debtor Account ID'"
+                                 [controlName]="'dbtrAcctId'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Debtor Account Currency'"
+                                 [controlName]="'dbtrAcctCcy'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Debtor Agent BIC'"
+                                 [controlName]="'dbtrAgtBicfi'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Debtor Agent Name'"
+                                 [controlName]="'dbtrAgtNm'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Debtor Agent Account ID'"
+                                 [controlName]="'dbtrAgtAcctId'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Debtor Agent Account Currency'"
+                                 [controlName]="'dbtrAgtAcctCcy'"/>
           </div>
         }
       </div>
 
-      <!-- Agent 3 -->
-      <div class="sub-panel mb-4">
-        <h4 class="text-md font-semibold mb-2">Previous Instructing Agent 3</h4>
+      <!-- Creditor Information -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Creditor Information'"/>
         @if (frmGroup) {
           <div class="form-grid-col-1">
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'BIC'"
-                                 [controlName]="'prvsInstgAgt3Bicfi'"/>
+                                 [label]="'Creditor Agent BIC'"
+                                 [controlName]="'cdtrAgtBicfi'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Name'"
-                                 [controlName]="'prvsInstgAgt3Nm'"/>
+                                 [label]="'Creditor Agent Name'"
+                                 [controlName]="'cdtrAgtNm'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Account Currency'"
-                                 [controlName]="'prvsInstgAgt3AcctCcy'"/>
+                                 [label]="'Creditor Agent Account ID'"
+                                 [controlName]="'cdtrAgtAcctId'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Account ID'"
-                                 [controlName]="'prvsInstgAgt3AcctId'"/>
-          </div>
-        }
-      </div>
-    </div>
-
-    <!-- Agents -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Agents'"/>
-      @if (frmGroup) {
-        <div class="form-grid-col-1">
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Instructing Agent BIC'"
-                               [controlName]="'instgAgtBicfi'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Instructing Agent Name'"
-                               [controlName]="'instgAgtNm'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Instructed Agent BIC'"
-                               [controlName]="'instdAgtBicfi'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Instructed Agent Name'"
-                               [controlName]="'instdAgtNm'"/>
-        </div>
-      }
-    </div>
-
-    <!-- Intermediary Agents -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Intermediary Agents'"/>
-
-      <!-- Agent 1 -->
-      <div class="sub-panel mb-4">
-        <h4 class="text-md font-semibold mb-2">Intermediary Agent 1</h4>
-        @if (frmGroup) {
-          <div class="form-grid-col-1">
+                                 [label]="'Creditor Agent Account Currency'"
+                                 [controlName]="'cdtrAgtAcctCcy'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'BIC'"
-                                 [controlName]="'intrmyAgt1Bicfi'"/>
+                                 [label]="'Creditor Name'"
+                                 [controlName]="'cdtrNm'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Name'"
-                                 [controlName]="'intrmyAgt1Nm'"/>
+                                 [label]="'Creditor Account ID'"
+                                 [controlName]="'cdtrAcctId'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Account Currency'"
-                                 [controlName]="'intrmyAgt1AcctCcy'"/>
-            <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Account ID'"
-                                 [controlName]="'intrmyAgt1AcctId'"/>
+                                 [label]="'Creditor Account Currency'"
+                                 [controlName]="'cdtrAcctCcy'"/>
           </div>
         }
       </div>
 
-      <!-- Agent 2 -->
-      <div class="sub-panel mb-4">
-        <h4 class="text-md font-semibold mb-2">Intermediary Agent 2</h4>
+      <!-- Instructions -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Instructions'"/>
         @if (frmGroup) {
           <div class="form-grid-col-1">
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'BIC'"
-                                 [controlName]="'intrmyAgt2Bicfi'"/>
+                                 [label]="'Instruction For Creditor Agent Code'"
+                                 [controlName]="'instrForCdtrAgtCD'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Name'"
-                                 [controlName]="'intrmyAgt2Nm'"/>
+                                 [label]="'Instruction For Creditor Agent Info'"
+                                 [controlName]="'instrForCdtrAgtInf'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Account Currency'"
-                                 [controlName]="'intrmyAgt2AcctCcy'"/>
+                                 [label]="'Instruction For Next Agent 1'"
+                                 [controlName]="'instrForNxtAgt1'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Account ID'"
-                                 [controlName]="'intrmyAgt2AcctId'"/>
+                                 [label]="'Instruction For Next Agent 2'"
+                                 [controlName]="'instrForNxtAgt2'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Instruction For Next Agent 3'"
+                                 [controlName]="'instrForNxtAgt3'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Instruction For Next Agent 4'"
+                                 [controlName]="'instrForNxtAgt4'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Instruction For Next Agent 5'"
+                                 [controlName]="'instrForNxtAgt5'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Instruction For Next Agent 6'"
+                                 [controlName]="'instrForNxtAgt6'"/>
           </div>
         }
       </div>
 
-      <!-- Agent 3 -->
-      <div class="sub-panel mb-4">
-        <h4 class="text-md font-semibold mb-2">Intermediary Agent 3</h4>
+      <!-- Purpose and Remittance -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Purpose and Remittance'"/>
         @if (frmGroup) {
           <div class="form-grid-col-1">
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'BIC'"
-                                 [controlName]="'intrmyAgt3Bicfi'"/>
+                                 [label]="'Purpose Code'"
+                                 [controlName]="'purpCD'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Name'"
-                                 [controlName]="'intrmyAgt3Nm'"/>
+                                 [label]="'Purpose Proprietary'"
+                                 [controlName]="'purpPrtry'"/>
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Account Currency'"
-                                 [controlName]="'intrmyAgt3AcctCcy'"/>
-            <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Account ID'"
-                                 [controlName]="'intrmyAgt3AcctId'"/>
+                                 [label]="'Remittance Information'"
+                                 [controlName]="'rmtInf'"/>
           </div>
         }
       </div>
-    </div>
 
-    <!-- Debtor Information -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Debtor Information'"/>
-      @if (frmGroup) {
-        <div class="form-grid-col-1">
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Debtor Name'"
-                               [controlName]="'dbtrNm'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Debtor Address Department'"
-                               [controlName]="'dbtrAdrDept'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Debtor Address Street Name'"
-                               [controlName]="'dbtrAdrStrtNm'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Debtor Account ID'"
-                               [controlName]="'dbtrAcctId'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Debtor Account Currency'"
-                               [controlName]="'dbtrAcctCcy'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Debtor Agent BIC'"
-                               [controlName]="'dbtrAgtBicfi'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Debtor Agent Name'"
-                               [controlName]="'dbtrAgtNm'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Debtor Agent Account ID'"
-                               [controlName]="'dbtrAgtAcctId'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Debtor Agent Account Currency'"
-                               [controlName]="'dbtrAgtAcctCcy'"/>
-        </div>
-      }
-    </div>
+      <!-- Authorization -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Authorization'"/>
+        @if (frmGroup) {
+          <div class="form-grid-col-1">
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'First Authorized By'"
+                                 [controlName]="'auth1stBy'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Make Date'"
+                                 [controlName]="'makeDt'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'First Authorization Date'"
+                                 [controlName]="'auth1stDt'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Second Authorized By'"
+                                 [controlName]="'auth2ndBy'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Second Authorization Date'"
+                                 [controlName]="'auth2ndDt'"/>
+          </div>
+        }
+      </div>
 
-    <!-- Creditor Information -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Creditor Information'"/>
-      @if (frmGroup) {
-        <div class="form-grid-col-1">
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Creditor Agent BIC'"
-                               [controlName]="'cdtrAgtBicfi'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Creditor Agent Name'"
-                               [controlName]="'cdtrAgtNm'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Creditor Agent Account ID'"
-                               [controlName]="'cdtrAgtAcctId'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Creditor Agent Account Currency'"
-                               [controlName]="'cdtrAgtAcctCcy'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Creditor Name'"
-                               [controlName]="'cdtrNm'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Creditor Account ID'"
-                               [controlName]="'cdtrAcctId'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Creditor Account Currency'"
-                               [controlName]="'cdtrAcctCcy'"/>
-        </div>
-      }
-    </div>
+      <!-- Other Information -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Other Information'"/>
+        @if (frmGroup) {
+          <div class="form-grid-col-1">
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Last Action'"
+                                 [controlName]="'lastAction'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Branch ID'"
+                                 [controlName]="'branchId'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Transaction Reference Number 20'"
+                                 [controlName]="'trnRefNo20'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Related Reference 21'"
+                                 [controlName]="'relatedRef21'"/>
+          </div>
+        }
+      </div>
 
-    <!-- Instructions -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Instructions'"/>
-      @if (frmGroup) {
-        <div class="form-grid-col-1">
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Instruction For Creditor Agent Code'"
-                               [controlName]="'instrForCdtrAgtCD'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Instruction For Creditor Agent Info'"
-                               [controlName]="'instrForCdtrAgtInf'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Instruction For Next Agent 1'"
-                               [controlName]="'instrForNxtAgt1'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Instruction For Next Agent 2'"
-                               [controlName]="'instrForNxtAgt2'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Instruction For Next Agent 3'"
-                               [controlName]="'instrForNxtAgt3'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Instruction For Next Agent 4'"
-                               [controlName]="'instrForNxtAgt4'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Instruction For Next Agent 5'"
-                               [controlName]="'instrForNxtAgt5'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Instruction For Next Agent 6'"
-                               [controlName]="'instrForNxtAgt6'"/>
-        </div>
-      }
-    </div>
+      <!-- Related Information -->
+      <div class="panel">
+        <app-panel-header [panelTitle]="'Related Information'"/>
+        @if (frmGroup) {
+          <div class="form-grid-col-1">
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Related Character Set'"
+                                 [controlName]="'rltdCharSet'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Related From BIC'"
+                                 [controlName]="'rltdFrBicfi'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Related From Name'"
+                                 [controlName]="'rltdFrNm'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Related To BIC'"
+                                 [controlName]="'rltdToBicfi'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Related To Name'"
+                                 [controlName]="'rltdToNm'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Related Business Message ID'"
+                                 [controlName]="'rltdBizMsgIdr'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Related Message Definition ID'"
+                                 [controlName]="'rltdMsgDefIdr'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Related Business Service'"
+                                 [controlName]="'rltdBizSvc'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Related Creation Date'"
+                                 [controlName]="'rltdCreDt'"/>
+          </div>
+        }
+      </div>
 
-    <!-- Purpose and Remittance -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Purpose and Remittance'"/>
-      @if (frmGroup) {
-        <div class="form-grid-col-1">
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Purpose Code'"
-                               [controlName]="'purpCD'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Purpose Proprietary'"
-                               [controlName]="'purpPrtry'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Remittance Information'"
-                               [controlName]="'rmtInf'"/>
-        </div>
-      }
-    </div>
-
-    <!-- Authorization -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Authorization'"/>
-      @if (frmGroup) {
-        <div class="form-grid-col-1">
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'First Authorized By'"
-                               [controlName]="'auth1stBy'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Make Date'"
-                               [controlName]="'makeDt'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'First Authorization Date'"
-                               [controlName]="'auth1stDt'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Second Authorized By'"
-                               [controlName]="'auth2ndBy'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Second Authorization Date'"
-                               [controlName]="'auth2ndDt'"/>
-        </div>
-      }
-    </div>
-
-    <!-- Other Information -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Other Information'"/>
-      @if (frmGroup) {
-        <div class="form-grid-col-1">
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Last Action'"
-                               [controlName]="'lastAction'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Branch ID'"
-                               [controlName]="'branchId'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Transaction Reference Number 20'"
-                               [controlName]="'trnRefNo20'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Related Reference 21'"
-                               [controlName]="'relatedRef21'"/>
-        </div>
-      }
-    </div>
-
-    <!-- Related Information -->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Related Information'"/>
-      @if (frmGroup) {
-        <div class="form-grid-col-1">
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Related Character Set'"
-                               [controlName]="'rltdCharSet'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Related From BIC'"
-                               [controlName]="'rltdFrBicfi'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Related From Name'"
-                               [controlName]="'rltdFrNm'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Related To BIC'"
-                               [controlName]="'rltdToBicfi'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Related To Name'"
-                               [controlName]="'rltdToNm'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Related Business Message ID'"
-                               [controlName]="'rltdBizMsgIdr'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Related Message Definition ID'"
-                               [controlName]="'rltdMsgDefIdr'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Related Business Service'"
-                               [controlName]="'rltdBizSvc'"/>
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Related Creation Date'"
-                               [controlName]="'rltdCreDt'"/>
-        </div>
-      }
-    </div>
-
-  </form>
+    </form>
   }
 </div>
