@@ -1,75 +1,170 @@
 <div class="page-wrapper">
-  <div class="bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden mx-8">
+  <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mx-8">
+    <!-- Filter Section -->
+    <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 py-8 border-b border-gray-200">
+      <!-- <div class="flex items-center mb-6">
+        <div class="w-1 h-8 bg-blue-600 rounded-full mr-4"></div>
+        <h2 class="text-gray-900 font-semibold text-xl">Search Filters</h2>
+      </div> -->
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
+        <!-- Date Range Picker -->
+        <div class="lg:col-span-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-date-range-input [rangePicker]="picker">
+              <input matStartDate [(ngModel)]="startDate" placeholder="Start date">
+              <input matEndDate [(ngModel)]="endDate" placeholder="End date">
+            </mat-date-range-input>
+            <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+
+        <!-- Message Type Dropdown -->
+        <div class="lg:col-span-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Message Type</label>
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-select [(ngModel)]="selectedMessageType">
+              <mat-option value="">All Types</mat-option>
+              <mat-option *ngFor="let type of messageTypes" [value]="type.value">
+                {{type.label}}
+              </mat-option>
+            </mat-select>
+            <mat-hint>Select message type to filter</mat-hint>
+          </mat-form-field>
+        </div>
+        <!-- Action Buttons -->
+        <button mat-icon-button color="primary" (click)="onFindClick()"
+              class="shadow-md hover:shadow-lg transition-all duration-200 font-mediumm mb-6">
+              <mat-icon class="mr-2 text-xl">search</mat-icon>
+            </button>
+
+      </div>
+    </div>
+
     <!-- Search Header -->
-    <div class="bg-slate-50 px-6 py-4 border-b border-gray-200">
-      <div class="flex justify-between items-center">
-        <h2 class="text-gray-900 font-medium text-lg">Data Table</h2>
-        <div class="relative">
-          <input
-            type="text"
-            id="filterInput"
-            placeholder="Search..."
-            class="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-slate-500 focus:border-slate-500 outline-none text-sm w-64"
-            onkeyup="applyFilter()"
-          >
+    <div class="bg-white px-8 py-6 border-b border-gray-200">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex items-center">
+          <div class="w-2 h-6 bg-blue-600 rounded-full mr-3"></div>
+          <h2 class="text-gray-900 font-semibold text-lg">Data Table</h2>
+        </div>
+        <div class="relative w-full sm:w-auto">
+          <div class="relative">
+            <mat-icon class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">search</mat-icon>
+            <input type="text" id="filterInput" placeholder="Search in table..."
+              class="pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm w-full sm:w-80 transition-all duration-200"
+              (keyup)="applyFilter($event)">
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Table -->
-    <div class="overflow-auto max-h-[75vh]">
+    <div class="overflow-auto max-h-[105vh]">
       <table class="w-full">
-        <thead class="bg-slate-100 border-b border-gray-200">
-        <tr>
-          <th class="text-center py-3 px-6 font-medium text-gray-700 text-sm">No.</th>
-          <th class="text-center py-3 px-6 font-medium text-gray-700 text-sm">Name</th>
-          <th class="text-center py-3 px-6 font-medium text-gray-700 text-sm">Weight</th>
-          <th class="text-center py-3 px-6 font-medium text-gray-700 text-sm">Symbol</th>
-          <th class="text-center py-3 px-6 font-medium text-gray-700 text-sm">Actions</th>
-        </tr>
+        <thead class="bg-gradient-to-r from-slate-100 to-gray-100 border-b border-gray-200 sticky top-0">
+          <tr>
+            <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wide">No.</th>
+            <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wide">Message Ref No
+            </th>
+            <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wide">MT ID</th>
+            <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wide">Sender BIC</th>
+            <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wide">Made By</th>
+            <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wide">Make Date</th>
+            <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wide">Action</th>
+          </tr>
         </thead>
         <tbody class="divide-y divide-gray-100" id="tableBody">
-          @for (data of dataSource; track $index) {
-            <tr class="hover:bg-slate-50">
-              <td class="py-3 px-6 text-sm text-gray-700 text-center">{{$index + 1}}</td>
-              <td class="py-3 px-6 text-gray-900 font-medium">{{data?.name}}</td>
-              <td class="py-3 px-6 text-gray-700 text-center">{{data?.weight}}</td>
-              <td class="py-3 px-6 text-gray-700">{{data?.symbol}}</td>
-              <td class="py-3 px-6">
-                <div class="flex gap-2 justify-center">
-                  <button class="px-3 py-1 text-sm text-gray-600 hover:text-slate-800 hover:bg-slate-100 rounded">View</button>
-                  <button class="px-3 py-1 text-sm text-gray-600 hover:text-slate-800 hover:bg-slate-100 rounded">Edit</button>
-                  <button class="px-3 py-1 text-sm text-gray-600 hover:text-slate-800 hover:bg-slate-100 rounded">Delete</button>
+          <tr *ngFor="let data of dataSource; let i = index; trackBy: trackByFn"
+            class="hover:bg-blue-50 transition-colors duration-200">
+            <td class="py-4 px-6 text-sm text-gray-600 text-center font-medium">{{i + 1}}</td>
+            <td class="py-4 px-6 text-gray-900 font-semibold">{{data?.msgRefNo}}</td>
+            <td class="py-4 px-6 text-gray-700 text-center font-mono bg-gray-50 rounded px-2 py-1">{{data?.mtId}}</td>
+            <td class="py-4 px-6 text-gray-700 font-mono">{{data?.senderBic}}</td>
+            <td class="py-4 px-6 text-gray-700">{{data?.makeBy}}</td>
+            <td class="py-4 px-6 text-gray-700 text-center text-sm">{{data?.makeDt}}</td>
+            <td class="py-4 px-6">
+              <div class="flex gap-2 justify-center">
+                <button mat-icon-button matTooltip="View details"
+                  class="hover:bg-blue-100 transition-colors duration-200 text-blue-600 hover:text-blue-700"
+                  (click)="viewDetails(data)">
+                  <mat-icon class="text-lg">visibility</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Send Email"
+                  class="hover:bg-green-100 transition-colors duration-200 text-green-600 hover:text-green-700"
+                  (click)="sendEmail(data)">
+                  <mat-icon class="text-lg">email</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Download PDF"
+                  class="hover:bg-red-100 transition-colors duration-200 text-red-600 hover:text-red-700"
+                  (click)="downloadPdf(data)">
+                  <mat-icon class="text-lg">picture_as_pdf</mat-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Empty State -->
+          <tr *ngIf="dataSource.length === 0">
+            <td colspan="7" class="py-16 text-center text-gray-500">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                  <mat-icon class="text-2xl text-gray-400">inbox</mat-icon>
                 </div>
-              </td>
-            </tr>
-          }
+                <div class="text-lg font-semibold text-gray-600 mb-2">No data found</div>
+                <div class="text-sm text-gray-500">Try adjusting your search filters or check back later</div>
+              </div>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
 
     <!-- Pagination Footer -->
-    <div class="bg-slate-50 px-6 py-4 border-t border-gray-200">
-      <div class="flex justify-between items-center">
-        <div class="text-sm text-gray-600">
-          Showing 1 to 10 of 50 results
+    <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 py-6 border-t border-gray-200">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="text-sm text-gray-600 font-medium">
+          Showing <span class="text-blue-600 font-semibold">{{getStartIndex()}}</span> to
+          <span class="text-blue-600 font-semibold">{{getEndIndex()}}</span> of
+          <span class="text-blue-600 font-semibold">{{getTotalResults()}}</span> results
         </div>
 
-        <div class="flex items-center gap-2">
-          <select class="border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-slate-500 focus:border-slate-500 outline-none">
-            <option value="5">5 per page</option>
-            <option value="10" selected>10 per page</option>
-            <option value="20">20 per page</option>
-          </select>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <mat-form-field appearance="outline" class="text-sm w-full sm:w-auto">
+            <mat-select [(value)]="pageSize" (selectionChange)="onPageSizeChange()">
+              <mat-option value="5">5 per page</mat-option>
+              <mat-option value="10">10 per page</mat-option>
+              <mat-option value="20">20 per page</mat-option>
+              <mat-option value="50">50 per page</mat-option>
+            </mat-select>
+          </mat-form-field>
 
-          <nav class="flex gap-1 ml-4">
-            <button class="px-3 py-2 text-sm text-gray-500 bg-white border border-gray-300 rounded-l hover:bg-slate-50">First</button>
-            <button class="px-3 py-2 text-sm text-gray-500 bg-white border-t border-b border-gray-300 hover:bg-slate-50">Prev</button>
-            <button class="px-3 py-2 text-sm bg-slate-600 text-white border border-slate-600">1</button>
-            <button class="px-3 py-2 text-sm text-gray-500 bg-white border-t border-b border-gray-300 hover:bg-slate-50">2</button>
-            <button class="px-3 py-2 text-sm text-gray-500 bg-white border-t border-b border-gray-300 hover:bg-slate-50">3</button>
-            <button class="px-3 py-2 text-sm text-gray-500 bg-white border-t border-b border-gray-300 hover:bg-slate-50">Next</button>
-            <button class="px-3 py-2 text-sm text-gray-500 bg-white border border-gray-300 rounded-r hover:bg-slate-50">Last</button>
+          <nav class="flex items-center gap-1">
+            <button mat-icon-button [disabled]="currentPage === 1" (click)="goToFirstPage()"
+              class="hover:bg-blue-100 transition-colors duration-200">
+              <mat-icon>first_page</mat-icon>
+            </button>
+            <button mat-icon-button [disabled]="currentPage === 1" (click)="goToPreviousPage()"
+              class="hover:bg-blue-100 transition-colors duration-200">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+
+            <div
+              class="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg mx-2">
+              Page {{currentPage}} of {{getTotalPages()}}
+            </div>
+
+            <button mat-icon-button [disabled]="currentPage === getTotalPages()" (click)="goToNextPage()"
+              class="hover:bg-blue-100 transition-colors duration-200">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+            <button mat-icon-button [disabled]="currentPage === getTotalPages()" (click)="goToLastPage()"
+              class="hover:bg-blue-100 transition-colors duration-200">
+              <mat-icon>last_page</mat-icon>
+            </button>
           </nav>
         </div>
       </div>
