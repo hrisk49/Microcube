@@ -1,4 +1,4 @@
-import {Component, effect, inject, OnInit} from '@angular/core';
+import {Component, effect, inject, OnInit, signal} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
@@ -17,6 +17,8 @@ import {Mx002Service} from '../../service/mx002.service';
 import {AmountToWordInput} from "../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input";
 import {AgentComponent} from '../../components/agent/agent';
 import {BusinessApplicationHeader} from '../../components/business-application-header/business-application-header';
+import {DataSelectionModal} from '../../../../shared/components/data-selection-modal/data-selection-modal';
+import {BranchInfoService} from '../../../../shared/services/branch-info.service';
 
 @Component({
   selector: 'app-pacs-002',
@@ -27,21 +29,55 @@ import {BusinessApplicationHeader} from '../../components/business-application-h
     DateInput,
     PanelHeader,
     SubPanelHeader,
-    AgentComponent,
     BusinessApplicationHeader,
-
+    DataSelectionModal
   ],
   templateUrl: './pacs-002.html',
   standalone: true,
   styleUrl: './pacs-002.scss'
 })
 export class Pacs002 implements OnInit {
+  branchInfoService = inject(BranchInfoService);
   formBuilder = inject(FormBuilder);
   mx002Service = inject(Mx002Service);
   toastr = inject(ToastrService);
   frmGroup : FormGroup;
+
   onClickReset = ONCLICK_RESET;
   onClickSave = ONCLICK_SAVE;
+
+  isPickTableDialogOpen = signal<boolean>(false);
+  pickTablePair = signal<Map<string, string>>(new Map());
+  pickTableDataSource = signal<any[]>([]);
+  onPickclick(): void {
+    this.isPickTableDialogOpen.set(true);
+    this.pickTableDataSource.set([]);
+    this.pickTablePair.set(new Map());
+
+    this.branchInfoService.getBySwiftCodePrefix('MTBLBDDH').subscribe({
+      next: data => {
+        if (data.status) {
+          this.pickTablePair.set(new Map([
+            ['branchId', 'Branch Id'],
+            ['branchName', 'Branch Name'],
+            ['swift', 'Swift']
+          ]));
+          this.pickTableDataSource.set(data?.payload);
+        }
+
+      }, error: err => {
+        console.error('Error:', err);
+      }
+    });
+  }
+
+  closeDialog(data: any) {
+    this.isPickTableDialogOpen.set(false);
+    if (data) {
+      this.frmGroup.get('toBic')?.setValue(data?.swift);
+    }
+  }
+
 
   priorityOptions: SelectOptionsModel[] = [
     {key: 'high', value: 'High'},
@@ -107,7 +143,6 @@ export class Pacs002 implements OnInit {
   initForm(): void {
     this.frmGroup = this.formBuilder.group({
       // Business Application Header
-      amountToText:[''],
       fromBic:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
       toBic: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
       bizMsgIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
@@ -130,7 +165,6 @@ export class Pacs002 implements OnInit {
 
       //  FI To FI Payment Status Report
       msgId: ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
-
       creDtTm: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
 
       // Transaction Information And Status
@@ -155,7 +189,7 @@ export class Pacs002 implements OnInit {
       dept:['',[Validators.minLength(1),Validators.maxLength(70)]],
       subDept:['',[Validators.minLength(1),Validators.maxLength(70)]],
       strtNm:['',[Validators.minLength(1),Validators.maxLength(70)]],
-      BldgNb:['',[Validators.maxLength(16)]],
+      bldgNb:['',[Validators.maxLength(16)]],
       bldgNm:['',[Validators.maxLength(35)]],
       flr:['',Validators.maxLength(70)],
       pstBx:['',[Validators.maxLength(16)]],
@@ -165,10 +199,9 @@ export class Pacs002 implements OnInit {
       twnLctnNm:['',[Validators.maxLength(35)]],
       dstrctNm:['',[Validators.maxLength(35)]],
       ctrySubDvsn:['',[Validators.maxLength(35)]],
-      ctry:[''],
+      ctry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
       adrLine:['',[Validators.maxLength(70)]],
-      id:[''],
-      ctryOfRes:[''],
+      ctryOfRes: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
 
       //  Number of transaction per status
       dtldNbOfTxs:['',Validators.required],
@@ -177,17 +210,17 @@ export class Pacs002 implements OnInit {
 
 
       orgIdBic:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
-      orgIdLei:[''],
+      orgIdLei:['',Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)],
       orgIdOthrId:[''],
       orgIdOthrScNmCd:[''],
       orgIdOthrIssr:[''],
-      orgIdOthrCd:[''], // added by developer
-      orgIdOthrIssrPtry:[''], // added by developer
+      orgIdOthrCd:['',[Validators.maxLength(4)]], // added
+      orgIdOthrIssrPtry:['',[Validators.maxLength(35)]], // added
 
-      birthDt:[''],
-      prvcOfBirth:[''],
-      cityOfBirth:[''],
-      ctryOfBirth:[''],
+      birthDt:['',Validators.required],
+      prvcOfBirth:['',[Validators.maxLength(35)]],
+      cityOfBirth:['',[Validators.maxLength(35)]],
+      ctryOfBirth:['',[Validators.pattern(/^[A-Z]{2}$/)]],
       prvtOthId1:[''],
       prvtOthIdSchNmCd1:[''],
       prvtOthIdIssr1:[''],
@@ -197,17 +230,17 @@ export class Pacs002 implements OnInit {
 
       // Status Reason Information block StsRsnInf
       StsRsnInf: [''],
-      rsnCd:['',Validators.required],
-      rsnPrtry :['',Validators.required],
-      addtlInf1:[''],
-      addtlInf2:[''],
+      rsnCd:['',[Validators.required,Validators.maxLength(4)]],
+      rsnPrtry :['',[Validators.required,Validators.maxLength(35)]],
+      addtlInf1:['',[Validators.maxLength(105),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]],
+      addtlInf2:['',[Validators.maxLength(105),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]],
 
-      clrSysRef: [''],
-      instgAgtBic: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
-      instdAgt: ['',Validators.required],
+      fctvIntrBkSttlmDt :[],
+      clrSysRef: ['',[Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+$/)]],
+      instgAgtBicfi: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
 
       // Agent Information
-      bIcfi:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      instdAgtBicfi:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
       clrSysIdCd:[''],
       mmbId:[''],
       lei:[''],
@@ -228,7 +261,6 @@ export class Pacs002 implements OnInit {
       prtryControl?.updateValueAndValidity({ emitEvent: false });
     });
 
-    // 🔹 Watch othrSchmPrtry changes
     this.frmGroup.get('rsnPrtry')?.valueChanges.subscribe(value => {
       const cdControl = this.frmGroup.get('rsnCd');
       if (value) {
@@ -254,4 +286,5 @@ export class Pacs002 implements OnInit {
     })
   }
 
+  protected readonly DataSelectionModal = DataSelectionModal;
 }

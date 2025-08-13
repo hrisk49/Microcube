@@ -1,85 +1,54 @@
+
 <div class="page-wrapper">
   <form [formGroup]="frmGroup" class="form-wrapper">
 
     <!--Business Application Header-->
     <div class="panel">
-      <app-panel-header [panelTitle]="'Business Application Header'"/>
-      <div class="form-grid-4-col">
-
-        <app-amount-to-word-input [frmGroup]="frmGroup"
-                                  [label]="'Amount to Text'"
-                                  [controlName]="'amountToText'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'From BIC'"
-                             [controlName]="'fromBic'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'To BIC'"
-                             [controlName]="'toBic'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [isReadonly]="true"
-                             [label]="'Business Message Identifier'"
-                             [controlName]="'businessMessageIdentifier'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Message Definition Identifier'"
-                             [controlName]="'messageDefinitionIdentifier'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Business Service'"
-                             [controlName]="'businessService'"/>
-
-        <app-select-option-field [frmGroup]="frmGroup"
-                                 [options]="duplicateOptions"
-                                 [label]="'Copy Duplicate'"
-                                 [controlName]="'copyDuplicate'"/>
-
-        <app-select-option-field [frmGroup]="frmGroup"
-                                 [options]="priorityOptions"
-                                 [label]="'Priority'"
-                                 [controlName]="'priority'"/>
-
-      </div>
+      <app-business-application-header
+        [frmGroup]="frmGroup"
+        [priorityOptions]="priorityOptions"
+        [duplicateOptions]="duplicateOptions"/>
 
       <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Related'"
-                              [divElement]="related"
-                              [isOptional]="true"/>
-        <div #related class="form-grid-4-col">
+        <app-sub-panel-header [subPanelTitle]="'Related'"/>
+        <div class="form-grid-3-col">
+
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'From BIC'"
-                               [controlName]="'relatedFromBic'"/>
+                               [controlName]="'rltdFrBic'"/>
 
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'To BIC'"
-                               [controlName]="'relatedToBic'"/>
+                               [controlName]="'rltdToBic'"/>
 
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'Business Message Identifier'"
-                               [controlName]="'relatedBusinessMessageIdentifier'"/>
+                               [controlName]="'rltdBizMsgIdr'"/>
 
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'Message Definition Identifier'"
-                               [controlName]="'relatedMessageDefinitionIdentifier'"/>
+                               [controlName]="'rltdMsgDefIdr'"/>
 
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'Business Service'"
-                               [controlName]="'relatedBusinessService'"/>
+                               [controlName]="'rltdBizSvc'"/>
 
           <app-select-option-field [frmGroup]="frmGroup"
                                    [options]="duplicateOptions"
                                    [label]="'Copy Duplicate'"
-                                   [controlName]="'relatedCopyDuplicate'"/>
+                                   [controlName]="'rltdCpyDplct'"/>
 
           <app-select-option-field [frmGroup]="frmGroup"
                                    [options]="priorityOptions"
                                    [label]="'Priority'"
-                                   [controlName]="'relatedPriority'"/>
+                                   [controlName]="'rltdPrty'"/>
+
         </div>
+
       </div>
+
     </div>
+
 
     <!--    Charges payment Notification-->
 
@@ -179,6 +148,24 @@
       </fieldset>
 
       <fieldset class="custom-fieldset">
+        <legend>Charges Account Owner</legend>
+        <div class="form-grid-4-col">
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Account Owner BICFI'"
+                               [controlName]="'ownrBicfi'"/>
+
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Member Identification'"
+                               [controlName]="'mmbId'"/>
+
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="clrsSystemoptions"
+                                   [label]="'Clearing System Identification'"
+                                   [controlName]="'clrSysIdCd'"/>
+        </div>
+      </fieldset>
+
+      <fieldset class="custom-fieldset">
         <legend> Other Scheme Name</legend>
         <div class="form-grid-4-col">
           <app-text-base-input [frmGroup]="frmGroup"
@@ -229,10 +216,10 @@
                                [controlName]="'crgsAccTypePrtry'"/>
 
           <app-select-option-field
-                              [frmGroup]="frmGroup"
-                              [options]="currencyOptions"
-                              [label]="'Currency'"
-                              [controlName]="'ccy'"/>
+            [frmGroup]="frmGroup"
+            [options]="currencyOptions"
+            [label]="'Currency'"
+            [controlName]="'ccy'"/>
         </div>
       </fieldset>
 
@@ -263,16 +250,16 @@
                                [controlName]="'instrId'"/>
 
           <app-text-base-input [frmGroup]="frmGroup"
-                                [label]="'Mandate Id'"
-                                [controlName]="'mndtId'"/>
+                               [label]="'Mandate Id'"
+                               [controlName]="'mndtId'"/>
 
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'Cheque Number'"
                                [controlName]="'chqNb'"/>
 
           <app-text-base-input [frmGroup]="frmGroup"
-                                [label]="'Account Owner Transaction Id'"
-                                [controlName]="'acctOwnrTxId'"/>
+                               [label]="'Account Owner Transaction Id'"
+                               [controlName]="'acctOwnrTxId'"/>
 
           <app-text-base-input [frmGroup]="frmGroup"
                                [label]="'Account Servicer Transaction Id'"
