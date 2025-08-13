@@ -18,6 +18,7 @@ import { Pacs058 } from './feature/pacs-058/pacs-058';
 import { Pacs060 } from './feature/pacs-060/pacs-060';
 import { Pacs107 } from './feature/pacs-107/pacs-107';
 import {Pacs053} from './feature/pacs-053/pacs-053';
+import {PrimeTable} from '../../shared/components/prime-table/prime-table';
 
 export const SwiftmxRouting: Routes = [
   {path: 'pacs-002', component: Pacs002},
@@ -38,4 +39,5 @@ export const SwiftmxRouting: Routes = [
   {path: 'pacs-106', component: Pacs106},
   {path: 'pacs-107', component: Pacs107},
   {path: 'pacs-109', component: Pacs109},
+  {path: 'optimus-prime', component: PrimeTable},
 ];
