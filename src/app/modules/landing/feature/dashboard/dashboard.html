@@ -3,57 +3,180 @@
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <div
-        class="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform border border-gray-100">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium">Recurring</p>
-            <p class="text-3xl text-gray-800 mt-1">৳200000</p>
+        class="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform border border-gray-200 cursor-pointer min-h-48 col-span-1 group relative hover:-translate-y-1">
+        <div class="flex flex-col h-full">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+            <p class="text-xl text-gray-800">Amounts/Today</p>
+            <!-- <div
+              class="w-10 h-10 bg-[#C5BCF7] rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
+              <i data-lucide="dollar-sign" class="w-5 h-5 text-white"></i>
+            </div> -->
           </div>
-          <div
-            class="w-16 h-16 bg-[#C5BCF7] rounded-2xl flex items-center justify-center shadow-lg">
-            <i data-lucide="users" class="w-8 h-8 text-white"></i>
+          <div class="space-y-1.5 flex-1 overflow-hidden">
+              <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+              <span class="text-sm text-gray-600">USD</span>
+              <span class="text-sm font-medium text-gray-800">200M</span>
+            </div>
+              <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+                <span class="text-sm text-gray-600">GBP</span>
+                <span class="text-sm font-medium text-gray-800">150M</span>
+              </div>
+              <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+                <span class="text-sm text-gray-600">EURO</span>
+                <span class="text-sm font-medium text-gray-800">180M</span>
+              </div>
+             
+          </div>
+          
+          <!-- Hidden content that shows on hover -->
+          <!-- <div class="hidden group-hover:block mt-4 pt-4 border-t border-gray-200">
+            <div class="space-y-2" >
+              <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                <span class="text-sm text-gray-600">USD</span>
+                <span class="text-base font-semibold text-gray-800">2000M</span>
+              </div>              
+              <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                <span class="text-sm text-gray-600">JPY</span>
+                <span class="text-base font-semibold text-gray-800">3200M</span>
+              </div>
+              <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                <span class="text-sm text-gray-600">CHF</span>
+                <span class="text-base font-semibold text-gray-800">1800M</span>
+              </div>
+              <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                <span class="text-sm text-gray-600">CAD</span>
+                <span class="text-base font-semibold text-gray-800">1400M</span>
+              </div>
+              <div class="flex justify-between items-center py-1">
+                <span class="text-sm text-gray-600">Total</span>
+                <span class="text-base font-bold text-blue-600">18.1B</span>
+              </div>
+            </div>
+          </div> -->
+        </div>
+      </div>
+
+      <div
+        class="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform border border-gray-200 cursor-pointer min-h-48 col-span-1 group relative hover:-translate-y-1">
+        <div class="flex flex-col h-full">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+            <p class="text-xl text-gray-800">Transactions/Today</p>
+            <!-- <div
+              class="w-10 h-10 bg-[#B2F5EA] rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
+              <i data-lucide="bar-chart-3" class="w-5 h-5 text-white"></i>
+            </div> -->
+          </div>
+          <div class="space-y-1.5 flex-1 overflow-hidden">
+            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+              <span class="text-sm text-gray-600 font-medium">USD</span>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-1 bg-green-50 text-gray-700 rounded-md text-xs font-medium border border-green-200">
+                  <span class="font-bold">↓</span> 220
+                </span>
+                <span class="px-2 py-1 bg-red-50 text-gray-700 rounded-md text-xs font-medium border border-red-200">
+                  <span class="font-bold">↑</span> 140
+                </span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+              <span class="text-sm text-gray-600 font-medium">GBP</span>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-1 bg-green-50 text-gray-700 rounded-md text-xs font-medium border border-green-200">
+                  <span class="font-bold">↓</span> 180
+                </span>
+                <span class="px-2 py-1 bg-red-50 text-gray-700 rounded-md text-xs font-medium border border-red-200">
+                  <span class="font-bold">↑</span> 95
+                </span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+              <span class="text-sm text-gray-600 font-medium">EURO</span>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-1 bg-green-50 text-gray-700 rounded-md text-xs font-medium border border-green-200">
+                  <span class="font-bold">↓</span> 150
+                </span>
+                <span class="px-2 py-1 bg-red-50 text-gray-700 rounded-md text-xs font-medium border border-red-200">
+                  <span class="font-bold">↑</span> 75
+                </span>
+              </div>
+            </div>
+           
+          </div>
+          
+          <!-- Hidden content that shows on hover -->
+          <!-- <div class="hidden group-hover:block mt-4 pt-4 border-t border-gray-200">
+            <div class="">
+              <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                <span class="text-sm text-gray-600">JPY</span>
+                <span class="text-sm font-semibold text-gray-800">IN-280/OUT-160</span>
+              </div>
+              <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                <span class="text-sm text-gray-600">CHF</span>
+                <span class="text-sm font-semibold text-gray-800">IN-190/OUT-110</span>
+              </div>
+              <div class="flex justify-between items-center py-1 border-b border-gray-100">
+                <span class="text-sm text-gray-600">CAD</span>
+                <span class="text-sm font-semibold text-gray-800">IN-150/OUT-85</span>
+              </div>
+              <div class="flex justify-between items-center py-1">
+                <span class="text-sm text-gray-600">Total</span>
+                <span class="text-sm font-bold text-blue-600">IN-1590/OUT-945</span>
+              </div>
+            </div>
+          </div> -->
+        </div>
+      </div>
+
+      <div
+        class="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform border border-gray-200 cursor-pointer min-h-48 col-span-1 group relative hover:-translate-y-1">
+        <div class="flex flex-col h-full">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+            <p class="text-xl text-gray-800">Incoming Messages</p>
+            <!-- <div
+              class="w-10 h-10 bg-[#FFC4B9] rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
+              <i data-lucide="inbox" class="w-5 h-5 text-white"></i>
+            </div> -->
+          </div>
+          <div class="space-y-1.5 flex-1 overflow-hidden">
+            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+              <span class="text-sm text-gray-600">Total</span>
+              <span class="text-sm font-medium text-gray-800">130</span>
+            </div>
+            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+              <span class="text-sm text-gray-600">Processed</span>
+              <span class="text-sm font-medium text-gray-800">100</span>
+            </div>
+            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+              <span class="text-sm text-gray-600">Pending</span>
+              <span class="text-sm font-medium text-gray-800">30</span>
+            </div>
           </div>
         </div>
       </div>
 
       <div
-        class="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform border border-gray-100">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium">Savings</p>
-            <p class="text-3xl text-gray-800 mt-1">৳400000</p>
+        class="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform border border-gray-200 cursor-pointer min-h-48 col-span-1 group relative hover:-translate-y-1">
+        <div class="flex flex-col h-full">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+            <p class="text-xl text-gray-800">Outgoing Messages</p>
+            <!-- <div
+              class="w-10 h-10 bg-[#A0AEC0] rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
+              <i data-lucide="send" class="w-5 h-5 text-white"></i>
+            </div> -->
           </div>
-          <div
-            class="w-16 h-16 bg-[#B2F5EA] rounded-2xl flex items-center justify-center shadow-lg">
-            <i data-lucide="dollar-sign" class="w-8 h-8 text-white"></i>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform border border-gray-100">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium">Fixed Deposit</p>
-            <p class="text-3xl text-gray-800 mt-1">৳500000</p>
-          </div>
-          <div
-            class="w-16 h-16 bg-[#FFC4B9] rounded-2xl flex items-center justify-center shadow-lg">
-            <i data-lucide="shopping-cart" class="w-8 h-8 text-white"></i>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="bg-white rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 transform border border-gray-100">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm font-medium">Current</p>
-            <p class="text-3xl text-gray-800 mt-1">৳300000</p>
-          </div>
-          <div
-            class="w-16 h-16 bg-[#A0AEC0] rounded-2xl flex items-center justify-center shadow-lg">
-            <i data-lucide="trending-up" class="w-8 h-8 text-white"></i>
+          <div class="space-y-1.5 flex-1 overflow-hidden">
+            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+              <span class="text-sm text-gray-600">Total</span>
+              <span class="text-sm font-medium text-gray-800">123</span>
+            </div>
+            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+              <span class="text-sm text-gray-600">ACK</span>
+              <span class="text-sm font-medium text-gray-800">80</span>
+            </div>
+            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+              <span class="text-sm text-gray-600">NACK</span>
+              <span class="text-sm font-medium text-gray-800">43</span>
+            </div>
           </div>
         </div>
       </div>
@@ -64,14 +187,16 @@
       <!-- Pie Chart Area -->
       <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl text-gray-800">Deposit Distribution by Account Type</h3>
+          <h3 class="text-xl text-gray-800">Incoming Messages</h3>
           <div class="flex space-x-2">
             <button
-              class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors">
+              (click)="setPieChartFilter('weekly')"
+              [class]="pieChartFilter === 'weekly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">
               Weekly
             </button>
             <button
-              class="px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              (click)="setPieChartFilter('monthly')"
+              [class]="pieChartFilter === 'monthly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">
               Monthly
             </button>
           </div>
@@ -91,14 +216,16 @@
       <!-- Bar Chart Area -->
       <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100">
         <div class="flex items-center justify-between mb-6">
-          <h3 class="text-xl text-gray-800">Branch Overview</h3>
+          <h3 class="text-xl text-gray-800">Outgoing Messages</h3>
           <div class="flex space-x-2">
             <button
-              class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors">
+              (click)="setBarChartFilter('weekly')"
+              [class]="barChartFilter === 'weekly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">
               Weekly
             </button>
             <button
-              class="px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors">
+              (click)="setBarChartFilter('monthly')"
+              [class]="barChartFilter === 'monthly' ? 'px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors' : 'px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition-colors'">
               Monthly
             </button>
           </div>
@@ -117,3 +244,4 @@
     </div>
   </div>
 </div>
+
