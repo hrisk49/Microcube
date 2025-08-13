@@ -7,8 +7,10 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatDialogModule, MatDialog} from '@angular/material/dialog';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
+import {XmlViewDialog} from '../xml-view-dialog/xml-view-dialog';
 
 @Component({
   selector: 'app-prime-table',
@@ -22,6 +24,7 @@ import {CommonModule} from '@angular/common';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    MatDialogModule,
     FormsModule,
     ReactiveFormsModule
   ],
@@ -62,7 +65,7 @@ export class PrimeTable {
     { value: '19', label: 'MT 019 - Intra-Position Movement Cancellation Request' }
   ];
 
-  constructor() {
+  constructor(private dialog: MatDialog) {
     this.applyPagination();
   }
 
@@ -217,8 +220,104 @@ export class PrimeTable {
   // Action methods for view, email and PDF
   viewDetails(data: SwiftMessage) {
     console.log('Viewing details for:', data);
-    // TODO: Implement view details functionality
-    // Example: this.router.navigate(['/details', data.msgRefNo]);
+    
+    // Sample XML data - in a real application, this would come from an API
+    const xmlData = `<?xml version="1.0" encoding="utf-16"?>
+<Document xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.09">
+  <FIToFICstmrCdtTrf>
+    <GrpHdr>
+      <MsgId>${data.msgRefNo}</MsgId>
+      <CreDtTm>2022-04-17T15:29:42.1057464+06:00</CreDtTm>
+      <SttlmInf>
+        <SttlmMtd>INDA</SttlmMtd>
+        <InstdRmbrsmntAgt>
+          <FinInstnId>
+            <BICFI>ABBLBDDH011</BICFI>
+          </FinInstnId>
+        </InstdRmbrsmntAgt>
+      </SttlmInf>
+      <InstgAgt>
+        <FinInstnId>
+          <BICFI>${data.senderBic}</BICFI>
+        </FinInstnId>
+      </InstgAgt>
+      <InstdAgt>
+        <FinInstnId>
+          <BICFI>ABGRGRAA201</BICFI>
+        </FinInstnId>
+      </InstdAgt>
+    </GrpHdr>
+    <CdtTrfTxInf>
+      <PmtId>
+        <InstrId>${data.msgRefNo}</InstrId>
+        <EndToEndId>CROPS/SX-25T/2015-10-13</EndToEndId>
+        <TxId>${data.msgRefNo}</TxId>
+        <UETR>49639fda-4c91-4913-81b7-0b1d68c80d49</UETR>
+      </PmtId>
+      <IntrBkSttlmAmt Ccy="012">12</IntrBkSttlmAmt>
+      <IntrBkSttlmDt>2022-04-17</IntrBkSttlmDt>
+      <ChrgBr>DEBT</ChrgBr>
+      <ChrgsInf>
+        <Amt Ccy="USD">8798</Amt>
+      </ChrgsInf>
+      <PrvsInstgAgt1>
+        <FinInstnId />
+      </PrvsInstgAgt1>
+      <PrvsInstgAgt2>
+        <FinInstnId />
+      </PrvsInstgAgt2>
+      <PrvsInstgAgt3>
+        <FinInstnId />
+      </PrvsInstgAgt3>
+      <DbtrAcct>
+        <Id>
+          <Othr>
+            <Id>11100007273</Id>
+          </Othr>
+        </Id>
+      </DbtrAcct>
+      <DbtrAgt>
+        <FinInstnId>
+          <BICFI>SEBDBDDHCRP</BICFI>
+        </FinInstnId>
+      </DbtrAgt>
+      <CdtrAgt>
+        <FinInstnId>
+          <BICFI>ACARIT21019</BICFI>
+        </FinInstnId>
+      </CdtrAgt>
+      <Cdtr>
+        <Nm>erte</Nm>
+        <PstlAdr>
+          <StrtNm>3232</StrtNm>
+          <PstCd>3232</PstCd>
+          <TwnNm>433</TwnNm>
+          <Ctry>43</Ctry>
+        </PstlAdr>
+      </Cdtr>
+      <CdtrAcct>
+        <Id>
+          <Othr>
+            <Id>34</Id>
+          </Othr>
+        </Id>
+      </CdtrAcct>
+    </CdtTrfTxInf>
+  </FIToFICstmrCdtTrf>
+</Document>`;
+
+    const dialogRef = this.dialog.open(XmlViewDialog, {
+      width: '80%',
+      maxWidth: '1200px',
+      height: '90%',
+      maxHeight: '800px',
+      data: { xmlData: xmlData },
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Dialog closed');
+    });
   }
 
   sendEmail(data: SwiftMessage) {
@@ -231,6 +330,12 @@ export class PrimeTable {
     console.log('Downloading PDF for:', data);
     // TODO: Implement PDF download functionality
     // Example: this.pdfService.generatePdf(data);
+  }
+
+  processData(data: SwiftMessage) {
+    console.log('Processing data for:', data);
+    // TODO: Implement process functionality
+    // Example: this.processService.processMessage(data);
   }
 }
 
