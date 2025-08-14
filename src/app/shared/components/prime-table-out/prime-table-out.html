@@ -1,7 +1,7 @@
 <div class="page-wrapper">
   <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mx-8">
     <!-- Filter Section -->
-    <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 py-8 border-b border-gray-200">
+    <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 py-6 border-b border-gray-200">
       <!-- <div class="flex items-center mb-6">
         <div class="w-1 h-8 bg-blue-600 rounded-full mr-4"></div>
         <h2 class="text-gray-900 font-semibold text-xl">Search Filters</h2>
@@ -50,7 +50,7 @@
           </mat-form-field>
         </div>
 
-       
+
                  <!-- Action Buttons -->
          <button mat-icon-button
            (click)="onFindClick()"
@@ -62,11 +62,11 @@
     </div>
 
     <!-- Search Header -->
-    <div class="bg-white px-8 py-6 border-b border-gray-200">
+    <div class="bg-white px-5 py-3 border-b border-gray-200">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div class="flex items-center">
-          <div class="w-2 h-6 bg-blue-600 rounded-full mr-3"></div>
-          <h2 class="text-gray-900 font-semibold text-lg">Outgoing Messages</h2>
+          <div class="w-2 h- bg-blue-600 rounded-full mr-3"></div>
+          <h2 class="text-gray-900 font-medium text-lg">Outgoing Messages</h2>
         </div>
         <div class="relative w-full sm:w-auto">
           <div class="relative">
@@ -100,14 +100,14 @@
           <tr *ngFor="let data of dataSource; let i = index; trackBy: trackByFn"
             class="hover:bg-blue-50 transition-colors duration-200">
             <td class="py-4 px-6 text-sm text-gray-600 text-center font-medium">{{i + 1}}</td>
-           
+
             <td class="py-4 text-left px-6 text-gray-900 font-mono">{{data?.msgRefNo}}</td>
             <td class="py-4 text-right px-6 text-gray-700 text-center font-mono bg-gray-50 rounded px-2 py-1">{{data?.mtId}}</td>
             <td class="py-4 text-left px-6 text-gray-700 font-mono">{{data?.senderBic}}</td>
             <td class="py-4 text-left px-6 text-gray-700">{{data?.makeBy}}</td>
             <td class="py-4 px-6 text-gray-700 text-center text-sm">{{data?.makeDt}}</td>
              <td class="py-4 px-6 text-center">
-              <span class="px-3 py-1 text-xs font-semibold rounded-full" 
+              <span class="px-3 py-1 text-xs font-semibold rounded-full"
                 [ngClass]="data?.status === 'ACK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
                 {{data?.status}}
               </span>
@@ -159,12 +159,12 @@
     </div>
 
     <!-- Pagination Footer -->
-    <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 py-6 border-t border-gray-200">
+    <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 pt-4 border-t border-gray-200">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div class="text-sm text-gray-600 font-medium">
-          Showing <span class="text-blue-600 font-semibold">{{getStartIndex()}}</span> to
-          <span class="text-blue-600 font-semibold">{{getEndIndex()}}</span> of
-          <span class="text-blue-600 font-semibold">{{getTotalResults()}}</span> results
+        <div class="text-sm text-gray-800">
+          Showing <span class="font-medium">{{getStartIndex()}}</span> to
+          <span class="font-medium">{{getEndIndex()}}</span> of
+          <span class="font-medium">{{getTotalResults()}}</span> results
         </div>
 
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
