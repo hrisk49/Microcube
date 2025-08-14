@@ -19,54 +19,125 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4">
+<!--      <div-->
+<!--        class="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform border border-gray-200 cursor-pointer min-h-48 col-span-1 group relative hover:-translate-y-1">-->
+<!--        <div class="flex flex-col h-full">-->
+<!--          <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">-->
+<!--            <p class="text-xl text-gray-800">Incoming Amount</p>-->
+<!--            &lt;!&ndash; <div-->
+<!--              class="w-10 h-10 bg-[#C5BCF7] rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">-->
+<!--              <i data-lucide="dollar-sign" class="w-5 h-5 text-white"></i>-->
+<!--            </div> &ndash;&gt;-->
+<!--          </div>-->
+<!--          <div class="space-y-1.5 flex-1 overflow-hidden">-->
+<!--              <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">-->
+<!--              <span class="text-sm text-gray-600">USD</span>-->
+<!--              <span class="text-sm font-medium text-gray-800">200M</span>-->
+<!--            </div>-->
+<!--              <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">-->
+<!--                <span class="text-sm text-gray-600">GBP</span>-->
+<!--                <span class="text-sm font-medium text-gray-800">150M</span>-->
+<!--              </div>-->
+<!--              <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">-->
+<!--                <span class="text-sm text-gray-600">EURO</span>-->
+<!--                <span class="text-sm font-medium text-gray-800">180M</span>-->
+<!--              </div>-->
+
+<!--          </div>-->
+
+<!--          &lt;!&ndash; Hidden content that shows on hover &ndash;&gt;-->
+<!--          &lt;!&ndash; <div class="hidden group-hover:block mt-4 pt-4 border-t border-gray-200">-->
+<!--            <div class="space-y-2" >-->
+<!--              <div class="flex justify-between items-center py-1 border-b border-gray-100">-->
+<!--                <span class="text-sm text-gray-600">USD</span>-->
+<!--                <span class="text-base font-semibold text-gray-800">2000M</span>-->
+<!--              </div>-->
+<!--              <div class="flex justify-between items-center py-1 border-b border-gray-100">-->
+<!--                <span class="text-sm text-gray-600">JPY</span>-->
+<!--                <span class="text-base font-semibold text-gray-800">3200M</span>-->
+<!--              </div>-->
+<!--              <div class="flex justify-between items-center py-1 border-b border-gray-100">-->
+<!--                <span class="text-sm text-gray-600">CHF</span>-->
+<!--                <span class="text-base font-semibold text-gray-800">1800M</span>-->
+<!--              </div>-->
+<!--              <div class="flex justify-between items-center py-1 border-b border-gray-100">-->
+<!--                <span class="text-sm text-gray-600">CAD</span>-->
+<!--                <span class="text-base font-semibold text-gray-800">1400M</span>-->
+<!--              </div>-->
+<!--              <div class="flex justify-between items-center py-1">-->
+<!--                <span class="text-sm text-gray-600">Total</span>-->
+<!--                <span class="text-base font-bold text-blue-600">18.1B</span>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div> &ndash;&gt;-->
+<!--        </div>-->
+<!--      </div>-->
+
       <div
         class="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 transform border border-gray-200 cursor-pointer min-h-48 col-span-1 group relative hover:-translate-y-1">
         <div class="flex flex-col h-full">
           <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
-            <p class="text-xl text-gray-800">Amount</p>
+            <p class="text-xl text-gray-800">Transaction Amount</p>
             <!-- <div
-              class="w-10 h-10 bg-[#C5BCF7] rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
-              <i data-lucide="dollar-sign" class="w-5 h-5 text-white"></i>
+              class="w-10 h-10 bg-[#B2F5EA] rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
+              <i data-lucide="bar-chart-3" class="w-5 h-5 text-white"></i>
             </div> -->
           </div>
           <div class="space-y-1.5 flex-1 overflow-hidden">
-              <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-              <span class="text-sm text-gray-600">USD</span>
-              <span class="text-sm font-medium text-gray-800">200M</span>
+            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+              <span class="text-sm text-gray-600 font-medium">USD</span>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-1 bg-green-50 text-gray-700 rounded-md text-xs font-medium border border-green-200 w-16 text-center">
+                  <span class="font-bold">↓</span> 1000
+                </span>
+                <span class="px-2 py-1 bg-red-50 text-gray-700 rounded-md text-xs font-medium border border-red-200 w-16 text-center">
+                  <span class="font-bold">↑</span> 500
+                </span>
+              </div>
             </div>
-              <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-                <span class="text-sm text-gray-600">GBP</span>
-                <span class="text-sm font-medium text-gray-800">150M</span>
+            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+              <span class="text-sm text-gray-600 font-medium">GBP</span>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-1 bg-green-50 text-gray-700 rounded-md text-xs font-medium border border-green-200 w-16 text-center">
+                  <span class="font-bold">↓</span> 700.25
+                </span>
+                <span class="px-2 py-1 bg-red-50 text-gray-700 rounded-md text-xs font-medium border border-red-200 w-16 text-center">
+                  <span class="font-bold">↑</span> 430.75
+                </span>
               </div>
-              <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
-                <span class="text-sm text-gray-600">EURO</span>
-                <span class="text-sm font-medium text-gray-800">180M</span>
+            </div>
+            <div class="flex justify-between items-center py-2 px-3 rounded-md stat-row-hover">
+              <span class="text-sm text-gray-600 font-medium">EURO</span>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-1 bg-green-50 text-gray-700 rounded-md text-xs font-medium border border-green-200 w-16 text-center">
+                  <span class="font-bold">↓</span> 2500
+                </span>
+                <span class="px-2 py-1 bg-red-50 text-gray-700 rounded-md text-xs font-medium border border-red-200 w-16 text-center">
+                  <span class="font-bold">↑</span> 75.98
+                </span>
               </div>
+            </div>
 
           </div>
 
           <!-- Hidden content that shows on hover -->
           <!-- <div class="hidden group-hover:block mt-4 pt-4 border-t border-gray-200">
-            <div class="space-y-2" >
-              <div class="flex justify-between items-center py-1 border-b border-gray-100">
-                <span class="text-sm text-gray-600">USD</span>
-                <span class="text-base font-semibold text-gray-800">2000M</span>
-              </div>
+            <div class="">
               <div class="flex justify-between items-center py-1 border-b border-gray-100">
                 <span class="text-sm text-gray-600">JPY</span>
-                <span class="text-base font-semibold text-gray-800">3200M</span>
+                <span class="text-sm font-semibold text-gray-800">IN-280/OUT-160</span>
               </div>
               <div class="flex justify-between items-center py-1 border-b border-gray-100">
                 <span class="text-sm text-gray-600">CHF</span>
-                <span class="text-base font-semibold text-gray-800">1800M</span>
+                <span class="text-sm font-semibold text-gray-800">IN-190/OUT-110</span>
               </div>
               <div class="flex justify-between items-center py-1 border-b border-gray-100">
                 <span class="text-sm text-gray-600">CAD</span>
-                <span class="text-base font-semibold text-gray-800">1400M</span>
+                <span class="text-sm font-semibold text-gray-800">IN-150/OUT-85</span>
               </div>
               <div class="flex justify-between items-center py-1">
                 <span class="text-sm text-gray-600">Total</span>
-                <span class="text-base font-bold text-blue-600">18.1B</span>
+                <span class="text-sm font-bold text-blue-600">IN-1590/OUT-945</span>
               </div>
             </div>
           </div> -->
