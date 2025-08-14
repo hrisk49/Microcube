@@ -160,16 +160,22 @@ export class Pacs009 implements OnInit {
   interbankPanel: WritableSignal<boolean> = signal(true);
   previousAgentsPanel: WritableSignal<boolean> = signal(true);
   prevAgent1Panel: WritableSignal<boolean> = signal(false);
+  prevAgent1AddressPanel:  WritableSignal<boolean> = signal(false);
   prevAgent2Panel: WritableSignal<boolean> = signal(false);
+  prevAgent2AddressPanel:  WritableSignal<boolean> = signal(false);
   prevAgent3Panel: WritableSignal<boolean> = signal(false);
+  prevAgent3AddressPanel:  WritableSignal<boolean> = signal(false);
   agentsPanel: WritableSignal<boolean> = signal(true);
   instructingAgentPanel: WritableSignal<boolean> = signal(true);
+  instgAgtAddressPanel: WritableSignal<boolean> = signal(false);
   instructedAgentPanel: WritableSignal<boolean> = signal(true);
+  instructedAgentAddressPanel: WritableSignal<boolean> = signal(false);
   intermediaryAgentsPanel: WritableSignal<boolean> = signal(true);
   intermediary1Panel: WritableSignal<boolean> = signal(false);
   intermediary2Panel: WritableSignal<boolean> = signal(false);
   intermediary3Panel: WritableSignal<boolean> = signal(false);
   debtorPanel: WritableSignal<boolean> = signal(true);
+  creditTransferTransactionPanel: WritableSignal<boolean> = signal(true);
   creditorPanel: WritableSignal<boolean> = signal(true);
   instructionsPanel: WritableSignal<boolean> = signal(true);
   purposePanel: WritableSignal<boolean> = signal(true);
@@ -183,7 +189,7 @@ export class Pacs009 implements OnInit {
   bicTableHeaders = new Map<string, string>([
     ['swift', 'SWIFT Code'],
     ['branchName', 'Branch Name'],
-    ['address', 'address']
+    ['address', 'Address']
   ]);
 
   constructor(private branchInfoService: BranchInfoService) {
@@ -265,12 +271,12 @@ export class Pacs009 implements OnInit {
       instrId: [''],
       endToEndId: [''],
       txId: ['', Validators.required],
-      uetr: ['', Validators.required],
+      uetr: [''],
       clrSysRef: [''],
 
       // Payment Type Information
       instrPrty: [null],
-      clrChanl: [''],
+      clrChanl: [null],
       serviceLevels: this.formBuilder.array([]),
       lclInstrmCD: [''],
       lclInstrmPrtry: [''],
@@ -309,7 +315,7 @@ export class Pacs009 implements OnInit {
       prvsInstgAgt1AdrLine: [''],
       // Previous Instructing Agent 1 Account (flat)
       prvsInstgAgt1AcctId: [''],
-      prvsInstgAgt1AcctCcy: [''],
+      prvsInstgAgt1AcctCcy: [null],
       prvsInstgAgt1AcctTp: [''],
       prvsInstgAgt1AcctNm: [''],
       prvsInstgAgt1AcctSchmeNm: [''],
@@ -656,11 +662,11 @@ export class Pacs009 implements OnInit {
       rmtInf: [''],
 
       // Authorization
-      auth1stBy: [''],
-      makeDt: [''],
-      auth1stDt: [''],
-      auth2ndBy: [''],
-      auth2ndDt: [''],
+      // auth1stBy: [''],
+      // makeDt: [''],
+      // auth1stDt: [''],
+      // auth2ndBy: [''],
+      // auth2ndDt: [''],
 
       // Other
       lastAction: [''],
