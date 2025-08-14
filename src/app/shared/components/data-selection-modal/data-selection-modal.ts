@@ -30,7 +30,8 @@ export class DataSelectionModal implements OnInit {
   pageSizeOptions: number[] = [5, 10, 25, 50, 100];
 
   // result = output<any | undefined>();
-
+  multiSelect = false;
+  
   constructor(
     public dialogRef: MatDialogRef<any>,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -47,6 +48,11 @@ export class DataSelectionModal implements OnInit {
   dialogClose(value: any) {
     // this.result.emit(value);
     this.dialogRef.close(value);
+  }
+
+  // Get ordered column keys based on pickTablePair Map
+  getOrderedColumnKeys(): string[] {
+    return Array.from(this.pickTablePair.keys());
   }
 
   isPresentHead(key: string): boolean {
