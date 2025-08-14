@@ -24,7 +24,7 @@ export class MenuDrawer {
 
   openSections: { [key: string]: boolean } = {
     mxMessages: true,
-    reports: true,
+    messageList: false,
   };
 
   toggleSection(section: string): void {

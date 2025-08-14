@@ -1,4 +1,4 @@
-export interface addressModel {
+export interface AddressModel {
   dept: string;             // Department (max 70)
   subDept: string;          // SubDepartment (max 70)
   strtNm: string;           // StreetName (max 70)

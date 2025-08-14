@@ -1,6 +1,6 @@
-import {partyModel} from './party.model';
-import {agentModel} from './agent.model';
-import {relatedModel} from './related.model';
+import {PartyModel} from './party.model';
+import {AgentModel} from './agent.model';
+import {RelatedModel} from './related.model';
 
 export interface Mx002Model {
   bizMsgIdr: string;              // BusinessMessageIdentifier max 35
@@ -22,7 +22,7 @@ export interface Mx002Model {
   txSts: string;                  // ExternalPaymentTransactionStatus1Code (enum if known)
 
   // Status Reason Information block StsRsnInf
-  orgtr: partyModel;                   // Originator (custom type)
+  orgtr: PartyModel;                   // Originator (custom type)
   rsnCd: string;                  // Reason CODE
   rsnPrtry: string;               // Reason Proprietary
   addtlInf1: string;              // AdditionalInformation max 105
@@ -31,7 +31,7 @@ export interface Mx002Model {
   // END
   fctvIntrBkSttlmDt: string;      // EffectiveInterbankSettlementDate
   clrSysRef: string;              // ClearingSystemReference
-  instgAgt: agentModel;                // InstructingAgent (custom type)
-  instdAgt: agentModel;                // InstructedAgent (custom type)
-  rltd: relatedModel;                  // Related info
+  instgAgt: AgentModel;                // InstructingAgent (custom type)
+  instdAgt: AgentModel;                // InstructedAgent (custom type)
+  rltd: RelatedModel;                  // Related info
 }

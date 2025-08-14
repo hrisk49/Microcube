@@ -1,3 +1,5 @@
+
+
 import {Component, effect, inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
@@ -15,6 +17,7 @@ import {PanelHeader} from '../../../../shared/components/panel-header/panel-head
 import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
 import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
 import {Mx054Service} from '../../service/mx054.service';
+import {BusinessApplicationHeader} from '../../components/business-application-header/business-application-header';
 
 @Component({
   selector: 'app-pacs-106',
@@ -26,6 +29,7 @@ import {Mx054Service} from '../../service/mx054.service';
     PanelHeader,
     SubPanelHeader,
     AmountToWordInput,
+    BusinessApplicationHeader,
   ],
   templateUrl: './pacs-106.html',
   standalone: true,
@@ -69,6 +73,9 @@ export class Pacs106 implements OnInit {
     {key:'002', value: 'EUR'},
     {key:'003', value: 'AED'}
   ];
+  clrsSystemoptions: SelectOptionsModel [] = [
+    {key:'Cd', value:'Code'}
+  ]
 
   constructor() {
     BUTTON_VISIBILITY.set({
@@ -98,35 +105,26 @@ export class Pacs106 implements OnInit {
   initForm(): void {
     this.frmGroup = this.formBuilder.group({
 
-      // Business Application Header
-      amountToText: ['',],
-      // fromBic: ['', Validators.required],
-      fromBic: [''],
-      // toBic: ['', Validators.required],
-      toBic: [''],
-      businessMessageIdentifier: [''],
-      messageDefinitionIdentifier: [''],
-      // businessService: ['', Validators.required],
-      businessService: [''],
-      copyDuplicate: ['codu'],
-      priority: ['high'],
+      fromBic:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      toBic: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      bizMsgIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
+      msgDefIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
+      bizSvc: ['',[Validators.required, Validators.minLength(6),Validators.maxLength(35),Validators.pattern(/^[a-z0-9]{1,10}(\.[a-z0-9]{1,10})+\.\d\d$/)]],
+      CreDt: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
+
+      cpyDplct: [null],
+      psblDplct: [null],
+      prty: ['high'],
 
       // Business Application Header -> related
-      // relatedFromBic: ['', Validators.required],
-      relatedFromBic: [''],
-      // relatedToBic: ['', Validators.required],
-      relatedToBic: [''],
-      relatedBusinessMessageIdentifier: [''],
-      relatedMessageDefinitionIdentifier: [''],
-      // relatedBusinessService: ['', Validators.required],
-      relatedBusinessService: [''],
-      relatedCopyDuplicate: ['codu'],
-      relatedPriority: ['high'],
+      rltdFrBic: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      rltdToBic: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      rltdBizMsgIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
+      rltdMsgDefIdr: [''],
+      rltdBizSvc: ['',[Validators.required, Validators.minLength(6),Validators.maxLength(35),Validators.pattern(/^[a-z0-9]{1,10}(\.[a-z0-9]{1,10})+\.\d\d$/)]],
+      rltdCpyDplct: ['codu'],
+      rltdPrty: ['high'],
 
-      // FI To FI Customer Credit Transfer
-      // FI To FI Customer -> Group Header
-      messageIdentification: [''],
-      creDtTm: [new Date()],
 
       // FI To FI Customer -> Settlement Information
       settlementMethod: ['clrg'],
@@ -170,9 +168,17 @@ export class Pacs106 implements OnInit {
       localInstrument: [''],
       categoryPurpose: [''],
 
+      // Payment Type Info -> Service Level
+
+      serviceLevels: this.formBuilder.array([
+        this.createServiceLevelGroup()
+      ]),
+
+      serviceCode: [''],
       servicePriority: ['high'],
 
       // Credit Transfer -> Normal
+      instructingAgentBic1: [''],
       instructingAccountId1: [''],
       instructingIban1: [''],
       instructingLei1: [''],
@@ -184,42 +190,64 @@ export class Pacs106 implements OnInit {
       instructingAccountId3: [''],
       instructingIban3: [''],
       instructingLei3: [''],
+
+      // Credit Transfer -> Debitor
+      // debitorName: ['', Validators.required],
+      debitorName: [''],
+      debitorPostalAddress: [''],
+      debitorOrganisationIdentification: [''],
+      debitorPrivateIdentification: [''],
+      debitorCountryOfResidence: [''],
+      debitorAgentBic: [''],
+      debitorAccountId: [''],
+      debitorIban: [''],
+      debitorLei: [''],
+
       // Charges Payment Notification
-      msgId: [''],
+      msgId: ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
+      creDtTm: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
+
       // charges Requestor
-      bicfi:[''],
-      ClrSysMmbId:['',Validators.required],
+      bicfi: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
       lei:[''],
       nm: [''],
 
       // Postal address
-      dept: [''],
-      subDept: [''],
-      strtNm: [''],
-      bldgNb: [''],
-      blggNm: [''],
-      flr: [''],
-      pstBx: [''],
-      room: [''],
-      pstCd: [''],
-      twnNm: [''],
-      ctrySubDvsn: [''],
-      ctry:[''],
-      twnLctnNm: [''],
-      dstrctNm: [''],
-      adrLine1:[''],
-      adrLine2:[''],
-      adrLine3:[''],
+
+      dept:['',[Validators.minLength(1),Validators.maxLength(70)]],
+      subDept:['',[Validators.minLength(1),Validators.maxLength(70)]],
+      strtNm:['',[Validators.minLength(1),Validators.maxLength(70)]],
+      bldgNb:['',[Validators.maxLength(16)]],
+      bldgNm:['',[Validators.maxLength(35)]],
+      flr:['',Validators.maxLength(70)],
+      pstBx:['',[Validators.maxLength(16)]],
+      room:['',[Validators.maxLength(70)]],
+      pstCd:['',[Validators.maxLength(16)]],
+      twnNm:['',[Validators.maxLength(35)]],
+      twnLctnNm:['',[Validators.maxLength(35)]],
+      dstrctNm:['',[Validators.maxLength(35)]],
+      ctrySubDvsn:['',[Validators.maxLength(35)]],
+      ctry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      adrLine:['',[Validators.maxLength(70)]],
+      ctryOfRes: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+
+      adrLine1:['',[Validators.maxLength(35),Validators.pattern(/[0-9a-zA-Z/\-\?:\(\)\.,'\+ !#$%&\*=^_`\{\|\}~";<>@\[\]\\]+/)]],
+      adrLine2:['',[Validators.maxLength(35),Validators.pattern(/[0-9a-zA-Z/\-\?:\(\)\.,'\+ !#$%&\*=^_`\{\|\}~";<>@\[\]\\]+/)]],
+      adrLine3:['',[Validators.maxLength(35),Validators.pattern(/[0-9a-zA-Z/\-\?:\(\)\.,'\+ !#$%&\*=^_`\{\|\}~";<>@\[\]\\]+/)]],
 
 
+      //  Charges Account Owner
+      ownrBicfi: ['',[Validators.pattern(/^[A-Z0-9]{4,4}[A-Z]{2,2}[A-Z0-9]{2,2}([A-Z0-9]{3,3}){0,1}/)]],
+      clrSysIdCd :['',[Validators.required,Validators.maxLength(35)]],
+      mmbId:['',[Validators.maxLength(28),Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+/)]],
       //  other Schem Information
       othrSchmCd:['', Validators.required],
       othrSchmPrtry: ['', Validators.required],
       finOthrIssr: ['',Validators.required],
 
       // Total Charges
-      nbOfChrgsRcrds:[Validators.required],
-      ctrlSum :[],
+      nbOfChrgsRcrds:[Validators.required,Validators.pattern(/^[0-9]{1,15}/)],
+      ctrlSum :[Validators.pattern(/^d{1,18}(\.\d{1,17})?$/)],
       ttlChrgsAmt:[],
       cdtDbtInd: [''],
 
@@ -230,7 +258,7 @@ export class Pacs106 implements OnInit {
       ccy: ['001'],
 
       // Charges Per-Transaction Information
-      ChrgsId : ['',Validators.required],
+      ChrgsId : ['',[Validators.required,Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+/)]],
       rcrdId: [''],
       msgNmId: ['',Validators.required],
       acctSvcrRef:[''],
@@ -246,25 +274,52 @@ export class Pacs106 implements OnInit {
       valDt: [''],
       nbOfChrgsBrkdwnItms: ['', Validators.required],
 
-      // Payment Type Info -> Service Level
 
-      serviceLevels: this.formBuilder.array([
-        this.createServiceLevelGroup()
-      ]),
-
-      // Credit Transfer -> Debitor
-      // debitorName: ['', Validators.required],
-      debitorName: [''],
-      debitorPostalAddress: [''],
-      debitorOrganisationIdentification: [''],
-      debitorPrivateIdentification: [''],
-      debitorCountryOfResidence: [''],
-      debitorAgentBic: [''],
-      debitorAccountId: [''],
-      debitorIban: [''],
-      debitorLei: [''],
+    });
 
 
+    this.frmGroup.get('othrSchmCd')?.valueChanges.subscribe(value => {
+      const othrSchmPrtryControl = this.frmGroup.get('othrSchmPrtry');
+      if (value) {
+        othrSchmPrtryControl?.setValue('');
+        othrSchmPrtryControl?.clearValidators();
+      } else {
+        othrSchmPrtryControl?.setValidators(Validators.required);
+      }
+      othrSchmPrtryControl?.updateValueAndValidity({ emitEvent: false });
+    });
+
+    this.frmGroup.get('othrSchmPrtry')?.valueChanges.subscribe(value => {
+      const othrSchmCdControl = this.frmGroup.get('othrSchmCd');
+      if (value) {
+        othrSchmCdControl?.setValue('');
+        othrSchmCdControl?.clearValidators();
+      } else {
+        othrSchmCdControl?.setValidators(Validators.required);
+      }
+      othrSchmCdControl?.updateValueAndValidity({ emitEvent: false });
+    });
+
+    this.frmGroup.get('crgsAccTypeCd')?.valueChanges.subscribe(value => {
+      const crgsAccTypePrtryControl = this.frmGroup.get('crgsAccTypePrtry');
+      if (value) {
+        crgsAccTypePrtryControl?.setValue('');
+        crgsAccTypePrtryControl?.clearValidators();
+      } else {
+        crgsAccTypePrtryControl?.setValidators(Validators.required);
+      }
+      crgsAccTypePrtryControl?.updateValueAndValidity({ emitEvent: false });
+    });
+
+    this.frmGroup.get('othrSchmPrtry')?.valueChanges.subscribe(value => {
+      const crgsAccTypeCdControl = this.frmGroup.get('crgsAccTypeCd');
+      if (value) {
+        crgsAccTypeCdControl?.setValue('');
+        crgsAccTypeCdControl?.clearValidators();
+      } else {
+        crgsAccTypeCdControl?.setValidators(Validators.required);
+      }
+      crgsAccTypeCdControl?.updateValueAndValidity({ emitEvent: false });
     });
 
     FormGroupSignal.set(this.frmGroup);

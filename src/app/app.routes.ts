@@ -1,9 +1,11 @@
 import {Routes} from '@angular/router';
 import {Layout} from './layout/layout';
+import {Login} from './core/auth/login/login';
 
 export const routes: Routes = [
 
   {path: '', redirectTo: 'login', pathMatch: 'full'},
+  {path: 'login', component: Login},
   {
     path: '', component: Layout,
     data: {

@@ -1,8 +1,8 @@
-import {addressModel} from './address.model';
+import {AddressModel} from './address.model';
 
-export  interface  partyModel {
+export  interface  PartyModel {
   nm: string;                          // Name, max 140, allowed chars defined externally
-  address: addressModel;                   // Address object
+  address: AddressModel;                   // Address object
   ctryOfRes: string;                  // Country of Residence (2-letter ISO code)
 
   // Organisation Identification

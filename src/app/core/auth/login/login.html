@@ -1,5 +1,5 @@
 <div class="page-wrapper">
-  <div class="flex justify-center items-center h-[100vh]">
+  <div class="flex justify-center items-center min-h-[100dvh] -mb-4">
     <div class="w-full max-w-md ">
       <!-- Logo and Header -->
       <div class="text-center mb-8">
@@ -8,13 +8,13 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
           </svg>
         </div>
-        <h1 class="text-2xl font-semibold text-slate-800 mb-2">SecureBank</h1>
+        <h1 class="text-2xl font-semibold text-slate-800 mb-2">Secure Bank</h1>
         <p class="text-slate-600">Access your banking dashboard</p>
       </div>
 
       <!-- Login Form -->
       <div class="bg-white rounded-2xl shadow-xl shadow-slate-200/50 p-8">
-        <form class="space-y-6" onsubmit="handleLogin(event)">
+        <form class="space-y-6">
           <!-- Username/Email Field -->
           <div>
             <label for="username" class="block text-sm font-medium text-slate-700 mb-2">
@@ -69,22 +69,22 @@
           </div>
 
           <!-- Remember Me and Forgot Password -->
-          <div class="flex items-center justify-between">
-            <div class="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                class="h-4 w-4 text-slate-800 focus:ring-slate-800 border-slate-300 rounded"
-              >
-              <label for="remember-me" class="ml-2 text-sm text-slate-600">
-                Remember me
-              </label>
-            </div>
-            <a href="#" class="text-sm font-medium text-slate-800 hover:text-slate-600 transition-colors duration-200">
-              Forgot password?
-            </a>
-          </div>
+<!--          <div class="flex items-center justify-between">-->
+<!--            <div class="flex items-center">-->
+<!--              <input-->
+<!--                id="remember-me"-->
+<!--                name="remember-me"-->
+<!--                type="checkbox"-->
+<!--                class="h-4 w-4 text-slate-800 focus:ring-slate-800 border-slate-300 rounded"-->
+<!--              >-->
+<!--              <label for="remember-me" class="ml-2 text-sm text-slate-600">-->
+<!--                Remember me-->
+<!--              </label>-->
+<!--            </div>-->
+<!--            <a href="#" class="text-sm font-medium text-slate-800 hover:text-slate-600 transition-colors duration-200">-->
+<!--              Forgot password?-->
+<!--            </a>-->
+<!--          </div>-->
 
           <!-- Login Button -->
           <button routerLink="/dashboard"
@@ -95,56 +95,56 @@
           </button>
 
           <!-- Divider -->
-          <div class="relative">
-            <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-t border-slate-200"></div>
-            </div>
-            <div class="relative flex justify-center text-sm">
-              <span class="px-2 bg-white text-slate-500">Or continue with</span>
-            </div>
-          </div>
+<!--          <div class="relative">-->
+<!--            <div class="absolute inset-0 flex items-center">-->
+<!--              <div class="w-full border-t border-slate-200"></div>-->
+<!--            </div>-->
+<!--            <div class="relative flex justify-center text-sm">-->
+<!--              <span class="px-2 bg-white text-slate-500">Or continue with</span>-->
+<!--            </div>-->
+<!--          </div>-->
 
           <!-- Biometric Login Options -->
-          <div class="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              class="flex items-center justify-center px-4 py-3 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-all duration-200"
-            >
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
-              </svg>
-              Touch ID
-            </button>
-            <button
-              type="button"
-              class="flex items-center justify-center px-4 py-3 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-all duration-200"
-            >
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-              </svg>
-              Face ID
-            </button>
-          </div>
+<!--          <div class="grid grid-cols-2 gap-3">-->
+<!--            <button-->
+<!--              type="button"-->
+<!--              class="flex items-center justify-center px-4 py-3 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-all duration-200"-->
+<!--            >-->
+<!--              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
+<!--                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>-->
+<!--              </svg>-->
+<!--              Touch ID-->
+<!--            </button>-->
+<!--            <button-->
+<!--              type="button"-->
+<!--              class="flex items-center justify-center px-4 py-3 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 transition-all duration-200"-->
+<!--            >-->
+<!--              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
+<!--                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>-->
+<!--                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>-->
+<!--              </svg>-->
+<!--              Face ID-->
+<!--            </button>-->
+<!--          </div>-->
         </form>
       </div>
 
       <!-- Footer -->
-      <div class="text-center mt-6">
-        <p class="text-sm text-slate-600">
-          Need help?
-          <a href="#" class="font-medium text-slate-800 hover:text-slate-600 transition-colors duration-200">
-            Contact Support
-          </a>
-        </p>
-        <div class="flex items-center justify-center mt-4 space-x-4 text-xs text-slate-500">
-          <a href="#" class="hover:text-slate-700 transition-colors duration-200">Privacy Policy</a>
-          <span>•</span>
-          <a href="#" class="hover:text-slate-700 transition-colors duration-200">Terms of Service</a>
-          <span>•</span>
-          <span>© 2025 SecureBank</span>
-        </div>
-      </div>
+<!--      <div class="text-center mt-6">-->
+<!--        <p class="text-sm text-slate-600">-->
+<!--          Need help?-->
+<!--          <a href="#" class="font-medium text-slate-800 hover:text-slate-600 transition-colors duration-200">-->
+<!--            Contact Support-->
+<!--          </a>-->
+<!--        </p>-->
+<!--        <div class="flex items-center justify-center mt-4 space-x-4 text-xs text-slate-500">-->
+<!--          <a href="#" class="hover:text-slate-700 transition-colors duration-200">Privacy Policy</a>-->
+<!--          <span>•</span>-->
+<!--          <a href="#" class="hover:text-slate-700 transition-colors duration-200">Terms of Service</a>-->
+<!--          <span>•</span>-->
+<!--          <span>© 2025 SecureBank</span>-->
+<!--        </div>-->
+<!--      </div>-->
     </div>
   </div>
 </div>

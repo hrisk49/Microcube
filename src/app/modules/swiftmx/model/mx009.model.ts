@@ -1,14 +1,14 @@
 import {AccountModel} from './account.model';
-import {AgentModel} from './agentModel';
-import {RelatedModel} from './relatedModel';
+import { AgentModel } from './agent.model';
+import { RelatedModel } from './related.model';
 
 export interface Mx009Model {
-  timeIndi13C: string;
-  timeSign13C: string;
-  timeOffset13C: string;
-  valDate32A: Date;
-  valCurr32A: string;
-  valAmt32A: number;
+  // timeIndi13C: string;
+  // timeSign13C: string;
+  // timeOffset13C: string;
+  // valDate32A: Date;
+  // valCurr32A: string;
+  // valAmt32A: number;
   bizMsgIdr: string; //BusinessMessageIdentifier max 35
   msgDefIdr: string; //MessageDefinitionIdentifier example - camt.001.001.03
   bizSvc: string; //BusinessService The value "swift.cbprplus.02" must be used.
@@ -34,9 +34,9 @@ export interface Mx009Model {
   clrSysRef: string;  //ClearingSystemReference max 35 pattern [0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+
   //End PaymentIdentification tag
   instrPrty: string; //InstructionPriority value can be HIGH/NORM
-  clrChanl: string; //ClearingChannel values can be BOOK/MPNS/RTGS/RTNS
-  svcLvlCD: string[3];
-  svcLvlPrtry: string[3]; //Proprietary
+  clrChanl?: string; //ClearingChannel values can be BOOK/MPNS/RTGS/RTNS
+  svcLvlCD: string[]; //ServiceLevelCode Max 3
+  svcLvlPrtry: string[]; //Proprietary Max 3
   lclInstrmCD: string; //LocalInstrument
   lclInstrmPrtry: string; //LocalInstrument Proprietary
   ctgyPurpCd: string; //CategoryPurpose Code
