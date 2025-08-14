@@ -1,0 +1,22 @@
+<div class="xml-dialog-container">
+  <div class="dialog-header">
+    <h2 mat-dialog-title class="text-lg font-semibold text-gray-900">XML Message Details</h2>
+    <button mat-icon-button mat-dialog-close class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  
+  <mat-dialog-content class="dialog-content">
+    <div class="xml-content">
+      <pre class="xml-text">{{xmlData}}</pre>
+    </div>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-button mat-dialog-close class="cancel-button">Close</button>
+    <button mat-raised-button color="primary" (click)="copyToClipboard()" class="copy-button">
+      <mat-icon>content_copy</mat-icon>
+      Copy XML
+    </button>
+  </mat-dialog-actions>
+</div>
