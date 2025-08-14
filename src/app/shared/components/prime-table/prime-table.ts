@@ -50,20 +50,20 @@ export class PrimeTable {
   
   // Message types for dropdown (MT types)
   messageTypes: any[] = [
-    { value: '2', label: 'Pacs-002 - F1 to F1 Payment' },
-    { value: '8', label: 'Pacs-008 - F1 to F1 Customer Credit Transfer' },
-    { value: '9', label: 'Pacs-009 - Financial Institution Credit Transfer Return' },
-    { value: '10',label: 'Pacs-010 - Payment Return' },
-    { value: '11',label: 'Pacs-011 - Request for Investigation' },
-    { value: '12',label: 'Pacs-012 - Request for Investigation Return' },
-    { value: '13',label: 'Pacs-013 - Resolution of Investigation' },
-    { value: '14',label: 'Pacs-014 - Additional Payment Information' },
-    { value: '15',label: 'Pacs-015 - Account Switching Information Request' },
-    { value: '16',label: 'Pacs-016 - Intra-Position Movement Instruction' },
-    { value: '17',label: 'Pacs-017 - Intra-Position Movement Confirmation' },
-    { value: '18',label: 'Pacs-018 - Intra-Position Movement Status Report' },
-    { value: '19',label: 'Pacs-019 - Intra-Position Movement Cancellation Request' }
-  ];
+  { value: 'pacs-008', label: 'pacs 008 - F1 to F1 Customer Credit Transfer' },
+  { value: 'pacs-009', label: 'pacs 009 - Financial Institution Credit Transfer Return' },
+  { value: 'pacs-002', label: 'pacs 002 - F1 to F1 Payment' },
+  { value: 'pacs-010', label: 'pacs 010 - Payment Return' },
+  { value: 'pacs-011', label: 'pacs 011 - Request for Investigation' },
+  { value: 'pacs-012', label: 'pacs 012 - Request for Investigation Return' },
+  { value: 'pacs-013', label: 'pacs 013 - Resolution of Investigation' },
+  { value: 'pacs-014', label: 'pacs 014 - Additional Payment Information' },
+  { value: 'pacs-015', label: 'pacs 015 - Account Switching Information Request' },
+  { value: 'pacs-016', label: 'pacs 016 - Intra-Position Movement Instruction' },
+  { value: 'pacs-017', label: 'pacs 017 - Intra-Position Movement Confirmation' },
+  { value: 'pacs-018', label: 'pacs 018 - Intra-Position Movement Status Report' },
+  { value: 'pacs-019', label: 'pacs 019 - Intra-Position Movement Cancellation Request' }
+];
 
   constructor(private dialog: MatDialog) {
     this.applyPagination();
