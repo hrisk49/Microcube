@@ -37,7 +37,7 @@
     <div class="panel">
       <app-expansion-panel-header
         [isOpenSignal]="businessHeaderPanel"
-        [panelTitle]="'Business Message Header'"
+        [panelTitle]="'Business Application Header'"
       />
       @if (businessHeaderPanel()) {
       <div class="form-grid-col-1">
@@ -69,7 +69,7 @@
         </div>
         }
       </div>
-      <div class="sub-panel">
+      <div class="sub-panel mb-2">
         <app-expansion-sub-panel-header
           [isOpenSignal]="toBicPanel"
           [subPanelTitle]="'To BIC'"
@@ -90,83 +90,73 @@
         </div>
         }
       </div>
-      @if (businessApplicationHeaderPanel()) {
-      <div class="sub-panel">
-        <app-expansion-sub-panel-header
-          [isOpenSignal]="businessApplicationHeaderPanel"
-          [subPanelTitle]="'Business Application Header'"
+      <div class="form-grid-col-1">
+        <app-text-base-input
+          [frmGroup]="frmGroup"
+          [label]="'Business Message Identifier'"
+          [controlName]="'bizMsgIdr'"
         />
 
-        @if (businessApplicationHeaderPanel()) {
-        <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Business Message Identifier'"
-            [controlName]="'bizMsgIdr'"
-          />
+        <app-text-base-input
+          [frmGroup]="frmGroup"
+          [isReadonly]="true"
+          [label]="'Message Definition Identifier'"
+          [isReadonly]="true"
+          [controlName]="'msgDefIdr'"
+        />
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [isReadonly]="true"
-            [label]="'Message Definition Identifier'"
-            [isReadonly]="true"
-            [controlName]="'msgDefIdr'"
-          />
+        <app-text-base-input
+          [frmGroup]="frmGroup"
+          [isReadonly]="true"
+          [label]="'Business Service'"
+          [controlName]="'bizSvc'"
+        />
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [isReadonly]="true"
-            [label]="'Business Service'"
-            [controlName]="'bizSvc'"
-          />
+        <app-date-input
+          [frmGroup]="frmGroup"
+          [label]="'Creation Date'"
+          [controlName]="'creDt'"
+        />
 
-          <app-date-input
-            [frmGroup]="frmGroup"
-            [label]="'Creation Date'"
-            [controlName]="'creDt'"
-          />
+        <app-select-option-field
+          [frmGroup]="frmGroup"
+          [options]="duplicateOptions"
+          [label]="'Copy Duplicate'"
+          [controlName]="'cpyDplct'"
+        />
 
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="duplicateOptions"
-            [label]="'Copy Duplicate'"
-            [controlName]="'cpyDplct'"
-          />
+        <app-select-option-field
+          [frmGroup]="frmGroup"
+          [options]="yesNoOptions"
+          [label]="'Possible Duplicate'"
+          [controlName]="'psblDplct'"
+        />
 
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="yesNoOptions"
-            [label]="'Possible Duplicate'"
-            [controlName]="'psblDplct'"
-          />
+        <app-select-option-field
+          [frmGroup]="frmGroup"
+          [options]="priorityOptions"
+          [label]="'Priority'"
+          [controlName]="'priority'"
+        />
 
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="priorityOptions"
-            [label]="'Priority'"
-            [controlName]="'priority'"
-          />
+        <app-text-base-input
+          [frmGroup]="frmGroup"
+          [label]="'Message ID'"
+          [controlName]="'msgId'"
+        />
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Message ID'"
-            [controlName]="'msgId'"
-          />
+        <app-text-base-input
+          [frmGroup]="frmGroup"
+          [label]="'Creation Date Time'"
+          [controlName]="'creDtTm'"
+        />
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Creation Date Time'"
-            [controlName]="'creDtTm'"
-          />
-
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [isReadonly]="true"
-            [label]="'Number of Transactions'"
-            [controlName]="'nbOfTxs'"
-          />
-        </div>
-        }
+        <app-text-base-input
+          [frmGroup]="frmGroup"
+          [isReadonly]="true"
+          [label]="'Number of Transactions'"
+          [controlName]="'nbOfTxs'"
+        />
       </div>
       <!-- Related Information -->
       <div class="sub-panel">
@@ -223,7 +213,6 @@
         }
       </div>
       }
-    }
     </div>
 
     <!-- Financial Institution Credit Transfer V08 -->
@@ -399,7 +388,7 @@
         </div>
         }
       </div>
-    }
+      }
     </div>
 
     <!-- Payment Type Information -->
@@ -535,7 +524,7 @@
             [label]="'Name'"
             [controlName]="'prvsInstgAgt1Nm'"
           />
-          
+
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Address Line 1'"
