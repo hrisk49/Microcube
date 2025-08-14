@@ -39,11 +39,11 @@
 
 
         <!-- Action Buttons -->
-        <button mat-icon-button
-                (click)="onFindClick()"
-                class="custom-btn mb-6">
-          <mat-icon class="custom-icon">search</mat-icon>
-        </button>
+      <button mat-icon-button
+        (click)="onFindClick()"
+        class="custom-btn mb-6">
+  <mat-icon class="custom-icon">search</mat-icon>
+</button>
 
 
       </div>
@@ -70,59 +70,56 @@
     <!-- Table -->
     <div class="overflow-auto max-h-[105vh]">
       <table class="w-full">
-        <thead class="bg-gradient-to-r from-slate-100 to-gray-100 border-b border-gray-200 sticky top-0">
-        <tr>
-          <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wide">SI.</th>
-          <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Message Ref No
-          </th>
-          <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">MT ID</th>
-          <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Sender BIC</th>
-          <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Made By</th>
-          <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Make Date</th>
-          <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Action</th>
-          <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Process</th>
-        </tr>
+        <thead class="bg-gradient-to-r from-slate-100 to-gray-100 border-b border-gray-200 sticky top-0 z-10">
+          <tr>
+            <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm uppercase tracking-wide">SI.</th>
+            <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Message Ref No
+            </th>
+            <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Message ID</th>
+            <th class="text-left py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Sender BIC</th>
+            <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Receive Date</th>
+                         <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Action</th>
+             <th class="text-center py-4 px-6 font-semibold text-gray-700 text-sm  tracking-wide">Process</th>
+          </tr>
         </thead>
         <tbody class="divide-y divide-gray-100" id="tableBody">
         <tr *ngFor="let data of dataSource; let i = index; trackBy: trackByFn"
             class="hover:bg-blue-50 transition-colors duration-200">
-          <td class="py-4 px-6 text-sm text-gray-600 text-center font-medium">{{ i + 1 }}</td>
-          <td class="py-4 text-left px-6 text-gray-900 font-mono">{{ data?.msgRefNo }}</td>
-          <td
-            class="py-4 text-right px-6 text-gray-700 text-center font-mono bg-gray-50 rounded px-2 py-1">{{ data?.mtId }}
-          </td>
-          <td class="py-4 text-left px-6 text-gray-700 font-mono">{{ data?.senderBic }}</td>
-          <td class="py-4 text-left px-6 text-gray-700">{{ data?.makeBy }}</td>
-          <td class="py-4 px-6 text-gray-700 text-center text-sm">{{ data?.makeDt }}</td>
-          <td class="py-4 px-6">
-            <div class="flex gap-2 justify-center">
-              <button mat-icon-button matTooltip="View details"
-                      class="hover:bg-blue-100 transition-colors duration-200 text-blue-600 hover:text-blue-700"
-                      (click)="viewDetails(data)">
-                <mat-icon class="text-lg">visibility</mat-icon>
-              </button>
-              <button mat-icon-button matTooltip="Send Email"
-                      class="hover:bg-green-100 transition-colors duration-200 text-green-600 hover:text-green-700"
-                      (click)="sendEmail(data)">
-                <mat-icon class="text-lg">email</mat-icon>
-              </button>
-              <button mat-icon-button matTooltip="Download PDF"
-                      class="hover:bg-red-100 transition-colors duration-200 text-red-600 hover:text-red-700"
-                      (click)="downloadPdf(data)">
-                <mat-icon class="text-lg">picture_as_pdf</mat-icon>
-              </button>
-            </div>
-          </td>
-          <td class="py-4 px-6">
-            <div class="flex justify-center">
-              <button mat-icon-button matTooltip="Process"
-                      class="hover:bg-purple-100 transition-colors duration-200 text-purple-600 hover:text-purple-700"
-                      (click)="processData(data)">
-                <mat-icon class="text-lg">settings</mat-icon>
-              </button>
-            </div>
-          </td>
-        </tr>
+            <td class="py-4 px-6 text-sm text-gray-600 text-center font-medium">{{i + 1}}</td>
+            <td class="py-4 text-left px-6 text-gray-900 font-mono">{{data?.msgRefNo}}</td>
+            <td class="py-4 text-left px-6 text-gray-700  font-mono bg-gray-50 rounded ">{{data?.mtId}}</td>
+            <td class="py-4 text-left px-6 text-gray-700 font-mono">{{data?.senderBic}}</td>
+            <!-- <td class="py-4 text-left px-6 text-gray-700">{{data?.makeBy}}</td> -->
+            <td class="py-4 px-6 text-gray-700 text-center text-sm">{{data?.makeDt}}</td>
+            <td class="py-4 px-6">
+              <div class="flex gap-2 justify-center">
+                <button mat-icon-button matTooltip="View details"
+                  class="hover:bg-blue-100 transition-colors duration-200 text-blue-600 hover:text-blue-700"
+                  (click)="viewDetails(data)">
+                  <mat-icon class="text-lg">visibility</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Send Email"
+                  class="hover:bg-green-100 transition-colors duration-200 text-green-600 hover:text-green-700"
+                  (click)="sendEmail(data)">
+                  <mat-icon class="text-lg">email</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Download PDF"
+                  class="hover:bg-red-100 transition-colors duration-200 text-red-600 hover:text-red-700"
+                  (click)="downloadPdf(data)">
+                  <mat-icon class="text-lg">picture_as_pdf</mat-icon>
+                </button>
+              </div>
+            </td>
+            <td class="py-4 px-6">
+              <div class="flex justify-center">
+                                 <button mat-icon-button matTooltip="Process"
+                   class="hover:bg-purple-100 transition-colors duration-200 text-purple-600 hover:text-purple-700"
+                   (click)="processData(data)">
+                   <mat-icon class="text-lg">settings</mat-icon>
+                 </button>
+              </div>
+            </td>
+          </tr>
 
         <!-- Empty State -->
         <tr *ngIf="dataSource.length === 0">
@@ -141,12 +138,12 @@
     </div>
 
     <!-- Pagination Footer -->
-    <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 pt-4 border-t border-gray-200">
+       <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-8 py-6 border-t border-gray-200">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div class="text-sm text-gray-800">
-          Showing <span class="font-medium">{{ getStartIndex() }}</span> to
-          <span class="font-medium">{{ getEndIndex() }}</span> of
-          <span class="font-medium">{{ getTotalResults() }}</span> results
+        <div class="text-sm text-gray-600 font-medium">
+          Showing <span class="text-blue-600 font-semibold">{{getStartIndex()}}</span> to
+          <span class="text-blue-600 font-semibold">{{getEndIndex()}}</span> of
+          <span class="text-blue-600 font-semibold">{{getTotalResults()}}</span> results
         </div>
 
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
