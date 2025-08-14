@@ -114,22 +114,22 @@ export class Dashboard implements OnInit {
         },
         series: [
           {
-            name: 'Sonali Bank',
+            name: 'JPMorgan Chase',
             data: [2530, 3220, 2810, 3805, 2250],
             type: 'column'
           },
           {
-            name: 'Rupali Bank',
+            name: 'HSBC Bank',
             data: [3805, 2505, 2205, 3505, 3270],
             type: 'column'
           },
           {
-            name: 'Agrani Bank',
+            name: 'Deutsche Bank',
             data: [2250, 3805, 3505, 2205, 2505],
             type: 'column'
           },
           {
-            name: 'Janata Bank',
+            name: 'Standard Chartered',
             data: [3505, 3205, 3005, 3805, 3005],
             type: 'column'
           }
@@ -148,22 +148,22 @@ export class Dashboard implements OnInit {
         },
         series: [
           {
-            name: 'Sonali Bank',
+            name: 'JPMorgan Chase',
             data: [95020, 72020, 68020, 82020, 88020],
             type: 'column'
           },
           {
-            name: 'Rupali Bank',
+            name: 'HSBC Bank',
             data: [82020, 68020, 62020, 78020, 82020],
             type: 'column'
           },
           {
-            name: 'Agrani Bank',
+            name: 'Deutsche Bank',
             data: [88020, 72020, 68020, 78020, 82020],
             type: 'column'
           },
           {
-            name: 'Janata Bank',
+            name: 'Standard Chartered',
             data: [78020, 62020, 58020, 72020, 76020],
             type: 'column'
           }
@@ -226,7 +226,7 @@ export class Dashboard implements OnInit {
       type: 'column',
       height: 320,
       backgroundColor: 'transparent',
-      marginTop: 45,
+      marginTop: 55,
       marginBottom: 80,
 
       marginRight: 20,

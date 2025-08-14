@@ -1,30 +1,42 @@
-import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {ToastrService} from 'ngx-toastr';
+import {
+  Component,
+  effect,
+  inject,
+  OnInit,
+  signal,
+  WritableSignal,
+} from '@angular/core';
+import {
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import {
   BUTTON_VISIBILITY,
   FormGroupSignal,
   ONCLICK_RESET,
-  ONCLICK_SAVE
+  ONCLICK_SAVE,
 } from '../../../../shared/constant/button-signals.constant';
-import {SelectOptionsModel} from '../../../../shared/models/select-options-model';
-import {PanelHeader} from '../../../../shared/components/panel-header/panel-header';
-import {TextBaseInput} from '../../../../shared/components/input-types/text-base-input/text-base-input';
-import {Pacs009Service} from '../../service/pacs009.service';
-import {Mx009Model} from '../../model/mx009.model';
-import { SubPanelHeader } from "../../../../shared/components/sub-panel-header/sub-panel-header";
-import { SelectOptionField } from "../../../../shared/components/input-types/select-option-field/select-option-field";
-import { DateInput } from "../../../../shared/components/input-types/date-input/date-input";
-import { AmountToWordInput } from "../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input";
-import {ExpansionPanelHeader} from '../../../../shared/components/expansion-panel-header/expansion-panel-header';
-import {
-  ExpansionSubPanelHeader
-} from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
+import { SelectOptionsModel } from '../../../../shared/models/select-options-model';
+import { TextBaseInput } from '../../../../shared/components/input-types/text-base-input/text-base-input';
+import { Pacs009Service } from '../../service/pacs009.service';
+import { Mx009Model } from '../../model/mx009.model';
+import { SubPanelHeader } from '../../../../shared/components/sub-panel-header/sub-panel-header';
+import { SelectOptionField } from '../../../../shared/components/input-types/select-option-field/select-option-field';
+import { DateInput } from '../../../../shared/components/input-types/date-input/date-input';
+import { AmountToWordInput } from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
+import { ExpansionPanelHeader } from '../../../../shared/components/expansion-panel-header/expansion-panel-header';
+import { ExpansionSubPanelHeader } from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
+import { BranchInfoService } from '../../../../shared/services/branch-info.service';
+import { DataSelectionModal } from '../../../../shared/components/data-selection-modal/data-selection-modal';
+import { DialogUtils } from '../../../../shared/service/dialog-utils';
 
 @Component({
   selector: 'app-pacs-009',
   imports: [
-    PanelHeader,
     ReactiveFormsModule,
     TextBaseInput,
     SubPanelHeader,
@@ -32,14 +44,15 @@ import {
     DateInput,
     AmountToWordInput,
     ExpansionPanelHeader,
-    ExpansionSubPanelHeader
+    ExpansionSubPanelHeader,
+    DataSelectionModal,
   ],
   templateUrl: './pacs-009.html',
   standalone: true,
-  styleUrl: './pacs-009.scss'
+  styleUrl: './pacs-009.scss',
 })
 export class Pacs009 implements OnInit {
-
+  dialogUtils = inject(DialogUtils);
   formBuilder = inject(FormBuilder);
   toastr = inject(ToastrService);
   pacs009Service = inject(Pacs009Service);
@@ -47,40 +60,140 @@ export class Pacs009 implements OnInit {
   onClickReset = ONCLICK_RESET;
   onClickSave = ONCLICK_SAVE;
   priorityOptions: SelectOptionsModel[] = [
-    {key: 'HIGH', value: 'High'},
-    {key: 'NORM', value: 'Normal'}
+    { key: 'HIGH', value: 'High' },
+    { key: 'NORM', value: 'Normal' },
   ];
 
   duplicateOptions: SelectOptionsModel[] = [
-    {key: 'CODU', value: 'CODU'},
-    {key: 'COPY', value: 'COPY'},
-    {key: 'DUPL', value: 'DUPL'}
+    { key: 'CODU', value: 'CODU' },
+    { key: 'COPY', value: 'COPY' },
+    { key: 'DUPL', value: 'DUPL' },
   ];
 
   settlementOptions: SelectOptionsModel[] = [
-    {key: 'CLRG', value: 'CLRG'},
-    {key: 'COVE', value: 'COVE'},
-    {key: 'INDA', value: 'INDA'},
-    {key: 'INGA', value: 'INGA'}
+    { key: 'CLRG', value: 'CLRG' },
+    { key: 'COVE', value: 'COVE' },
+    { key: 'INDA', value: 'INDA' },
+    { key: 'INGA', value: 'INGA' },
   ];
 
   chargeBearerOptions: SelectOptionsModel[] = [
-    {key: 'DEBT', value: 'Debitor'},
-    {key: 'CRED', value: 'Creditor'},
-    {key: 'SHAR', value: 'Shared'}
+    { key: 'DEBT', value: 'Debitor' },
+    { key: 'CRED', value: 'Creditor' },
+    { key: 'SHAR', value: 'Shared' },
   ];
 
-  timeDatePanel: WritableSignal<boolean> = signal(true);
-  subPanelOpen: WritableSignal<boolean> = signal(true);
+  yesNoOptions: SelectOptionsModel[] = [
+    { key: 'YES', value: 'Yes' },
+    { key: 'NO', value: 'No' },
+  ];
 
-  constructor() {
+  clearingChannelOptions: SelectOptionsModel[] = [
+    { key: 'BOOK', value: 'Book' },
+    { key: 'MPNS', value: 'MPNS' },
+    { key: 'RTGS', value: 'RTGS' },
+    { key: 'RTNS', value: 'RTNS' },
+  ];
+
+  settlementPriorityOptions: SelectOptionsModel[] = [
+    { key: 'HIGH', value: 'High' },
+    { key: 'NORM', value: 'Normal' },
+    { key: 'URGT', value: 'Urgent' },
+  ];
+
+  currencyOptions: SelectOptionsModel[] = [
+    { key: 'USD', value: 'USD - US Dollar' },
+    { key: 'EUR', value: 'EUR - Euro' },
+    { key: 'GBP', value: 'GBP - British Pound' },
+    { key: 'JPY', value: 'JPY - Japanese Yen' },
+    { key: 'CHF', value: 'CHF - Swiss Franc' },
+    { key: 'CAD', value: 'CAD - Canadian Dollar' },
+    { key: 'AUD', value: 'AUD - Australian Dollar' },
+    { key: 'CNY', value: 'CNY - Chinese Yuan' },
+    { key: 'HKD', value: 'HKD - Hong Kong Dollar' },
+    { key: 'SGD', value: 'SGD - Singapore Dollar' },
+    { key: 'SEK', value: 'SEK - Swedish Krona' },
+    { key: 'NOK', value: 'NOK - Norwegian Krone' },
+    { key: 'DKK', value: 'DKK - Danish Krone' },
+    { key: 'NZD', value: 'NZD - New Zealand Dollar' },
+    { key: 'MXN', value: 'MXN - Mexican Peso' },
+    { key: 'BRL', value: 'BRL - Brazilian Real' },
+    { key: 'INR', value: 'INR - Indian Rupee' },
+    { key: 'KRW', value: 'KRW - South Korean Won' },
+    { key: 'TRY', value: 'TRY - Turkish Lira' },
+    { key: 'RUB', value: 'RUB - Russian Ruble' },
+    { key: 'ZAR', value: 'ZAR - South African Rand' },
+    { key: 'PLN', value: 'PLN - Polish Zloty' },
+    { key: 'CZK', value: 'CZK - Czech Koruna' },
+    { key: 'HUF', value: 'HUF - Hungarian Forint' },
+    { key: 'ILS', value: 'ILS - Israeli Shekel' },
+    { key: 'CLP', value: 'CLP - Chilean Peso' },
+    { key: 'PHP', value: 'PHP - Philippine Peso' },
+    { key: 'AED', value: 'AED - UAE Dirham' },
+    { key: 'SAR', value: 'SAR - Saudi Riyal' },
+    { key: 'THB', value: 'THB - Thai Baht' },
+    { key: 'MYR', value: 'MYR - Malaysian Ringgit' },
+    { key: 'IDR', value: 'IDR - Indonesian Rupiah' },
+    { key: 'VND', value: 'VND - Vietnamese Dong' },
+    { key: 'EGP', value: 'EGP - Egyptian Pound' },
+    { key: 'NGN', value: 'NGN - Nigerian Naira' },
+    { key: 'KES', value: 'KES - Kenyan Shilling' },
+    { key: 'GHS', value: 'GHS - Ghanaian Cedi' },
+    { key: 'MAD', value: 'MAD - Moroccan Dirham' },
+    { key: 'TND', value: 'TND - Tunisian Dinar' },
+  ];
+
+  // Panel visibility signals
+  timeDatePanel: WritableSignal<boolean> = signal(true);
+  fromBicPanel: WritableSignal<boolean> = signal(true);
+  toBicPanel: WritableSignal<boolean> = signal(true);
+  subPanelOpen: WritableSignal<boolean> = signal(true);
+  businessHeaderPanel: WritableSignal<boolean> = signal(true);
+  businessApplicationHeaderPanel: WritableSignal<boolean> = signal(true);
+  groupHeaderPanel: WritableSignal<boolean> = signal(true);
+  settlementPanel: WritableSignal<boolean> = signal(true);
+  financialInstitutionCreditTransferPanel: WritableSignal<boolean> =
+    signal(true);
+  paymentIdPanel: WritableSignal<boolean> = signal(true);
+  paymentTypePanel: WritableSignal<boolean> = signal(true);
+  serviceLevelPanel: WritableSignal<boolean> = signal(true);
+  interbankPanel: WritableSignal<boolean> = signal(true);
+  previousAgentsPanel: WritableSignal<boolean> = signal(true);
+  prevAgent1Panel: WritableSignal<boolean> = signal(false);
+  prevAgent2Panel: WritableSignal<boolean> = signal(false);
+  prevAgent3Panel: WritableSignal<boolean> = signal(false);
+  agentsPanel: WritableSignal<boolean> = signal(true);
+  instructingAgentPanel: WritableSignal<boolean> = signal(true);
+  instructedAgentPanel: WritableSignal<boolean> = signal(true);
+  intermediaryAgentsPanel: WritableSignal<boolean> = signal(true);
+  intermediary1Panel: WritableSignal<boolean> = signal(false);
+  intermediary2Panel: WritableSignal<boolean> = signal(false);
+  intermediary3Panel: WritableSignal<boolean> = signal(false);
+  debtorPanel: WritableSignal<boolean> = signal(true);
+  creditorPanel: WritableSignal<boolean> = signal(true);
+  instructionsPanel: WritableSignal<boolean> = signal(true);
+  purposePanel: WritableSignal<boolean> = signal(true);
+  authorizationPanel: WritableSignal<boolean> = signal(true);
+  otherInfoPanel: WritableSignal<boolean> = signal(true);
+  relatedInfoPanel: WritableSignal<boolean> = signal(false);
+  swiftCodesFrom: any;
+  swiftCodesTo: any;
+
+  // Define column headers for the BIC selection modal
+  bicTableHeaders = new Map<string, string>([
+    ['swift', 'SWIFT Code'],
+    ['branchName', 'Branch Name'],
+    ['address', 'address']
+  ]);
+
+  constructor(private branchInfoService: BranchInfoService) {
     BUTTON_VISIBILITY.set({
       save: true,
       update: false,
       view: true,
       delete: true,
       exit: true,
-      reset: true
+      reset: true,
     });
 
     effect(() => {
@@ -118,22 +231,31 @@ export class Pacs009 implements OnInit {
       valAmt32A: [''],
 
       // Business Message Header
+      charSet: [''],
+      fromBicfi: ['', Validators.required],
+      fromNm: [''],
+      toBicfi: ['', Validators.required],
+      toNm: [''],
+      rltdBizMsgIdr: [''],
+      rltdMsgDefIdr: [''],
+      rltdBizSvc: [''],
+      rltdCreDt: [''],
       bizMsgIdr: ['', Validators.required],
-      msgDefIdr: ['camt.001.001.03'],
-      bizSvc: ['swift.cbprplus.02'],
-      creDt: [''],
+      msgDefIdr: ['pacs.009.001.08', Validators.required],
+      bizSvc: ['swift.cbprplus.02', Validators.required],
+      creDt: ['', Validators.required],
       cpyDplct: ['COPY'],
       psblDplct: [null],
       priority: ['NORM'],
-      msgId: [''],
-      creDtTm: [''],
-      nbOfTxs: ['1'],
+      msgId: ['', Validators.required],
+      creDtTm: ['', Validators.required],
+      nbOfTxs: ['1', Validators.required],
 
       // Settlement Information
-      sttlmMtd: ['INGA'],
+      sttlmMtd: ['INGA', Validators.required],
       // Settlement Account (flat)
       sttlmAcctId: [''],
-      sttlmAcctCcy: [''],
+      sttlmAcctCcy: [null],
       sttlmAcctTp: [''],
       sttlmAcctNm: [''],
       sttlmAcctSchmeNm: [''],
@@ -156,10 +278,10 @@ export class Pacs009 implements OnInit {
       ctgyPurpPrtry: [''],
 
       // Interbank Settlement
-      intrBkSttlmAmtCcy: [''],
-      intrBkSttlmAmt: [''],
-      intrBkSttlmDt: [''],
-      sttlmPrty: [''],
+      intrBkSttlmAmtCcy: [null, Validators.required],
+      intrBkSttlmAmt: ['', Validators.required],
+      intrBkSttlmDt: ['', Validators.required],
+      sttlmPrty: [null],
 
       // Previous Instructing Agent 1 (flat)
       prvsInstgAgt1Bicfi: [''],
@@ -595,13 +717,8 @@ export class Pacs009 implements OnInit {
       rltdToAdrCtrySubDvsn: [''],
       rltdToAdrCtry: [''],
       rltdToAdrLine: [''],
-
-      rltdBizMsgIdr: [''],
-      rltdMsgDefIdr: [''],
-      rltdBizSvc: [''],
-      rltdCreDt: [''],
       rltdCpyDplct: ['COPY'],
-      rltdPrty: ['NORM']
+      rltdPrty: ['NORM'],
     });
 
     // Ensure the form is properly initialized
@@ -610,6 +727,78 @@ export class Pacs009 implements OnInit {
       // Initialize with one service level row
       this.addServiceRow();
     }
+  }
+
+  // Open BIC selection modal for "From BIC" (Instructing Agent)
+  openFromBicSelectionModal(): void {
+    this.branchInfoService
+      .getBySwiftCodePrefix(
+        this.frmGroup.get('fromBicfi')?.value
+          ? this.frmGroup.get('fromBicfi')?.value.trim()
+          : 'SCBLBDDX'
+      )
+      .subscribe((res) => {
+        this.swiftCodesFrom = res?.payload;
+        const dialogRef = this.dialogUtils.openDialog(
+          DataSelectionModal,
+          this.bicTableHeaders,
+          this.swiftCodesFrom
+        );
+
+        dialogRef.afterClosed().subscribe((selectedBank: any) => {
+          if (selectedBank) {
+            // Update From BIC fields
+            this.frmGroup.patchValue({
+              fromBicfi: selectedBank.swift,
+              fromNm: selectedBank.branchName,
+            });
+
+            // Update Instructing Agent fields
+            this.frmGroup.patchValue({
+              instgAgtBicfi: selectedBank.swift,
+              instgAgtNm: selectedBank.branchName,
+            });
+
+            // this.toastr.success('From BIC selected successfully', 'Success');
+          }
+        });
+      });
+  }
+
+  // Open BIC selection modal for "To BIC" (Instructed Agent)
+  openToBicSelectionModal(): void {
+    this.branchInfoService
+      .getBySwiftCodePrefix(
+        this.frmGroup.get('toBicfi')?.value
+          ? this.frmGroup.get('toBicfi')?.value.trim()
+          : 'AANLGB21XXX'
+      )
+      .subscribe((res) => {
+        this.swiftCodesTo = res?.payload;
+        const dialogRef = this.dialogUtils.openDialog(
+          DataSelectionModal,
+          this.bicTableHeaders,
+          this.swiftCodesTo
+        );
+
+        dialogRef.afterClosed().subscribe((selectedBank: any) => {
+          if (selectedBank) {
+            // Update To BIC fields
+            this.frmGroup.patchValue({
+              toBicfi: selectedBank.swift,
+              toNm: selectedBank.branchName,
+            });
+
+            // Update Instructed Agent fields
+            this.frmGroup.patchValue({
+              instdAgtBicfi: selectedBank.swift,
+              instdAgtNm: selectedBank.branchName,
+            });
+
+            //  this.toastr.success('To BIC selected successfully', 'Success');
+          }
+        });
+      });
   }
 
   resetForm(): void {
@@ -632,9 +821,12 @@ export class Pacs009 implements OnInit {
     if (!group) return true;
 
     const values = group.value;
-    return Object.values(values).every(value =>
-      value === '' || value === null || value === undefined ||
-      (Array.isArray(value) && value.every(v => v === ''))
+    return Object.values(values).every(
+      (value) =>
+        value === '' ||
+        value === null ||
+        value === undefined ||
+        (Array.isArray(value) && value.every((v) => v === ''))
     );
   }
 
@@ -657,7 +849,7 @@ export class Pacs009 implements OnInit {
   addServiceRow() {
     const serviceGroup = this.formBuilder.group({
       serviceCode: [''],
-      servicePriority: [null]
+      servicePriority: [null],
     });
     this.serviceLevels.push(serviceGroup);
   }
@@ -701,7 +893,9 @@ export class Pacs009 implements OnInit {
     payload.timeIndi13C = frmValue.timeIndi13C;
     payload.timeSign13C = frmValue.timeSign13C;
     payload.timeOffset13C = frmValue.timeOffset13C;
-    payload.valDate32A = frmValue.valDate32A ? new Date(frmValue.valDate32A) : null;
+    payload.valDate32A = frmValue.valDate32A
+      ? new Date(frmValue.valDate32A)
+      : null;
     payload.valCurr32A = frmValue.valCurr32A;
     payload.valAmt32A = frmValue.valAmt32A ? Number(frmValue.valAmt32A) : null;
 
@@ -727,7 +921,7 @@ export class Pacs009 implements OnInit {
       tp: frmValue.sttlmAcctTp,
       nm: frmValue.sttlmAcctNm,
       schmeNm: frmValue.sttlmAcctSchmeNm,
-      issr: frmValue.sttlmAcctIssr
+      issr: frmValue.sttlmAcctIssr,
     };
 
     // Payment Identification
@@ -742,19 +936,23 @@ export class Pacs009 implements OnInit {
     payload.clrChanl = frmValue.clrChanl;
     // Convert service level FormArray to fixed arrays of 3 elements as per model
     const serviceLevels = frmValue.serviceLevels || [];
-    const serviceCodes = serviceLevels.map((level: any) => level.serviceCode).filter((code: string) => code);
-    const servicePriorities = serviceLevels.map((level: any) => level.servicePriority).filter((priority: string) => priority);
+    const serviceCodes = serviceLevels
+      .map((level: any) => level.serviceCode)
+      .filter((code: string) => code);
+    const servicePriorities = serviceLevels
+      .map((level: any) => level.servicePriority)
+      .filter((priority: string) => priority);
 
     // Ensure arrays have exactly 3 elements as per model specification
     payload.svcLvlCD = [
       serviceCodes[0] || '',
       serviceCodes[1] || '',
-      serviceCodes[2] || ''
+      serviceCodes[2] || '',
     ];
     payload.svcLvlPrtry = [
       servicePriorities[0] || '',
       servicePriorities[1] || '',
-      servicePriorities[2] || ''
+      servicePriorities[2] || '',
     ];
 
     payload.lclInstrmCD = frmValue.lclInstrmCD;
@@ -764,7 +962,9 @@ export class Pacs009 implements OnInit {
 
     // Interbank Settlement
     payload.intrBkSttlmAmtCcy = frmValue.intrBkSttlmAmtCcy;
-    payload.intrBkSttlmAmt = frmValue.intrBkSttlmAmt ? Number(frmValue.intrBkSttlmAmt) : null;
+    payload.intrBkSttlmAmt = frmValue.intrBkSttlmAmt
+      ? Number(frmValue.intrBkSttlmAmt)
+      : null;
     payload.intrBkSttlmDt = frmValue.intrBkSttlmDt;
     payload.sttlmPrty = frmValue.sttlmPrty;
 
@@ -793,8 +993,10 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.prvsInstgAgt1AdrDstrctNm,
         ctrySubDvsn: frmValue.prvsInstgAgt1AdrCtrySubDvsn,
         ctry: frmValue.prvsInstgAgt1AdrCtry,
-        adrLine: (frmValue.prvsInstgAgt1AdrLine || []).filter((line: string) => line && line.trim() !== '')
-      }
+        adrLine: (frmValue.prvsInstgAgt1AdrLine || []).filter(
+          (line: string) => line && line.trim() !== ''
+        ),
+      },
     };
 
     payload.prvsInstgAgt1Acct = {
@@ -803,7 +1005,7 @@ export class Pacs009 implements OnInit {
       tp: frmValue.prvsInstgAgt1AcctTp,
       nm: frmValue.prvsInstgAgt1AcctNm,
       schmeNm: frmValue.prvsInstgAgt1AcctSchmeNm,
-      issr: frmValue.prvsInstgAgt1AcctIssr
+      issr: frmValue.prvsInstgAgt1AcctIssr,
     };
 
     // Map flat previous instructing agent 2 to nested structure
@@ -831,8 +1033,10 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.prvsInstgAgt2AdrDstrctNm,
         ctrySubDvsn: frmValue.prvsInstgAgt2AdrCtrySubDvsn,
         ctry: frmValue.prvsInstgAgt2AdrCtry,
-        adrLine: (frmValue.prvsInstgAgt2AdrLine || []).filter((line: string) => line && line.trim() !== '')
-      }
+        adrLine: (frmValue.prvsInstgAgt2AdrLine || []).filter(
+          (line: string) => line && line.trim() !== ''
+        ),
+      },
     };
 
     payload.prvsInstgAgt2Acct = {
@@ -841,7 +1045,7 @@ export class Pacs009 implements OnInit {
       tp: frmValue.prvsInstgAgt2AcctTp,
       nm: frmValue.prvsInstgAgt2AcctNm,
       schmeNm: frmValue.prvsInstgAgt2AcctSchmeNm,
-      issr: frmValue.prvsInstgAgt2AcctIssr
+      issr: frmValue.prvsInstgAgt2AcctIssr,
     };
 
     // Map flat previous instructing agent 3 to nested structure
@@ -869,8 +1073,10 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.prvsInstgAgt3AdrDstrctNm,
         ctrySubDvsn: frmValue.prvsInstgAgt3AdrCtrySubDvsn,
         ctry: frmValue.prvsInstgAgt3AdrCtry,
-        adrLine: (frmValue.prvsInstgAgt3AdrLine || []).filter((line: string) => line && line.trim() !== '')
-      }
+        adrLine: (frmValue.prvsInstgAgt3AdrLine || []).filter(
+          (line: string) => line && line.trim() !== ''
+        ),
+      },
     };
 
     payload.prvsInstgAgt3Acct = {
@@ -879,7 +1085,7 @@ export class Pacs009 implements OnInit {
       tp: frmValue.prvsInstgAgt3AcctTp,
       nm: frmValue.prvsInstgAgt3AcctNm,
       schmeNm: frmValue.prvsInstgAgt3AcctSchmeNm,
-      issr: frmValue.prvsInstgAgt3AcctIssr
+      issr: frmValue.prvsInstgAgt3AcctIssr,
     };
 
     // Map flat agents to nested structure
@@ -907,8 +1113,10 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.instgAgtAdrDstrctNm,
         ctrySubDvsn: frmValue.instgAgtAdrCtrySubDvsn,
         ctry: frmValue.instgAgtAdrCtry,
-        adrLine: (frmValue.instgAgtAdrLine || []).filter((line: string) => line && line.trim() !== '')
-      }
+        adrLine: (frmValue.instgAgtAdrLine || []).filter(
+          (line: string) => line && line.trim() !== ''
+        ),
+      },
     };
 
     payload.instdAgt = {
@@ -935,8 +1143,10 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.instdAgtAdrDstrctNm,
         ctrySubDvsn: frmValue.instdAgtAdrCtrySubDvsn,
         ctry: frmValue.instdAgtAdrCtry,
-        adrLine: (frmValue.instdAgtAdrLine || []).filter((line: string) => line && line.trim() !== '')
-      }
+        adrLine: (frmValue.instdAgtAdrLine || []).filter(
+          (line: string) => line && line.trim() !== ''
+        ),
+      },
     };
 
     // Map flat intermediary agents to nested structure
@@ -964,8 +1174,10 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.intrmyAgt1AdrDstrctNm,
         ctrySubDvsn: frmValue.intrmyAgt1AdrCtrySubDvsn,
         ctry: frmValue.intrmyAgt1AdrCtry,
-        adrLine: (frmValue.intrmyAgt1AdrLine || []).filter((line: string) => line && line.trim() !== '')
-      }
+        adrLine: (frmValue.intrmyAgt1AdrLine || []).filter(
+          (line: string) => line && line.trim() !== ''
+        ),
+      },
     };
 
     payload.intrmyAgt1Acct = {
@@ -974,7 +1186,7 @@ export class Pacs009 implements OnInit {
       tp: frmValue.intrmyAgt1AcctTp,
       nm: frmValue.intrmyAgt1AcctNm,
       schmeNm: frmValue.intrmyAgt1AcctSchmeNm,
-      issr: frmValue.intrmyAgt1AcctIssr
+      issr: frmValue.intrmyAgt1AcctIssr,
     };
 
     payload.intrmyAgt2 = {
@@ -1001,8 +1213,10 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.intrmyAgt2AdrDstrctNm,
         ctrySubDvsn: frmValue.intrmyAgt2AdrCtrySubDvsn,
         ctry: frmValue.intrmyAgt2AdrCtry,
-        adrLine: (frmValue.intrmyAgt2AdrLine || []).filter((line: string) => line && line.trim() !== '')
-      }
+        adrLine: (frmValue.intrmyAgt2AdrLine || []).filter(
+          (line: string) => line && line.trim() !== ''
+        ),
+      },
     };
 
     payload.intrmyAgt2Acct = {
@@ -1011,7 +1225,7 @@ export class Pacs009 implements OnInit {
       tp: frmValue.intrmyAgt2AcctTp,
       nm: frmValue.intrmyAgt2AcctNm,
       schmeNm: frmValue.intrmyAgt2AcctSchmeNm,
-      issr: frmValue.intrmyAgt2AcctIssr
+      issr: frmValue.intrmyAgt2AcctIssr,
     };
 
     payload.intrmyAgt3 = {
@@ -1038,8 +1252,10 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.intrmyAgt3AdrDstrctNm,
         ctrySubDvsn: frmValue.intrmyAgt3AdrCtrySubDvsn,
         ctry: frmValue.intrmyAgt3AdrCtry,
-        adrLine: (frmValue.intrmyAgt3AdrLine || []).filter((line: string) => line && line.trim() !== '')
-      }
+        adrLine: (frmValue.intrmyAgt3AdrLine || []).filter(
+          (line: string) => line && line.trim() !== ''
+        ),
+      },
     };
 
     payload.intrmyAgt3Acct = {
@@ -1048,7 +1264,7 @@ export class Pacs009 implements OnInit {
       tp: frmValue.intrmyAgt3AcctTp,
       nm: frmValue.intrmyAgt3AcctNm,
       schmeNm: frmValue.intrmyAgt3AcctSchmeNm,
-      issr: frmValue.intrmyAgt3AcctIssr
+      issr: frmValue.intrmyAgt3AcctIssr,
     };
 
     // Map flat debtor to nested structure
@@ -1076,8 +1292,10 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.dbtrAdrDstrctNm,
         ctrySubDvsn: frmValue.dbtrAdrCtrySubDvsn,
         ctry: frmValue.dbtrAdrCtry,
-        adrLine: (frmValue.dbtrAdrLine || []).filter((line: string) => line && line.trim() !== '')
-      }
+        adrLine: (frmValue.dbtrAdrLine || []).filter(
+          (line: string) => line && line.trim() !== ''
+        ),
+      },
     };
 
     payload.dbtrAcct = {
@@ -1086,7 +1304,7 @@ export class Pacs009 implements OnInit {
       tp: frmValue.dbtrAcctTp,
       nm: frmValue.dbtrAcctNm,
       schmeNm: frmValue.dbtrAcctSchmeNm,
-      issr: frmValue.dbtrAcctIssr
+      issr: frmValue.dbtrAcctIssr,
     };
 
     payload.dbtrAgt = {
@@ -1113,8 +1331,10 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.dbtrAgtAdrDstrctNm,
         ctrySubDvsn: frmValue.dbtrAgtAdrCtrySubDvsn,
         ctry: frmValue.dbtrAgtAdrCtry,
-        adrLine: (frmValue.dbtrAgtAdrLine || []).filter((line: string) => line && line.trim() !== '')
-      }
+        adrLine: (frmValue.dbtrAgtAdrLine || []).filter(
+          (line: string) => line && line.trim() !== ''
+        ),
+      },
     };
 
     payload.dbtrAgtAcct = {
@@ -1123,7 +1343,7 @@ export class Pacs009 implements OnInit {
       tp: frmValue.dbtrAgtAcctTp,
       nm: frmValue.dbtrAgtAcctNm,
       schmeNm: frmValue.dbtrAgtAcctSchmeNm,
-      issr: frmValue.dbtrAgtAcctIssr
+      issr: frmValue.dbtrAgtAcctIssr,
     };
 
     // Map flat creditor agent to nested structure
@@ -1151,8 +1371,10 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.cdtrAgtAdrDstrctNm,
         ctrySubDvsn: frmValue.cdtrAgtAdrCtrySubDvsn,
         ctry: frmValue.cdtrAgtAdrCtry,
-        adrLine: (frmValue.cdtrAgtAdrLine || []).filter((line: string) => line && line.trim() !== '')
-      }
+        adrLine: (frmValue.cdtrAgtAdrLine || []).filter(
+          (line: string) => line && line.trim() !== ''
+        ),
+      },
     };
 
     payload.cdtrAgtAcct = {
@@ -1161,7 +1383,7 @@ export class Pacs009 implements OnInit {
       tp: frmValue.cdtrAgtAcctTp,
       nm: frmValue.cdtrAgtAcctNm,
       schmeNm: frmValue.cdtrAgtAcctSchmeNm,
-      issr: frmValue.cdtrAgtAcctIssr
+      issr: frmValue.cdtrAgtAcctIssr,
     };
 
     // Map flat creditor to nested structure
@@ -1189,8 +1411,10 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.cdtrAdrDstrctNm,
         ctrySubDvsn: frmValue.cdtrAdrCtrySubDvsn,
         ctry: frmValue.cdtrAdrCtry,
-        adrLine: (frmValue.cdtrAdrLine || []).filter((line: string) => line && line.trim() !== '')
-      }
+        adrLine: (frmValue.cdtrAdrLine || []).filter(
+          (line: string) => line && line.trim() !== ''
+        ),
+      },
     };
 
     payload.cdtrAcct = {
@@ -1199,7 +1423,7 @@ export class Pacs009 implements OnInit {
       tp: frmValue.cdtrAcctTp,
       nm: frmValue.cdtrAcctNm,
       schmeNm: frmValue.cdtrAcctSchmeNm,
-      issr: frmValue.cdtrAcctIssr
+      issr: frmValue.cdtrAcctIssr,
     };
 
     // Instructions
@@ -1222,9 +1446,13 @@ export class Pacs009 implements OnInit {
     // Authorization
     payload.auth1stBy = frmValue.auth1stBy;
     payload.makeDt = frmValue.makeDt ? new Date(frmValue.makeDt) : null;
-    payload.auth1stDt = frmValue.auth1stDt ? new Date(frmValue.auth1stDt) : null;
+    payload.auth1stDt = frmValue.auth1stDt
+      ? new Date(frmValue.auth1stDt)
+      : null;
     payload.auth2ndBy = frmValue.auth2ndBy;
-    payload.auth2ndDt = frmValue.auth2ndDt ? new Date(frmValue.auth2ndDt) : null;
+    payload.auth2ndDt = frmValue.auth2ndDt
+      ? new Date(frmValue.auth2ndDt)
+      : null;
 
     // Other
     payload.lastAction = frmValue.lastAction;
@@ -1259,8 +1487,10 @@ export class Pacs009 implements OnInit {
           dstrctNm: frmValue.rltdFrAdrDstrctNm,
           ctrySubDvsn: frmValue.rltdFrAdrCtrySubDvsn,
           ctry: frmValue.rltdFrAdrCtry,
-          adrLine: (frmValue.rltdFrAdrLine || []).filter((line: string) => line && line.trim() !== '')
-        }
+          adrLine: (frmValue.rltdFrAdrLine || []).filter(
+            (line: string) => line && line.trim() !== ''
+          ),
+        },
       },
       to: {
         bIcfi: frmValue.rltdToBicfi,
@@ -1286,15 +1516,20 @@ export class Pacs009 implements OnInit {
           dstrctNm: frmValue.rltdToAdrDstrctNm,
           ctrySubDvsn: frmValue.rltdToAdrCtrySubDvsn,
           ctry: frmValue.rltdToAdrCtry,
-          adrLine: (frmValue.rltdToAdrLine || []).filter((line: string) => line && line.trim() !== '')
-        }
+          adrLine: (frmValue.rltdToAdrLine || []).filter(
+            (line: string) => line && line.trim() !== ''
+          ),
+        },
       },
       bizMsgIdr: frmValue.rltdBizMsgIdr,
       msgDefIdr: frmValue.rltdMsgDefIdr,
       bizSvc: frmValue.rltdBizSvc,
       creDt: frmValue.rltdCreDt,
       cpyDplct: frmValue.rltdCpyDplct,
-      prty: (frmValue.rltdPrty === 'HIGH' || frmValue.rltdPrty === 'NORM') ? frmValue.rltdPrty : 'NORM'
+      prty:
+        frmValue.rltdPrty === 'HIGH' || frmValue.rltdPrty === 'NORM'
+          ? frmValue.rltdPrty
+          : 'NORM',
     };
 
     return payload as Mx009Model;
@@ -1302,7 +1537,10 @@ export class Pacs009 implements OnInit {
 
   save(): void {
     if (this.frmGroup.invalid) {
-      this.toastr.error('Please fill in all required fields', 'Validation Error');
+      this.toastr.error(
+        'Please fill in all required fields',
+        'Validation Error'
+      );
       return;
     }
 
@@ -1332,8 +1570,7 @@ export class Pacs009 implements OnInit {
           errorMessage = error.message;
         }
         this.toastr.error(errorMessage, 'Error');
-      }
+      },
     });
   }
-
 }
