@@ -46,14 +46,14 @@ export class Dashboard implements OnInit {
   }
 
   ngOnInit(): void {
-    BUTTON_VISIBILITY.set({
-      save: true,
-      update: false,
-      view: true,
-      delete: true,
-      exit: true,
-      reset: true
-    });
+    // BUTTON_VISIBILITY.set({
+    //   save: true,
+    //   update: false,
+    //   view: true,
+    //   delete: true,
+    //   exit: true,
+    //   reset: true
+    // });
   }
 
   setPieChartFilter(filter: 'weekly' | 'monthly'): void {
