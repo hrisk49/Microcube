@@ -1,8 +1,9 @@
-<div class="form-grid-3-col">
+<div class="form-grid-col-1">
 
   <app-text-base-input [frmGroup]="frmGroup()"
                        [label]="'From BIC'"
-                       [controlName]="'fromBic'"/>
+                       [controlName]="'fromBic'"
+                        (onDoubleClick)="onPickClick()"/>
 
   <app-text-base-input [frmGroup]="frmGroup()"
                        [label]="'To BIC'"
