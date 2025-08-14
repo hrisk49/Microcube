@@ -23,8 +23,8 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 export class MenuDrawer {
 
   openSections: { [key: string]: boolean } = {
-    mxMessages: true,
-    messageList: false,
+    mxMessages: false,
+    messageList: true,
   };
 
   toggleSection(section: string): void {
