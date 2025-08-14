@@ -1,6 +1,46 @@
 <div class="h-full overflow-y-auto pb-16 bg-white">
   <div class="p-6 pt-2">
 
+    <div class="border-b border-gray-200">
+      <div
+        class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer cursor-pointer"
+        (click)="toggleSection('messageList')">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-6 bg-gray-100 rounded-full flex items-center justify-center">
+            <mat-icon class="text-blue-600">message</mat-icon>
+          </div>
+          <div>
+            <p class="font-medium text-gray-800">Message List</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <mat-icon class="text-slate-400">{{ isSectionOpen('messageList') ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+      </div>
+
+      <div [@expandCollapse]="isSectionOpen('messageList') ? 'open' : 'closed'" class="overflow-hidden">
+        <div class="space-y-3">
+          <!-- Notification Items -->
+          <div class="max-w-md mx-auto bg-gray-0 p-4 pt-0 rounded-lg">
+            <!-- Notification List -->
+            <div class="">
+              <div routerLink="/mx/optimus-prime"
+                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
+                <mat-icon class="text-blue-600">view_headline</mat-icon>
+                <p class="text-sm font-medium text-gray-800">Incoming</p>
+              </div>
+
+              <div routerLink="/mx/optimus-prime-out"
+                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
+                <mat-icon class="text-blue-600">view_headline</mat-icon>
+                <p class="text-sm font-medium text-gray-800">Outgoing</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- MX Message -->
     <div class="border-b border-gray-200">
       <div
@@ -136,46 +176,6 @@
                 <p class="text-sm font-medium text-gray-800">Cheque Cancellation Or Stop Report(CAMT-109)</p>
               </div>
 
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="border-b border-gray-200">
-      <div
-        class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer cursor-pointer"
-        (click)="toggleSection('messageList')">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-6 bg-gray-100 rounded-full flex items-center justify-center">
-            <mat-icon class="text-blue-600">message</mat-icon>
-          </div>
-          <div>
-            <p class="font-medium text-gray-800">Message List</p>
-          </div>
-        </div>
-        <div class="flex items-center space-x-2">
-          <mat-icon class="text-slate-400">{{ isSectionOpen('messageList') ? 'expand_less' : 'expand_more' }}</mat-icon>
-        </div>
-      </div>
-
-      <div [@expandCollapse]="isSectionOpen('messageList') ? 'open' : 'closed'" class="overflow-hidden">
-        <div class="space-y-3">
-          <!-- Notification Items -->
-          <div class="max-w-md mx-auto bg-gray-0 p-4 pt-0 rounded-lg">
-            <!-- Notification List -->
-            <div class="">
-              <div routerLink="/mx/optimus-prime"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Incoming</p>
-              </div>
-
-              <div routerLink="/mx/optimus-prime-out"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Outgoing</p>
-              </div>
             </div>
           </div>
         </div>

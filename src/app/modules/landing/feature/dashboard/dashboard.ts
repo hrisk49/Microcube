@@ -46,14 +46,14 @@ export class Dashboard implements OnInit {
   }
 
   ngOnInit(): void {
-    // BUTTON_VISIBILITY.set({
-    //   save: true,
-    //   update: false,
-    //   view: true,
-    //   delete: true,
-    //   exit: true,
-    //   reset: true
-    // });
+    BUTTON_VISIBILITY.set({
+      save: false,
+      update: false,
+      view: false,
+      delete: false,
+      exit: false,
+      reset: false
+    });
   }
 
   setPieChartFilter(filter: 'weekly' | 'monthly'): void {
@@ -255,22 +255,22 @@ export class Dashboard implements OnInit {
     },
     series: [
       {
-        name: 'Sonali Bank',
+        name: 'AB Bank Mumbai',
         data: [2530, 3220, 2810, 3805, 2250],
         type: 'column'
       },
       {
-        name: 'Rupali Bank',
+        name: 'Reagent Bank',
         data: [3805, 2505, 2205, 3505, 3270],
         type: 'column'
       },
       {
-        name: 'Agrani Bank',
+        name: 'Citi Bank',
         data: [3205, 2805, 2505, 3205, 3505],
         type: 'column'
       },
       {
-        name: 'Janata Bank',
+        name: 'HSBC',
         data: [3505, 2205, 2345, 2805, 3005],
         type: 'column'
       }
