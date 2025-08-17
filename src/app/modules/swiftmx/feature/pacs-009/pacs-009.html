@@ -1,38 +1,6 @@
 <div class="page-wrapper">
   @if (frmGroup) {
   <form [formGroup]="frmGroup" class="form-wrapper">
-    <!-- Time and Value Information -->
-    <!-- <div class="panel">
-        <app-expansion-panel-header [isOpenSignal]="timeDatePanel" [panelTitle]="'Time and Value Information'"/>
-        @if (timeDatePanel()) {
-              <div class="form-grid-col-1">
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Time Indicator 13C'"
-                                     [controlName]="'timeIndi13C'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Time Sign 13C'"
-                                     [controlName]="'timeSign13C'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Time Offset 13C'"
-                                     [controlName]="'timeOffset13C'"/>
-
-                <app-date-input [frmGroup]="frmGroup"
-                                [label]="'Value Date 32A'"
-                                [controlName]="'valDate32A'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Value Currency 32A'"
-                                     [controlName]="'valCurr32A'"/>
-
-                <app-amount-to-word-input [frmGroup]="frmGroup"
-                                          [label]="'Value Amount 32A'"
-                                          [controlName]="'valAmt32A'"/>
-              </div>
-            }
-      </div> -->
-
     <!-- Business Message Header -->
     <div class="panel">
       <app-expansion-panel-header
@@ -51,20 +19,30 @@
       <div class="sub-panel">
         <app-expansion-sub-panel-header
           [isOpenSignal]="fromBicPanel"
-          [subPanelTitle]="'From BIC'"
+          [subPanelTitle]="'From'"
         />
         @if(fromBicPanel()) {
         <div class="form-grid-col-1">
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'From BIC'"
+            [label]="'BIC'"
             [controlName]="'fromBicfi'"
             (onDoubleClick)="openFromBicSelectionModal()"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'From Name'"
-            [controlName]="'fromNm'"
+            [label]="'Clearing System ID Code'"
+            [controlName]="'fromClrSysIdCd'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Member ID'"
+            [controlName]="'fromMembId'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'LEI'"
+            [controlName]="'fromLei'"
           />
         </div>
         }
@@ -72,20 +50,30 @@
       <div class="sub-panel mb-2">
         <app-expansion-sub-panel-header
           [isOpenSignal]="toBicPanel"
-          [subPanelTitle]="'To BIC'"
+          [subPanelTitle]="'To'"
         />
         @if(toBicPanel()) {
         <div class="form-grid-col-1">
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'To BIC'"
+            [label]="'BIC'"
             [controlName]="'toBicfi'"
             (onDoubleClick)="openToBicSelectionModal()"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'To Name'"
-            [controlName]="'toNm'"
+            [label]="'Clearing System ID Code'"
+            [controlName]="'toClrSysIdCd'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Member ID'"
+            [controlName]="'toMembId'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'LEI'"
+            [controlName]="'toLei'"
           />
         </div>
         }
@@ -143,12 +131,6 @@
           [frmGroup]="frmGroup"
           [label]="'Message ID'"
           [controlName]="'msgId'"
-        />
-
-        <app-text-base-input
-          [frmGroup]="frmGroup"
-          [label]="'Creation Date Time'"
-          [controlName]="'creDtTm'"
         />
 
         <app-text-base-input

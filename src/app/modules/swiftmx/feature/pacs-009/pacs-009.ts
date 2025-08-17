@@ -24,7 +24,6 @@ import { SelectOptionsModel } from '../../../../shared/models/select-options-mod
 import { TextBaseInput } from '../../../../shared/components/input-types/text-base-input/text-base-input';
 import { Pacs009Service } from '../../service/pacs009.service';
 import { Mx009Model } from '../../model/mx009.model';
-import { SubPanelHeader } from '../../../../shared/components/sub-panel-header/sub-panel-header';
 import { SelectOptionField } from '../../../../shared/components/input-types/select-option-field/select-option-field';
 import { DateInput } from '../../../../shared/components/input-types/date-input/date-input';
 import { AmountToWordInput } from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
@@ -39,14 +38,12 @@ import { DialogUtils } from '../../../../shared/service/dialog-utils';
   imports: [
     ReactiveFormsModule,
     TextBaseInput,
-    SubPanelHeader,
     SelectOptionField,
     DateInput,
     AmountToWordInput,
     ExpansionPanelHeader,
-    ExpansionSubPanelHeader,
-    DataSelectionModal,
-  ],
+    ExpansionSubPanelHeader
+],
   templateUrl: './pacs-009.html',
   standalone: true,
   styleUrl: './pacs-009.scss',
@@ -228,20 +225,17 @@ export class Pacs009 implements OnInit {
 
   initForm(): void {
     this.frmGroup = this.formBuilder.group({
-      // Time and Value Information
-      timeIndi13C: [''],
-      timeSign13C: [''],
-      timeOffset13C: [''],
-      valDate32A: [''],
-      valCurr32A: [''],
-      valAmt32A: [''],
-
       // Business Message Header
       charSet: [''],
       fromBicfi: ['', Validators.required],
-      fromNm: [''],
+      fromMembId: [''],
+      fromClrSysIdCd: [''],
+      fromLei: [''],
+      toMembId: [''],
       toBicfi: ['', Validators.required],
-      toNm: [''],
+      toClrSysIdCd: [''],
+      toLei: [''],
+      
       rltdBizMsgIdr: [''],
       rltdMsgDefIdr: [''],
       rltdBizSvc: [''],
@@ -894,16 +888,6 @@ export class Pacs009 implements OnInit {
   generatePayload(): Mx009Model {
     let payload: any = {};
     let frmValue = this.frmGroup.value;
-
-    // Time and Value Information
-    payload.timeIndi13C = frmValue.timeIndi13C;
-    payload.timeSign13C = frmValue.timeSign13C;
-    payload.timeOffset13C = frmValue.timeOffset13C;
-    payload.valDate32A = frmValue.valDate32A
-      ? new Date(frmValue.valDate32A)
-      : null;
-    payload.valCurr32A = frmValue.valCurr32A;
-    payload.valAmt32A = frmValue.valAmt32A ? Number(frmValue.valAmt32A) : null;
 
     // Business Message Header
     payload.bizMsgIdr = frmValue.bizMsgIdr;
