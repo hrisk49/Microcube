@@ -96,8 +96,7 @@ messageTypes: any[] = [
     console.log('Start Date:', this.startDate);
     console.log('End Date:', this.endDate);
     console.log('Message Type:', this.selectedMessageType);
-    
-    this.currentPage = 1; // Reset to first page
+    this.currentPage = 1;// Reset to first page
     this.filterData();
   }
 
