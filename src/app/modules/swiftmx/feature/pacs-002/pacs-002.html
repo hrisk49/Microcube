@@ -15,41 +15,43 @@
         }
 
         <div class="sub-panel">
-          <app-expansion-sub-panel-header [isOpenSignal]="rltdPanelOpen"
-                                          [subPanelTitle]="'Related'"/>
-          <div class="form-grid-col-1">
+          <app-expansion-sub-panel-header [isOpenSignal]="rltdPanelOpen" [subPanelTitle]="'Related'"/>
+         @if(rltdPanelOpen()){
+           <div class="form-grid-col-1">
 
-            <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'From BIC'"
-                                 [controlName]="'rltdFrBic'"/>
+             <app-text-base-input [frmGroup]="frmGroup"
+                                  [label]="'From BIC'"
+                                  [controlName]="'rltdFrBic'"
+                                  />
 
-            <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'To BIC'"
-                                 [controlName]="'rltdToBic'"/>
+             <app-text-base-input [frmGroup]="frmGroup"
+                                  [label]="'To BIC'"
+                                  [controlName]="'rltdToBic'"/>
 
-            <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Business Message Identifier'"
-                                 [controlName]="'rltdBizMsgIdr'"/>
+             <app-text-base-input [frmGroup]="frmGroup"
+                                  [label]="'Business Message Identifier'"
+                                  [controlName]="'rltdBizMsgIdr'"/>
 
-            <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Message Definition Identifier'"
-                                 [controlName]="'rltdMsgDefIdr'"/>
+             <app-text-base-input [frmGroup]="frmGroup"
+                                  [label]="'Message Definition Identifier'"
+                                  [controlName]="'rltdMsgDefIdr'"/>
 
-            <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Business Service'"
-                                 [controlName]="'rltdBizSvc'"/>
+             <app-text-base-input [frmGroup]="frmGroup"
+                                  [label]="'Business Service'"
+                                  [controlName]="'rltdBizSvc'"/>
 
-            <app-select-option-field [frmGroup]="frmGroup"
-                                     [options]="duplicateOptions"
-                                     [label]="'Copy Duplicate'"
-                                     [controlName]="'rltdCpyDplct'"/>
+             <app-select-option-field [frmGroup]="frmGroup"
+                                      [options]="duplicateOptions"
+                                      [label]="'Copy Duplicate'"
+                                      [controlName]="'rltdCpyDplct'"/>
 
-            <app-select-option-field [frmGroup]="frmGroup"
-                                     [options]="priorityOptions"
-                                     [label]="'Priority'"
-                                     [controlName]="'rltdPrty'"/>
+             <app-select-option-field [frmGroup]="frmGroup"
+                                      [options]="priorityOptions"
+                                      [label]="'Priority'"
+                                      [controlName]="'rltdPrty'"/>
 
-          </div>
+           </div>
+         }
 
         </div>
       </div>
@@ -99,11 +101,11 @@
 
                 <app-text-base-input [frmGroup]="frmGroup"
                                      [label]="'Original Number Transaction'"
-                                     [controlName]="'orgnlNbOfTxs'"/>
+                                     [controlName]="'orgnlNbOfTxs'" type="number"/>
 
                 <app-text-base-input [frmGroup]="frmGroup"
                                      [label]="'Original Control Sum'"
-                                     [controlName]="'orgnlCtrlSum'"/>
+                                     [controlName]="'orgnlCtrlSum'" type="number"/>
 
 
                 <app-text-base-input [frmGroup]="frmGroup"
@@ -121,185 +123,279 @@
                 <app-text-base-input [frmGroup]="frmGroup"
                                      [label]="' Transaction Status'"
                                      [controlName]="'txSts'"/>
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="' Country of Residance'"
-                                     [controlName]="'ctryOfRes'"/>
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="' Clearing System Reference'"
-                                     [controlName]="'clrSysRef'"/>
+
+
               </div>
             }
 
-            <fieldset class="custom-fieldset">
-              <legend>Status Reason Information</legend>
-              <div class="form-grid-4-col">
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Orginator Name'"
-                                     [controlName]="'orgtrNm'"/>
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="stsRsInfo" [subPanelTitle]="'Status Reason Information'"/>
+              @if (stsRsInfo()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Orginator Name'"
+                                       [controlName]="'orgtrNm'"/>
+                  <!--                    Originator-->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="adrsInfo" [subPanelTitle]="'Postal Address'" />
+                    @if(adrsInfo()){
+                      <div class="form-grid-col-1">
+                        <app-select-option-field [frmGroup]="frmGroup"
+                                                 [options]="TypeOptions"
+                                                 [label]="'Type'"
+                                                 [controlName]="'addrTp'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Department'"
+                                             [controlName]="'dept'"/>
 
-                <app-select-option-field [frmGroup]="frmGroup"
-                                         [options]="TypeOptions"
-                                         [label]="'Type'"
-                                         [controlName]="'addrTp'"/>
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Department'"
-                                     [controlName]="'dept'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Sub Department'"
+                                             [controlName]="'subDept'"/>
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Sub Department'"
-                                     [controlName]="'subDept'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Street Name'"
+                                             [controlName]="'strtNm'"/>
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Street Name'"
-                                     [controlName]="'strtNm'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Building Number'"
+                                             [controlName]="'bldgNb'"/>
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Building Number'"
-                                     [controlName]="'bldgNb'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Floor'"
+                                             [controlName]="'flr'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Post Box'"
+                                             [controlName]="'pstBx'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Room'"
+                                             [controlName]="'room'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Town Name'"
+                                             [controlName]="'twnNm'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Post Code'"
+                                             [controlName]="'pstCd'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Town Location Name'"
+                                             [controlName]="'twnLctnNm'"/>
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Floor'"
-                                     [controlName]="'flr'"/>
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Post Box'"
-                                     [controlName]="'pstBx'"/>
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Room'"
-                                     [controlName]="'room'"/>
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Town Name'"
-                                     [controlName]="'twnNm'"/>
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Post Code'"
-                                     [controlName]="'pstCd'"/>
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Town Location Name'"
-                                     [controlName]="'twnLctnNm'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'District Name'"
+                                             [controlName]="'dstrctNm'"/>
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'District Name'"
-                                     [controlName]="'dstrctNm'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Country Sub Division'"
+                                             [controlName]="'ctrySubDvsn'"/>
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Country Sub Division'"
-                                     [controlName]="'ctrySubDvsn'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Country'"
+                                             [controlName]="'ctry'"/>
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Country'"
-                                     [controlName]="'ctry'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Address Line'"
+                                             [controlName]="'adrLine'"/>
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Address Line'"
-                                     [controlName]="'adrLine'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Additional Information 1'"
+                                             [controlName]="'addtlInf1'"/>
 
-                <app-date-input [frmGroup]="frmGroup"
-                                [label]="'Effective Settlement Date'"
-                                [controlName]="'fctvIntrBkSttlmDt'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Additional Information 2'"
+                                             [controlName]="'addtlInf2'"/>
+                      </div>
+                    }
+                  </div>
+                  <!--                 Identification / Organization identification -->
+
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="orgId" [subPanelTitle]="'Orgnization Identification'"/>
+                    <div class="form-grid-col-1">
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Organization Identification BIC'"
+                                           [controlName]="'orgIdBic'"/>
+
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Organization Identification LEI'"
+                                           [controlName]="'orgIdLei'"/>
+
+                      <div class="sub-panel">
+                        <app-expansion-sub-panel-header [isOpenSignal]="orgOthr" [subPanelTitle]="'Orgnization Other Information'"></app-expansion-sub-panel-header>
+                        <div class="form-grid-col-1">
+
+                          <app-text-base-input [frmGroup]="frmGroup"
+                                               [label]="'Organization Other Identification'"
+                                               [controlName]="'orgIdOthrId'"/>
+
+                          <app-text-base-input [frmGroup]="frmGroup"
+                                               [label]="'Identification Other Issuer'"
+                                               [controlName]="'orgIdOthrIssr'"/>
+
+                          <app-select-option-field [frmGroup]="frmGroup"
+                                                   [options]="TypeOptions"
+                                                   [label]="'Scheme Name'"
+                                                   [controlName]="'orgScmNm'"/>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="orgPrvtId" [subPanelTitle]="'Private Identification' "/>
+
+                    <div class="sub-panel">
+                      <app-expansion-sub-panel-header [isOpenSignal]="dtAndPlcOfBirth" [subPanelTitle]="'Date And Place Of Birth'"/>
+                      <div class="form-grid-col-1">
+                        <app-date-input [frmGroup]="frmGroup"
+                                        [label]="'Birth Date'"
+                                        [controlName]="'birthDt'"/>
+
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Place of Birth'"
+                                             [controlName]="'prvcOfBirth'"/>
+
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Private Other Identification'"
+                                             [controlName]="'prvtOthId1'"/>
+
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'City of Birth'"
+                                             [controlName]="'cityOfBirth'"/>
+
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Country of Birth'"
+                                             [controlName]="'ctryOfBirth'"/>
+                      </div>
+                    </div>
+                    <div class="sub-panel">
+                      <app-expansion-sub-panel-header [isOpenSignal]="orgOthrPrvtId" [subPanelTitle]="'Private Other Information'"/>
+                      <div class="form-grid-col-1">
+
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Private Other Identification 1'"
+                                             [controlName]="'prvtOthId1'"/>
+                        <app-date-input [frmGroup]="frmGroup"
+                                        [label]="'Private Other Identification 2'"
+                                        [controlName]="'prvtOthId2'"/>
+
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Scheme Name Code1'"
+                                             [controlName]="'prvtOthIdSchNmCd1'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Scheme Name Code2'"
+                                             [controlName]="'prvtOthIdSchNmCd2'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Identification Issuer'"
+                                             [controlName]="'prvtOthIdIssr1'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Identification Issuer2'"
+                                             [controlName]="'prvtOthIdIssr2'"/>
+                      </div>
+                    </div>
+                  </div>
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="' Country of Residance'"
+                                       [controlName]="'ctryOfRes'"/>
+
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="ctctDtls" [subPanelTitle]="'Contact Details'"></app-expansion-sub-panel-header>
+                    <div class="form-grid-col-1">
+                      <app-select-option-field [frmGroup]="frmGroup"
+                                               [options]="NamePrefixOptions"
+                                               [label]="'Name Prefix'"
+                                               [controlName]="'ctDtlsNmPrfx'"/>
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Details Name'"
+                                           [controlName]="'ctDtlsNm'"/>
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Phone Number'"
+                                           [controlName]="'ctDtlsPhneNb'"/>
+
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Mobile Number'"
+                                           [controlName]="'ctDtlsMobNb'"/>
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Fax Number'"
+                                           [controlName]="'ctDtlsFaxNb'"/>
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Email Address'"
+                                           [controlName]="'ctDtlsEmailAdr'"/>
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Email Purpose'"
+                                           [controlName]="'ctDtlsEmailPurp'"/>
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Job Title Details'"
+                                           [controlName]="'ctDtlsJobTitlctctDtls'"/>
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Responsibility'"
+                                           [controlName]="'ctDtlsRspnsblty'"/>
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Department'"
+                                           [controlName]="'ctDtlsDept'"/>
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Sub Department'"
+                                           [controlName]="'ctDtlsSubDept'"/>
+                    </div>
+
+                    <div class="sub-panel">
+                      <app-expansion-sub-panel-header [isOpenSignal]="ctDtlsOthr" [subPanelTitle]="'Contact Details Other Information'"/>
+
+                      <div class="form-grid-col-1">
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Contact Details Other Channel Type'"
+                                             [controlName]="'ctDtlsothrChanlTp'"/>
+
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Contact Details Other Identification'"
+                                             [controlName]="'ctDtlsothrChanlId'"/>
 
 
-                <!--            <app-text-base-input [frmGroup]="frmGroup"-->
-                <!--                                 [label]="'Reason'"-->
-                <!--                                 [controlName]="'Rsn'"/>-->
+                      </div>
+                    </div>
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Additional Information 1'"
-                                     [controlName]="'addtlInf1'"/>
+                    <app-select-option-field [frmGroup]="frmGroup"
+                                             [options]="PreferredMthdOptions"
+                                             [label]="'Contact Details Preferred Method'"
+                                             [controlName]="'ctctDtlsPrefrdMtd'"/>
+                  </div>
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Additional Information 2'"
-                                     [controlName]="'addtlInf2'"/>
+                  <app-select-option-field [frmGroup]="frmGroup"
+                                           [options]="TypeOptions"
+                                           [label]="'Type'"
+                                           [controlName]="'Tp'"/>
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Reason Code'"
-                                     [controlName]="'rsnCd'"/>
+                  <!--                <app-text-base-input [frmGroup]="frmGroup"-->
+                  <!--                                     [label]="'Reason Code'"-->
+                  <!--                                     [controlName]="'rsnCd'"/>-->
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Reson propietary'"
-                                     [controlName]="'rsnPrtry'"/>
-              </div>
-            </fieldset>
+                  <!--                <app-text-base-input [frmGroup]="frmGroup"-->
+                  <!--                                     [label]="'Reson propietary'"-->
+                  <!--                                     [controlName]="'rsnPrtry'"/>-->
+                </div>
+              }
+            </div>
 
-            <fieldset class="custom-fieldset">
-              <legend>Organization identification</legend>
-              <div class="form-grid-4-col">
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Organization Identification BIC'"
-                                     [controlName]="'orgIdBic'"/>
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="efftvIntrBankStllmnt" [subPanelTitle]="'Effective inter bank settlement'"/>
+              <app-date-input [frmGroup]="frmGroup"
+                              [label]="'Effective Settlement Date'"
+                              [controlName]="'fctvIntrBkSttlmDt'"/>
+            </div>
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Organization Identification LEI'"
-                                     [controlName]="'orgIdLei'"/>
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="clrSysRef" [subPanelTitle]="'Clearing System Reference'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="' Clearing System Reference'"
+                                   [controlName]="'clrSysRef'"/>
+            </div>
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Organization Other Identification'"
-                                     [controlName]="'orgIdOthrId'"/>
+            <!--        //  Number of transaction per status-->
 
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Identification Other Issuer'"
-                                     [controlName]="'orgIdOthrIssr'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Organization Other Code'"
-                                     [controlName]="'orgIdOthrCd'"/>
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Organization Other Propietary'"
-                                     [controlName]="'orgIdOthrIssrPtry'"/>
-              </div>
-            </fieldset>
-
-            <fieldset class="custom-fieldset">
-              <legend>Private Identification</legend>
-              <div class="form-grid-4-col">
-                <app-date-input [frmGroup]="frmGroup"
-                                [label]="'Birth Date'"
-                                [controlName]="'birthDt'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Place of Birth'"
-                                     [controlName]="'prvcOfBirth'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Private Other Identification'"
-                                     [controlName]="'prvtOthId1'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'City of Birth'"
-                                     [controlName]="'cityOfBirth'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Country of Birth'"
-                                     [controlName]="'ctryOfBirth'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Private Other Identification 1'"
-                                     [controlName]="'prvtOthId1'"/>
-                <app-date-input [frmGroup]="frmGroup"
-                                [label]="'Private Other Identification 2'"
-                                [controlName]="'prvtOthId2'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Scheme Name Code1'"
-                                     [controlName]="'prvtOthIdSchNmCd1'"/>
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Scheme Name Code2'"
-                                     [controlName]="'prvtOthIdSchNmCd2'"/>
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Identification Issuer'"
-                                     [controlName]="'prvtOthIdIssr1'"/>
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Identification Issuer2'"
-                                     [controlName]="'prvtOthIdIssr2'"/>
-              </div>
-            </fieldset>
-
-
-            <!--              //  Number of transaction per status-->
-
-
-            <fieldset class="custom-fieldset">
-              <legend> Number of transaction per status</legend>
-              <div class="form-grid-4-col">
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="nbOfTxsPerSts" [subPanelTitle]="'Number of transaction per status'"/>
+              <div class="form-grid-col-1">
                 <app-text-base-input [frmGroup]="frmGroup"
                                      [label]="'Detailed Number of transaction'"
                                      [controlName]="'dtldNbOfTxs'"/>
@@ -308,27 +404,32 @@
                                      [controlName]="'dtldSts'"/>
                 <app-text-base-input [frmGroup]="frmGroup"
                                      [label]="'Detailed Control Sum'"
-                                     [controlName]="'dtldCtrlSum'"/>
+                                     [controlName]="'dtldCtrlSum'"
+                                      type="number"/>
 
               </div>
-            </fieldset>
+            </div>
 
-            <fieldset class="'custom-fieldset'">
-              <legend>Instructing Agent</legend>
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="clrSysRef" [subPanelTitle]="'Clearing System Reference'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="' Clearing System Reference'"
+                                   [controlName]="'clrSysRef'"/>
+            </div>
+
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="instgAgntBicfi" [subPanelTitle]="'Instructing Agent Bic'"/>
               <app-text-base-input [frmGroup]="frmGroup"
                                    [label]="'Instructing Agent Bic'"
                                    [controlName]="'instgAgtBicfi'"
                                    (onDoubleClick)="onPickclick()"/>
-
-            </fieldset>
-
-            <fieldset class="'custom-fieldset'">
-              <legend>Instructed Agent</legend>
+            </div>
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="instdAgntBicfi" [subPanelTitle]="'Instructed Agent Bic'"/>
               <app-text-base-input [frmGroup]="frmGroup"
                                    [label]="'Instructed Agent Bic'"
                                    [controlName]="'instdAgtBicfi'"/>
-            </fieldset>
-
+            </div>
           </div>
         }
       </div>
