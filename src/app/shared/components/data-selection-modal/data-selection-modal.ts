@@ -2,6 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-data-selection-modal',
@@ -9,6 +10,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
   imports: [
     CommonModule,
     FormsModule,
+    MatIconModule,
     ReactiveFormsModule
   ],
   templateUrl: './data-selection-modal.html',

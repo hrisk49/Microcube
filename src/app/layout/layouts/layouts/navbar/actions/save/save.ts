@@ -1,4 +1,4 @@
-import {Component, effect} from '@angular/core';
+import {Component, effect, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {FormGroupSignal, ONCLICK_RESET, ONCLICK_SAVE} from '../../../../../../shared/constant/button-signals.constant';
 import {FormGroup} from '@angular/forms';
@@ -14,9 +14,13 @@ import {FormGroup} from '@angular/forms';
 })
 export class Save {
 
-  frmGroup: FormGroup = FormGroupSignal();
+  frmGroup = signal<FormGroup>(FormGroupSignal());
 
   constructor() {
+    effect(() => {
+      const formGroup = FormGroupSignal();
+      this.frmGroup.set(formGroup);
+    });
   }
 
   save() {

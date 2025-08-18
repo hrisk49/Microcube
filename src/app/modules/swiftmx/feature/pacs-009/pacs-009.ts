@@ -32,6 +32,7 @@ import { ExpansionSubPanelHeader } from '../../../../shared/components/expansion
 import { BranchInfoService } from '../../../../shared/services/branch-info.service';
 import { DataSelectionModal } from '../../../../shared/components/data-selection-modal/data-selection-modal';
 import { DialogUtils } from '../../../../shared/service/dialog-utils';
+import { BicSelectionService } from '../../../../shared/services/bic-selection.service';
 
 @Component({
   selector: 'app-pacs-009',
@@ -189,7 +190,10 @@ export class Pacs009 implements OnInit {
     ['address', 'Address']
   ]);
 
-  constructor(private branchInfoService: BranchInfoService) {
+  constructor(
+    private branchInfoService: BranchInfoService,
+    private bicSelectionService: BicSelectionService
+  ) {
     BUTTON_VISIBILITY.set({
       save: true,
       update: false,
@@ -216,6 +220,17 @@ export class Pacs009 implements OnInit {
       if (!this.frmGroup) {
         console.error('Form initialization failed');
         this.toastr.error('Form initialization failed', 'Error');
+      } else {
+        // Subscribe to form value changes to update FormGroupSignal
+        this.frmGroup.valueChanges.subscribe(() => {
+          FormGroupSignal.set(this.frmGroup);
+        });
+        
+        // Force update FormGroupSignal after a short delay
+        setTimeout(() => {
+          FormGroupSignal.set(this.frmGroup);
+          console.log('FormGroupSignal updated in ngOnInit. Form valid:', this.frmGroup.valid);
+        }, 100);
       }
     } catch (error) {
       console.error('Error during form initialization:', error);
@@ -240,15 +255,15 @@ export class Pacs009 implements OnInit {
       rltdMsgDefIdr: [''],
       rltdBizSvc: [''],
       rltdCreDt: [''],
-      bizMsgIdr: ['', Validators.required],
+      bizMsgIdr: ['PACS009_' + new Date().getTime(), Validators.required],
       msgDefIdr: ['pacs.009.001.08', Validators.required],
       bizSvc: ['swift.cbprplus.02', Validators.required],
-      creDt: ['', Validators.required],
+      creDt: [new Date().toISOString().split('T')[0], Validators.required],
       cpyDplct: ['COPY'],
       psblDplct: [null],
       priority: ['NORM'],
-      msgId: ['', Validators.required],
-      creDtTm: ['', Validators.required],
+      msgId: ['MSG_' + new Date().getTime(), Validators.required],
+      creDtTm: [new Date().toISOString(), Validators.required],
       nbOfTxs: ['1', Validators.required],
 
       // Settlement Information
@@ -264,7 +279,7 @@ export class Pacs009 implements OnInit {
       // Payment Identification
       instrId: [''],
       endToEndId: [''],
-      txId: ['', Validators.required],
+      txId: ['TX_' + new Date().getTime(), Validators.required],
       uetr: [''],
       clrSysRef: [''],
 
@@ -278,9 +293,9 @@ export class Pacs009 implements OnInit {
       ctgyPurpPrtry: [''],
 
       // Interbank Settlement
-      intrBkSttlmAmtCcy: [null, Validators.required],
-      intrBkSttlmAmt: ['', Validators.required],
-      intrBkSttlmDt: ['', Validators.required],
+      intrBkSttlmAmtCcy: ['USD', Validators.required],
+      intrBkSttlmAmt: ['1000.00', Validators.required],
+      intrBkSttlmDt: [new Date().toISOString().split('T')[0], Validators.required],
       sttlmPrty: [null],
 
       // Previous Instructing Agent 1 (flat)
@@ -723,7 +738,11 @@ export class Pacs009 implements OnInit {
 
     // Ensure the form is properly initialized
     if (this.frmGroup) {
-      FormGroupSignal.set(this.frmGroup);
+      // Use setTimeout to ensure form is fully initialized
+      setTimeout(() => {
+        FormGroupSignal.set(this.frmGroup);
+        console.log('FormGroupSignal set with form:', this.frmGroup.valid, this.frmGroup.invalid);
+      }, 0);
       // Initialize with one service level row
       this.addServiceRow();
     }
@@ -731,79 +750,73 @@ export class Pacs009 implements OnInit {
 
   // Open BIC selection modal for "From BIC" (Instructing Agent)
   openFromBicSelectionModal(): void {
-    this.branchInfoService
-      .getBySwiftCodePrefix(
-        this.frmGroup.get('fromBicfi')?.value
-          ? this.frmGroup.get('fromBicfi')?.value.trim()
-          : 'SCBLBDDX'
-      )
-      .subscribe((res) => {
-        this.swiftCodesFrom = res?.payload;
-        const dialogRef = this.dialogUtils.openDialog(
-          DataSelectionModal,
-          this.bicTableHeaders,
-          this.swiftCodesFrom
-        );
-
-        dialogRef.afterClosed().subscribe((selectedBank: any) => {
-          if (selectedBank) {
-            // Update From BIC fields
-            this.frmGroup.patchValue({
-              fromBicfi: selectedBank.swift,
-              fromNm: selectedBank.branchName,
-            });
-
-            // Update Instructing Agent fields
-            this.frmGroup.patchValue({
-              instgAgtBicfi: selectedBank.swift,
-              instgAgtNm: selectedBank.branchName,
-            });
-
-            // this.toastr.success('From BIC selected successfully', 'Success');
-          }
-        });
-      });
+    this.bicSelectionService.openBicSelectionModal(
+      this.frmGroup,
+      {
+        bicField: 'fromBicfi',
+        nameField: 'fromNm',
+        defaultValue: 'SCBLBDDX'
+      },
+      {
+        bicField: 'instgAgtBicfi',
+        nameField: 'instgAgtNm'
+      },
+      this.bicTableHeaders
+    ).subscribe();
   }
 
   // Open BIC selection modal for "To BIC" (Instructed Agent)
   openToBicSelectionModal(): void {
-    this.branchInfoService
-      .getBySwiftCodePrefix(
-        this.frmGroup.get('toBicfi')?.value
-          ? this.frmGroup.get('toBicfi')?.value.trim()
-          : 'AANLGB21XXX'
-      )
-      .subscribe((res) => {
-        this.swiftCodesTo = res?.payload;
-        const dialogRef = this.dialogUtils.openDialog(
-          DataSelectionModal,
-          this.bicTableHeaders,
-          this.swiftCodesTo
-        );
+    this.bicSelectionService.openBicSelectionModal(
+      this.frmGroup,
+      {
+        bicField: 'toBicfi',
+        nameField: 'toNm',
+        defaultValue: 'AANLGB21XXX'
+      },
+      {
+        bicField: 'instdAgtBicfi',
+        nameField: 'instdAgtNm'
+      },
+      this.bicTableHeaders
+    ).subscribe();
+  }
 
-        dialogRef.afterClosed().subscribe((selectedBank: any) => {
-          if (selectedBank) {
-            // Update To BIC fields
-            this.frmGroup.patchValue({
-              toBicfi: selectedBank.swift,
-              toNm: selectedBank.branchName,
-            });
-
-            // Update Instructed Agent fields
-            this.frmGroup.patchValue({
-              instdAgtBicfi: selectedBank.swift,
-              instdAgtNm: selectedBank.branchName,
-            });
-
-            //  this.toastr.success('To BIC selected successfully', 'Success');
-          }
-        });
-      });
+  // Add new method for other BIC selections
+  openIntermediaryBicSelectionModal(agentNumber: number): void {
+    this.bicSelectionService.openBicSelectionModal(
+      this.frmGroup,
+      {
+        bicField: `intrmyAgt${agentNumber}Bicfi`,
+        nameField: `intrmyAgt${agentNumber}Nm`
+      },
+      undefined,
+      this.bicTableHeaders
+    ).subscribe();
   }
 
   resetForm(): void {
     if (this.frmGroup) {
       this.frmGroup.reset();
+      // Set default values for required fields
+      this.frmGroup.patchValue({
+        bizMsgIdr: 'PACS009_' + new Date().getTime(),
+        msgDefIdr: 'pacs.009.001.08',
+        bizSvc: 'swift.cbprplus.02',
+        creDt: new Date().toISOString().split('T')[0],
+        cpyDplct: 'COPY',
+        priority: 'NORM',
+        msgId: 'MSG_' + new Date().getTime(),
+        creDtTm: new Date().toISOString(),
+        nbOfTxs: '1',
+        sttlmMtd: 'INGA',
+        fromBicfi: 'SCBLBDDX',
+        toBicfi: 'AANLGB21XXX',
+        txId: 'TX_' + new Date().getTime(),
+        intrBkSttlmAmtCcy: 'USD',
+        intrBkSttlmAmt: '1000.00',
+        intrBkSttlmDt: new Date().toISOString().split('T')[0]
+      });
       // Clear service levels and add one default row
       this.serviceLevels.clear();
       this.addServiceRow();
@@ -883,6 +896,18 @@ export class Pacs009 implements OnInit {
       }
     }
     return true;
+  }
+
+  // Helper method to get form validation errors
+  getFormValidationErrors(): any {
+    const errors: any = {};
+    Object.keys(this.frmGroup.controls).forEach(key => {
+      const control = this.frmGroup.get(key);
+      if (control && control.invalid) {
+        errors[key] = control.errors;
+      }
+    });
+    return errors;
   }
 
   generatePayload(): Mx009Model {
@@ -1526,7 +1551,9 @@ export class Pacs009 implements OnInit {
   }
 
   save(): void {
+    console.log('Save method called. Form valid:', this.frmGroup.valid, 'Form invalid:', this.frmGroup.invalid);
     if (this.frmGroup.invalid) {
+      console.log('Form validation errors:', this.getFormValidationErrors());
       this.toastr.error(
         'Please fill in all required fields',
         'Validation Error'
