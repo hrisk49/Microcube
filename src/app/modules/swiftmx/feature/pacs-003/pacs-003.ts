@@ -1,4 +1,4 @@
-import {Component, effect, inject, OnInit} from '@angular/core';
+import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
@@ -10,26 +10,24 @@ import {
 } from '../../../../shared/constant/button-signals.constant';
 import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
 import {ToastrService} from 'ngx-toastr';
-import { PanelHeader } from '../../../../shared/components/panel-header/panel-header';
-import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
+import {ExpansionPanelHeader} from '../../../../shared/components/expansion-panel-header/expansion-panel-header';
+import {ExpansionSubPanelHeader} from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
 import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
+import {CommonModule} from '@angular/common';
 import { SelectOptionsModel } from '../../../../shared/models/select-options-model';
-import { AccountComponent } from '../../components/account/account';
-import { AgentComponent } from '../../components/agent/agent';
 
 
 @Component({
     selector: 'app-pacs-003',
     imports: [
+        CommonModule,
         ReactiveFormsModule,
         SelectOptionField,
         TextBaseInput,
         DateInput,
-        PanelHeader,
-        SubPanelHeader,
+        ExpansionPanelHeader,
+        ExpansionSubPanelHeader,
         AmountToWordInput,
-        AccountComponent,
-        AgentComponent,
     ],
     templateUrl: './pacs-003.html',
     standalone: true,
@@ -42,6 +40,32 @@ export class Pacs003 implements OnInit {
     frmGroup: FormGroup;
     onClickReset = ONCLICK_RESET;
     onClickSave = ONCLICK_SAVE;
+
+    // Panel state signals for expansion panels
+    businessHeaderPanel: WritableSignal<boolean> = signal(true);
+    relatedPanel: WritableSignal<boolean> = signal(false);
+    directDebitPanel: WritableSignal<boolean> = signal(true);
+    groupHeaderPanel: WritableSignal<boolean> = signal(true);
+    settlementInfoPanel: WritableSignal<boolean> = signal(true);
+    paymentIdentificationPanel: WritableSignal<boolean> = signal(true);
+    paymentTypeInfoPanel: WritableSignal<boolean> = signal(true);
+    settlementInfo2Panel: WritableSignal<boolean> = signal(true);
+    previousAgentsPanel: WritableSignal<boolean> = signal(true);
+    prevAgent1Panel: WritableSignal<boolean> = signal(false);
+    prevAgent2Panel: WritableSignal<boolean> = signal(false);
+    prevAgent3Panel: WritableSignal<boolean> = signal(false);
+    agentsPanel: WritableSignal<boolean> = signal(true);
+    instructingAgentPanel: WritableSignal<boolean> = signal(true);
+    instructedAgentPanel: WritableSignal<boolean> = signal(true);
+    intermediaryAgentsPanel: WritableSignal<boolean> = signal(true);
+    intermediary1Panel: WritableSignal<boolean> = signal(false);
+    intermediary2Panel: WritableSignal<boolean> = signal(false);
+    intermediary3Panel: WritableSignal<boolean> = signal(false);
+    debtorPanel: WritableSignal<boolean> = signal(true);
+    creditorPanel: WritableSignal<boolean> = signal(true);
+    instructionsPanel: WritableSignal<boolean> = signal(true);
+    purposeRemittancePanel: WritableSignal<boolean> = signal(true);
+    chargesPanel: WritableSignal<boolean> = signal(true);
   
     priorityOptions: SelectOptionsModel[] = [
         {key: 'HIGH', value: 'High'},
@@ -96,6 +120,46 @@ export class Pacs003 implements OnInit {
         {key: 'oneOff', value: 'OOFF'},
         {key: 'recurring', value: 'RCUR'},
         {key: 'represented', value: 'RPRE'},
+    ];
+
+    currencyOptions: SelectOptionsModel[] = [
+        { key: 'USD', value: 'USD - US Dollar' },
+        { key: 'EUR', value: 'EUR - Euro' },
+        { key: 'GBP', value: 'GBP - British Pound' },
+        { key: 'JPY', value: 'JPY - Japanese Yen' },
+        { key: 'CHF', value: 'CHF - Swiss Franc' },
+        { key: 'CAD', value: 'CAD - Canadian Dollar' },
+        { key: 'AUD', value: 'AUD - Australian Dollar' },
+        { key: 'CNY', value: 'CNY - Chinese Yuan' },
+        { key: 'HKD', value: 'HKD - Hong Kong Dollar' },
+        { key: 'SGD', value: 'SGD - Singapore Dollar' },
+        { key: 'SEK', value: 'SEK - Swedish Krona' },
+        { key: 'NOK', value: 'NOK - Norwegian Krone' },
+        { key: 'DKK', value: 'DKK - Danish Krone' },
+        { key: 'NZD', value: 'NZD - New Zealand Dollar' },
+        { key: 'MXN', value: 'MXN - Mexican Peso' },
+        { key: 'BRL', value: 'BRL - Brazilian Real' },
+        { key: 'INR', value: 'INR - Indian Rupee' },
+        { key: 'KRW', value: 'KRW - South Korean Won' },
+        { key: 'TRY', value: 'TRY - Turkish Lira' },
+        { key: 'RUB', value: 'RUB - Russian Ruble' },
+        { key: 'ZAR', value: 'ZAR - South African Rand' },
+        { key: 'PLN', value: 'PLN - Polish Zloty' },
+        { key: 'CZK', value: 'CZK - Czech Koruna' },
+        { key: 'HUF', value: 'HUF - Hungarian Forint' },
+        { key: 'ILS', value: 'ILS - Israeli Shekel' },
+        { key: 'CLP', value: 'CLP - Chilean Peso' },
+        { key: 'PHP', value: 'PHP - Philippine Peso' },
+        { key: 'AED', value: 'AED - UAE Dirham' },
+        { key: 'SAR', value: 'SAR - Saudi Riyal' },
+        { key: 'THB', value: 'THB - Thai Baht' },
+        { key: 'MYR', value: 'MYR - Malaysian Ringgit' },
+        { key: 'IDR', value: 'IDR - Indonesian Rupiah' },
+        { key: 'VND', value: 'VND - Vietnamese Dong' },
+        { key: 'EGP', value: 'EGP - Egyptian Pound' },
+        { key: 'NGN', value: 'NGN - Nigerian Naira' },
+        { key: 'KES', value: 'KES - Kenyan Shilling' },
+        { key: 'GHS', value: 'GHS - Ghanaian Cedi' }
     ];
 
     constructor() {

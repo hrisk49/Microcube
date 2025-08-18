@@ -30,7 +30,6 @@ import { AmountToWordInput } from '../../../../shared/components/input-types/amo
 import { ExpansionPanelHeader } from '../../../../shared/components/expansion-panel-header/expansion-panel-header';
 import { ExpansionSubPanelHeader } from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
 import { BranchInfoService } from '../../../../shared/services/branch-info.service';
-import { DataSelectionModal } from '../../../../shared/components/data-selection-modal/data-selection-modal';
 import { DialogUtils } from '../../../../shared/service/dialog-utils';
 import { BicSelectionService } from '../../../../shared/services/bic-selection.service';
 
@@ -810,8 +809,8 @@ export class Pacs009 implements OnInit {
         creDtTm: new Date().toISOString(),
         nbOfTxs: '1',
         sttlmMtd: 'INGA',
-        fromBicfi: 'SCBLBDDX',
-        toBicfi: 'AANLGB21XXX',
+        fromBicfi: '',
+        toBicfi: '',
         txId: 'TX_' + new Date().getTime(),
         intrBkSttlmAmtCcy: 'USD',
         intrBkSttlmAmt: '1000.00',
@@ -915,6 +914,8 @@ export class Pacs009 implements OnInit {
     let frmValue = this.frmGroup.value;
 
     // Business Message Header
+    payload.fromBicfi = frmValue.fromBicfi;
+    payload.toBicfi = frmValue.toBicfi;
     payload.bizMsgIdr = frmValue.bizMsgIdr;
     payload.msgDefIdr = frmValue.msgDefIdr;
     payload.bizSvc = frmValue.bizSvc;
