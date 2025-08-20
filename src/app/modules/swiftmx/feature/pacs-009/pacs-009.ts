@@ -172,9 +172,21 @@ export class Pacs009 implements OnInit {
   intermediary2Panel: WritableSignal<boolean> = signal(false);
   intermediary3Panel: WritableSignal<boolean> = signal(false);
   debtorPanel: WritableSignal<boolean> = signal(true);
+  dbtrAddressPanel: WritableSignal<boolean> = signal(false);
+  dbtrAccountPanel: WritableSignal<boolean> = signal(false);
+  dbtrAgentPanel: WritableSignal<boolean> = signal(false);
+  dbtrAgentAddressPanel: WritableSignal<boolean> = signal(false);
+  dbtrAgentAccountPanel: WritableSignal<boolean> = signal(false);
   creditTransferTransactionPanel: WritableSignal<boolean> = signal(true);
   creditorPanel: WritableSignal<boolean> = signal(true);
+  cdtrAddressPanel: WritableSignal<boolean> = signal(false);
+  cdtrAccountPanel: WritableSignal<boolean> = signal(false);
+  cdtrAgentPanel: WritableSignal<boolean> = signal(false);
+  cdtrAgentAddressPanel: WritableSignal<boolean> = signal(false);
+  cdtrAgentAccountPanel: WritableSignal<boolean> = signal(false);
   instructionsPanel: WritableSignal<boolean> = signal(true);
+  instructionForCreditorAgentPanel: WritableSignal<boolean> = signal(false);
+  instructionForNextAgentPanel: WritableSignal<boolean> = signal(false);
   purposePanel: WritableSignal<boolean> = signal(true);
   authorizationPanel: WritableSignal<boolean> = signal(true);
   otherInfoPanel: WritableSignal<boolean> = signal(true);
@@ -257,8 +269,8 @@ export class Pacs009 implements OnInit {
       bizMsgIdr: ['PACS009_' + new Date().getTime(), Validators.required],
       msgDefIdr: ['pacs.009.001.08', Validators.required],
       bizSvc: ['swift.cbprplus.02', Validators.required],
-      creDt: [new Date().toISOString().split('T')[0], Validators.required],
-      cpyDplct: ['COPY'],
+      creDt: ['', Validators.required],
+      cpyDplct: [null],
       psblDplct: [null],
       priority: ['NORM'],
       msgId: ['MSG_' + new Date().getTime(), Validators.required],
@@ -266,7 +278,7 @@ export class Pacs009 implements OnInit {
       nbOfTxs: ['1', Validators.required],
 
       // Settlement Information
-      sttlmMtd: ['INGA', Validators.required],
+      sttlmMtd: [null, Validators.required],
       // Settlement Account (flat)
       sttlmAcctId: [''],
       sttlmAcctCcy: [null],
@@ -540,6 +552,10 @@ export class Pacs009 implements OnInit {
 
       // Debtor (flat)
       dbtrNm: [''],
+      dbtrBicfi: [''],
+      dbtrClrSysIdCd: [''],
+      dbtrMmbId: [''],
+      dbtrLei: [''],
       dbtrAdrDept: [''],
       dbtrAdrSubDept: [''],
       dbtrAdrStrtNm: [''],
@@ -555,6 +571,9 @@ export class Pacs009 implements OnInit {
       dbtrAdrCtrySubDvsn: [''],
       dbtrAdrCtry: [''],
       dbtrAdrLine: [''],
+      dbtrAdrLine1: [''],
+      dbtrAdrLine2: [''],
+      dbtrAdrLine3: [''],
       // Debtor Account (flat)
       dbtrAcctId: [''],
       dbtrAcctCcy: [''],
@@ -629,6 +648,10 @@ export class Pacs009 implements OnInit {
 
       // Creditor (flat)
       cdtrNm: [''],
+      cdtrBicfi: [''],
+      cdtrClrSysIdCd: [''],
+      cdtrMmbId: [''],
+      cdtrLei: [''],
       cdtrAdrDept: [''],
       cdtrAdrSubDept: [''],
       cdtrAdrStrtNm: [''],
@@ -644,6 +667,9 @@ export class Pacs009 implements OnInit {
       cdtrAdrCtrySubDvsn: [''],
       cdtrAdrCtry: [''],
       cdtrAdrLine: [''],
+      cdtrAdrLine1: [''],
+      cdtrAdrLine2: [''],
+      cdtrAdrLine3: [''],
       // Creditor Account (flat)
       cdtrAcctId: [''],
       cdtrAcctCcy: [''],
@@ -653,14 +679,8 @@ export class Pacs009 implements OnInit {
       cdtrAcctIssr: [''],
 
       // Instructions
-      instrForCdtrAgtCD: [''],
-      instrForCdtrAgtInf: [''],
-      instrForNxtAgt1: [''],
-      instrForNxtAgt2: [''],
-      instrForNxtAgt3: [''],
-      instrForNxtAgt4: [''],
-      instrForNxtAgt5: [''],
-      instrForNxtAgt6: [''],
+      instructionForCreditorAgent: this.formBuilder.array([]),
+      instructionForNextAgent: this.formBuilder.array([]),
 
       // Purpose
       purpCD: [''],
@@ -731,8 +751,8 @@ export class Pacs009 implements OnInit {
       rltdToAdrCtrySubDvsn: [''],
       rltdToAdrCtry: [''],
       rltdToAdrLine: [''],
-      rltdCpyDplct: ['COPY'],
-      rltdPrty: ['NORM'],
+      rltdCpyDplct: [null],
+      rltdPrty: [null],
     });
 
     // Ensure the form is properly initialized
@@ -744,6 +764,10 @@ export class Pacs009 implements OnInit {
       }, 0);
       // Initialize with one service level row
       this.addServiceRow();
+      // Initialize with one instruction for creditor agent row
+      this.addInstructionForCreditorAgentRow();
+      // Initialize with one instruction for next agent row
+      this.addInstructionForNextAgentRow();
     }
   }
 
@@ -794,6 +818,122 @@ export class Pacs009 implements OnInit {
     ).subscribe();
   }
 
+  // BIC selection for Previous Instructing Agents
+  openPrevInstgAgtBicSelectionModal(agentNumber: number): void {
+    this.bicSelectionService.openBicSelectionModal(
+      this.frmGroup,
+      {
+        bicField: `prvsInstgAgt${agentNumber}Bicfi`,
+        nameField: `prvsInstgAgt${agentNumber}Nm`
+      },
+      undefined,
+      this.bicTableHeaders
+    ).subscribe();
+  }
+
+  // BIC selection for Instructing Agent (instgAgt)
+  openInstgAgtBicSelectionModal(): void {
+    this.bicSelectionService.openBicSelectionModal(
+      this.frmGroup,
+      {
+        bicField: 'instgAgtBicfi',
+        nameField: 'instgAgtNm'
+      },
+      undefined,
+      this.bicTableHeaders
+    ).subscribe();
+  }
+
+  // BIC selection for Instructed Agent (instdAgt)
+  openInstdAgtBicSelectionModal(): void {
+    this.bicSelectionService.openBicSelectionModal(
+      this.frmGroup,
+      {
+        bicField: 'instdAgtBicfi',
+        nameField: 'instdAgtNm'
+      },
+      undefined,
+      this.bicTableHeaders
+    ).subscribe();
+  }
+
+  // BIC selection for Debtor (dbtr)
+  openDbtrBicSelectionModal(): void {
+    this.bicSelectionService.openBicSelectionModal(
+      this.frmGroup,
+      {
+        bicField: 'dbtrBicfi',
+        nameField: 'dbtrNm'
+      },
+      undefined,
+      this.bicTableHeaders
+    ).subscribe();
+  }
+
+  // BIC selection for Debtor Agent (dbtrAgt)
+  openDbtrAgtBicSelectionModal(): void {
+    this.bicSelectionService.openBicSelectionModal(
+      this.frmGroup,
+      {
+        bicField: 'dbtrAgtBicfi',
+        nameField: 'dbtrAgtNm'
+      },
+      undefined,
+      this.bicTableHeaders
+    ).subscribe();
+  }
+
+  // BIC selection for Creditor (cdtr)
+  openCdtrBicSelectionModal(): void {
+    this.bicSelectionService.openBicSelectionModal(
+      this.frmGroup,
+      {
+        bicField: 'cdtrBicfi',
+        nameField: 'cdtrNm'
+      },
+      undefined,
+      this.bicTableHeaders
+    ).subscribe();
+  }
+
+  // BIC selection for Creditor Agent (cdtrAgt)
+  openCdtrAgtBicSelectionModal(): void {
+    this.bicSelectionService.openBicSelectionModal(
+      this.frmGroup,
+      {
+        bicField: 'cdtrAgtBicfi',
+        nameField: 'cdtrAgtNm'
+      },
+      undefined,
+      this.bicTableHeaders
+    ).subscribe();
+  }
+
+  // BIC selection for Related From/To (rltd.fr / rltd.to)
+  openRelatedFromBicSelectionModal(): void {
+    this.bicSelectionService.openBicSelectionModal(
+      this.frmGroup,
+      {
+        bicField: 'rltdFrBicfi',
+        nameField: 'rltdFrNm'
+      },
+      undefined,
+      this.bicTableHeaders
+    ).subscribe();
+  }
+
+  openRelatedToBicSelectionModal(): void {
+    this.bicSelectionService.openBicSelectionModal(
+      this.frmGroup,
+      {
+        bicField: 'rltdToBicfi',
+        nameField: 'rltdToNm'
+      },
+      undefined,
+      this.bicTableHeaders
+    ).subscribe();
+  }
+
   resetForm(): void {
     if (this.frmGroup) {
       this.frmGroup.reset();
@@ -803,7 +943,7 @@ export class Pacs009 implements OnInit {
         msgDefIdr: 'pacs.009.001.08',
         bizSvc: 'swift.cbprplus.02',
         creDt: new Date().toISOString().split('T')[0],
-        cpyDplct: 'COPY',
+        cpyDplct: null,
         priority: 'NORM',
         msgId: 'MSG_' + new Date().getTime(),
         creDtTm: new Date().toISOString(),
@@ -819,6 +959,13 @@ export class Pacs009 implements OnInit {
       // Clear service levels and add one default row
       this.serviceLevels.clear();
       this.addServiceRow();
+      
+      // Clear instruction arrays and add one default row each
+      this.instructionForCreditorAgent.clear();
+      this.addInstructionForCreditorAgentRow();
+      
+      this.instructionForNextAgent.clear();
+      this.addInstructionForNextAgentRow();
     }
   }
 
@@ -913,15 +1060,13 @@ export class Pacs009 implements OnInit {
     let payload: any = {};
     let frmValue = this.frmGroup.value;
 
-    // Business Message Header
-    payload.fromBicfi = frmValue.fromBicfi;
-    payload.toBicfi = frmValue.toBicfi;
+    // Business Message Header - Only fields that exist in DTO
     payload.bizMsgIdr = frmValue.bizMsgIdr;
     payload.msgDefIdr = frmValue.msgDefIdr;
     payload.bizSvc = frmValue.bizSvc;
     payload.creDt = frmValue.creDt;
     payload.cpyDplct = frmValue.cpyDplct;
-    payload.psblDplct = frmValue.psblDplct;
+    payload.pssblDplct = frmValue.pssblDplct;
     payload.priority = frmValue.priority;
     payload.msgId = frmValue.msgId;
     payload.creDtTm = frmValue.creDtTm;
@@ -944,12 +1089,12 @@ export class Pacs009 implements OnInit {
     payload.instrId = frmValue.instrId;
     payload.endToEndId = frmValue.endToEndId;
     payload.txId = frmValue.txId;
-    payload.uetr = frmValue.uetr;
     payload.clrSysRef = frmValue.clrSysRef;
 
     // Payment Type Information
     payload.instrPrty = frmValue.instrPrty;
     payload.clrChanl = frmValue.clrChanl;
+    
     // Convert service level FormArray to fixed arrays of 3 elements as per model
     const serviceLevels = frmValue.serviceLevels || [];
     const serviceCodes = serviceLevels
@@ -984,9 +1129,13 @@ export class Pacs009 implements OnInit {
     payload.intrBkSttlmDt = frmValue.intrBkSttlmDt;
     payload.sttlmPrty = frmValue.sttlmPrty;
 
-    // Map flat previous instructing agent 1 to nested structure
+    // Agent BIC fields as per DTO
+    payload.instgAgtBic = frmValue.instgAgtBicfi;
+    payload.instdAgtBic = frmValue.instdAgtBicfi;
+
+    // Map flat previous instructing agent 1 to nested structure - Fix field name from bIcfi to bicfi
     payload.prvsInstgAgt1 = {
-      bIcfi: frmValue.prvsInstgAgt1Bicfi,
+      bicfi: frmValue.prvsInstgAgt1Bicfi,
       clrSysIdCd: frmValue.prvsInstgAgt1ClrSysIdCd,
       mmbId: frmValue.prvsInstgAgt1MmbId,
       lei: frmValue.prvsInstgAgt1Lei,
@@ -1024,9 +1173,9 @@ export class Pacs009 implements OnInit {
       issr: frmValue.prvsInstgAgt1AcctIssr,
     };
 
-    // Map flat previous instructing agent 2 to nested structure
+    // Map flat previous instructing agent 2 to nested structure - Fix field name from bIcfi to bicfi
     payload.prvsInstgAgt2 = {
-      bIcfi: frmValue.prvsInstgAgt2Bicfi,
+      bicfi: frmValue.prvsInstgAgt2Bicfi,
       clrSysIdCd: frmValue.prvsInstgAgt2ClrSysIdCd,
       mmbId: frmValue.prvsInstgAgt2MmbId,
       lei: frmValue.prvsInstgAgt2Lei,
@@ -1064,9 +1213,9 @@ export class Pacs009 implements OnInit {
       issr: frmValue.prvsInstgAgt2AcctIssr,
     };
 
-    // Map flat previous instructing agent 3 to nested structure
+    // Map flat previous instructing agent 3 to nested structure - Fix field name from bIcfi to bicfi
     payload.prvsInstgAgt3 = {
-      bIcfi: frmValue.prvsInstgAgt3Bicfi,
+      bicfi: frmValue.prvsInstgAgt3Bicfi,
       clrSysIdCd: frmValue.prvsInstgAgt3ClrSysIdCd,
       mmbId: frmValue.prvsInstgAgt3MmbId,
       lei: frmValue.prvsInstgAgt3Lei,
@@ -1104,9 +1253,9 @@ export class Pacs009 implements OnInit {
       issr: frmValue.prvsInstgAgt3AcctIssr,
     };
 
-    // Map flat agents to nested structure
+    // Map flat agents to nested structure - Fix field name from bIcfi to bicfi
     payload.instgAgt = {
-      bIcfi: frmValue.instgAgtBicfi,
+      bicfi: frmValue.instgAgtBicfi,
       clrSysIdCd: frmValue.instgAgtClrSysIdCd,
       mmbId: frmValue.instgAgtMmbId,
       lei: frmValue.instgAgtLei,
@@ -1136,7 +1285,7 @@ export class Pacs009 implements OnInit {
     };
 
     payload.instdAgt = {
-      bIcfi: frmValue.instdAgtBicfi,
+      bicfi: frmValue.instdAgtBicfi,
       clrSysIdCd: frmValue.instdAgtClrSysIdCd,
       mmbId: frmValue.instdAgtMmbId,
       lei: frmValue.instdAgtLei,
@@ -1165,9 +1314,9 @@ export class Pacs009 implements OnInit {
       },
     };
 
-    // Map flat intermediary agents to nested structure
+    // Map flat intermediary agents to nested structure - Fix field name from bIcfi to bicfi
     payload.intrmyAgt1 = {
-      bIcfi: frmValue.intrmyAgt1Bicfi,
+      bicfi: frmValue.intrmyAgt1Bicfi,
       clrSysIdCd: frmValue.intrmyAgt1ClrSysIdCd,
       mmbId: frmValue.intrmyAgt1MmbId,
       lei: frmValue.intrmyAgt1Lei,
@@ -1206,7 +1355,7 @@ export class Pacs009 implements OnInit {
     };
 
     payload.intrmyAgt2 = {
-      bIcfi: frmValue.intrmyAgt2Bicfi,
+      bicfi: frmValue.intrmyAgt2Bicfi,
       clrSysIdCd: frmValue.intrmyAgt2ClrSysIdCd,
       mmbId: frmValue.intrmyAgt2MmbId,
       lei: frmValue.intrmyAgt2Lei,
@@ -1245,7 +1394,7 @@ export class Pacs009 implements OnInit {
     };
 
     payload.intrmyAgt3 = {
-      bIcfi: frmValue.intrmyAgt3Bicfi,
+      bicfi: frmValue.intrmyAgt3Bicfi,
       clrSysIdCd: frmValue.intrmyAgt3ClrSysIdCd,
       mmbId: frmValue.intrmyAgt3MmbId,
       lei: frmValue.intrmyAgt3Lei,
@@ -1283,16 +1432,16 @@ export class Pacs009 implements OnInit {
       issr: frmValue.intrmyAgt3AcctIssr,
     };
 
-    // Map flat debtor to nested structure
+    // Map flat debtor to nested structure - Fix field name from bIcfi to bicfi
     payload.dbtr = {
-      bIcfi: '',
-      clrSysIdCd: '',
-      mmbId: '',
-      lei: '',
+      bicfi: frmValue.dbtrBicfi || '',
+      clrSysIdCd: frmValue.dbtrClrSysIdCd || '',
+      mmbId: frmValue.dbtrMmbId || '',
+      lei: frmValue.dbtrLei || '',
       nm: frmValue.dbtrNm,
-      adrLine1: '',
-      adrLine2: '',
-      adrLine3: '',
+      adrLine1: frmValue.dbtrAdrLine1 || '',
+      adrLine2: frmValue.dbtrAdrLine2 || '',
+      adrLine3: frmValue.dbtrAdrLine3 || '',
       adr: {
         dept: frmValue.dbtrAdrDept,
         subDept: frmValue.dbtrAdrSubDept,
@@ -1324,7 +1473,7 @@ export class Pacs009 implements OnInit {
     };
 
     payload.dbtrAgt = {
-      bIcfi: frmValue.dbtrAgtBicfi,
+      bicfi: frmValue.dbtrAgtBicfi,
       clrSysIdCd: frmValue.dbtrAgtClrSysIdCd,
       mmbId: frmValue.dbtrAgtMmbId,
       lei: frmValue.dbtrAgtLei,
@@ -1362,9 +1511,9 @@ export class Pacs009 implements OnInit {
       issr: frmValue.dbtrAgtAcctIssr,
     };
 
-    // Map flat creditor agent to nested structure
+    // Map flat creditor agent to nested structure - Fix field name from bIcfi to bicfi
     payload.cdtrAgt = {
-      bIcfi: frmValue.cdtrAgtBicfi,
+      bicfi: frmValue.cdtrAgtBicfi,
       clrSysIdCd: frmValue.cdtrAgtClrSysIdCd,
       mmbId: frmValue.cdtrAgtMmbId,
       lei: frmValue.cdtrAgtLei,
@@ -1402,16 +1551,16 @@ export class Pacs009 implements OnInit {
       issr: frmValue.cdtrAgtAcctIssr,
     };
 
-    // Map flat creditor to nested structure
+    // Map flat creditor to nested structure - Fix field name from bIcfi to bicfi
     payload.cdtr = {
-      bIcfi: '',
-      clrSysIdCd: '',
-      mmbId: '',
-      lei: '',
+      bicfi: frmValue.cdtrBicfi || '',
+      clrSysIdCd: frmValue.cdtrClrSysIdCd || '',
+      mmbId: frmValue.cdtrMmbId || '',
+      lei: frmValue.cdtrLei || '',
       nm: frmValue.cdtrNm,
-      adrLine1: '',
-      adrLine2: '',
-      adrLine3: '',
+      adrLine1: frmValue.cdtrAdrLine1 || '',
+      adrLine2: frmValue.cdtrAdrLine2 || '',
+      adrLine3: frmValue.cdtrAdrLine3 || '',
       adr: {
         dept: frmValue.cdtrAdrDept,
         subDept: frmValue.cdtrAdrSubDept,
@@ -1443,14 +1592,24 @@ export class Pacs009 implements OnInit {
     };
 
     // Instructions
-    payload.instrForCdtrAgtCD = frmValue.instrForCdtrAgtCD;
-    payload.instrForCdtrAgtInf = frmValue.instrForCdtrAgtInf;
-    payload.instrForNxtAgt1 = frmValue.instrForNxtAgt1;
-    payload.instrForNxtAgt2 = frmValue.instrForNxtAgt2;
-    payload.instrForNxtAgt3 = frmValue.instrForNxtAgt3;
-    payload.instrForNxtAgt4 = frmValue.instrForNxtAgt4;
-    payload.instrForNxtAgt5 = frmValue.instrForNxtAgt5;
-    payload.instrForNxtAgt6 = frmValue.instrForNxtAgt6;
+    // Map instruction for creditor agent FormArray to individual fields as per DTO
+    const creditorAgentInstructions = frmValue.instructionForCreditorAgent || [];
+    if (creditorAgentInstructions.length > 0) {
+      payload.instrForCdtrAgtCD = creditorAgentInstructions[0]?.code || '';
+      payload.instrForCdtrAgtInf = creditorAgentInstructions[0]?.info || '';
+    } else {
+      payload.instrForCdtrAgtCD = '';
+      payload.instrForCdtrAgtInf = '';
+    }
+
+    // Map instruction for next agent FormArray to individual fields as per DTO
+    const nextAgentInstructions = frmValue.instructionForNextAgent || [];
+    payload.instrForNxtAgt1 = nextAgentInstructions[0]?.instruction || '';
+    payload.instrForNxtAgt2 = nextAgentInstructions[1]?.instruction || '';
+    payload.instrForNxtAgt3 = nextAgentInstructions[2]?.instruction || '';
+    payload.instrForNxtAgt4 = nextAgentInstructions[3]?.instruction || '';
+    payload.instrForNxtAgt5 = nextAgentInstructions[4]?.instruction || '';
+    payload.instrForNxtAgt6 = nextAgentInstructions[5]?.instruction || '';
 
     // Purpose
     payload.purpCD = frmValue.purpCD;
@@ -1473,14 +1632,14 @@ export class Pacs009 implements OnInit {
     // Other
     payload.lastAction = frmValue.lastAction;
     payload.branchId = frmValue.branchId;
-    payload.trnRefNo20 = frmValue.trnRefNo20;
+    payload.trnRefNo20 = frmValue.trnRefNo20 || '';
     payload.relatedRef21 = frmValue.relatedRef21;
 
-    // Map flat related to nested structure
+    // Related (flat)
     payload.rltd = {
       charSet: frmValue.rltdCharSet,
       fr: {
-        bIcfi: frmValue.rltdFrBicfi,
+        bicfi: frmValue.rltdFrBicfi,
         clrSysIdCd: frmValue.rltdFrClrSysIdCd,
         mmbId: frmValue.rltdFrMmbId,
         lei: frmValue.rltdFrLei,
@@ -1509,7 +1668,7 @@ export class Pacs009 implements OnInit {
         },
       },
       to: {
-        bIcfi: frmValue.rltdToBicfi,
+        bicfi: frmValue.rltdToBicfi,
         clrSysIdCd: frmValue.rltdToClrSysIdCd,
         mmbId: frmValue.rltdToMmbId,
         lei: frmValue.rltdToLei,
@@ -1590,5 +1749,60 @@ export class Pacs009 implements OnInit {
         this.toastr.error(errorMessage, 'Error');
       },
     });
+  }
+
+  // Instruction for Creditor Agent FormArray getter
+  get instructionForCreditorAgent() {
+    return this.frmGroup.get('instructionForCreditorAgent') as FormArray;
+  }
+
+  // Instruction for Next Agent FormArray getter
+  get instructionForNextAgent() {
+    return this.frmGroup.get('instructionForNextAgent') as FormArray;
+  }
+
+  // Add instruction for creditor agent row
+  addInstructionForCreditorAgentRow() {
+    if (this.instructionForCreditorAgent.length < 2) { // Max 2 as per spec
+      const instructionGroup = this.formBuilder.group({
+        code: [''],
+        info: [''],
+      });
+      this.instructionForCreditorAgent.push(instructionGroup);
+    } else {
+      this.toastr.warning('Maximum 2 instructions for creditor agent allowed', 'Limit Reached');
+    }
+  }
+
+  // Remove instruction for creditor agent row
+  removeInstructionForCreditorAgentRow(index: number) {
+    this.instructionForCreditorAgent.removeAt(index);
+  }
+
+  // Add instruction for next agent row
+  addInstructionForNextAgentRow() {
+    if (this.instructionForNextAgent.length < 6) { // Max 6 as per spec
+      const instructionGroup = this.formBuilder.group({
+        instruction: [''],
+      });
+      this.instructionForNextAgent.push(instructionGroup);
+    } else {
+      this.toastr.warning('Maximum 6 instructions for next agent allowed', 'Limit Reached');
+    }
+  }
+
+  // Remove instruction for next agent row
+  removeInstructionForNextAgentRow(index: number) {
+    this.instructionForNextAgent.removeAt(index);
+  }
+
+  // Get instruction for creditor agent group at specific index
+  getInstructionForCreditorAgentGroup(index: number): FormGroup {
+    return this.instructionForCreditorAgent.at(index) as FormGroup;
+  }
+
+  // Get instruction for next agent group at specific index
+  getInstructionForNextAgentGroup(index: number): FormGroup {
+    return this.instructionForNextAgent.at(index) as FormGroup;
   }
 }

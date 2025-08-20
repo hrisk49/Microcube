@@ -15,9 +15,9 @@ export interface Mx009Model {
   msgDefIdr: string; //MessageDefinitionIdentifier example - camt.001.001.03
   bizSvc: string; //BusinessService The value "swift.cbprplus.02" must be used.
   creDt: string;
-  cpyDplct: string;  // values can be only - CODU,COPY,DUPL
-  psblDplct: string;  //PossibleDuplicate Values Can only  be - YES/NO
-  priority: string; // Header block Priority values can only be - HIGH,NORM
+  cpyDplct?: string;  // values can be only - CODU,COPY,DUPL
+  pssblDplct?: string;  //PossibleDuplicate Values Can only  be - YES/NO
+  priority?: string; // Header block Priority values can only be - HIGH,NORM
   msgId: string;  // MessageIdentification  //0-9 a-z A-Z / - ? : ( ) . , '
   creDtTm: string; //CreationDateTime
   nbOfTxs: string; // Number of transactions
