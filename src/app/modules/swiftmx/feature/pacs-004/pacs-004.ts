@@ -1,5 +1,5 @@
 import {Component, effect, inject, OnInit} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule} from "@angular/forms";
+import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
 import {SelectOptionsModel} from "../../../../shared/models/select-options-model";
@@ -180,7 +180,7 @@ export class Pacs004 implements OnInit {
       orgnlTxId: [''],
       orgnlUETR: [''],
       OrgnlClrSysRef: [''],
-      OrgnlIntrBkSttlmAmt: [],
+      OrgnlIntrBkSttlmAmt: ['',[Validators.minLength(2),Validators.maxLength(15)]],
       OrgnlIntrBkSttlmDt: [],
       RtrdIntrBkSttlmAmt: [],
       IntrBkSttlmDt: [],

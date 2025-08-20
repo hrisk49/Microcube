@@ -10,9 +10,20 @@
            [readonly]="isReadonly()" matInput [placeholder]="placeholder() ?? 'Enter ' + label()"
            [type]="type() ?? 'text'" class="custom-input"
            (dblclick)="onDoubleClick.emit()"/>
-    @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
-      <div class="text-red-500 text-sm mt-1">
-        {{ label() }} is required..!
-      </div>
+           
+  @if (frmGroup().get(controlName())?.errors && 
+      (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
+
+  <div class="text-red-500 text-sm mt-1">
+    @if (frmGroup().get(controlName())?.hasError('required')) {
+      {{ label() }} is required..!
     }
+    @if (frmGroup().get(controlName())?.hasError('minlength')) {
+      {{ label() }} must be at least {{ frmGroup().get(controlName())?.errors?.['minlength']?.requiredLength }} characters.
+    }
+    @if (frmGroup().get(controlName())?.hasError('maxlength')) {
+      {{ label() }} cannot be more than {{ frmGroup().get(controlName())?.errors?.['maxlength']?.requiredLength }} characters.
+    }
+  </div>
+}
 </div>

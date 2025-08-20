@@ -1,0 +1,41 @@
+<div [formGroup]="frmGroup()" class="input-container" [matTooltip]="tooltip()">
+  <label class="input-label relative">
+    {{ label() }}
+    @if (isRequired()) {
+    <span class="text-red-500">*</span>
+    }
+  </label>
+
+  <input 
+  [formControlName]="controlName()" 
+  matInput 
+  [ngClass]="{'readonly-input': isReadonly() }" 
+  type="text"
+    (keyup)="onChangeInput()" 
+    [placeholder]="placeholder() ?? 'Enter ' + label()" 
+    [readonly]="isReadonly()"
+    class="custom-input" 
+    />
+
+  @if (isInvalid()) {
+  <div class="text-red-500 text-sm mt-1">
+    @if (hasError('required')) {
+    <ng-container>
+      {{ label() }} is required..!
+    </ng-container>
+    }
+
+    @if (hasError('minlength')) {
+    <ng-container>
+      Minimum length required is {{ getErrorValue('minlength')?.requiredLength }} characters
+    </ng-container>
+    }
+
+    @if (hasError('maxlength')) {
+    <ng-container>
+      Maximum length allowed is {{ getErrorValue('maxlength')?.requiredLength }} characters
+    </ng-container>
+    }
+  </div>
+  }
+</div>
