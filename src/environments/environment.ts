@@ -1,4 +1,5 @@
 export const environment = {
-  production: true,
-  apiBaseUrl: 'http://localhost:8095/swiftFusionAPI/api/v1/'
+  production: false,
+  apiBaseUrl: 'http://localhost:8095/swiftFusionAPI/api/v1/',
+  coreBaseUrl: 'http://localhost:8096/swiftCoreAccess/api/v1/',
 };

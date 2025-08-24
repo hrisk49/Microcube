@@ -63,6 +63,11 @@ input[type="number"]::placeholder {
   @apply grid grid-cols-1;
 }
 
+.form-grid-2-col {
+  @extend .form-grid;
+  @apply md:grid-cols-2;
+}
+
 .form-grid-3-col {
   @extend .form-grid;
   @apply md:grid-cols-3;
@@ -511,8 +516,12 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 }
 
 /* mat-select or other select inputs */
-.custom-select {
+.custom-select {  
   @extend .custom-input;
+}
+
+.custom-select option {
+  font-size: 12px;
 }
 
 .floating-input {

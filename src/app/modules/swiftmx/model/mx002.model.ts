@@ -3,6 +3,7 @@ import {AgentModel} from './agent.model';
 import {RelatedModel} from './related.model';
 
 export interface Mx002Model {
+  
   bizMsgIdr: string;              // BusinessMessageIdentifier max 35
   msgDefIdr: string;              // MessageDefinitionIdentifier e.g., camt.001.001.03
   bizSvc: string;                 // BusinessService, must be "swift.cbprplus.02"

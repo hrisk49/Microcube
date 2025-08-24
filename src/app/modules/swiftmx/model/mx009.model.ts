@@ -9,13 +9,15 @@ export interface Mx009Model {
   // valDate32A: Date;
   // valCurr32A: string;
   // valAmt32A: number;
+  fromBicfi: string; //[A-Z0-9]{4,4}[A-Z]{2,2}[A-Z0-9]{2,2}([A-Z0-9]{3,3}){0,1}
+  toBicfi: string; //[A-Z0-9]{4,4}[A-Z]{2,2}[A-Z0-9]{2,2}([A-Z0-9]{3,3}){0,1}
   bizMsgIdr: string; //BusinessMessageIdentifier max 35
   msgDefIdr: string; //MessageDefinitionIdentifier example - camt.001.001.03
   bizSvc: string; //BusinessService The value "swift.cbprplus.02" must be used.
   creDt: string;
-  cpyDplct: string;  // values can be only - CODU,COPY,DUPL
-  psblDplct: string;  //PossibleDuplicate Values Can only  be - YES/NO
-  priority: string; // Header block Priority values can only be - HIGH,NORM
+  cpyDplct?: string;  // values can be only - CODU,COPY,DUPL
+  pssblDplct?: string;  //PossibleDuplicate Values Can only  be - YES/NO
+  priority?: string; // Header block Priority values can only be - HIGH,NORM
   msgId: string;  // MessageIdentification  //0-9 a-z A-Z / - ? : ( ) . , '
   creDtTm: string; //CreationDateTime
   nbOfTxs: string; // Number of transactions

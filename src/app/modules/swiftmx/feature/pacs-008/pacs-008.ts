@@ -21,19 +21,13 @@ import { DataSelectionModal } from '../../../../shared/components/data-selection
 import { DialogUtils } from '../../../../shared/service/dialog-utils';
 import { BranchInfoService } from '../../../../shared/services/branch-info.service';
 import { Mx009Model } from '../../model/mx009.model';
-import { IdBoxComponent } from '../../../../shared/components/input-types/id-box/id-box';
-import { AmountInput } from '../../../../shared/components/input-types/amount-input/amount-input';
-import { FileComponent } from '../../../../shared/components/input-types/file-input/file-input';
 
 @Component({
     selector: 'app-pacs-008',
     imports: [
     ReactiveFormsModule,
     TextBaseInput,
-    IdBoxComponent,
-    AmountInput,
     SubPanelHeader,
-    FileComponent,
     SelectOptionField,
     DateInput,
     AmountToWordInput,
@@ -137,14 +131,6 @@ dialogUtils = inject(DialogUtils);
     { key: 'TND', value: 'TND - Tunisian Dinar' },
   ];
 
-  // File upload demo state
-  showAnyFileUpload: boolean = true;
-  pdfFiles: File[] = [];
-  imageFiles: File[] = [];
-  anyFiles: File[] = [];
-  documentFiles: File[] = [];
-  profilePicFile?: File;
-
   // Panel visibility signals
   timeDatePanel: WritableSignal<boolean> = signal(true);
   fromBicPanel: WritableSignal<boolean> = signal(true);
@@ -242,8 +228,6 @@ dialogUtils = inject(DialogUtils);
       charSet: [''],
       fromBicfi: ['', Validators.required],
       fromNm: [''],
-      idinfo: ['',[Validators.required, Validators.maxLength(35), Validators.minLength(2)]],
-      amount1: ['', [Validators.required]],
       toBicfi: ['', Validators.required],
       toNm: [''],
       rltdBizMsgIdr: [''],
@@ -737,41 +721,6 @@ dialogUtils = inject(DialogUtils);
       // Initialize with one service level row
       this.addServiceRow();
     }
-  }
-
-  // File input handlers used by the template examples
-  onPdfSelected(files: File[]): void {
-    this.pdfFiles = files || [];
-    this.toastr.info(`${this.pdfFiles.length} PDF file(s) selected`, 'Files');
-  }
-
-  onImagesSelected(files: File[]): void {
-    this.imageFiles = files || [];
-    this.toastr.info(`${this.imageFiles.length} image file(s) selected`, 'Files');
-  }
-
-  onAnyFilesSelected(files: File[]): void {
-    this.anyFiles = files || [];
-    this.toastr.info(`${this.anyFiles.length} file(s) selected`, 'Files');
-  }
-
-  onDocumentsSelected(files: File[]): void {
-    this.documentFiles = files || [];
-    this.toastr.info(`${this.documentFiles.length} document(s) selected`, 'Files');
-  }
-
-  onProfilePicSelected(files: File[]): void {
-    this.profilePicFile = files && files.length > 0 ? files[0] : undefined;
-    this.toastr.success(this.profilePicFile ? `Selected: ${this.profilePicFile.name}` : 'No file selected', 'Profile Picture');
-  }
-
-  onFileInputChanged(context: string): void {
-    // Context string helps distinguish which input fired, e.g., 'PDF', 'Images'
-    this.toastr.show(`File input changed: ${context}`, 'Notice');
-  }
-
-  toggleAnyFileUpload(): void {
-    this.showAnyFileUpload = !this.showAnyFileUpload;
   }
 
   // Open BIC selection modal for "From BIC" (Instructing Agent)
@@ -1578,9 +1527,6 @@ dialogUtils = inject(DialogUtils);
     };
 
     return payload as Mx009Model;
-  }
-  onIdInfoChange(a:string){
-    console.log('ID Info changed:', a);
   }
 
   save(): void {

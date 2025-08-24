@@ -1,347 +1,793 @@
 <div class="page-wrapper">
-  <form [formGroup]="frmGroup" class="form-wrapper">
+  @if (frmGroup) {
+    <form [formGroup]="frmGroup" class="form-wrapper">
 
-    <!--Business Application Header-->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Business Application Header'"/>
-      <div class="form-grid-3-col">
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'From BIC'"
-                             [controlName]="'fromBic'"/>
+      <!--Business Application Header-->
+      <div class="panel">
+        <app-expansion-panel-header [isOpenSignal]="businessAppHeader" [panelTitle]="'Business Application Header'"/>
 
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'To BIC'"
-                             [controlName]="'toBic'"/>
+        @if (businessAppHeader()) {
 
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [isReadonly]="true"
-                             [label]="'Business Message Identifier'"
-                             [controlName]="'businessMessageIdentifier'"/>
+          <app-business-application-header
+            [frmGroup]="frmGroup"
+            [priorityOptions]="priorityOptions"
+            [duplicateOptions]="duplicateOptions"/>
+        }
 
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Message Definition Identifier'"
-                             [controlName]="'messageDefinitionIdentifier'"/>
-
-        <app-text-base-input [frmGroup]="frmGroup"
-                             [label]="'Business Service'"
-                             [controlName]="'businessService'"/>
-
-        <app-select-option-field [frmGroup]="frmGroup"
-                                 [options]="duplicateOptions"
-                                 [label]="'Copy Duplicate'"
-                                 [controlName]="'copyDuplicate'"/>
-
-        <app-select-option-field [frmGroup]="frmGroup"
-                                 [options]="priorityOptions"
-                                 [label]="'Priority'"
-                                 [controlName]="'priority'"/>
-
-      </div>
-
-      <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Related'"
-                              [divElement]="related"
-                              [isOptional]="true"/>
-        <div #related class="form-grid-3-col">
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'From BIC'"
-                               [controlName]="'relatedFromBic'"/>
-
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'To BIC'"
-                               [controlName]="'relatedToBic'"/>
-
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Business Message Identifier'"
-                               [controlName]="'relatedBusinessMessageIdentifier'"/>
-
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Message Definition Identifier'"
-                               [controlName]="'relatedMessageDefinitionIdentifier'"/>
-
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Business Service'"
-                               [controlName]="'relatedBusinessService'"/>
-
-          <app-select-option-field [frmGroup]="frmGroup"
-                                   [options]="duplicateOptions"
-                                   [label]="'Copy Duplicate'"
-                                   [controlName]="'relatedCopyDuplicate'"/>
-
-          <app-select-option-field [frmGroup]="frmGroup"
-                                   [options]="priorityOptions"
-                                   [label]="'Priority'"
-                                   [controlName]="'relatedPriority'"/>
-        </div>
-      </div>
-    </div>
-
-    <!--Payment Return V09 Start-->
-    <div class="panel">
-      <app-panel-header [panelTitle]="'Payment Return V09'"/>
-
-      <!--Group Header Start-->
-      <div class="sub-panel">
-        <app-sub-panel-header [subPanelTitle]="'Group Header'"></app-sub-panel-header>
-        <div class="form-grid-3-col">
-          <app-text-base-input [frmGroup]="frmGroup"
-                               [label]="'Message Identification'"
-                               [controlName]="'messageIdentification'"/>
-
-          <app-date-input [frmGroup]="frmGroup"
-                          [label]="'Creation Date'"
-                          [controlName]="'creationDate'"/>
-
-          <app-text-base-input [frmGroup]="frmGroup"
-                          [label]="'Number Of Transactions'"
-                          [controlName]="'numberOfTransactions'" [type]="'number'"/>
-        </div>
-        <!--Settlement Information Area Start-->
-        <div>
-          <fieldset class="custom-fieldset">
-            <legend>Settlement Information</legend>
-            <div class="form-grid-4-col">
-              <app-select-option-field [frmGroup]="frmGroup"
-                                       [options]="IdentificationOptions"
-                                       [label]="'Identification'"
-                                       [controlName]="'Id'"/>
-              <app-text-base-input [frmGroup]="frmGroup"
-                                   [label]="'Identification'"
-                                   [controlName]="'otherId'"/>
-              <app-select-option-field [frmGroup]="frmGroup"
-                                       [options]="SchmeNmOptions"
-                                       [label]="'Schme Name'"
-                                       [controlName]="'otherSchmeNm'"/>
-              <app-text-base-input [frmGroup]="frmGroup"
-                                   [label]="'Issuer'"
-                                   [controlName]="'otherIssr'"/>
-
-<!--              &lt;!&ndash; Show when Identification is 'other' &ndash;&gt;-->
-<!--              <div *ngIf="frmGroup.get('Id')?.value === 'other'">-->
-<!--                <app-text-base-input-->
-<!--                  [frmGroup]="frmGroup"-->
-<!--                  [label]="'Identification'"-->
-<!--                  [controlName]="'otherId'">-->
-<!--                </app-text-base-input>-->
-
-<!--                <app-select-option-field-->
-<!--                  [frmGroup]="frmGroup"-->
-<!--                  [options]="SchmeNmOptions"-->
-<!--                  [label]="'Schme Name'"-->
-<!--                  [controlName]="'otherSchmeNm'">-->
-<!--                </app-select-option-field>-->
-
-<!--                <app-text-base-input-->
-<!--                  [frmGroup]="frmGroup"-->
-<!--                  [label]="'Issuer'"-->
-<!--                  [controlName]="'otherIssr'">-->
-<!--                </app-text-base-input>-->
-<!--              </div>-->
-              <app-select-option-field [frmGroup]="frmGroup"
-                                       [options]="TypeOptions"
-                                       [label]="'Type'"
-                                       [controlName]="'Tp'"/>
-              <app-select-option-field [frmGroup]="frmGroup"
-                                       [options]="CurrencyOptions"
-                                       [label]="'Currency'"
-                                       [controlName]="'Ccy'"/>
-              <app-text-base-input [frmGroup]="frmGroup"
-                                   [label]="'Name'"
-                                   [controlName]="'Nm'"/>
-              <app-select-option-field [frmGroup]="frmGroup"
-                                       [options]="ProxyOptions"
-                                       [label]="'Proxy'"
-                                       [controlName]="'Prxy'"/>
-              <app-select-option-field [frmGroup]="frmGroup"
-                                       [options]="ProxcyTpOptions"
-                                       [label]="'Type'"
-                                       [controlName]="'ProxcyTp'"/>
-            </div>
-          </fieldset>
-        </div>
-        <!--Settlement Information Area End-->
-        <!--Group Header END-->
-
-        <!--Transaction Information Start-->
         <div class="sub-panel">
-          <app-sub-panel-header [subPanelTitle]="'Transaction Information'"></app-sub-panel-header>
-          <div class="form-grid-4-col">
-            <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Return Identification'"
-                                 [controlName]="'RtrId'"/>
+          <app-expansion-sub-panel-header [isOpenSignal]="rltdPanelOpen"
+                                          [subPanelTitle]="'Related'"/>
+          <div class="form-grid-col-1">
 
             <app-text-base-input [frmGroup]="frmGroup"
-
-                                 [label]="'Original Instruction Identification'"
-                                 [controlName]="'orgnlInstrId'"/>
-
-            <app-text-base-input [frmGroup]="frmGroup"
-
-                                     [label]="'Original End To End Identification'"
-                                     [controlName]="'orgnlEndToEndId'"/>
-            <app-text-base-input [frmGroup]="frmGroup"
-
-                                     [label]="'Original Transaction Identification'"
-                                     [controlName]="'orgnlTxId'"/>
-
-          </div>
-          <!--Original Group Information Area Start-->
-          <div>
-            <fieldset class="custom-fieldset">
-              <legend>Original Group Information</legend>
-              <div class="form-grid-4-col">
-                 <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Original Message Identification'"
-                                     [controlName]="'OrgnlMsgId'"/>
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Original MessageName Identification'"
-                                     [controlName]="'OrgnlMsgNmId'"/>
-                <app-date-input [frmGroup]="frmGroup"
-                                [label]="'Original Creation DateTime'"
-                                [controlName]="'OrgnlCreDtTm'"/>
-              </div>
-            </fieldset>
-          </div>
-          <!--Original Group Information Area End-->
-
-          <div class="form-grid-4-col">
-
+                                 [label]="'From BIC'"
+                                 [controlName]="'rltdFrBic'"/>
 
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Original UETR'"
-                                 [controlName]="'orgnlUETR'"/>
+                                 [label]="'To BIC'"
+                                 [controlName]="'rltdToBic'"/>
 
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Original Clearing System Reference'"
-                                 [controlName]="'OrgnlClrSysRef'"/>
+                                 [label]="'Business Message Identifier'"
+                                 [controlName]="'rltdBizMsgIdr'"/>
 
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Original Interbank Settlement Amount'"
-                                 [controlName]="'OrgnlIntrBkSttlmAmt'"
-                                 type="number"/>
-
-            <app-date-input [frmGroup]="frmGroup"
-                                 [label]="'Original Interbank Settlement Date'"
-                                 [controlName]="'OrgnlIntrBkSttlmDt'"/>
+                                 [label]="'Message Definition Identifier'"
+                                 [controlName]="'rltdMsgDefIdr'"/>
 
             <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Instructed Reimbursement Agent BIC'"
-                                 [controlName]="'instructedReimbursementAgent'"/>
-
-            <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Returned Interbank Settlement Amount'"
-                                 [controlName]="'RtrdIntrBkSttlmAmt'"
-                                 type="number"/>
-
-            <app-date-input [frmGroup]="frmGroup"
-                                 [label]="'Interbank Settlement Date'"
-                                 [controlName]="'IntrBkSttlmDt'"/>
+                                 [label]="'Business Service'"
+                                 [controlName]="'rltdBizSvc'"/>
 
             <app-select-option-field [frmGroup]="frmGroup"
-                                     [options]="SttlmPrtyOptions"
-                                     [label]="'Settlement Priority'"
-                                     [controlName]="'SttlmPrty'"/>
-
-
-            <app-date-input [frmGroup]="frmGroup"
-                            [label]="'Debit DateTime'"
-                            [controlName]="'DbtDtTm'"/>
-
-            <app-date-input [frmGroup]="frmGroup"
-                            [label]="'Credit DateTime'"
-                            [controlName]="'CdtDtTm'"/>
-<!--            <app-select-option-field [frmGroup]="frmGroup"-->
-<!--                                     [options]="SttlmTmIndctnOptions"-->
-<!--                                     [label]="'Settlement Time Indication'"-->
-<!--                                     [controlName]="'SttlmTmIndctn'"/>-->
-
-            <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Returned Instructed Amount'"
-                                 [controlName]="'RtrdInstdAmt'"
-                                 type="number"/>
-
-            <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Exchange Rate'"
-                                 [controlName]="'XchgRate'"
-                                 type="number"/>
+                                     [options]="duplicateOptions"
+                                     [label]="'Copy Duplicate'"
+                                     [controlName]="'rltdCpyDplct'"/>
 
             <app-select-option-field [frmGroup]="frmGroup"
-                                     [options]="ChrgBrOptions"
-                                     [label]="'Charge Bearer'"
-                                     [controlName]="'ChrgBr'"/>
+                                     [options]="priorityOptions"
+                                     [label]="'Priority'"
+                                     [controlName]="'rltdPrty'"/>
 
-            <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Clearing System Reference'"
-                                     [controlName]="'ClrSysRef'"/>
-            <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Instructing Agent BICFI'"
-                                 [controlName]="'InstructingAgentBICFI'"/>
-            <app-text-base-input [frmGroup]="frmGroup"
-                                 [label]="'Instructed Agent BICFI'"
-                                 [controlName]="'InstructedAgentBICFI'"/>
           </div>
-        </div>
-        <!--Return Chain Area Start-->
-        <div>
-          <fieldset class="custom-fieldset">
-            <legend>Return Chain</legend>
-            <div class="form-grid-4-col">
-<!--              <app-text-base-input [frmGroup]="frmGroup"-->
-<!--                                   [label]="'Original Message Identification'"-->
-<!--                                   [controlName]="'OrgnlMsgId'"/>-->
-<!--              <app-text-base-input [frmGroup]="frmGroup"-->
-<!--                                   [label]="'Original MessageName Identification'"-->
-<!--                                   [controlName]="'OrgnlMsgNmId'"/>-->
-<!--              <app-date-input [frmGroup]="frmGroup"-->
-<!--                              [label]="'Original Creation DateTime'"-->
-<!--                              [controlName]="'OrgnlCreDtTm'"/>-->
-            </div>
-          </fieldset>
-        </div>
-        <!--Return Chain Area End-->
-        <!--Return Reason Information Area Start-->
-        <div>
-          <fieldset class="custom-fieldset">
-            <legend>Return Reason Information</legend>
-            <div class="form-grid-4-col">
-              <!--              <app-text-base-input [frmGroup]="frmGroup"-->
-              <!--                                   [label]="'Original Message Identification'"-->
-              <!--                                   [controlName]="'OrgnlMsgId'"/>-->
-              <!--              <app-text-base-input [frmGroup]="frmGroup"-->
-              <!--                                   [label]="'Original MessageName Identification'"-->
-              <!--                                   [controlName]="'OrgnlMsgNmId'"/>-->
-              <!--              <app-date-input [frmGroup]="frmGroup"-->
-              <!--                              [label]="'Original Creation DateTime'"-->
-              <!--                              [controlName]="'OrgnlCreDtTm'"/>-->
-            </div>
-          </fieldset>
-        </div>
-        <!--Return Reason Information Area End-->
-        <!--Original Transaction Reference Area Start-->
-        <div>
-          <fieldset class="custom-fieldset">
-            <legend>Original Transaction Reference Information</legend>
-            <div class="form-grid-4-col">
-                            <app-text-base-input [frmGroup]="frmGroup"
-                                                 [label]="'Interbank Settlement Amount'"
-                                                 [controlName]="'OrgnlTxRefIntrBkSttlmAmt'"
-                                                 [type]="'number'"/>
-                            <app-text-base-input [frmGroup]="frmGroup"
-                                                 [label]="'Instructed Amount'"
-                                                 [controlName]="'InstdAmt'"
-                                                 [type]="'number'"/>
-                            <app-text-base-input [frmGroup]="frmGroup"
-                                                 [label]="'Equivalent Amount'"
-                                                 [controlName]="'EqvtAmtAmt'"
-                                                 [type]="'number'"/>
 
-            </div>
-          </fieldset>
         </div>
-        <!--Original Transaction Reference Area End-->
-        <!--Transaction Information END-->
       </div>
-    </div>
-    <!--Payment Return V09 END-->
-  </form>
+
+      <!-- Payment Return V09 -->
+      <div class="panel">
+        <app-expansion-panel-header [isOpenSignal]="pmtRtr" [panelTitle]="'Payment Return V09'"/>
+        @if (pmtRtr()) {
+          <div class="sub-panel">
+            <!-- Payment Return V09 -> Group Header-->
+            <app-expansion-sub-panel-header [isOpenSignal]="GrpHdr" [subPanelTitle]="'Group Header'"/>
+            <div class="sub-panel">
+              @if (GrpHdr()) {
+                <div class="form-grid-col-1">
+
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Message ID'"
+                                       [controlName]="'GrpHdrmsgId'"/>
+
+                  <app-date-input [frmGroup]="frmGroup"
+                                  [label]="'Creation Date'"
+                                  [controlName]="'GrpHdrcreDtTm'"/>
+
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Number Of Transactions'"
+                                       [controlName]="'GrpHdrNbOfTxs'"/>
+                </div>
+
+                <!-- Payment Return V09 -> Group Header -> Settlement Information-->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header [isOpenSignal]="SttlmInf" [subPanelTitle]="'Settlement Information'"/>
+                  <div class="sub-panel">
+                    @if (SttlmInf()) {
+                      <div class="form-grid-col-1">
+                        <app-select-option-field [frmGroup]="frmGroup"
+                                                 [options]="SttlmInfSttlmMtdOptions"
+                                                 [label]="'Settlement Method'"
+                                                 [controlName]="'SttlmInfSttlmMtd'"/>
+
+                        <!-- Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account-->
+                        <div class="sub-panel">
+                          <app-expansion-sub-panel-header [isOpenSignal]="SttlmAcct" [subPanelTitle]="'Settlement Account'"/>
+                          <div class="sub-panel">
+                            @if (SttlmAcct()) {
+                              <div class="form-grid-col-1">
+                                <!-- Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account -> Identification-->
+                                <div class="sub-panel">
+                                  <app-expansion-sub-panel-header [isOpenSignal]="SttlmAcctId" [subPanelTitle]="'Identification'"/>
+                                  <div class="sub-panel">
+                                    @if (SttlmAcctId()) {
+                                      <div class="form-grid-col-1">
+                                        <app-text-base-input [frmGroup]="frmGroup"
+                                                             [label]="'IBAN'"
+                                                             [controlName]="'SttlmAcctIdIBAN'"/>
+                                      </div>
+                                    }
+                                  </div>
+                                </div>
+                                <!-- Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account -> Identification -> Other-->
+                                <div class="sub-panel">
+                                  <app-expansion-sub-panel-header [isOpenSignal]="SttlmAcctIdOthr" [subPanelTitle]="'Other'"/>
+                                  <div class="sub-panel">
+                                    @if (SttlmAcctIdOthr()) {
+                                      <div class="form-grid-col-1">
+                                        <app-text-base-input [frmGroup]="frmGroup"
+                                                             [label]="'Identification'"
+                                                             [controlName]="'SttlmAcctIdOthrId'"/>
+                                      </div>
+
+                                      <div class="form-grid-col-1">
+                                        <app-text-base-input [frmGroup]="frmGroup"
+                                                             [label]="'Issuer'"
+                                                             [controlName]="'SttlmAcctIdOthrIssr'"/>
+                                      </div>
+                                      <!-- Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account -> Identification -> Other ->SchemeName-->
+                                      <div class="sub-panel">
+                                        <app-expansion-sub-panel-header [isOpenSignal]="SttlmAcctIdOthrSchmeNm"
+                                                                        [subPanelTitle]="'Scheme Name'"/>
+                                        <div class="sub-panel">
+                                          @if (SttlmAcctIdOthrSchmeNm()) {
+                                            <div class="form-grid-col-1">
+                                              <app-text-base-input [frmGroup]="frmGroup"
+                                                                   [label]="'Code'"
+                                                                   [controlName]="'SttlmAcctIdOthrSchmeNmCd'"/>
+                                              <app-text-base-input [frmGroup]="frmGroup"
+                                                                   [label]="'Proprietary'"
+                                                                   [controlName]="'SttlmAcctIdOthrSchmeNmPrtry'"/>
+                                            </div>
+                                          }
+                                        </div>
+                                      </div>
+                                    }
+                                  </div>
+
+                                </div>
+                                <!-- Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account -> Type-->
+                                <div class="sub-panel">
+                                  <app-expansion-sub-panel-header [isOpenSignal]="SttlmAcctTp" [subPanelTitle]="'Type'"/>
+                                  <div class="sub-panel">
+                                    @if (SttlmAcctTp()) {
+                                      <div class="form-grid-col-1">
+                                        <app-text-base-input [frmGroup]="frmGroup"
+                                                             [label]="'Code'"
+                                                             [controlName]="'SttlmAcctTpCd'"/>
+                                        <app-text-base-input [frmGroup]="frmGroup"
+                                                             [label]="'Proprietary'"
+                                                             [controlName]="'SttlmAcctTpPrtry'"/>
+                                      </div>
+                                    }
+                                  </div>
+                                </div>
+
+                                <app-select-option-field [frmGroup]="frmGroup"
+                                                         [options]="SttlmAcctCcyOptions"
+                                                         [label]="'Currency'"
+                                                         [controlName]="'SttlmAcctCcy'"/>
+                                <app-text-base-input [frmGroup]="frmGroup"
+                                                     [label]="'Name'"
+                                                     [controlName]="'SttlmAcctNm'"/>
+
+                                <!-- Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account -> Proxy-->
+                                <div class="sub-panel">
+                                  <app-expansion-sub-panel-header [isOpenSignal]="SttlmAcctPrxy" [subPanelTitle]="'Proxy'"/>
+                                  <div class="sub-panel">
+                                    @if (SttlmAcctPrxy()) {
+                                      <div class="form-grid-col-1">
+                                        <!-- Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account -> Proxy->Type-->
+                                        <div class="sub-panel">
+                                          <app-expansion-sub-panel-header [isOpenSignal]="SttlmAcctPrxyTp" [subPanelTitle]="'Type'"/>
+                                          <div class="sub-panel">
+                                            @if (SttlmAcctPrxyTp()) {
+                                              <div class="form-grid-col-1">
+                                                <app-text-base-input [frmGroup]="frmGroup"
+                                                                     [label]="'Code'"
+                                                                     [controlName]="'SttlmAcctPrxyTpCd'"/>
+                                                <app-text-base-input [frmGroup]="frmGroup"
+                                                                     [label]="'Proprietary'"
+                                                                     [controlName]="'SttlmAcctPrxyTpPrtry'"/>
+                                              </div>
+                                            }
+                                          </div>
+                                        </div>
+
+                                        <app-text-base-input [frmGroup]="frmGroup"
+                                                             [label]="'Identification'"
+                                                             [controlName]="'SttlmAcctPrxyId'"/>
+                                      </div>
+                                    }
+                                  </div>
+                                </div>
+                              </div>
+                            }
+                          </div>
+
+                        </div>
+                      </div>
+                    }
+                  </div>
+
+                </div>
+              }
+            </div>
+          </div>
+          <div class="sub-panel">
+            <!-- Payment Return V09 -> Transaction Information-->
+            <app-expansion-sub-panel-header [isOpenSignal]="TxInf" [subPanelTitle]="'Transaction Information'"/>
+            <div class="sub-panel">
+              @if (TxInf()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                  [label]="'Return Identification'"
+                                  [controlName]="'TxInfRtrId'"/>
+
+                  <!-- Payment Return V09 -> Transaction Information->Original Group Information-->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="TxInfOrgnlGrpInf" [subPanelTitle]="'Original Group Information'"/>
+                    <div class="sub-panel">
+                      @if (TxInfOrgnlGrpInf()) {
+                        <div class="form-grid-col-1">
+                          <app-text-base-input [frmGroup]="frmGroup"
+                                               [label]="'Original Message Identification'"
+                                               [controlName]="'TxInforgnlMsgId'"/>
+                          <app-text-base-input [frmGroup]="frmGroup"
+                                               [label]="'Original Message Identification'"
+                                               [controlName]="'TxInforgnlMsgNmId'"/>
+                          <app-date-input [frmGroup]="frmGroup"
+                                          [label]="'Original Message Identification'"
+                                          [controlName]="'TxInforgnlCreDtTm'"/>
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                  [label]="'Original Instruction Identification'"
+                                  [controlName]="'TxInfOrgnlInstrId'"/>
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Original EndToEnd Identification'"
+                                       [controlName]="'TxInfOrgnlEndToEndId'"/>
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Original Transaction Identification'"
+                                       [controlName]="'TxInfOrgnlTxId'"/>
+
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Original UETR'"
+                                       [controlName]="'TxInfOrgnlUETR'"/>
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Original Clearing SystemReference'"
+                                       [controlName]="'TxInfOrgnlClrSysRef'"/>
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Original Interbank Settlement Amount'"
+                                       [controlName]="'TxInfOrgnlIntrBkSttlmAmt'" [type]="'number'"/>
+                  <app-date-input [frmGroup]="frmGroup"
+                                  [label]="'Original Interbank SettlementDate'"
+                                  [controlName]="'TxInfOrgnlIntrBkSttlmDt'"/>
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Original Interbank Settlement Amount'"
+                                       [controlName]="'TxInfOrgnlIntrBkSttlmAmt'" />
+                  <app-select-option-field [frmGroup]="frmGroup"
+                                           [options]="TxInfSttlmPrtyOptions"
+                                           [label]="'Settlement Priority'"
+                                           [controlName]="'TxInfSttlmPrty'"/>
+
+                  <!-- Payment Return V09 -> Transaction Information->Original Group Information -> Settlement Time Indication-->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="TxInfSttlmTmIndctn" [subPanelTitle]="'Settlement Time Indication'"/>
+                    <div class="sub-panel">
+                      @if (TxInfSttlmTmIndctn()) {
+                        <div class="form-grid-col-1">
+
+                          <app-date-input [frmGroup]="frmGroup"
+                                          [label]="'Debit DateTime'"
+                                          [controlName]="'TxInfSttlmTmIndctnDbtDtTm'"/>
+                          <app-date-input [frmGroup]="frmGroup"
+                                          [label]="'Credit DateTime'"
+                                          [controlName]="'TxInfSttlmTmIndctnCdtDtTm'"/>
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Returned Instructed Amount'"
+                                       [controlName]="'TxInfRtrdInstdAmt'" [type]="'number'" />
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Exchange Rate'"
+                                       [controlName]="'TxInfXchgRate'" [type]="'number'" />
+                  <app-select-option-field [frmGroup]="frmGroup"
+                                           [options]="TxInfChrgBrOptions"
+                                           [label]="'Charge Bearer'"
+                                           [controlName]="'TxInfChrgBr'"/>
+
+                  <!-- Payment Return V09 -> Transaction Information->Original Group Information -> Charges Information -->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="TxInfChrgsInf" [subPanelTitle]="'Charges Information'"/>
+                    <div class="sub-panel">
+                      @if (TxInfChrgsInf()) {
+                        <div class="form-grid-col-1">
+
+                          <app-text-base-input [frmGroup]="frmGroup"
+                                          [label]="'Amount'"
+                                          [controlName]="'TxInfChrgsInfAmt'"/>
+
+
+                          <!-- Payment Return V09 -> Transaction Information->Original Group Information -> Charges Information -> Agent-->
+                          <div class="sub-panel">
+                            <app-expansion-sub-panel-header [isOpenSignal]="TxInfChrgsInfAgt" [subPanelTitle]="'Agent'"/>
+                            <div class="sub-panel">
+                              @if (TxInfChrgsInfAgt()) {
+                                <div class="form-grid-col-1">
+
+                                  <!-- Payment Return V09 -> Transaction Information->Original Group Information -> Charges Information -> Agent -> Financial Institution Identification-->
+                                  <div class="sub-panel">
+                                    <app-expansion-sub-panel-header [isOpenSignal]="TxInfChrgsInfAgtFinInstnId" [subPanelTitle]="'Financial Institution Identification'"/>
+                                    <div class="sub-panel">
+                                      @if (TxInfChrgsInfAgtFinInstnId()) {
+                                        <div class="form-grid-col-1">
+
+                                          <app-text-base-input [frmGroup]="frmGroup"
+                                                               [label]="'BICFI'"
+                                                               [controlName]="'TxInfChrgsInfAgtFinInstnIdBICFI'"/>
+
+                                          <!-- Payment Return V09 -> Transaction Information->Original Group Information -> Charges Information -> Agent -> Financial Institution Identification -> Clearing System Member Identification-->
+                                          <div class="sub-panel">
+                                            <app-expansion-sub-panel-header [isOpenSignal]="TxInfChrgsInfAgtFinInstnIdClrSysMmbId" [subPanelTitle]="'Clearing System Member Identification'"/>
+                                            <div class="sub-panel">
+                                              @if (TxInfChrgsInfAgtFinInstnIdClrSysMmbId()) {
+                                                <div class="form-grid-col-1">
+
+                                                  <!-- Payment Return V09 -> Transaction Information->Original Group Information -> Charges Information -> Agent -> Financial Institution Identification -> Clearing System Member Identification -> ClearingSystemIdentification -->
+                                                  <div class="sub-panel">
+                                                    <app-expansion-sub-panel-header [isOpenSignal]="TxInfChrgsInfAgtFinInstnIdClrSysMmbIdClrSysId" [subPanelTitle]="'Clearing System Identification'"/>
+                                                    <div class="sub-panel">
+                                                      @if (TxInfChrgsInfAgtFinInstnIdClrSysMmbIdClrSysId()) {
+                                                        <div class="form-grid-col-1">
+
+                                                          <app-text-base-input [frmGroup]="frmGroup"
+                                                                               [label]="'Code'"
+                                                                               [controlName]="'TxInfChrgsInfAgtFinInstnIdClrSysIdCd'"/>
+
+
+                                                        </div>
+                                                      }
+                                                    </div>
+                                                  </div>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Member Identification'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdClrSysMmbIdMmbId'"/>
+
+                                                </div>
+                                              }
+                                            </div>
+                                          </div>
+
+                                          <app-text-base-input [frmGroup]="frmGroup"
+                                                               [label]="'LEI'"
+                                                               [controlName]="'TxInfChrgsInfAgtFinInstnIdLEI'"/>
+                                          <app-text-base-input [frmGroup]="frmGroup"
+                                                               [label]="'Name'"
+                                                               [controlName]="'TxInfChrgsInfAgtFinInstnIdNm'"/>
+
+
+
+                                          <!-- Payment Return V09 -> Transaction Information->Original Group Information -> Charges Information -> Agent -> Financial Institution Identification -> Postal Address-->
+                                          <div class="sub-panel">
+                                            <app-expansion-sub-panel-header [isOpenSignal]="TxInfChrgsInfAgtFinInstnIdPstlAdr" [subPanelTitle]="'Postal Address'"/>
+                                            <div class="sub-panel">
+                                              @if (TxInfChrgsInfAgtFinInstnIdPstlAdr()) {
+                                                <div class="form-grid-col-1">
+
+
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Department'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrDept'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Sub Department'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrSubDept'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Street Name'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrStrtNm'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Building Number'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrStrtBldgNb'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Building Name'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrStrtBldgNm'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Floor'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrStrtFlr'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Post Box'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrStrtPstBx'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Room'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrStrtRoom'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Post Code'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrStrtPstCd'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Town Name'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrStrtTwnNm'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'TownLocation Name'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrStrtTwnLctnNm'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'District Name'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrStrtDstrctNm'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Country SubDivision'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrStrtCtrySubDvsn'"/>
+
+                                                  <app-select-option-field [frmGroup]="frmGroup"
+                                                                           [options]="TxInfChrgsInfAgtFinInstnIdPstlAdrStrtCtryOptions"
+                                                                           [label]="'Country'"
+                                                                           [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrStrtCtry'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Address Line'"
+                                                                       [controlName]="'TxInfChrgsInfAgtFinInstnIdPstlAdrStrtAdrLine'"/>
+
+                                                </div>
+                                              }
+                                            </div>
+                                          </div>
+
+                                        </div>
+                                      }
+                                    </div>
+                                  </div>
+
+                                </div>
+                              }
+                            </div>
+                          </div>
+
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Clearing System Reference'"
+                                       [controlName]="'TxInfClrSysRef'" />
+
+                  <!-- Payment Return V09 -> Transaction Information->Charges Information -> Instructing Agent -->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="TxInfInstgAgt" [subPanelTitle]="'Instructing Agent'"/>
+                    <div class="sub-panel">
+                      @if (TxInfInstgAgt()) {
+                        <div class="form-grid-col-1">
+
+                          <!-- Payment Return V09 -> Transaction Information->Charges Information -> Instructing Agent -> Financial Institution Identification-->
+                          <div class="sub-panel">
+                            <app-expansion-sub-panel-header [isOpenSignal]="TxInfInstgAgtFinInstnId" [subPanelTitle]="'Financial Institution Identification'"/>
+                            <div class="sub-panel">
+                              @if (TxInfInstgAgtFinInstnId()) {
+                                <div class="form-grid-col-1">
+
+                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                       [label]="'BICFI'"
+                                                       [controlName]="'TxInfInstgAgtFinInstnIdBICFI'"/>
+
+                                  <!-- Payment Return V09 -> Transaction Information->Charges Information -> Instructing Agent -> Financial Institution Identification -> Clearing System Member Identification-->
+                                  <div class="sub-panel">
+                                    <app-expansion-sub-panel-header [isOpenSignal]="TxInfInstgAgtFinInstnIdClrSysMmbId" [subPanelTitle]="'Clearing System Member Identification'"/>
+                                    <div class="sub-panel">
+                                      @if (TxInfInstgAgtFinInstnIdClrSysMmbId()) {
+                                        <div class="form-grid-col-1">
+
+                                          <!-- Payment Return V09 -> Transaction Information->Charges Information -> Instructing Agent -> Financial Institution Identification -> Clearing System Member Identification -> ClearingSystemIdentification -->
+                                          <div class="sub-panel">
+                                            <app-expansion-sub-panel-header [isOpenSignal]="TxInfInstgAgtFinInstnIdClrSysMmbIdClrSysId" [subPanelTitle]="'Clearing System Identification'"/>
+                                            <div class="sub-panel">
+                                              @if (TxInfInstgAgtFinInstnIdClrSysMmbIdClrSysId()) {
+                                                <div class="form-grid-col-1">
+
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Code'"
+                                                                       [controlName]="'TxInfInstgAgtFinInstnIdClrSysMmbIdClrSysIdCd'"/>
+
+
+                                                </div>
+                                              }
+                                            </div>
+                                          </div>
+                                          <app-text-base-input [frmGroup]="frmGroup"
+                                                               [label]="'Member Identification'"
+                                                               [controlName]="'TxInfInstgAgtFinInstnIdClrSysMmbIdMmbId'"/>
+
+                                        </div>
+                                      }
+                                    </div>
+                                  </div>
+
+                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                       [label]="'LEI'"
+                                                       [controlName]="'TxInfInstgAgtFinInstnIdLEI'"/>
+
+                                </div>
+                              }
+                            </div>
+                          </div>
+
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Payment Return V09 -> Transaction Information->Charges Information -> Instructed Agent -->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="TxInfInstdAgt" [subPanelTitle]="'Instructed Agent'"/>
+                    <div class="sub-panel">
+                      @if (TxInfInstdAgt()) {
+                        <div class="form-grid-col-1">
+
+                          <!-- Payment Return V09 -> Transaction Information->Charges Information -> Instructing Agent -> Financial Institution Identification-->
+                          <div class="sub-panel">
+                            <app-expansion-sub-panel-header [isOpenSignal]="TxInfInstdAgtFinInstnId" [subPanelTitle]="'Financial Institution Identification'"/>
+                            <div class="sub-panel">
+                              @if (TxInfInstdAgtFinInstnId()) {
+                                <div class="form-grid-col-1">
+
+                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                       [label]="'BICFI'"
+                                                       [controlName]="'TxInfInstdAgtFinInstnIdBICFI'"/>
+
+                                  <!-- Payment Return V09 -> Transaction Information->Charges Information -> Instructing Agent -> Financial Institution Identification -> Clearing System Member Identification-->
+                                  <div class="sub-panel">
+                                    <app-expansion-sub-panel-header [isOpenSignal]="TxInfInstdAgtFinInstnIdClrSysMmbId" [subPanelTitle]="'Clearing System Member Identification'"/>
+                                    <div class="sub-panel">
+                                      @if (TxInfInstdAgtFinInstnIdClrSysMmbId()) {
+                                        <div class="form-grid-col-1">
+
+                                          <!-- Payment Return V09 -> Transaction Information->Charges Information -> Instructing Agent -> Financial Institution Identification -> Clearing System Member Identification -> ClearingSystemIdentification -->
+                                          <div class="sub-panel">
+                                            <app-expansion-sub-panel-header [isOpenSignal]="TxInfInstdAgtFinInstnIdClrSysMmbIdClrSysId" [subPanelTitle]="'Clearing System Identification'"/>
+                                            <div class="sub-panel">
+                                              @if (TxInfInstdAgtFinInstnIdClrSysMmbIdClrSysId()) {
+                                                <div class="form-grid-col-1">
+
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Code'"
+                                                                       [controlName]="'TxInfInstdAgtFinInstnIdClrSysMmbIdClrSysIdCd'"/>
+
+
+                                                </div>
+                                              }
+                                            </div>
+                                          </div>
+                                          <app-text-base-input [frmGroup]="frmGroup"
+                                                               [label]="'Member Identification'"
+                                                               [controlName]="'TxInfInstdAgtFinInstnIdClrSysMmbIdMmbId'"/>
+
+                                        </div>
+                                      }
+                                    </div>
+                                  </div>
+
+                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                       [label]="'LEI'"
+                                                       [controlName]="'TxInfInstdAgtFinInstnIdLEI'"/>
+
+                                </div>
+                              }
+                            </div>
+                          </div>
+
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Payment Return V09 -> Transaction Information->ReturnChain -->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="TxInfRtrChain" [subPanelTitle]="'Return Chain'"/>
+                    <div class="sub-panel">
+                      @if (TxInfRtrChain()) {
+                        <div class="form-grid-col-1">
+
+                          <!-- Payment Return V09 -> Transaction Information->Return Chain -> UltimateDebtor -->
+                          <div class="sub-panel">
+                            <app-expansion-sub-panel-header [isOpenSignal]="TxInfRtrChainUltmtDbtr" [subPanelTitle]="'Ultimate Debtor'"/>
+                            <div class="sub-panel">
+                              @if (TxInfRtrChainUltmtDbtr()) {
+                                <div class="form-grid-col-1">
+
+                                  <!-- Payment Return V09 -> Transaction Information->Return Chain -> UltimateDebtor -> Party -->
+                                  <div class="sub-panel">
+                                    <app-expansion-sub-panel-header [isOpenSignal]="TxInfRtrChainUltmtDbtrPty" [subPanelTitle]="'Party'"/>
+                                    <div class="sub-panel">
+                                      @if (TxInfRtrChainUltmtDbtrPty()) {
+                                        <div class="form-grid-col-1">
+
+                                          <app-text-base-input [frmGroup]="frmGroup"
+                                                               [label]="'Name'"
+                                                               [controlName]="'TxInfRtrChainUltmtDbtrPtyNm'"/>
+
+                                          <!-- Payment Return V09 -> Transaction Information->Return Chain -> UltimateDebtor -> Party -> Postal Address-->
+                                          <div class="sub-panel">
+                                            <app-expansion-sub-panel-header [isOpenSignal]="TxInfRtrChainUltmtDbtrPtyPstlAdr" [subPanelTitle]="'Postal Address'"/>
+                                            <div class="sub-panel">
+                                              @if (TxInfRtrChainUltmtDbtrPtyPstlAdr()) {
+                                                <div class="form-grid-col-1">
+
+
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Department'"
+                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyPstlAdrDept'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Sub Department'"
+                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyPstlAdrSubDept'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Street Name'"
+                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyPstlAdrStrtNm'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Building Number'"
+                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyPstlAdrBldgNb'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Building Name'"
+                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyPstlAdrBldgNm'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Floor'"
+                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyPstlAdrFlr'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Post Box'"
+                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyPstlAdrPstBx'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Room'"
+                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyPstlAdrRoom'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Post Code'"
+                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyPstlAdrPstCd'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Town Name'"
+                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyPstlAdrTwnNm'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'TownLocation Name'"
+                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyPstlAdrTwnLctnNm'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'District Name'"
+                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyPstlAdrDstrctNm'"/>
+                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                       [label]="'Country SubDivision'"
+                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyPstlAdrCtrySubDvsn'"/>
+
+                                                  <app-select-option-field [frmGroup]="frmGroup"
+                                                                           [options]="TxInfRtrChainUltmtDbtrPtyPstlAdrCtryOptions"
+                                                                           [label]="'Country'"
+                                                                           [controlName]="'TxInfRtrChainUltmtDbtrPtyPstlAdrCtry'"/>
+
+
+                                                </div>
+                                              }
+                                            </div>
+                                          </div>
+
+                                          <!-- Payment Return V09 -> Transaction Information->Return Chain -> UltimateDebtor -> Party -> Identification -->
+                                          <div class="sub-panel">
+                                            <app-expansion-sub-panel-header [isOpenSignal]="TxInfRtrChainUltmtDbtrPtyId" [subPanelTitle]="'Identification'"/>
+                                            <div class="sub-panel">
+                                              @if (TxInfRtrChainUltmtDbtrPtyId()) {
+                                                <div class="form-grid-col-1">
+
+                                                  <!-- Payment Return V09 -> Transaction Information->Return Chain -> UltimateDebtor -> Party -> Identification -> OrganisationIdentification -->
+                                                  <div class="sub-panel">
+                                                    <app-expansion-sub-panel-header [isOpenSignal]="TxInfRtrChainUltmtDbtrPtyIdOrgId" [subPanelTitle]="'Organisation Identification'"/>
+                                                    <div class="sub-panel">
+                                                      @if (TxInfRtrChainUltmtDbtrPtyIdOrgId()) {
+                                                        <div class="form-grid-col-1">
+
+                                                          <app-text-base-input [frmGroup]="frmGroup"
+                                                                               [label]="'AnyBIC'"
+                                                                               [controlName]="'TxInfRtrChainUltmtDbtrPtyIdOrgIdAnyBIC'"/>
+                                                          <app-text-base-input [frmGroup]="frmGroup"
+                                                                               [label]="'LEI'"
+                                                                               [controlName]="'TxInfRtrChainUltmtDbtrPtyIdOrgIdLEI'"/>
+
+                                                          <!-- Payment Return V09 -> Transaction Information->Return Chain -> UltimateDebtor -> Party -> Identification -> OrganisationIdentification->Other -->
+                                                          <div class="sub-panel">
+                                                            <app-expansion-sub-panel-header [isOpenSignal]="TxInfRtrChainUltmtDbtrPtyIdOrgIdOthr" [subPanelTitle]="'Other'"/>
+                                                            <div class="sub-panel">
+                                                              @if (TxInfRtrChainUltmtDbtrPtyIdOrgIdOthr()) {
+                                                                <div class="form-grid-col-1">
+
+                                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                                       [label]="'Identification'"
+                                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyIdOrgIdOthrId'"/>
+                                                                  <!-- Payment Return V09 -> Transaction Information->Return Chain -> UltimateDebtor -> Party -> Identification -> OrganisationIdentification->Other -> SchemeName -->
+                                                                  <div class="sub-panel">
+                                                                    <app-expansion-sub-panel-header [isOpenSignal]="TxInfRtrChainUltmtDbtrPtyIdOrgIdOthrSchmeNm" [subPanelTitle]="'Scheme Name'"/>
+                                                                    <div class="sub-panel">
+                                                                      @if (TxInfRtrChainUltmtDbtrPtyIdOrgIdOthrSchmeNm()) {
+                                                                        <div class="form-grid-col-1">
+
+                                                                          <app-text-base-input [frmGroup]="frmGroup"
+                                                                                               [label]="'Code'"
+                                                                                               [controlName]="'TxInfRtrChainUltmtDbtrPtyIdOrgIdOthrSchmeNmCd'"/>
+                                                                          <app-text-base-input [frmGroup]="frmGroup"
+                                                                                               [label]="'Proprietary'"
+                                                                                               [controlName]="'TxInfRtrChainUltmtDbtrPtyIdOrgIdOthrSchmeNmPrtry'"/>
+
+
+
+                                                                        </div>
+                                                                      }
+                                                                    </div>
+                                                                  </div>
+
+                                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                                       [label]="'Issuer'"
+                                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyIdOrgIdOthrIssr'"/>
+
+                                                                </div>
+                                                              }
+                                                            </div>
+                                                          </div>
+
+                                                        </div>
+                                                      }
+                                                    </div>
+                                                  </div>
+
+                                                  <!-- Payment Return V09 -> Transaction Information->Return Chain -> UltimateDebtor -> Party -> Identification -> PrivateIdentification -->
+                                                  <div class="sub-panel">
+                                                    <app-expansion-sub-panel-header [isOpenSignal]="TxInfRtrChainUltmtDbtrPtyIdPrvtId" [subPanelTitle]="'Private Identification'"/>
+                                                    <div class="sub-panel">
+                                                      @if (TxInfRtrChainUltmtDbtrPtyIdPrvtId()) {
+                                                        <div class="form-grid-col-1">
+
+                                                          <!-- Payment Return V09 -> Transaction Information->Return Chain -> UltimateDebtor -> Party -> Identification -> PrivateIdentification -> DateAndPlaceOfBirth-->
+                                                          <div class="sub-panel">
+                                                            <app-expansion-sub-panel-header [isOpenSignal]="TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirth" [subPanelTitle]="'Date And Place Of Birth'"/>
+                                                            <div class="sub-panel">
+                                                              @if (TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirth()) {
+                                                                <div class="form-grid-col-1">
+
+                                                                  <app-text-base-input [frmGroup]="frmGroup"
+                                                                                       [label]="'Birth Date'"
+                                                                                       [controlName]="'TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirthBirthDt'"/>
+
+
+                                                                </div>
+                                                              }
+                                                            </div>
+                                                          </div>
+
+                                                        </div>
+                                                      }
+                                                    </div>
+                                                  </div>
+
+                                                </div>
+                                              }
+                                            </div>
+                                          </div>
+
+                                        </div>
+                                      }
+                                    </div>
+                                  </div>
+
+                                </div>
+                              }
+                            </div>
+                          </div>
+
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                </div>
+              }
+            </div>
+          </div>
+
+        }
+      </div>
+    </form>
+  }
 </div>
+

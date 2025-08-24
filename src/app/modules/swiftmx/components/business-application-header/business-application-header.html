@@ -1,14 +1,75 @@
 <div class="form-grid-col-1">
 
-  <app-text-base-input [frmGroup]="frmGroup()"
-                       [label]="'From BIC'"
-                       [controlName]="'fromBic'"
-                        (onDoubleClick)="onPickClick()"/>
+  <div class="form-grid-col-1">
+    <app-text-base-input
+      [frmGroup]="frmGroup()"
+      [label]="'Character Set'"
+      [controlName]="'charSet'"
+    />
+  </div>
 
-  <app-text-base-input [frmGroup]="frmGroup()"
-                       [label]="'To BIC'"
-                       [controlName]="'toBic'"
-                       (onDoubleClick)="onPickClick()"/>
+  <div class="sub-panel">
+    <app-expansion-sub-panel-header
+      [isOpenSignal]="frmBicPnl"
+      [subPanelTitle]="'From'"
+    />
+    @if(frmBicPnl()) {
+      <div class="form-grid-col-1">
+        <app-text-base-input
+          [frmGroup]="frmGroup()"
+          [label]="'BIC'"
+          [controlName]="'fromBicfi'"
+          (onDoubleClick)="onPickClick()"
+        />
+        <app-text-base-input
+          [frmGroup]="frmGroup()"
+          [label]="'Clearing System ID Code'"
+          [controlName]="'fromClrSysIdCd'"
+        />
+        <app-text-base-input
+          [frmGroup]="frmGroup()"
+          [label]="'Member ID'"
+          [controlName]="'fromMembId'"
+        />
+        <app-text-base-input
+          [frmGroup]="frmGroup()"
+          [label]="'LEI'"
+          [controlName]="'fromLei'"
+        />
+      </div>
+    }
+  </div>
+  <div class="sub-panel mb-2">
+    <app-expansion-sub-panel-header
+      [isOpenSignal]="toBicPnl"
+      [subPanelTitle]="'To'"
+    />
+    @if(toBicPnl()) {
+      <div class="form-grid-col-1">
+        <app-text-base-input
+          [frmGroup]="frmGroup()"
+          [label]="'BIC'"
+          [controlName]="'toBicfi'"
+          (onDoubleClick)="onPickClick()"
+        />
+        <app-text-base-input
+          [frmGroup]="frmGroup()"
+          [label]="'Clearing System ID Code'"
+          [controlName]="'toClrSysIdCd'"
+        />
+        <app-text-base-input
+          [frmGroup]="frmGroup()"
+          [label]="'Member ID'"
+          [controlName]="'toMembId'"
+        />
+        <app-text-base-input
+          [frmGroup]="frmGroup()"
+          [label]="'LEI'"
+          [controlName]="'toLei'"
+        />
+      </div>
+    }
+  </div>
 
   <app-text-base-input [frmGroup]="frmGroup()"
                        [isReadonly]="true"
@@ -41,7 +102,7 @@
   <app-date-input
     [frmGroup]="frmGroup()"
     [label]="'Creation Date'"
-    [controlName]="'CreDt'"
+    [controlName]="'creDt'"
   />
 
 </div>

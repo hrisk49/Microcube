@@ -23,6 +23,8 @@ import {ExpansionPanelHeader} from '../../../../shared/components/expansion-pane
 import {
   ExpansionSubPanelHeader
 } from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
+import {Mx002Model} from '../../model/mx002.model';
+import {PartyModel} from '../../model/party.model';
 
 @Component({
   selector: 'app-pacs-002',
@@ -54,40 +56,29 @@ export class Pacs002 implements OnInit {
   pickTablePair = signal<Map<string, string>>(new Map());
   pickTableDataSource = signal<any[]>([]);
 
+  // Expansion Panel Headers
   businessAppHeader: WritableSignal<boolean> = signal(true);
   rltdPanelOpen: WritableSignal<boolean> = signal(true);
   fiToFiPaymntSts : WritableSignal<boolean> = signal(true);
   orgnlGrpInfAndSts : WritableSignal<boolean> = signal(true);
   grpHeadr : WritableSignal<boolean> = signal(true);
+  stsRsInfo : WritableSignal<boolean> = signal(true);
+  adrsInfo : WritableSignal<boolean> = signal(true);
+  orgId : WritableSignal<boolean> = signal(true);
+  ctctDtls : WritableSignal<boolean> = signal(true);
+  orgOthr : WritableSignal<boolean> = signal(true);
+  ctDtlsOthr : WritableSignal<boolean> = signal(true);
+  orgPrvtId : WritableSignal<boolean> = signal(true);
+  dtAndPlcOfBirth : WritableSignal<boolean> = signal(true);
+  orgOthrPrvtId : WritableSignal<boolean> = signal(true);
+  efftvIntrBankStllmnt : WritableSignal<boolean> = signal(true);
+  clrSysRef : WritableSignal<boolean> = signal(true);
+  instgAgntBicfiOpn : WritableSignal<boolean> = signal(true);
+  instdAgntBicfiOpn : WritableSignal<boolean> = signal(true);
+  nbOfTxsPerSts : WritableSignal<boolean> = signal(true);
+  instgAgntClrMmbId : WritableSignal<boolean> = signal(true);
+  instdAgntClrMmbId : WritableSignal<boolean> = signal(true);
 
-  onPickclick(): void {
-    this.isPickTableDialogOpen.set(true);
-    this.pickTableDataSource.set([]);
-    this.pickTablePair.set(new Map());
-
-    this.branchInfoService.getBySwiftCodePrefix('MTBLBDDH').subscribe({
-      next: data => {
-        if (data.status) {
-          this.pickTablePair.set(new Map([
-            ['branchId', 'Branch Id'],
-            ['branchName', 'Branch Name'],
-            ['swift', 'Swift']
-          ]));
-          this.pickTableDataSource.set(data?.payload);
-        }
-
-      }, error: err => {
-        console.error('Error:', err);
-      }
-    });
-  }
-
-  closeDialog(data: any) {
-    this.isPickTableDialogOpen.set(false);
-    if (data) {
-      this.frmGroup.get('toBic')?.setValue(data?.swift);
-    }
-  }
 
 
   priorityOptions: SelectOptionsModel[] = [
@@ -120,10 +111,27 @@ export class Pacs002 implements OnInit {
     {key: 'YES', value: 'Yes'},
     {key: 'NO', value: 'No'}
   ];
+
   TypeOptions: SelectOptionsModel[] =[
     {key: 'Cd', value: 'Code'},
     {key: 'Prtry', value: 'Proprietary'}
   ];
+
+  NamePrefixOptions: SelectOptionsModel[] = [
+    {key:'DOCT',value: 'Dr.'},
+    {key: 'MADM', value: 'Madam'},
+    {key: 'MIKS', value: 'Mx'},
+    {key: 'MISS', value: 'Miss'},
+    {key: 'MIST', value: 'Mister'}
+  ]
+
+  PreferredMthdOptions: SelectOptionsModel[] = [
+    {key: 'CELL', value: 'Cell'},
+    {key: 'MAIL', value: 'Mail'},
+    {key: 'FAXX', value: 'Fax'},
+    {key:'LETT', value: 'Letter'},
+    {key: 'PHONE', value: 'Phone'}
+  ]
 
   constructor() {
     BUTTON_VISIBILITY.set({
@@ -155,13 +163,19 @@ export class Pacs002 implements OnInit {
   initForm(): void {
     this.frmGroup = this.formBuilder.group({
       // Business Application Header
-      fromBic:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
-      toBic: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      charSet: [''],
+      fromBicfi:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      fromMembId: [''],
+      fromClrSysIdCd: [''],
+      fromLei: [''],
+      toMembId: [''],
+      toBicfi: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      toClrSysIdCd: [''],
+      toLei: [''],
       bizMsgIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
       msgDefIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
       bizSvc: ['',[Validators.required, Validators.minLength(6),Validators.maxLength(35),Validators.pattern(/^[a-z0-9]{1,10}(\.[a-z0-9]{1,10})+\.\d\d$/)]],
-      CreDt: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
-
+      creDt: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
       cpyDplct: [null],
       psblDplct: [null],
       prty: ['high'],
@@ -185,10 +199,8 @@ export class Pacs002 implements OnInit {
       orgnlMsgId:['', [Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
       orgnlMsgNmId:['', [Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
       orgnlCreDtTm: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
-
       orgnlNbOfTxs:['',[Validators.pattern(/^[0-9]{1,15}$/)]],
-      orgnlCtrlSum :[Validators.pattern(/^\d{1,17} \d{1,18}$/)],
-
+      orgnlCtrlSum :[Validators.pattern(/^d\d{1,17}\.\{1,18}?$/)],
       orgnlInstrId: ['',[Validators.minLength(1),Validators.maxLength(16)]],
       orgnlEndToEndId: ['',[Validators.required,Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+$/)]],
       orgnlTxId: ['', [Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]],
@@ -196,40 +208,57 @@ export class Pacs002 implements OnInit {
       txSts: ['', [Validators.required],Validators.minLength(1),Validators.maxLength(4)],
 
       // Status Reason Information block StsRsnInf
-      orgtrNm:['',[Validators.minLength(1),Validators.maxLength(140)]],
-      addrTp:['',Validators.required],
-      // Address Information
-      dept:['',[Validators.minLength(1),Validators.maxLength(70)]],
-      subDept:['',[Validators.minLength(1),Validators.maxLength(70)]],
-      strtNm:['',[Validators.minLength(1),Validators.maxLength(70)]],
-      bldgNb:['',[Validators.maxLength(16)]],
-      bldgNm:['',[Validators.maxLength(35)]],
-      flr:['',Validators.maxLength(70)],
-      pstBx:['',[Validators.maxLength(16)]],
-      room:['',[Validators.maxLength(70)]],
-      pstCd:['',[Validators.maxLength(16)]],
-      twnNm:['',[Validators.maxLength(35)]],
-      twnLctnNm:['',[Validators.maxLength(35)]],
-      dstrctNm:['',[Validators.maxLength(35)]],
-      ctrySubDvsn:['',[Validators.maxLength(35)]],
+      orgtrNm: ['', [Validators.minLength(1), Validators.maxLength(140)]],
+      addrTp: ['', Validators.required],
+      dept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      subDept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      strtNm: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      bldgNb: ['', [Validators.maxLength(16)]],
+      bldgNm: ['', [Validators.maxLength(35)]],
+      flr: ['', Validators.maxLength(70)],
+      pstBx: ['', [Validators.maxLength(16)]],
+      room: ['', [Validators.maxLength(70)]],
+      pstCd: ['', [Validators.maxLength(16)]],
+      twnNm: ['', [Validators.maxLength(35)]],
+      twnLctnNm: ['', [Validators.maxLength(35)]],
+      dstrctNm: ['', [Validators.maxLength(35)]],
+      ctrySubDvsn: ['', [Validators.maxLength(35)]],
       ctry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
-      adrLine:['',[Validators.maxLength(70)]],
+      adrLine: ['', [Validators.maxLength(70)]],
       ctryOfRes: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      Tp: ['Cd'],
+
+      // Contact Details
+      ctDtlsNmPrfx: ['DOCT'], // Should this be dynamic? If yes, use ['']
+      ctDtlsNm: ['', [Validators.maxLength(140)]],
+      ctDtlsPhneNb: ['', Validators.pattern(/^\+[0-9]{1,3}-[0-9()+\-]{1,30}/)],
+      ctDtlsMobNb: ['', Validators.pattern(/^\+[0-9]{1,3}-[0-9()+\-]{1,30}/)],
+      ctDtlsFaxNb: ['', Validators.pattern(/^\+[0-9]{1,3}-[0-9()+\-]{1,30}/)],
+      ctDtlsEmailAdr: ['', [Validators.email, Validators.maxLength(2048)]], // Fixed: Validators in array
+      ctDtlsEmailPurp: ['', Validators.maxLength(35)],
+      ctDtlsJobTitl: ['', Validators.maxLength(35)],
+      ctDtlsRspnsblty: ['', Validators.maxLength(35)],
+      ctDtlsDept: ['', Validators.maxLength(70)],
+      ctDtlsJobTitlctctDtls:['', Validators.maxLength(35)],
+      ctDtlsSubDept: [''],
+
+      // Contact Details -> Other
+      ctDtlsothrChanlTp: ['', Validators.maxLength(4)],
+      ctDtlsothrChanlId: ['', Validators.maxLength(140)],
+      ctctDtlsPrefrdMtd: ['MAIL'],
 
       //  Number of transaction per status
       dtldNbOfTxs:['',Validators.required],
       dtldSts : ['',Validators.required],
       dtldCtrlSum: [],
-
-
       orgIdBic:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
       orgIdLei:['',Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)],
-      orgIdOthrId:[''],
+      orgScmNm:['Cd'],
       orgIdOthrScNmCd:[''],
+      orgIdOthrId:[''],
       orgIdOthrIssr:[''],
       orgIdOthrCd:['',[Validators.maxLength(4)]], // added
       orgIdOthrIssrPtry:['',[Validators.maxLength(35)]], // added
-
       birthDt:['',Validators.required],
       prvcOfBirth:['',[Validators.maxLength(35)]],
       cityOfBirth:['',[Validators.maxLength(35)]],
@@ -247,17 +276,21 @@ export class Pacs002 implements OnInit {
       rsnPrtry :['',[Validators.required,Validators.maxLength(35)]],
       addtlInf1:['',[Validators.maxLength(105),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]],
       addtlInf2:['',[Validators.maxLength(105),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]],
-
       fctvIntrBkSttlmDt :[],
       clrSysRef: ['',[Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+$/)]],
-      instgAgtBicfi: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
 
-      // Agent Information
+
+      // Instructing Agent Information
+      instgAgtBicfi: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      instgAgtClrClrSysId:['',Validators.required],
+      instgAgtClrMmbId:['',[Validators.required,Validators.maxLength(28),Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+?$/)]],
+      instgAgtLei:['',[Validators.pattern(/^[A-Z0-9]{18,18}[0-9]{2,2}/)]],
+
+      // Instructing Agent Information
       instdAgtBicfi:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
-      clrSysIdCd:[''],
-      mmbId:[''],
-      lei:[''],
-      agentNm:[''],
+      instdAgtClrClrSysId:['',Validators.required],
+      instdAgtClrMmbId:['',[Validators.required,Validators.maxLength(28),Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+?$/)]],
+      instdAgtLei:['',[Validators.pattern(/^[A-Z0-9]{18,18}[0-9]{2,2}/)]],
       adrLine1:[''],
       adrLine2:[''],
       adrLine3:[''],
@@ -293,11 +326,99 @@ export class Pacs002 implements OnInit {
     });
   }
 
+  generatePayload(): Mx002Model
+  {
+   let payload : any = {};
+   let frmValue = this.frmGroup.value;
+
+    payload.charSet = frmValue.charSet;
+
+
+// Business Message Header
+
+    payload.bizMsgIdr = frmValue.bizMsgIdr;
+    payload.msgDefIdr = frmValue.msgDefIdr;
+    payload.fromBicfi = frmValue.fromBicfi;
+    payload.toBicfi = frmValue.toBicfi;
+    payload.bizSvc = frmValue.bizSvc;
+    payload.creDt = frmValue.creDt;
+    payload.cpyDplct = frmValue.cpyDplct;
+    payload.psblDplct = frmValue.psblDplct;
+    payload.priority = frmValue.prty;
+    payload.msgId = frmValue.msgId;
+
+    // Business Application Header -> related
+    //tobic
+    //frmBic
+     payload.rltd ={
+       bizMsgIdr : frmValue.rltdBizMsgIdr,
+       msgDefIdr: frmValue.rltdMsgDefIdr,
+       bizSvc: frmValue.rltdBizSvc,
+       //cpyDplct: frmValue.rltdCpyDplct,
+
+       cpyDplct : (()=>{
+         switch (frmValue.rltdCpyDplct) {
+           case 'codu':
+             return 'CODU';
+           case 'copy':
+             return 'COPY';
+           case 'dupl':
+             return 'DUPL';
+           default:
+             return 'CODU';
+         }
+       }),
+
+       prty: (()=>{
+         switch (frmValue.rltdPrty) {
+           case 'high':
+             return 'HIGH';
+           case 'low':
+             return 'LOW';
+           case 'normal':
+             return 'NORM';
+           case 'urgent':
+             return 'URGENT';
+           default:
+             return 'high';
+         }
+       })
+     }
+
+     payload.orgtr ={
+       nm: frmValue.orgtrNm,
+        addrTp: frmValue.addrTp,
+        dept: frmValue.dept,
+        subDept: frmValue.subDept,
+       strtNm: frmValue.strtNm,
+        bldgNb: frmValue.bldgNb,
+        bldgNm: frmValue.bldgNm,
+        flr: frmValue.flr,
+        pstBx: frmValue.pstBx,
+        room: frmValue.room,
+        pstCd: frmValue.pstCd,
+        twnNm: frmValue.twnNm,
+        twnLctnNm: frmValue.twnLctnNm,
+        dstrctNm: frmValue.dstrctNm,
+        ctrySubDvsn: frmValue.ctrySubDvsn,
+        ctry: frmValue.ctry,
+        adrLine: frmValue.adrLine,
+        ctryOfRes: frmValue.ctryOfRes
+     }
+
+     //payload.rsnCd = frmValue.rsnCd;
+
+    //
+
+   return  payload as Mx002Model;
+  }
+
   save() {
     this.mx002Service.save(this.frmGroup.value).subscribe(res => {
       console.log(res);
     })
   }
+
 
   protected readonly DataSelectionModal = DataSelectionModal;
 }

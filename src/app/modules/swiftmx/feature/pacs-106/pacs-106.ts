@@ -1,6 +1,6 @@
 
 
-import {Component, effect, inject, OnInit} from '@angular/core';
+import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
@@ -18,6 +18,10 @@ import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub
 import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
 import {Mx054Service} from '../../service/mx054.service';
 import {BusinessApplicationHeader} from '../../components/business-application-header/business-application-header';
+import {ExpansionPanelHeader} from '../../../../shared/components/expansion-panel-header/expansion-panel-header';
+import {
+  ExpansionSubPanelHeader
+} from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
 
 @Component({
   selector: 'app-pacs-106',
@@ -26,10 +30,9 @@ import {BusinessApplicationHeader} from '../../components/business-application-h
     SelectOptionField,
     TextBaseInput,
     DateInput,
-    PanelHeader,
-    SubPanelHeader,
-    AmountToWordInput,
     BusinessApplicationHeader,
+    ExpansionPanelHeader,
+    ExpansionSubPanelHeader,
   ],
   templateUrl: './pacs-106.html',
   standalone: true,
@@ -43,6 +46,19 @@ export class Pacs106 implements OnInit {
   frmGroup: FormGroup;
   onClickReset = ONCLICK_RESET;
   onClickSave = ONCLICK_SAVE;
+
+  // expension panel header
+  businessAppHeader: WritableSignal<boolean> = signal(true);
+  rltdPanelOpen: WritableSignal<boolean> = signal(true);
+  chrgsPmtReqOpn: WritableSignal<boolean> = signal(true);
+  grpHeadrOpn : WritableSignal<boolean> = signal(true);
+  chrgsRqstrOpn : WritableSignal<boolean> = signal(true);
+  finInstnIdOpn : WritableSignal<boolean> = signal(true);
+  chrgsRqstrPoAddrsOpn : WritableSignal<boolean> = signal(true);
+  ttlChrgsOpn : WritableSignal<boolean> = signal(true);
+  clrSysMmbIdOpn : WritableSignal<boolean> = signal(true);
+
+
   priorityOptions: SelectOptionsModel[] = [
     {key: 'high', value: 'High'},
     {key: 'normal', value: 'Normal'}
@@ -126,7 +142,43 @@ export class Pacs106 implements OnInit {
       rltdPrty: ['high'],
 
 
-      // FI To FI Customer -> Settlement Information
+      // Charge Payment Request -> Group Header
+      msgId: ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
+      creDtTm: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
+
+      // Charge Payment Request -> Group Header -> Requerstor
+      chrgRqstrBicfi: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      clsmMId:['',[Validators.required,Validators.maxLength(28),Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+?$/)]],
+      clrSysIdCd:['',[Validators.maxLength(5)]],
+      chrgRqstrLei: ['',Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)],
+      crgsRqstrNm: ['',[Validators.maxLength(140),Validators.pattern(/[0-9a-zA-Z/\-\?:\(\)\.,'\+ !#$%&\*=^_`\{\|\}~";<>@\[\]\\]+/)]],
+
+      // Charge Payment Request -> Group Header -> Requerstor -> Postal Address
+      dept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      subDept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      strtNm: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      bldgNb: ['', [Validators.maxLength(16)]],
+      bldgNm: ['', [Validators.maxLength(35)]],
+      flr: ['', Validators.maxLength(70)],
+      pstBx: ['', [Validators.maxLength(16)]],
+      room: ['', [Validators.maxLength(70)]],
+      pstCd: ['', [Validators.maxLength(16)]],
+      twnNm: ['', [Validators.maxLength(35)]],
+      twnLctnNm: ['', [Validators.maxLength(35)]],
+      dstrctNm: ['', [Validators.maxLength(35)]],
+      ctrySubDvsn: ['', [Validators.maxLength(35)]],
+      ctry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      adrLine: ['', [Validators.maxLength(70)]],
+      ctryOfRes: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      Tp: ['Cd'],
+
+      // Charge Payment Request -> Group Header -> Requerstor -> Total Number of Charges Records
+      nbOfChrgsRcrds:[Validators.required,Validators.pattern(/^[0-9]{1,15}/)],
+      ctrlSum :[Validators.pattern(/^d{1,18}(\.\d{1,17})?$/)],
+      ttlChrgsAmt:[],
+      cdtDbtInd: [''],
+
+
       settlementMethod: ['clrg'],
       settleAccountId: [''],
       settleIban: [''],
@@ -203,33 +255,12 @@ export class Pacs106 implements OnInit {
       debitorIban: [''],
       debitorLei: [''],
 
-      // Charges Payment Notification
-      msgId: ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
-      creDtTm: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
+      // // Charges Payment Notification
+      // msgId: ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
+      // creDtTm: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
+      //
+      // // charges Requestor
 
-      // charges Requestor
-      bicfi: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
-      lei:[''],
-      nm: [''],
-
-      // Postal address
-
-      dept:['',[Validators.minLength(1),Validators.maxLength(70)]],
-      subDept:['',[Validators.minLength(1),Validators.maxLength(70)]],
-      strtNm:['',[Validators.minLength(1),Validators.maxLength(70)]],
-      bldgNb:['',[Validators.maxLength(16)]],
-      bldgNm:['',[Validators.maxLength(35)]],
-      flr:['',Validators.maxLength(70)],
-      pstBx:['',[Validators.maxLength(16)]],
-      room:['',[Validators.maxLength(70)]],
-      pstCd:['',[Validators.maxLength(16)]],
-      twnNm:['',[Validators.maxLength(35)]],
-      twnLctnNm:['',[Validators.maxLength(35)]],
-      dstrctNm:['',[Validators.maxLength(35)]],
-      ctrySubDvsn:['',[Validators.maxLength(35)]],
-      ctry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
-      adrLine:['',[Validators.maxLength(70)]],
-      ctryOfRes: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
 
       adrLine1:['',[Validators.maxLength(35),Validators.pattern(/[0-9a-zA-Z/\-\?:\(\)\.,'\+ !#$%&\*=^_`\{\|\}~";<>@\[\]\\]+/)]],
       adrLine2:['',[Validators.maxLength(35),Validators.pattern(/[0-9a-zA-Z/\-\?:\(\)\.,'\+ !#$%&\*=^_`\{\|\}~";<>@\[\]\\]+/)]],
@@ -238,18 +269,14 @@ export class Pacs106 implements OnInit {
 
       //  Charges Account Owner
       ownrBicfi: ['',[Validators.pattern(/^[A-Z0-9]{4,4}[A-Z]{2,2}[A-Z0-9]{2,2}([A-Z0-9]{3,3}){0,1}/)]],
-      clrSysIdCd :['',[Validators.required,Validators.maxLength(35)]],
+      //clrSysIdCd :['',[Validators.required,Validators.maxLength(35)]],
       mmbId:['',[Validators.maxLength(28),Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+/)]],
       //  other Schem Information
       othrSchmCd:['', Validators.required],
       othrSchmPrtry: ['', Validators.required],
       finOthrIssr: ['',Validators.required],
 
-      // Total Charges
-      nbOfChrgsRcrds:[Validators.required,Validators.pattern(/^[0-9]{1,15}/)],
-      ctrlSum :[Validators.pattern(/^d{1,18}(\.\d{1,17})?$/)],
-      ttlChrgsAmt:[],
-      cdtDbtInd: [''],
+
 
       //charges Information
       iban: [''],

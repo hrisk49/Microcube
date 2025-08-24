@@ -1,4 +1,5 @@
-import {Component, effect, inject, OnInit} from '@angular/core';
+import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
+import {Router} from '@angular/router';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
@@ -10,26 +11,26 @@ import {
 } from '../../../../shared/constant/button-signals.constant';
 import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
 import {ToastrService} from 'ngx-toastr';
-import { PanelHeader } from '../../../../shared/components/panel-header/panel-header';
-import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub-panel-header';
+import {ExpansionPanelHeader} from '../../../../shared/components/expansion-panel-header/expansion-panel-header';
+import {ExpansionSubPanelHeader} from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
 import {AmountToWordInput} from '../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input';
+import {CommonModule} from '@angular/common';
 import { SelectOptionsModel } from '../../../../shared/models/select-options-model';
-import { AccountComponent } from '../../components/account/account';
-import { AgentComponent } from '../../components/agent/agent';
+import { CurrencyService } from '../../../../shared/services/currency.service';
+import { CurrencyModel } from '../../../../shared/models/currency.model';
 
 
 @Component({
     selector: 'app-pacs-003',
     imports: [
+        CommonModule,
         ReactiveFormsModule,
         SelectOptionField,
         TextBaseInput,
         DateInput,
-        PanelHeader,
-        SubPanelHeader,
+        ExpansionPanelHeader,
+        ExpansionSubPanelHeader,
         AmountToWordInput,
-        AccountComponent,
-        AgentComponent,
     ],
     templateUrl: './pacs-003.html',
     standalone: true,
@@ -39,9 +40,40 @@ export class Pacs003 implements OnInit {
 
     formBuilder = inject(FormBuilder);
     toastr = inject(ToastrService);
+    currencyService = inject(CurrencyService);
+    router = inject(Router);
     frmGroup: FormGroup;
     onClickReset = ONCLICK_RESET;
     onClickSave = ONCLICK_SAVE;
+
+    // CBS Data received from swift messaging interface
+    cbsData: any = null;
+
+    // Panel state signals for expansion panels
+    businessHeaderPanel: WritableSignal<boolean> = signal(true);
+    relatedPanel: WritableSignal<boolean> = signal(false);
+    directDebitPanel: WritableSignal<boolean> = signal(true);
+    groupHeaderPanel: WritableSignal<boolean> = signal(true);
+    settlementInfoPanel: WritableSignal<boolean> = signal(true);
+    paymentIdentificationPanel: WritableSignal<boolean> = signal(true);
+    paymentTypeInfoPanel: WritableSignal<boolean> = signal(true);
+    settlementInfo2Panel: WritableSignal<boolean> = signal(true);
+    previousAgentsPanel: WritableSignal<boolean> = signal(true);
+    prevAgent1Panel: WritableSignal<boolean> = signal(false);
+    prevAgent2Panel: WritableSignal<boolean> = signal(false);
+    prevAgent3Panel: WritableSignal<boolean> = signal(false);
+    agentsPanel: WritableSignal<boolean> = signal(true);
+    instructingAgentPanel: WritableSignal<boolean> = signal(true);
+    instructedAgentPanel: WritableSignal<boolean> = signal(true);
+    intermediaryAgentsPanel: WritableSignal<boolean> = signal(true);
+    intermediary1Panel: WritableSignal<boolean> = signal(false);
+    intermediary2Panel: WritableSignal<boolean> = signal(false);
+    intermediary3Panel: WritableSignal<boolean> = signal(false);
+    debtorPanel: WritableSignal<boolean> = signal(true);
+    creditorPanel: WritableSignal<boolean> = signal(true);
+    instructionsPanel: WritableSignal<boolean> = signal(true);
+    purposeRemittancePanel: WritableSignal<boolean> = signal(true);
+    chargesPanel: WritableSignal<boolean> = signal(true);
   
     priorityOptions: SelectOptionsModel[] = [
         {key: 'HIGH', value: 'High'},
@@ -98,6 +130,10 @@ export class Pacs003 implements OnInit {
         {key: 'represented', value: 'RPRE'},
     ];
 
+    // Currency data
+    currencies: CurrencyModel[] = [];
+    currencyOptions: SelectOptionsModel[] = [];
+
     constructor() {
         BUTTON_VISIBILITY.set({
             save: true,
@@ -124,7 +160,40 @@ export class Pacs003 implements OnInit {
     }
 
     ngOnInit(): void {
+        // Check if data was passed from swift messaging interface
+        const navigation = this.router.getCurrentNavigation();
+        if (navigation?.extras.state) {
+            this.cbsData = (navigation.extras.state as any).cbsData;
+            console.log('Received CBS data in pacs-003:', this.cbsData);
+            
+            // Pre-populate form fields with CBS data if available
+            if (this.cbsData) {
+                this.prePopulateFormWithCBSData();
+            }
+        }
+        
         this.initForm();
+        this.loadCurrencies();
+    }
+
+    private loadCurrencies(): void {
+        this.currencyService.getAllCurrency().subscribe({
+            next: (response: any) => {
+                if (response.payload && response.payload.length > 0) {
+                    this.currencies = response.payload;
+                    // Map CurrencyModel[] to SelectOptionsModel[]
+                    this.currencyOptions = this.currencies.map(c => ({
+                        key: c.isoSwiftCode,
+                        value: `${c.isoSwiftCode} - ${c.currencyFullNm}`
+                    }));
+                }
+            },
+            error: (err: any) => {
+                console.error('Failed to load currencies', err);
+                this.toastr.error('Failed to load currencies', 'Error');
+                this.currencyOptions = [];
+            }
+        });
     }
 
     initForm(): void {
@@ -663,6 +732,30 @@ export class Pacs003 implements OnInit {
             this.toastr.success('Form saved successfully!', 'SUCCESS');
         } else {
             this.toastr.error('Please fill all required fields!', 'ERROR');
+        }
+    }
+
+    /**
+     * Pre-populate form fields with CBS data received from swift messaging interface
+     */
+    private prePopulateFormWithCBSData(): void {
+        if (!this.cbsData || !this.frmGroup) {
+            return;
+        }
+
+        try {
+            // Pre-populate form fields with CBS data
+            this.frmGroup.patchValue({
+                // Map CBS data to form fields using new interface
+                MsgId: this.cbsData.msgRefNo || '',
+                makeDt: this.cbsData.makeDate || '',
+                auth1stBy: this.cbsData.auth1stBy || '',
+                // Add more field mappings as needed
+            });
+
+            console.log('Form pre-populated with CBS data');
+        } catch (error) {
+            console.error('Error pre-populating form with CBS data:', error);
         }
     }
 }
