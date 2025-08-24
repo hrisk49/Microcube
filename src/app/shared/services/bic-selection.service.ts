@@ -75,10 +75,10 @@ export class BicSelectionService {
           dialogRef.componentInstance.updatePagination();
           return;
         }
-        
+
         // Set loading state
         dialogRef.componentInstance.setLoading(true);
-        
+
         this.branchInfoService.getBySwiftCodePrefix(q).subscribe({
           next: (res: any) => {
             const swiftCodes = res?.payload || [];

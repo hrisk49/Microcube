@@ -74,7 +74,7 @@ export class Pacs003 implements OnInit {
     instructionsPanel: WritableSignal<boolean> = signal(true);
     purposeRemittancePanel: WritableSignal<boolean> = signal(true);
     chargesPanel: WritableSignal<boolean> = signal(true);
-  
+
     priorityOptions: SelectOptionsModel[] = [
         {key: 'HIGH', value: 'High'},
         {key: 'NORM', value: 'Normal'}
@@ -165,13 +165,13 @@ export class Pacs003 implements OnInit {
         if (navigation?.extras.state) {
             this.cbsData = (navigation.extras.state as any).cbsData;
             console.log('Received CBS data in pacs-003:', this.cbsData);
-            
+
             // Pre-populate form fields with CBS data if available
             if (this.cbsData) {
                 this.prePopulateFormWithCBSData();
             }
         }
-        
+
         this.initForm();
         this.loadCurrencies();
     }
@@ -198,7 +198,7 @@ export class Pacs003 implements OnInit {
 
     initForm(): void {
         this.frmGroup = this.formBuilder.group({
-            
+
             // Business Application Header V02
             BizMsgIdr: ['', [Validators.required, Validators.maxLength(35)]], // BusinessMessageIdentifier max 35
             MsgDefIdr: ['', Validators.required], // MessageDefinitionIdentifier example - camt.001.001.03

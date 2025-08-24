@@ -167,10 +167,10 @@ export class Pacs009 implements OnInit {
 
   // Options for Service Level Code (loaded from ExternalCodeService)
   serviceLevelCodeOptions: SelectOptionsModel[] = [];
-  
+
   // Currency data
   currencies: CurrencyModel[] = [];
-  
+
   // Settlement options (loaded from LookupService)
   settlementOptions: SelectOptionsModel[] = [];
 
@@ -226,7 +226,7 @@ export class Pacs009 implements OnInit {
         setTimeout(() => {
           FormGroupSignal.set(this.frmGroup);
           console.log('FormGroupSignal updated in ngOnInit. Form valid:', this.frmGroup.valid);
-          
+
           // Pre-populate form fields with CBS data if available
           if (this.cbsData) {
             this.prePopulateFormWithCBSData();
