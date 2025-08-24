@@ -1,4 +1,5 @@
 import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
+import {Router} from '@angular/router';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
@@ -40,9 +41,13 @@ export class Pacs003 implements OnInit {
     formBuilder = inject(FormBuilder);
     toastr = inject(ToastrService);
     currencyService = inject(CurrencyService);
+    router = inject(Router);
     frmGroup: FormGroup;
     onClickReset = ONCLICK_RESET;
     onClickSave = ONCLICK_SAVE;
+
+    // CBS Data received from swift messaging interface
+    cbsData: any = null;
 
     // Panel state signals for expansion panels
     businessHeaderPanel: WritableSignal<boolean> = signal(true);
@@ -155,6 +160,18 @@ export class Pacs003 implements OnInit {
     }
 
     ngOnInit(): void {
+        // Check if data was passed from swift messaging interface
+        const navigation = this.router.getCurrentNavigation();
+        if (navigation?.extras.state) {
+            this.cbsData = (navigation.extras.state as any).cbsData;
+            console.log('Received CBS data in pacs-003:', this.cbsData);
+            
+            // Pre-populate form fields with CBS data if available
+            if (this.cbsData) {
+                this.prePopulateFormWithCBSData();
+            }
+        }
+        
         this.initForm();
         this.loadCurrencies();
     }
@@ -715,6 +732,30 @@ export class Pacs003 implements OnInit {
             this.toastr.success('Form saved successfully!', 'SUCCESS');
         } else {
             this.toastr.error('Please fill all required fields!', 'ERROR');
+        }
+    }
+
+    /**
+     * Pre-populate form fields with CBS data received from swift messaging interface
+     */
+    private prePopulateFormWithCBSData(): void {
+        if (!this.cbsData || !this.frmGroup) {
+            return;
+        }
+
+        try {
+            // Pre-populate form fields with CBS data
+            this.frmGroup.patchValue({
+                // Map CBS data to form fields using new interface
+                MsgId: this.cbsData.msgRefNo || '',
+                makeDt: this.cbsData.makeDate || '',
+                auth1stBy: this.cbsData.auth1stBy || '',
+                // Add more field mappings as needed
+            });
+
+            console.log('Form pre-populated with CBS data');
+        } catch (error) {
+            console.error('Error pre-populating form with CBS data:', error);
         }
     }
 }

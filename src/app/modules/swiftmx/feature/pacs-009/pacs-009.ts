@@ -6,6 +6,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import {Router} from '@angular/router';
 import {
   FormArray,
   FormBuilder,
@@ -60,6 +61,7 @@ export class Pacs009 implements OnInit {
   externalCodeService = inject(ExternalCodeService);
   currencyService = inject(CurrencyService);
   lookupService = inject(LookupService);
+  router = inject(Router);
   frmGroup: FormGroup;
   onClickReset = ONCLICK_RESET;
   onClickSave = ONCLICK_SAVE;
@@ -172,6 +174,8 @@ export class Pacs009 implements OnInit {
   // Settlement options (loaded from LookupService)
   settlementOptions: SelectOptionsModel[] = [];
 
+  // CBS Data received from swift messaging interface
+  cbsData: any = null;
   constructor(
     private branchInfoService: BranchInfoService,
     private bicSelectionService: BicSelectionService
@@ -198,6 +202,13 @@ export class Pacs009 implements OnInit {
 
   ngOnInit(): void {
     try {
+      // Check if data was passed from swift messaging interface
+      const navigation = this.router.getCurrentNavigation();
+      if (navigation?.extras.state) {
+        this.cbsData = (navigation.extras.state as any).cbsData;
+        console.log('Received CBS data in pacs-009:', this.cbsData);
+      }
+
       this.initForm();
       this.loadServiceLevelCodes();
       this.loadCurrencies();
@@ -215,6 +226,11 @@ export class Pacs009 implements OnInit {
         setTimeout(() => {
           FormGroupSignal.set(this.frmGroup);
           console.log('FormGroupSignal updated in ngOnInit. Form valid:', this.frmGroup.valid);
+          
+          // Pre-populate form fields with CBS data if available
+          if (this.cbsData) {
+            this.prePopulateFormWithCBSData();
+          }
         }, 100);
       }
     } catch (error) {
@@ -1842,5 +1858,27 @@ export class Pacs009 implements OnInit {
   // Get instruction for next agent group at specific index
   getInstructionForNextAgentGroup(index: number): FormGroup {
     return this.instructionForNextAgent.at(index) as FormGroup;
+  }
+
+  /**
+   * Pre-populate form fields with CBS data received from swift messaging interface
+   */
+  private prePopulateFormWithCBSData(): void {
+    if (!this.cbsData || !this.frmGroup) {
+      return;
+    }
+
+    try {
+      // Pre-populate form fields with CBS data using new interface
+      this.frmGroup.patchValue({
+        // Map CBS data to form fields
+        // Add field mappings based on your form structure
+        // Example: messageRefNo: this.cbsData.msgRefNo || '',
+      });
+
+      console.log('Form pre-populated with CBS data in pacs-009');
+    } catch (error) {
+      console.error('Error pre-populating form with CBS data:', error);
+    }
   }
 }
