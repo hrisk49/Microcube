@@ -32,6 +32,10 @@ import { ExpansionSubPanelHeader } from '../../../../shared/components/expansion
 import { BranchInfoService } from '../../../../shared/services/branch-info.service';
 import { DialogUtils } from '../../../../shared/service/dialog-utils';
 import { BicSelectionService } from '../../../../shared/services/bic-selection.service';
+import { ExternalCodeService } from '../../../../shared/services/external-code.service';
+import { CurrencyService } from '../../../../shared/services/currency.service';
+import { CurrencyModel } from '../../../../shared/models/currency.model';
+import { LookupService } from '../../../../shared/services/lookup.service';
 
 @Component({
   selector: 'app-pacs-009',
@@ -53,6 +57,9 @@ export class Pacs009 implements OnInit {
   formBuilder = inject(FormBuilder);
   toastr = inject(ToastrService);
   pacs009Service = inject(Pacs009Service);
+  externalCodeService = inject(ExternalCodeService);
+  currencyService = inject(CurrencyService);
+  lookupService = inject(LookupService);
   frmGroup: FormGroup;
   onClickReset = ONCLICK_RESET;
   onClickSave = ONCLICK_SAVE;
@@ -67,12 +74,7 @@ export class Pacs009 implements OnInit {
     { key: 'DUPL', value: 'DUPL' },
   ];
 
-  settlementOptions: SelectOptionsModel[] = [
-    { key: 'CLRG', value: 'CLRG' },
-    { key: 'COVE', value: 'COVE' },
-    { key: 'INDA', value: 'INDA' },
-    { key: 'INGA', value: 'INGA' },
-  ];
+
 
   chargeBearerOptions: SelectOptionsModel[] = [
     { key: 'DEBT', value: 'Debitor' },
@@ -98,47 +100,7 @@ export class Pacs009 implements OnInit {
     { key: 'URGT', value: 'Urgent' },
   ];
 
-  currencyOptions: SelectOptionsModel[] = [
-    { key: 'USD', value: 'USD - US Dollar' },
-    { key: 'EUR', value: 'EUR - Euro' },
-    { key: 'GBP', value: 'GBP - British Pound' },
-    { key: 'JPY', value: 'JPY - Japanese Yen' },
-    { key: 'CHF', value: 'CHF - Swiss Franc' },
-    { key: 'CAD', value: 'CAD - Canadian Dollar' },
-    { key: 'AUD', value: 'AUD - Australian Dollar' },
-    { key: 'CNY', value: 'CNY - Chinese Yuan' },
-    { key: 'HKD', value: 'HKD - Hong Kong Dollar' },
-    { key: 'SGD', value: 'SGD - Singapore Dollar' },
-    { key: 'SEK', value: 'SEK - Swedish Krona' },
-    { key: 'NOK', value: 'NOK - Norwegian Krone' },
-    { key: 'DKK', value: 'DKK - Danish Krone' },
-    { key: 'NZD', value: 'NZD - New Zealand Dollar' },
-    { key: 'MXN', value: 'MXN - Mexican Peso' },
-    { key: 'BRL', value: 'BRL - Brazilian Real' },
-    { key: 'INR', value: 'INR - Indian Rupee' },
-    { key: 'KRW', value: 'KRW - South Korean Won' },
-    { key: 'TRY', value: 'TRY - Turkish Lira' },
-    { key: 'RUB', value: 'RUB - Russian Ruble' },
-    { key: 'ZAR', value: 'ZAR - South African Rand' },
-    { key: 'PLN', value: 'PLN - Polish Zloty' },
-    { key: 'CZK', value: 'CZK - Czech Koruna' },
-    { key: 'HUF', value: 'HUF - Hungarian Forint' },
-    { key: 'ILS', value: 'ILS - Israeli Shekel' },
-    { key: 'CLP', value: 'CLP - Chilean Peso' },
-    { key: 'PHP', value: 'PHP - Philippine Peso' },
-    { key: 'AED', value: 'AED - UAE Dirham' },
-    { key: 'SAR', value: 'SAR - Saudi Riyal' },
-    { key: 'THB', value: 'THB - Thai Baht' },
-    { key: 'MYR', value: 'MYR - Malaysian Ringgit' },
-    { key: 'IDR', value: 'IDR - Indonesian Rupiah' },
-    { key: 'VND', value: 'VND - Vietnamese Dong' },
-    { key: 'EGP', value: 'EGP - Egyptian Pound' },
-    { key: 'NGN', value: 'NGN - Nigerian Naira' },
-    { key: 'KES', value: 'KES - Kenyan Shilling' },
-    { key: 'GHS', value: 'GHS - Ghanaian Cedi' },
-    { key: 'MAD', value: 'MAD - Moroccan Dirham' },
-    { key: 'TND', value: 'TND - Tunisian Dinar' },
-  ];
+  currencyOptions: SelectOptionsModel[] = [];
 
   // Panel visibility signals
   timeDatePanel: WritableSignal<boolean> = signal(true);
@@ -201,6 +163,15 @@ export class Pacs009 implements OnInit {
     ['address', 'Address']
   ]);
 
+  // Options for Service Level Code (loaded from ExternalCodeService)
+  serviceLevelCodeOptions: SelectOptionsModel[] = [];
+  
+  // Currency data
+  currencies: CurrencyModel[] = [];
+  
+  // Settlement options (loaded from LookupService)
+  settlementOptions: SelectOptionsModel[] = [];
+
   constructor(
     private branchInfoService: BranchInfoService,
     private bicSelectionService: BicSelectionService
@@ -228,6 +199,9 @@ export class Pacs009 implements OnInit {
   ngOnInit(): void {
     try {
       this.initForm();
+      this.loadServiceLevelCodes();
+      this.loadCurrencies();
+      this.loadSettlementOptions();
       if (!this.frmGroup) {
         console.error('Form initialization failed');
         this.toastr.error('Form initialization failed', 'Error');
@@ -247,6 +221,70 @@ export class Pacs009 implements OnInit {
       console.error('Error during form initialization:', error);
       this.toastr.error('Error during form initialization', 'Error');
     }
+  }
+
+  private loadServiceLevelCodes(): void {
+    const codeSet = 'ExternalServiceLevel1Code';
+    this.externalCodeService.getSwiftExternalCodes(codeSet).subscribe({
+      next: (res) => {
+        const list = Array.isArray(res?.payload) ? res.payload : [];
+        this.serviceLevelCodeOptions = list.map((item: any) => ({
+          key: item.codeValue,
+          value: item.codeName ? `${item.codeValue} - ${item.codeName}` : item.codeValue,
+        }));
+      },
+      error: (err) => {
+        console.error('Failed to load service level codes', err);
+        this.toastr.error('Failed to load service level codes', 'Error');
+        this.serviceLevelCodeOptions = [];
+      }
+    });
+  }
+
+  private loadCurrencies(): void {
+    this.currencyService.getAllCurrency().subscribe({
+      next: (response: any) => {
+        if (response.payload && response.payload.length > 0) {
+          this.currencies = response.payload;
+          // Map CurrencyModel[] to SelectOptionsModel[]
+          this.currencyOptions = this.currencies.map(c => ({
+            key: c.isoSwiftCode,
+            value: `${c.isoSwiftCode} - ${c.currencyFullNm}`
+          }));
+        }
+      },
+      error: (err: any) => {
+        console.error('Failed to load currencies', err);
+        this.toastr.error('Failed to load currencies', 'Error');
+        this.currencyOptions = [];
+      }
+    });
+  }
+
+  private loadSettlementOptions(): void {
+    // Assuming typeId 1 is for settlement methods - adjust as needed based on your backend
+    this.lookupService.getListByTypeId(1).subscribe({
+      next: (response: any) => {
+        if (response.payload && response.payload.length > 0) {
+          // Map the response to SelectOptionsModel format
+          this.settlementOptions = response.payload.map((item: any) => ({
+            key: item.codeValue || item.code,
+            value: item.codeName || item.description || item.value
+          }));
+        }
+      },
+      error: (err: any) => {
+        console.error('Failed to load settlement options', err);
+        this.toastr.error('Failed to load settlement options', 'Error');
+        // Fallback to default options if API fails
+        this.settlementOptions = [
+          { key: 'CLRG', value: 'CLRG' },
+          { key: 'COVE', value: 'COVE' },
+          { key: 'INDA', value: 'INDA' },
+          { key: 'INGA', value: 'INGA' },
+        ];
+      }
+    });
   }
 
   initForm(): void {
@@ -304,7 +342,7 @@ export class Pacs009 implements OnInit {
       ctgyPurpPrtry: [''],
 
       // Interbank Settlement
-      intrBkSttlmAmtCcy: ['USD', Validators.required],
+      intrBkSttlmAmtCcy: [null, Validators.required],
       intrBkSttlmAmt: ['1000.00', Validators.required],
       intrBkSttlmDt: [new Date().toISOString().split('T')[0], Validators.required],
       sttlmPrty: [null],
@@ -367,7 +405,7 @@ export class Pacs009 implements OnInit {
       prvsInstgAgt2AdrLine: [''],
       // Previous Instructing Agent 2 Account (flat)
       prvsInstgAgt2AcctId: [''],
-      prvsInstgAgt2AcctCcy: [''],
+      prvsInstgAgt2AcctCcy: [null],
       prvsInstgAgt2AcctTp: [''],
       prvsInstgAgt2AcctNm: [''],
       prvsInstgAgt2AcctSchmeNm: [''],
@@ -399,14 +437,14 @@ export class Pacs009 implements OnInit {
       prvsInstgAgt3AdrLine: [''],
       // Previous Instructing Agent 3 Account (flat)
       prvsInstgAgt3AcctId: [''],
-      prvsInstgAgt3AcctCcy: [''],
+      prvsInstgAgt3AcctCcy: [null],
       prvsInstgAgt3AcctTp: [''],
       prvsInstgAgt3AcctNm: [''],
       prvsInstgAgt3AcctSchmeNm: [''],
       prvsInstgAgt3AcctIssr: [''],
 
       // Agents (flat)
-      instgAgtBicfi: [''],
+      instgAgtBicfi: ['', Validators.required],
       instgAgtClrSysIdCd: [''],
       instgAgtMmbId: [''],
       instgAgtLei: [''],
@@ -430,7 +468,7 @@ export class Pacs009 implements OnInit {
       instgAgtAdrCtry: [''],
       instgAgtAdrLine: [''],
 
-      instdAgtBicfi: [''],
+      instdAgtBicfi: ['', Validators.required],
       instdAgtClrSysIdCd: [''],
       instdAgtMmbId: [''],
       instdAgtLei: [''],
@@ -480,7 +518,7 @@ export class Pacs009 implements OnInit {
       intrmyAgt1AdrLine: [''],
       // Intermediary Agent 1 Account (flat)
       intrmyAgt1AcctId: [''],
-      intrmyAgt1AcctCcy: [''],
+      intrmyAgt1AcctCcy: [null],
       intrmyAgt1AcctTp: [''],
       intrmyAgt1AcctNm: [''],
       intrmyAgt1AcctSchmeNm: [''],
@@ -512,7 +550,7 @@ export class Pacs009 implements OnInit {
       intrmyAgt2AdrLine: [''],
       // Intermediary Agent 2 Account (flat)
       intrmyAgt2AcctId: [''],
-      intrmyAgt2AcctCcy: [''],
+      intrmyAgt2AcctCcy: [null],
       intrmyAgt2AcctTp: [''],
       intrmyAgt2AcctNm: [''],
       intrmyAgt2AcctSchmeNm: [''],
@@ -544,7 +582,7 @@ export class Pacs009 implements OnInit {
       intrmyAgt3AdrLine: [''],
       // Intermediary Agent 3 Account (flat)
       intrmyAgt3AcctId: [''],
-      intrmyAgt3AcctCcy: [''],
+      intrmyAgt3AcctCcy: [null],
       intrmyAgt3AcctTp: [''],
       intrmyAgt3AcctNm: [''],
       intrmyAgt3AcctSchmeNm: [''],
@@ -552,7 +590,7 @@ export class Pacs009 implements OnInit {
 
       // Debtor (flat)
       dbtrNm: [''],
-      dbtrBicfi: [''],
+      dbtrBicfi: ['', Validators.required],
       dbtrClrSysIdCd: [''],
       dbtrMmbId: [''],
       dbtrLei: [''],
@@ -576,14 +614,14 @@ export class Pacs009 implements OnInit {
       dbtrAdrLine3: [''],
       // Debtor Account (flat)
       dbtrAcctId: [''],
-      dbtrAcctCcy: [''],
+      dbtrAcctCcy: [null],
       dbtrAcctTp: [''],
       dbtrAcctNm: [''],
       dbtrAcctSchmeNm: [''],
       dbtrAcctIssr: [''],
 
       // Debtor Agent (flat)
-      dbtrAgtBicfi: [''],
+      dbtrAgtBicfi: ['', Validators.required],
       dbtrAgtClrSysIdCd: [''],
       dbtrAgtMmbId: [''],
       dbtrAgtLei: [''],
@@ -608,14 +646,14 @@ export class Pacs009 implements OnInit {
       dbtrAgtAdrLine: [''],
       // Debtor Agent Account (flat)
       dbtrAgtAcctId: [''],
-      dbtrAgtAcctCcy: [''],
+      dbtrAgtAcctCcy: [null],
       dbtrAgtAcctTp: [''],
       dbtrAgtAcctNm: [''],
       dbtrAgtAcctSchmeNm: [''],
       dbtrAgtAcctIssr: [''],
 
       // Creditor Agent (flat)
-      cdtrAgtBicfi: [''],
+      cdtrAgtBicfi: ['', Validators.required],
       cdtrAgtClrSysIdCd: [''],
       cdtrAgtMmbId: [''],
       cdtrAgtLei: [''],
@@ -640,7 +678,7 @@ export class Pacs009 implements OnInit {
       cdtrAgtAdrLine: [''],
       // Creditor Agent Account (flat)
       cdtrAgtAcctId: [''],
-      cdtrAgtAcctCcy: [''],
+      cdtrAgtAcctCcy: [null],
       cdtrAgtAcctTp: [''],
       cdtrAgtAcctNm: [''],
       cdtrAgtAcctSchmeNm: [''],
@@ -648,7 +686,7 @@ export class Pacs009 implements OnInit {
 
       // Creditor (flat)
       cdtrNm: [''],
-      cdtrBicfi: [''],
+      cdtrBicfi: ['', Validators.required],
       cdtrClrSysIdCd: [''],
       cdtrMmbId: [''],
       cdtrLei: [''],
@@ -672,7 +710,7 @@ export class Pacs009 implements OnInit {
       cdtrAdrLine3: [''],
       // Creditor Account (flat)
       cdtrAcctId: [''],
-      cdtrAcctCcy: [''],
+      cdtrAcctCcy: [null],
       cdtrAcctTp: [''],
       cdtrAcctNm: [''],
       cdtrAcctSchmeNm: [''],
@@ -944,15 +982,15 @@ export class Pacs009 implements OnInit {
         bizSvc: 'swift.cbprplus.02',
         creDt: new Date().toISOString().split('T')[0],
         cpyDplct: null,
-        priority: 'NORM',
+        priority: null,
         msgId: 'MSG_' + new Date().getTime(),
         creDtTm: new Date().toISOString(),
         nbOfTxs: '1',
-        sttlmMtd: 'INGA',
+        sttlmMtd: null,
         fromBicfi: '',
         toBicfi: '',
         txId: 'TX_' + new Date().getTime(),
-        intrBkSttlmAmtCcy: 'USD',
+        intrBkSttlmAmtCcy: null,
         intrBkSttlmAmt: '1000.00',
         intrBkSttlmDt: new Date().toISOString().split('T')[0]
       });
@@ -1007,7 +1045,7 @@ export class Pacs009 implements OnInit {
   // Add service level row
   addServiceRow() {
     const serviceGroup = this.formBuilder.group({
-      serviceCode: [''],
+      serviceCode: [null],
       servicePriority: [null],
     });
     this.serviceLevels.push(serviceGroup);

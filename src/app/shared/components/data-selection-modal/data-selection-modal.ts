@@ -1,8 +1,9 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, input, output, EventEmitter} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { Button } from '../../components/input-types/button/button';
 
 @Component({
   selector: 'app-data-selection-modal',
@@ -11,7 +12,8 @@ import { MatIconModule } from '@angular/material/icon';
     CommonModule,
     FormsModule,
     MatIconModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    Button
   ],
   templateUrl: './data-selection-modal.html',
   styleUrls: ['./data-selection-modal.scss']
@@ -23,6 +25,8 @@ export class DataSelectionModal implements OnInit {
   filteredDataSource: any[] = [];
   paginatedDataSource: any[] = [];
   searchTerm: string = '';
+  apiSearchTerm: string = ''; // Separate field for API calls
+  isLoading: boolean = false; // Loading state for API calls
   pickTablePair: Map<string, string> = new Map<string, string>();
 
   // Pagination properties
@@ -33,6 +37,18 @@ export class DataSelectionModal implements OnInit {
 
   // result = output<any | undefined>();
   multiSelect = false;
+
+  // Inputs/Outputs
+  allowDoubleClickSelect = input<boolean>(true);
+  readonly onFindClicked = output<string>();
+  readonly onRowDoubleClick = output<any>();
+  
+  // Configurable text from modal data
+  apiSearchPlaceholder: string = 'Enter search term...';
+  findButtonText: string = 'Find';
+  loadingText: string = 'Searching...';
+  noDataMessage: string = 'No data available. Use the search field above to find items.';
+  loadingMessage: string = 'Searching...';
   
   constructor(
     public dialogRef: MatDialogRef<any>,
@@ -41,6 +57,14 @@ export class DataSelectionModal implements OnInit {
     this.dataSource = data?.pickTableDataSource ?? [];
     this.filteredDataSource = [...this.dataSource];
     this.pickTablePair = data?.pickTablePair ?? new Map<string, string>();
+    
+    // Read configurable text from modal data
+    this.apiSearchPlaceholder = data?.apiSearchPlaceholder ?? 'Enter search term...';
+    this.findButtonText = data?.findButtonText ?? 'Find';
+    this.loadingText = data?.loadingText ?? 'Searching...';
+    this.noDataMessage = data?.noDataMessage ?? 'No data available. Use the search field above to find items.';
+    this.loadingMessage = data?.loadingMessage ?? 'Searching...';
+    
     this.updatePagination();
   }
 
@@ -96,9 +120,20 @@ export class DataSelectionModal implements OnInit {
   // Clear search and filters
   clearFilters(): void {
     this.searchTerm = '';
+    this.apiSearchTerm = '';
     this.filteredDataSource = [...this.dataSource];
     this.currentPage = 1;
     this.updatePagination();
+  }
+
+  // Clear API search field
+  clearApiSearch(): void {
+    this.apiSearchTerm = '';
+  }
+
+  // Set loading state
+  setLoading(loading: boolean): void {
+    this.isLoading = loading;
   }
 
   // Update pagination after data changes
@@ -158,4 +193,11 @@ export class DataSelectionModal implements OnInit {
     return `Showing ${startItem} to ${endItem} of ${this.filteredDataSource.length} results`;
   }
 
+  // Handle double click on a row
+  handleRowDoubleClick(row: any) {
+    if (this.allowDoubleClickSelect()) {
+      this.onRowDoubleClick.emit(row);
+      this.dialogClose(row);
+    }
+  }
 }

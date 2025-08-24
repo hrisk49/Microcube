@@ -96,8 +96,7 @@ messageTypes: any[] = [
     console.log('Start Date:', this.startDate);
     console.log('End Date:', this.endDate);
     console.log('Message Type:', this.selectedMessageType);
-    
-    this.currentPage = 1; // Reset to first page
+    this.currentPage = 1;// Reset to first page
     this.filterData();
   }
 
@@ -365,7 +364,7 @@ export interface SwiftMessage {
   makeDt: string;
 }
 
-const ELEMENT_DATA: SwiftMessage[] = [
+export const ELEMENT_DATA: SwiftMessage[] = [
   { msgRefNo: 'ENDTO4', status: 'ACK', mtId: 'pacs-009', senderBic: 'UTBLBDDH432', makeBy: 'roney', makeDt: '7/13/2021 3:25:17 PM' },
   { msgRefNo: '43534534', status: 'NACK', mtId: 'pacs-009', senderBic: 'ABBLBDDH010', makeBy: 'asd', makeDt: '7/14/2021 9:30:51 AM' },
   { msgRefNo: '00310901900040', status: 'ACK', mtId: 'pacs-009', senderBic: 'ABBLBDDH011', makeBy: 'roney', makeDt: '4/13/2022 11:37:58 AM' },

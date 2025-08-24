@@ -21,5 +21,9 @@ export const PACS_056: string = PACS + "056";
 export const CURRENCY: string = "currency/";
 export const GET_ALL: string = "get-all";
 
+//Swift External Code
+export const SWIFT_EXTERNAL_CODE: string = "swift-external-code";
+export const GET_SWIFT_EXTERNAL_CODES: string = "get-codes";
+
 
 

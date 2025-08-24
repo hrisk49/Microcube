@@ -12,6 +12,10 @@ export class BranchInfoService extends ApiService<any>{
     super(BRANCH_INFO);
   }
 
+  getBranchList(): Observable<any> {
+    return this.http.get<any>(this.baseUrl + `get-all`,);
+  }
+  
   getBySwiftCodePrefix(swiftCode?: any): Observable<any> {
     return this.http.get<any>(this.baseUrl + `get-by-swift-prefix?swiftCode=${swiftCode}`,);
   }

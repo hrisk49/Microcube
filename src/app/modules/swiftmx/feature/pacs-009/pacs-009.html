@@ -113,12 +113,12 @@
           [controlName]="'cpyDplct'"
         />
 
-        <app-select-option-field
+        <!-- <app-select-option-field
           [frmGroup]="frmGroup"
           [options]="yesNoOptions"
           [label]="'Possible Duplicate'"
           [controlName]="'pssblDplct'"
-        />
+        /> -->
 
         <app-select-option-field
           [frmGroup]="frmGroup"
@@ -437,8 +437,9 @@
         <ng-container formArrayName="serviceLevels">
           @for (group of serviceLevels.controls; track $index) {
           <div [formGroupName]="$index" class="form-grid-col-1 mb-3">
-            <app-text-base-input
+            <app-select-option-field
               [frmGroup]="getServiceLevelGroup($index)"
+              [options]="serviceLevelCodeOptions"
               [label]="'Service Code'"
               [controlName]="'serviceCode'"
             />
