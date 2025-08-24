@@ -25,12 +25,18 @@ export class TextBaseInput {
   readonly placeholder = input<any>();
   readonly onDoubleClick = output<void>();
 
+  //output
+  readonly valueChanged = output<string>();
+  readonly onChanged = output<any>();
+
   isRequired(): boolean {
     const control = this.frmGroup().get(this.controlName());
     if (!control?.validator) return false;
     const validation = control.validator({} as any);
     return !!validation?.['required'];
   }
+
+  
 
 
 }

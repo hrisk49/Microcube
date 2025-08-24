@@ -1,0 +1,41 @@
+<div [formGroup]="frmGroup()" class="input-container">
+  <label class="input-label relative">
+    {{ label() }}
+    @if (isRequired()) {
+      <span class="text-red-500">*</span>
+    }
+  </label>
+  
+  <input [formControlName]="controlName()" 
+         [ngClass]="{'readonly-input': isReadonly() }" 
+         type="number" 
+         (keyup)="onChangeInput()"
+         [readonly]="isReadonly()" 
+         matInput 
+         [placeholder]="placeholder() ?? 'Enter ' + label()" 
+         class="custom-input"
+         step="0.01"
+         min="0"/>
+
+  @if (isInvalid()) {
+    <div class="text-red-500 text-sm mt-1">
+      @if (hasError('required')) {
+        <ng-container>
+          {{ label() }} is required..!
+        </ng-container>
+      }
+
+      @if (hasError('min')) {
+        <ng-container>
+          Minimum amount required is {{ getErrorValue('min') }}
+        </ng-container>
+      }
+
+      @if (hasError('max')) {
+        <ng-container>
+          Maximum amount allowed is {{ getErrorValue('max') }}
+        </ng-container>
+      }
+    </div>
+  }
+</div>
