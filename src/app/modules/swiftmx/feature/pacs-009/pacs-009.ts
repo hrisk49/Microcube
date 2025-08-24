@@ -279,13 +279,13 @@ export class Pacs009 implements OnInit {
 
   private loadSettlementOptions(): void {
     // Assuming typeId 1 is for settlement methods - adjust as needed based on your backend
-    this.lookupService.getListByTypeId(1).subscribe({
+    this.lookupService.getListByTypeId(16).subscribe({
       next: (response: any) => {
         if (response.payload && response.payload.length > 0) {
           // Map the response to SelectOptionsModel format
           this.settlementOptions = response.payload.map((item: any) => ({
-            key: item.codeValue || item.code,
-            value: item.codeName || item.description || item.value
+            key: item.lookName,
+            value: item.lookDescription
           }));
         }
       },
