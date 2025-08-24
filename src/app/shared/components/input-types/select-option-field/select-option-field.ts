@@ -21,6 +21,7 @@ export class SelectOptionField {
   readonly label = input.required<string>();
   readonly isReadonly = input<boolean>();
   options = input<Option[] | null>(null);
+  readonly isLabelVertical = input<boolean>(false);
 
   isRequired(): boolean {
     const control = this.frmGroup().get(this.controlName());

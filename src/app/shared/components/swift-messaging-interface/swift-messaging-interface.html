@@ -16,9 +16,9 @@
       </div>
 
       <!-- Other Fields Row -->
-      <div class="grid grid-cols-4 gap-4 mb-4 justify-center items-center">
+      <div class="grid grid-cols-4 gap-4 mb-4 justify-start items-center">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+          <label class="input-label">From Date</label>
           <div [formGroup]="swiftForm">
             <input
               type="date"
@@ -29,7 +29,7 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+          <label class="input-label">To Date</label>
           <div [formGroup]="swiftForm">
             <input
               type="date"
@@ -40,19 +40,19 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1 ml-3">Branch</label>
           <app-select-option-field
             [frmGroup]="swiftForm"
             controlName="branch"
-            label=""
+            label="Branch"
             [options]="branchOptions"
+            [isLabelVertical]="true"
             (onChange)="onBranchChange($event)"
           >
           </app-select-option-field>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Message Ref. No.</label>
+          <label class="input-label">Message Ref. No.</label>
           <div [formGroup]="swiftForm">
             <input
               type="text"

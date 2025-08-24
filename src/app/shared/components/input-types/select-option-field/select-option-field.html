@@ -1,4 +1,4 @@
-<div [formGroup]="frmGroup()" class="input-container">
+<div [formGroup]="frmGroup()" class="input-container" [ngClass]="{'sm:flex-col gap-0': isLabelVertical(), 'sm:flex-row gap-2 sm:items-center': !isLabelVertical()}">
   <label class="input-label">
     {{ label() }}
     @if (isRequired()) {
