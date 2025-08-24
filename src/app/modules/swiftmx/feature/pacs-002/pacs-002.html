@@ -16,43 +16,41 @@
 
         <div class="sub-panel">
           <app-expansion-sub-panel-header [isOpenSignal]="rltdPanelOpen" [subPanelTitle]="'Related'"/>
-         @if(rltdPanelOpen()){
-           <div class="form-grid-col-1">
+          @if (rltdPanelOpen()) {
+            <div class="form-grid-col-1">
 
-             <app-text-base-input [frmGroup]="frmGroup"
-                                  [label]="'From BIC'"
-                                  [controlName]="'rltdFrBic'"
-                                  />
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'From BIC'"
+                                   [controlName]="'rltdFrBic'"/>
 
-             <app-text-base-input [frmGroup]="frmGroup"
-                                  [label]="'To BIC'"
-                                  [controlName]="'rltdToBic'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'To BIC'"
+                                   [controlName]="'rltdToBic'"/>
 
-             <app-text-base-input [frmGroup]="frmGroup"
-                                  [label]="'Business Message Identifier'"
-                                  [controlName]="'rltdBizMsgIdr'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Business Message Identifier'"
+                                   [controlName]="'rltdBizMsgIdr'"/>
 
-             <app-text-base-input [frmGroup]="frmGroup"
-                                  [label]="'Message Definition Identifier'"
-                                  [controlName]="'rltdMsgDefIdr'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Message Definition Identifier'"
+                                   [controlName]="'rltdMsgDefIdr'"/>
 
-             <app-text-base-input [frmGroup]="frmGroup"
-                                  [label]="'Business Service'"
-                                  [controlName]="'rltdBizSvc'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Business Service'"
+                                   [controlName]="'rltdBizSvc'"/>
 
-             <app-select-option-field [frmGroup]="frmGroup"
-                                      [options]="duplicateOptions"
-                                      [label]="'Copy Duplicate'"
-                                      [controlName]="'rltdCpyDplct'"/>
+              <app-select-option-field [frmGroup]="frmGroup"
+                                       [options]="duplicateOptions"
+                                       [label]="'Copy Duplicate'"
+                                       [controlName]="'rltdCpyDplct'"/>
 
-             <app-select-option-field [frmGroup]="frmGroup"
-                                      [options]="priorityOptions"
-                                      [label]="'Priority'"
-                                      [controlName]="'rltdPrty'"/>
+              <app-select-option-field [frmGroup]="frmGroup"
+                                       [options]="priorityOptions"
+                                       [label]="'Priority'"
+                                       [controlName]="'rltdPrty'"/>
 
-           </div>
-         }
-
+            </div>
+          }
         </div>
       </div>
 
@@ -125,7 +123,6 @@
                                      [controlName]="'txSts'"/>
 
 
-
               </div>
             }
 
@@ -138,8 +135,8 @@
                                        [controlName]="'orgtrNm'"/>
                   <!--                    Originator-->
                   <div class="sub-panel">
-                    <app-expansion-sub-panel-header [isOpenSignal]="adrsInfo" [subPanelTitle]="'Postal Address'" />
-                    @if(adrsInfo()){
+                    <app-expansion-sub-panel-header [isOpenSignal]="adrsInfo" [subPanelTitle]="'Postal Address'"/>
+                    @if (adrsInfo()) {
                       <div class="form-grid-col-1">
                         <app-select-option-field [frmGroup]="frmGroup"
                                                  [options]="TypeOptions"
@@ -209,7 +206,8 @@
                   <!--                 Identification / Organization identification -->
 
                   <div class="sub-panel">
-                    <app-expansion-sub-panel-header [isOpenSignal]="orgId" [subPanelTitle]="'Orgnization Identification'"/>
+                    <app-expansion-sub-panel-header [isOpenSignal]="orgId"
+                                                    [subPanelTitle]="'Orgnization Identification'"/>
                     <div class="form-grid-col-1">
                       <app-text-base-input [frmGroup]="frmGroup"
                                            [label]="'Organization Identification BIC'"
@@ -220,7 +218,8 @@
                                            [controlName]="'orgIdLei'"/>
 
                       <div class="sub-panel">
-                        <app-expansion-sub-panel-header [isOpenSignal]="orgOthr" [subPanelTitle]="'Orgnization Other Information'"></app-expansion-sub-panel-header>
+                        <app-expansion-sub-panel-header [isOpenSignal]="orgOthr"
+                                                        [subPanelTitle]="'Orgnization Other Information'"></app-expansion-sub-panel-header>
                         <div class="form-grid-col-1">
 
                           <app-text-base-input [frmGroup]="frmGroup"
@@ -243,10 +242,12 @@
                   </div>
 
                   <div class="sub-panel">
-                    <app-expansion-sub-panel-header [isOpenSignal]="orgPrvtId" [subPanelTitle]="'Private Identification' "/>
+                    <app-expansion-sub-panel-header [isOpenSignal]="orgPrvtId"
+                                                    [subPanelTitle]="'Private Identification' "/>
 
                     <div class="sub-panel">
-                      <app-expansion-sub-panel-header [isOpenSignal]="dtAndPlcOfBirth" [subPanelTitle]="'Date And Place Of Birth'"/>
+                      <app-expansion-sub-panel-header [isOpenSignal]="dtAndPlcOfBirth"
+                                                      [subPanelTitle]="'Date And Place Of Birth'"/>
                       <div class="form-grid-col-1">
                         <app-date-input [frmGroup]="frmGroup"
                                         [label]="'Birth Date'"
@@ -270,7 +271,8 @@
                       </div>
                     </div>
                     <div class="sub-panel">
-                      <app-expansion-sub-panel-header [isOpenSignal]="orgOthrPrvtId" [subPanelTitle]="'Private Other Information'"/>
+                      <app-expansion-sub-panel-header [isOpenSignal]="orgOthrPrvtId"
+                                                      [subPanelTitle]="'Private Other Information'"/>
                       <div class="form-grid-col-1">
 
                         <app-text-base-input [frmGroup]="frmGroup"
@@ -300,59 +302,65 @@
                                        [controlName]="'ctryOfRes'"/>
 
                   <div class="sub-panel">
-                    <app-expansion-sub-panel-header [isOpenSignal]="ctctDtls" [subPanelTitle]="'Contact Details'"></app-expansion-sub-panel-header>
-                    <div class="form-grid-col-1">
-                      <app-select-option-field [frmGroup]="frmGroup"
-                                               [options]="NamePrefixOptions"
-                                               [label]="'Name Prefix'"
-                                               [controlName]="'ctDtlsNmPrfx'"/>
-                      <app-text-base-input [frmGroup]="frmGroup"
-                                           [label]="'Details Name'"
-                                           [controlName]="'ctDtlsNm'"/>
-                      <app-text-base-input [frmGroup]="frmGroup"
-                                           [label]="'Phone Number'"
-                                           [controlName]="'ctDtlsPhneNb'"/>
+                    <app-expansion-sub-panel-header [isOpenSignal]="ctctDtls"
+                                                    [subPanelTitle]="'Contact Details'"></app-expansion-sub-panel-header>
+                    @if(ctctDtls()){
+                      <div class="form-grid-col-1">
+                        <app-select-option-field [frmGroup]="frmGroup"
+                                                 [options]="NamePrefixOptions"
+                                                 [label]="'Name Prefix'"
+                                                 [controlName]="'ctDtlsNmPrfx'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Details Name'"
+                                             [controlName]="'ctDtlsNm'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Phone Number'"
+                                             [controlName]="'ctDtlsPhneNb'"/>
 
-                      <app-text-base-input [frmGroup]="frmGroup"
-                                           [label]="'Mobile Number'"
-                                           [controlName]="'ctDtlsMobNb'"/>
-                      <app-text-base-input [frmGroup]="frmGroup"
-                                           [label]="'Fax Number'"
-                                           [controlName]="'ctDtlsFaxNb'"/>
-                      <app-text-base-input [frmGroup]="frmGroup"
-                                           [label]="'Email Address'"
-                                           [controlName]="'ctDtlsEmailAdr'"/>
-                      <app-text-base-input [frmGroup]="frmGroup"
-                                           [label]="'Email Purpose'"
-                                           [controlName]="'ctDtlsEmailPurp'"/>
-                      <app-text-base-input [frmGroup]="frmGroup"
-                                           [label]="'Job Title Details'"
-                                           [controlName]="'ctDtlsJobTitlctctDtls'"/>
-                      <app-text-base-input [frmGroup]="frmGroup"
-                                           [label]="'Responsibility'"
-                                           [controlName]="'ctDtlsRspnsblty'"/>
-                      <app-text-base-input [frmGroup]="frmGroup"
-                                           [label]="'Department'"
-                                           [controlName]="'ctDtlsDept'"/>
-                      <app-text-base-input [frmGroup]="frmGroup"
-                                           [label]="'Sub Department'"
-                                           [controlName]="'ctDtlsSubDept'"/>
-                    </div>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Mobile Number'"
+                                             [controlName]="'ctDtlsMobNb'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Fax Number'"
+                                             [controlName]="'ctDtlsFaxNb'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Email Address'"
+                                             [controlName]="'ctDtlsEmailAdr'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Email Purpose'"
+                                             [controlName]="'ctDtlsEmailPurp'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Job Title Details'"
+                                             [controlName]="'ctDtlsJobTitlctctDtls'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Responsibility'"
+                                             [controlName]="'ctDtlsRspnsblty'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Department'"
+                                             [controlName]="'ctDtlsDept'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Sub Department'"
+                                             [controlName]="'ctDtlsSubDept'"/>
+                      </div>
+                    }
 
                     <div class="sub-panel">
-                      <app-expansion-sub-panel-header [isOpenSignal]="ctDtlsOthr" [subPanelTitle]="'Contact Details Other Information'"/>
+                      <app-expansion-sub-panel-header [isOpenSignal]="ctDtlsOthr"
+                                                      [subPanelTitle]="'Contact Details Other Information'"/>
 
-                      <div class="form-grid-col-1">
-                        <app-text-base-input [frmGroup]="frmGroup"
-                                             [label]="'Contact Details Other Channel Type'"
-                                             [controlName]="'ctDtlsothrChanlTp'"/>
+                      @if(ctDtlsOthr()) {
+                        <div class="form-grid-col-1">
+                          <app-text-base-input [frmGroup]="frmGroup"
+                                               [label]="'Contact Details Other Channel Type'"
+                                               [controlName]="'ctDtlsothrChanlTp'"/>
 
-                        <app-text-base-input [frmGroup]="frmGroup"
-                                             [label]="'Contact Details Other Identification'"
-                                             [controlName]="'ctDtlsothrChanlId'"/>
+                          <app-text-base-input [frmGroup]="frmGroup"
+                                               [label]="'Contact Details Other Identification'"
+                                               [controlName]="'ctDtlsothrChanlId'"/>
 
 
-                      </div>
+                        </div>
+                      }
                     </div>
 
                     <app-select-option-field [frmGroup]="frmGroup"
@@ -378,57 +386,123 @@
             </div>
 
             <div class="sub-panel">
-              <app-expansion-sub-panel-header [isOpenSignal]="efftvIntrBankStllmnt" [subPanelTitle]="'Effective inter bank settlement'"/>
-              <app-date-input [frmGroup]="frmGroup"
-                              [label]="'Effective Settlement Date'"
-                              [controlName]="'fctvIntrBkSttlmDt'"/>
+              <app-expansion-sub-panel-header [isOpenSignal]="efftvIntrBankStllmnt"
+                                              [subPanelTitle]="'Effective inter bank settlement'"/>
+              @if (efftvIntrBankStllmnt()) {
+                <div class="form-grid-col-1">
+                  <app-date-input [frmGroup]="frmGroup"
+                                  [label]="'Effective Settlement Date'"
+                                  [controlName]="'fctvIntrBkSttlmDt'"/>
+                </div>
+              }
             </div>
 
             <div class="sub-panel">
               <app-expansion-sub-panel-header [isOpenSignal]="clrSysRef" [subPanelTitle]="'Clearing System Reference'"/>
-              <app-text-base-input [frmGroup]="frmGroup"
-                                   [label]="' Clearing System Reference'"
-                                   [controlName]="'clrSysRef'"/>
+              @if (clrSysRef()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="' Clearing System Reference'"
+                                       [controlName]="'clrSysRef'"/>
+                </div>
+              }
             </div>
 
             <!--        //  Number of transaction per status-->
 
             <div class="sub-panel">
-              <app-expansion-sub-panel-header [isOpenSignal]="nbOfTxsPerSts" [subPanelTitle]="'Number of transaction per status'"/>
-              <div class="form-grid-col-1">
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Detailed Number of transaction'"
-                                     [controlName]="'dtldNbOfTxs'"/>
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Detailed Status'"
-                                     [controlName]="'dtldSts'"/>
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Detailed Control Sum'"
-                                     [controlName]="'dtldCtrlSum'"
-                                      type="number"/>
+              <app-expansion-sub-panel-header [isOpenSignal]="nbOfTxsPerSts"
+                                              [subPanelTitle]="'Number of transaction per status'"/>
+              @if(nbOfTxsPerSts()){
+                <div class="form-grid-col-1">
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Detailed Number of transaction'"
+                                       [controlName]="'dtldNbOfTxs'"/>
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Detailed Status'"
+                                       [controlName]="'dtldSts'"/>
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Detailed Control Sum'"
+                                       [controlName]="'dtldCtrlSum'"
+                                       type="number"/>
 
-              </div>
+                </div>
+              }
             </div>
 
             <div class="sub-panel">
               <app-expansion-sub-panel-header [isOpenSignal]="clrSysRef" [subPanelTitle]="'Clearing System Reference'"/>
-              <app-text-base-input [frmGroup]="frmGroup"
-                                   [label]="' Clearing System Reference'"
-                                   [controlName]="'clrSysRef'"/>
+              <div class="form-grid-col-1">
+                @if (clrSysRef()) {
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="' Clearing System Reference'"
+                                       [controlName]="'clrSysRef'"/>
+                }
+              </div>
             </div>
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="instgAgntBicfiOpn"
+                                              [subPanelTitle]="'Instructing Agent Bic'"/>
+              @if (instgAgntBicfiOpn()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Instructed Agent BICFI'"
+                                       [controlName]="'instdAgtBicfi'"/>
 
-            <div class="sub-panel">
-              <app-expansion-sub-panel-header [isOpenSignal]="instgAgntBicfi" [subPanelTitle]="'Instructing Agent Bic'"/>
-              <app-text-base-input [frmGroup]="frmGroup"
-                                   [label]="'Instructing Agent Bic'"
-                                   [controlName]="'instgAgtBicfi'"
-                                   (onDoubleClick)="onPickclick()"/>
+
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="instgAgntClrMmbId"
+                                                    [subPanelTitle]="'Instructing Clearing System'"/>
+                    @if (instgAgntClrMmbId()) {
+                      <div class="form-grid-col-1">
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'System Clearing Identification'"
+                                             [controlName]="'instgAgtClrClrSysId'"/>
+
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Clearing Member Identification'"
+                                             [controlName]="'instgAgtClrMmbId'"/>
+                      </div>
+                    }
+                  </div>
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'LEI'"
+                    [controlName]="'instgAgtLei'"/>
+                </div>
+              }
             </div>
             <div class="sub-panel">
-              <app-expansion-sub-panel-header [isOpenSignal]="instdAgntBicfi" [subPanelTitle]="'Instructed Agent Bic'"/>
-              <app-text-base-input [frmGroup]="frmGroup"
-                                   [label]="'Instructed Agent Bic'"
-                                   [controlName]="'instdAgtBicfi'"/>
+              <app-expansion-sub-panel-header [isOpenSignal]="instdAgntBicfiOpn"
+                                              [subPanelTitle]="'Instructed Agent Bic'"/>
+              @if (instdAgntBicfiOpn()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Instructed Agent BICFI'"
+                                       [controlName]="'instdAgtBicfi'"/>
+
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="instdAgntClrMmbId"
+                                                    [subPanelTitle]="'Instructed Clearing System'"/>
+                    @if (instdAgntClrMmbId()) {
+                      <div class="form-grid-col-1">
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'System Clearing Identification'"
+                                             [controlName]="'instdAgtClrClrSysId'"/>
+
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Clearing Member Id'"
+                                             [controlName]="'instdAgtClrMmbId'"/>
+                      </div>
+                    }
+
+                  </div>
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'LEI'"
+                    [controlName]="'instdAgtLei'"/>
+                </div>
+              }
             </div>
           </div>
         }

@@ -24,6 +24,7 @@ import {
   ExpansionSubPanelHeader
 } from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
 import {Mx002Model} from '../../model/mx002.model';
+import {PartyModel} from '../../model/party.model';
 
 @Component({
   selector: 'app-pacs-002',
@@ -55,6 +56,7 @@ export class Pacs002 implements OnInit {
   pickTablePair = signal<Map<string, string>>(new Map());
   pickTableDataSource = signal<any[]>([]);
 
+  // Expansion Panel Headers
   businessAppHeader: WritableSignal<boolean> = signal(true);
   rltdPanelOpen: WritableSignal<boolean> = signal(true);
   fiToFiPaymntSts : WritableSignal<boolean> = signal(true);
@@ -71,38 +73,12 @@ export class Pacs002 implements OnInit {
   orgOthrPrvtId : WritableSignal<boolean> = signal(true);
   efftvIntrBankStllmnt : WritableSignal<boolean> = signal(true);
   clrSysRef : WritableSignal<boolean> = signal(true);
-  instgAgntBicfi : WritableSignal<boolean> = signal(true);
-  instdAgntBicfi : WritableSignal<boolean> = signal(true);
+  instgAgntBicfiOpn : WritableSignal<boolean> = signal(true);
+  instdAgntBicfiOpn : WritableSignal<boolean> = signal(true);
   nbOfTxsPerSts : WritableSignal<boolean> = signal(true);
+  instgAgntClrMmbId : WritableSignal<boolean> = signal(true);
+  instdAgntClrMmbId : WritableSignal<boolean> = signal(true);
 
-  onPickclick(): void {
-    this.isPickTableDialogOpen.set(true);
-    this.pickTableDataSource.set([]);
-    this.pickTablePair.set(new Map());
-
-    this.branchInfoService.getBySwiftCodePrefix('MTBLBDDH').subscribe({
-      next: data => {
-        if (data.status) {
-          this.pickTablePair.set(new Map([
-            ['branchId', 'Branch Id'],
-            ['branchName', 'Branch Name'],
-            ['swift', 'Swift']
-          ]));
-          this.pickTableDataSource.set(data?.payload);
-        }
-
-      }, error: err => {
-        console.error('Error:', err);
-      }
-    });
-  }
-
-  closeDialog(data: any) {
-    this.isPickTableDialogOpen.set(false);
-    if (data) {
-      this.frmGroup.get('toBic')?.setValue(data?.swift);
-    }
-  }
 
 
   priorityOptions: SelectOptionsModel[] = [
@@ -199,8 +175,7 @@ export class Pacs002 implements OnInit {
       bizMsgIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
       msgDefIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
       bizSvc: ['',[Validators.required, Validators.minLength(6),Validators.maxLength(35),Validators.pattern(/^[a-z0-9]{1,10}(\.[a-z0-9]{1,10})+\.\d\d$/)]],
-      CreDt: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
-
+      creDt: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
       cpyDplct: [null],
       psblDplct: [null],
       prty: ['high'],
@@ -224,10 +199,8 @@ export class Pacs002 implements OnInit {
       orgnlMsgId:['', [Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
       orgnlMsgNmId:['', [Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
       orgnlCreDtTm: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
-
       orgnlNbOfTxs:['',[Validators.pattern(/^[0-9]{1,15}$/)]],
       orgnlCtrlSum :[Validators.pattern(/^d\d{1,17}\.\{1,18}?$/)],
-
       orgnlInstrId: ['',[Validators.minLength(1),Validators.maxLength(16)]],
       orgnlEndToEndId: ['',[Validators.required,Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+$/)]],
       orgnlTxId: ['', [Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]],
@@ -278,8 +251,6 @@ export class Pacs002 implements OnInit {
       dtldNbOfTxs:['',Validators.required],
       dtldSts : ['',Validators.required],
       dtldCtrlSum: [],
-
-
       orgIdBic:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
       orgIdLei:['',Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)],
       orgScmNm:['Cd'],
@@ -288,7 +259,6 @@ export class Pacs002 implements OnInit {
       orgIdOthrIssr:[''],
       orgIdOthrCd:['',[Validators.maxLength(4)]], // added
       orgIdOthrIssrPtry:['',[Validators.maxLength(35)]], // added
-
       birthDt:['',Validators.required],
       prvcOfBirth:['',[Validators.maxLength(35)]],
       cityOfBirth:['',[Validators.maxLength(35)]],
@@ -306,17 +276,21 @@ export class Pacs002 implements OnInit {
       rsnPrtry :['',[Validators.required,Validators.maxLength(35)]],
       addtlInf1:['',[Validators.maxLength(105),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]],
       addtlInf2:['',[Validators.maxLength(105),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]],
-
       fctvIntrBkSttlmDt :[],
       clrSysRef: ['',[Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+$/)]],
-      instgAgtBicfi: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
 
-      // Agent Information
+
+      // Instructing Agent Information
+      instgAgtBicfi: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
+      instgAgtClrClrSysId:['',Validators.required],
+      instgAgtClrMmbId:['',[Validators.required,Validators.maxLength(28),Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+?$/)]],
+      instgAgtLei:['',[Validators.pattern(/^[A-Z0-9]{18,18}[0-9]{2,2}/)]],
+
+      // Instructing Agent Information
       instdAgtBicfi:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
-      clrSysIdCd:[''],
-      mmbId:[''],
-      lei:[''],
-      agentNm:[''],
+      instdAgtClrClrSysId:['',Validators.required],
+      instdAgtClrMmbId:['',[Validators.required,Validators.maxLength(28),Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+?$/)]],
+      instdAgtLei:['',[Validators.pattern(/^[A-Z0-9]{18,18}[0-9]{2,2}/)]],
       adrLine1:[''],
       adrLine2:[''],
       adrLine3:[''],
@@ -357,7 +331,84 @@ export class Pacs002 implements OnInit {
    let payload : any = {};
    let frmValue = this.frmGroup.value;
 
+    payload.charSet = frmValue.charSet;
 
+
+// Business Message Header
+
+    payload.bizMsgIdr = frmValue.bizMsgIdr;
+    payload.msgDefIdr = frmValue.msgDefIdr;
+    payload.fromBicfi = frmValue.fromBicfi;
+    payload.toBicfi = frmValue.toBicfi;
+    payload.bizSvc = frmValue.bizSvc;
+    payload.creDt = frmValue.creDt;
+    payload.cpyDplct = frmValue.cpyDplct;
+    payload.psblDplct = frmValue.psblDplct;
+    payload.priority = frmValue.prty;
+    payload.msgId = frmValue.msgId;
+
+    // Business Application Header -> related
+    //tobic
+    //frmBic
+     payload.rltd ={
+       bizMsgIdr : frmValue.rltdBizMsgIdr,
+       msgDefIdr: frmValue.rltdMsgDefIdr,
+       bizSvc: frmValue.rltdBizSvc,
+       //cpyDplct: frmValue.rltdCpyDplct,
+
+       cpyDplct : (()=>{
+         switch (frmValue.rltdCpyDplct) {
+           case 'codu':
+             return 'CODU';
+           case 'copy':
+             return 'COPY';
+           case 'dupl':
+             return 'DUPL';
+           default:
+             return 'CODU';
+         }
+       }),
+
+       prty: (()=>{
+         switch (frmValue.rltdPrty) {
+           case 'high':
+             return 'HIGH';
+           case 'low':
+             return 'LOW';
+           case 'normal':
+             return 'NORM';
+           case 'urgent':
+             return 'URGENT';
+           default:
+             return 'high';
+         }
+       })
+     }
+
+     payload.orgtr ={
+       nm: frmValue.orgtrNm,
+        addrTp: frmValue.addrTp,
+        dept: frmValue.dept,
+        subDept: frmValue.subDept,
+       strtNm: frmValue.strtNm,
+        bldgNb: frmValue.bldgNb,
+        bldgNm: frmValue.bldgNm,
+        flr: frmValue.flr,
+        pstBx: frmValue.pstBx,
+        room: frmValue.room,
+        pstCd: frmValue.pstCd,
+        twnNm: frmValue.twnNm,
+        twnLctnNm: frmValue.twnLctnNm,
+        dstrctNm: frmValue.dstrctNm,
+        ctrySubDvsn: frmValue.ctrySubDvsn,
+        ctry: frmValue.ctry,
+        adrLine: frmValue.adrLine,
+        ctryOfRes: frmValue.ctryOfRes
+     }
+
+     //payload.rsnCd = frmValue.rsnCd;
+
+    //
 
    return  payload as Mx002Model;
   }
