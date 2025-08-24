@@ -39,7 +39,7 @@ export class FileComponent {
 	readonly onFileChanged = output<any>();
 
 	// Internal state
-	selectedFiles = signal<File[]>([]);
+	public selectedFiles = signal<File[]>([]);
 	isDragOver = signal<boolean>(false);
 	fileNamesDisplay = computed(() => {
 		const files = this.selectedFiles();
