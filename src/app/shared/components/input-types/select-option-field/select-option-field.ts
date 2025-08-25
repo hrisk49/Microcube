@@ -24,6 +24,7 @@ export class SelectOptionField {
   readonly label = input.required<string>();
   readonly isReadonly = input<boolean>();
   readonly options = input<Option[] | null>(null);
+  readonly isVertical = input<boolean>(false);
 
   // Component state
   searchTerm = signal('');

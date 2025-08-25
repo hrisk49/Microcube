@@ -1,4 +1,4 @@
-<div [formGroup]="frmGroup()" class="input-container">
+<div [formGroup]="frmGroup()" class="input-container-horizontal">
   <label class="input-label">
     {{ labelText() }}
     @if (isRequired()) {
@@ -23,7 +23,7 @@
     </span>
   </div>
 
-  @if (frmGroup().get(controlName())?.errors && 
+  @if (frmGroup().get(controlName())?.errors &&
       (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
 
     <div class="text-red-500 text-sm mt-1">
