@@ -10,7 +10,7 @@ import { AppDateFormatsConstant } from '../../../constant/app-date-formats.const
 export type DateFormat = 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'YYYY/MM/DD' | 'DD-MM-YYYY' | 'MM-DD-YYYY' | 'YYYY-MM-DD';
 
 @Component({
-  selector: 'app-date-input',
+  selector: 'lds-date-input',
   imports: [
     FormsModule,
     MatDatepicker,
@@ -36,6 +36,7 @@ export class DateInputComponent {
   readonly label = input.required<string>();
   readonly isReadonly = input<boolean>(false);
   readonly dateFormat = input<DateFormat>('DD/MM/YYYY');
+  readonly isVertical = input<boolean>(false);
 
   private dateAdapter = inject(DateAdapter) as CustomDateAdapter;
 
