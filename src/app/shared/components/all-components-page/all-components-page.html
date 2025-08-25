@@ -22,6 +22,7 @@
         [isReadonly]="false"
         [minLength]="3"
         [maxLength]="20"
+        
          (onDoubleClick)="openFromBicSelectionModal()"
       ></app-text-base-input>
     </div>
@@ -77,12 +78,13 @@
 
     <!-- Date Input -->
     <div class="component-section">
-      <app-date-input
+      <lds-date-input
         [frmGroup]="frmGroup"
         [controlName]="'date'"
         [label]="'Date Input'"
+        [isVertical]="true"
         dateFormat="YYYY/MM/DD"
-      ></app-date-input>
+      ></lds-date-input>
     </div>
  
 

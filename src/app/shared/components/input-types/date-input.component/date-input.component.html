@@ -1,4 +1,4 @@
-<div [formGroup]="frmGroup()" class="input-container-horizontal">
+<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'">
   <label class="input-label">
     {{ label() }}
     @if (isRequired()) {

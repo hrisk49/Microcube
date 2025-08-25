@@ -26,7 +26,7 @@ export class TextBaseInput {
   readonly minLength = input<number>(); 
   readonly maxLength = input<number>(); 
   readonly onDoubleClick = output<void>(); 
- 
+  readonly isVertical = input<boolean>(false);
   //output 
   readonly valueChanged = output<string>(); 
   readonly onChanged = output<any>(); 
