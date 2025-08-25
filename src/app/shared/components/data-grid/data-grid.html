@@ -42,7 +42,7 @@
       
     >
       <!-- Selection Column -->
-      <ng-container matColumnDef="selection" *ngIf="enableSelection()">
+      <ng-container sticky matColumnDef="selection" *ngIf="enableSelection()">
         <th mat-header-cell *matHeaderCellDef>
           <mat-checkbox
             [checked]="isAllSelected()"
@@ -64,7 +64,7 @@
 
 
             <!-- Actions Column -->
-      <ng-container matColumnDef="actions" *ngIf="showEditButton() || showDeleteButton() || showViewButton() || showPrintButton()">
+      <ng-container sticky matColumnDef="actions" *ngIf="showEditButton() || showDeleteButton() || showViewButton() || showPrintButton()">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let element; let i = index">
           <div class="action-buttons " >
