@@ -4,7 +4,7 @@ import { SwiftMessage } from '../prime-table-out/prime-table-out';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ELEMENT_DATA } from '../prime-table-out/prime-table-out';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -20,6 +20,8 @@ import { SelectOptionField } from '../input-types/select-option-field/select-opt
 import { BranchInfoService } from '../../services/branch-info.service';
 import { MessageTypeService } from '../../services/message-type.service';
 import { SwiftMessageService, SwiftMessageRequest, CBSData } from '../../services/swift-message.service';
+import { TextBaseInput } from '../input-types/text-base-input/text-base-input';
+import { DateInput } from '../input-types/date-input/date-input';
 
 @Component({
   selector: 'app-swift-messaging-interface',
@@ -38,6 +40,8 @@ import { SwiftMessageService, SwiftMessageRequest, CBSData } from '../../service
     Button,
     SelectOptionField,
     FormsModule,
+    DateInput,
+    TextBaseInput,
     ReactiveFormsModule,
     RouterModule],
   templateUrl: './swift-messaging-interface.html',
@@ -141,8 +145,8 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
   private initializeForm() {
     this.swiftForm = this.fb.group({
       messageType: [null],
-      fromDate: [null as string | null],
-      toDate: [null as string | null],
+      fromDate: ['', [Validators.required]], // Add required validator if needed
+      toDate: ['', [Validators.required]],   // Add required validator if needed
       branch: [null],
       messageRefNo: ['']
     });
@@ -638,7 +642,7 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
    */
   private buildSearchRequest(): SwiftMessageRequest {
     const formValue = this.swiftForm.value;
-
+    console.log('Building search request from form value:', formValue);
     return {
       branchId: formValue.branch || '',
       msgType: this.getMessageTypeNumber(formValue.messageType),
@@ -664,25 +668,6 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
       return `${day}${month}${year}`;
     } catch (error) {
       console.error('Error formatting date:', error);
-      return dateString; // Return original if formatting fails
-    }
-  }
-
-  /**
-   * Format backend date string for display (e.g., "2022-08-28T15:45:08.000+00:00" -> "Aug 28, 2022")
-   */
-  private formatDateForDisplay(dateString: string): string {
-    if (!dateString) return '';
-
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    } catch (error) {
-      console.error('Error formatting display date:', error);
       return dateString; // Return original if formatting fails
     }
   }
