@@ -1,0 +1,219 @@
+<div class="page-wrapper">
+    @if(frmGroup) {
+     
+
+
+    <form [formGroup]="frmGroup">
+        <div class="panel">
+ 
+    <div class="transaction-grid-container mb-10 ">
+     <app-expansion-panel-header
+        [isOpenSignal]="businessHeaderPanel"
+        [panelTitle]="'All components'"
+      />
+    <div class="form-grid-col-1">
+
+         <!-- Text Box -->
+    <div class="component-section">
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [controlName]="'textBox'"
+        [label]="'Text Box'"
+        [isReadonly]="false"
+        [minLength]="3"
+        [maxLength]="20"
+         (onDoubleClick)="openFromBicSelectionModal()"
+      ></app-text-base-input>
+    </div>
+
+
+
+
+
+    <!-- ID Box -->
+    <div class="component-section">
+      <lds-id-box
+        [frmGroup]="frmGroup"
+        [controlName]="'id'"
+        [label]="'ID Box'"
+        [minLength]="5"
+        [maxLength]="10"
+      ></lds-id-box>
+    </div>
+
+    <!-- Amount Input -->
+    <div class="component-section">
+      <lds-amount
+        [frmGroup]="frmGroup"
+        [controlName]="'amount'"
+        [label]="'Amount Input'"
+        [decimalPlaces]="3"
+        [minAmt]="1"  
+        [allowLeadingZeros]="false"  
+        [maxAmt]="1000"
+      ></lds-amount>
+    </div>
+
+
+
+    <!-- Amount to Word -->
+    <div class="component-section">
+      <app-amount-to-word-input
+        [frmGroup]="frmGroup"
+        [controlName]="'amountToWord'"
+        [label]="'Amount to Word'"
+      ></app-amount-to-word-input>
+    </div>
+
+    <!-- Dropdown -->
+    <div class="component-section">
+      <app-select-option-field
+        [frmGroup]="frmGroup"
+        [controlName]="'dropdown'"
+        [label]="'Dropdown'"
+        [options]="dropdownOptions"
+      ></app-select-option-field>
+    </div>
+
+    <!-- Date Input -->
+    <div class="component-section">
+      <app-date-input
+        [frmGroup]="frmGroup"
+        [controlName]="'date'"
+        [label]="'Date Input'"
+        dateFormat="YYYY/MM/DD"
+      ></app-date-input>
+    </div>
+ 
+
+    <!-- Number Input -->
+    <div class="component-section">
+      <app-text-base-input
+        [frmGroup]="frmGroup"
+        [controlName]="'number'"
+        [label]="'Number Input'"
+        [type]="'number'"
+      ></app-text-base-input>
+    </div>
+
+    <!-- Office Box -->
+    <div class="component-section">
+      <lds-office-box
+        [frmGroup]="frmGroup"
+        controlName="officeCode"
+        labelText="Office Code"
+        placeholder="Enter Office Code"
+        [enable]="true"
+        [visible]="true"
+      ></lds-office-box>
+    </div>
+
+    <!-- File Upload -->
+  <lds-file
+  #pdfFileInput
+  [id]="'pdf-upload'"
+  [multipleFile]="false"
+  [fileExtension]="'.pdf'"
+  [labelText]="'Upload PDF Document'"
+  [cssClass]="'border-blue-300 bg-blue-50'"
+  [savePath]="'documents/pdfs'"
+  [customFileName]="'important-document'"
+  (selectedFilesChanged)="onPdfSelected($event)"
+  (onFileChanged)="onFileInputChanged('PDF')"
+/>
+
+        <lds-file
+          [id]="'image-upload'"
+          [multipleFile]="true"
+          [fileExtension]="'.jpg,.jpeg,.png,.webp,.gif'"
+          [labelText]="'Upload Images'"
+          [cssClass]="'border-green-300 bg-green-50'"
+          [savePath]="'images/gallery'"
+          (selectedFilesChanged)="onImagesSelected($event)"
+          (onFileChanged)="onFileInputChanged('Images')"
+        />
+
+
+         <lds-file
+          [multipleFile]="true"
+          [fileExtension]="'.pdf,.doc,.docx,.txt,.xls,.xlsx'"
+          [labelText]="'Upload Documents'"
+          [cssClass]="'border-purple-300 bg-purple-50 hover:border-purple-400'"
+          [style]="''"
+          [savePath]="'documents/uploads'"
+          (selectedFilesChanged)="onDocumentsSelected($event)"
+        />
+
+
+        <lds-file
+          [multipleFile]="true"
+          [fileExtension]="'*/*'"
+          [labelText]="'Upload Any Files'"
+          [visible]="showAnyFileUpload"
+          [cssClass]="'border-gray-400'"
+          (selectedFilesChanged)="onAnyFilesSelected($event)"
+        />
+
+    <!-- Switch -->
+    <div class="component-section">
+      <lds-switch
+        [frmGroup]="frmGroup"
+        [controlName]="'switch'"
+        [labelText]="'Switch'"
+      ></lds-switch>
+    </div>
+
+        <!-- Text Area -->
+    <div class="component-section w-1/2">
+      <lds-txt-area
+        [frmGroup]="frmGroup"
+        [controlName]="'textArea'"
+        [labelText]="'Text Area'"
+        [rows]="3"
+        [minRows]="2"
+        [maxRows]="10"
+        [maxCols]="80"
+        [maxLen]="500"
+        [placeholder]="'Enter product description...'"
+        [showRowCount]="true"
+        [autoResize]="true"
+      ></lds-txt-area>
+
+
+    </div>
+
+    <!-- Data Grid -->
+    <div class="component-section">
+        <lds-data-grid
+          [id]="'pacs008-transactions'"
+          [dataSource]="sampleTransactions()"
+          [initPageSize]="5"
+          [enableSelection]="true"
+          [showEditButton]="true"
+          [showDeleteButton]="true"
+          [showViewButton]="true"
+          [showPrintButton]="true"
+          [customColumnNames]="transactionColumnNames()"
+          [editableColumns]="['amount', 'status']"
+          [numberColumns]="['amount']"
+          [rowDesignerList]="transactionRowDesigners()"
+          [tblClass]="'pacs008-table'"
+          (onFHEditClick)="onTransactionEdit($event)"
+          (onFHDeleteClick)="onTransactionDelete($event)"
+          (onFHViewClick)="onTransactionView($event)"
+          (onPrint)="onTransactionPrint($event)"
+          (onChecked)="onTransactionRowSelect($event)"
+          (onSelectAllChange)="onTransactionSelectAll($event)"
+          (dataSourceChanged)="onTransactionDataChanged($event)"
+        >
+        </lds-data-grid>
+        
+    </div>
+    </div>
+            </div>
+        </div>
+  
+  </form>
+
+    }
+</div>

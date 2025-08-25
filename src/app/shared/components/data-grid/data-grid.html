@@ -15,7 +15,7 @@
       </mat-form-field>
     </div> -->
     
-    <div class="pagination-controls">
+    <!-- <div class="pagination-controls">
       <mat-form-field  class="page-size-selector">
         <mat-label>Page Size</mat-label>
         <mat-select 
@@ -29,7 +29,7 @@
           <mat-option [value]="100">100</mat-option>
         </mat-select>
       </mat-form-field>
-    </div>
+    </div> -->
   </div>
 
   <!-- Data Table -->
@@ -62,69 +62,12 @@
         </td>
       </ng-container>
 
-      <!-- Data Columns -->
-      <ng-container 
-        *ngFor="let column of columns()" 
-        [matColumnDef]="column.property"
-      >
-<th 
-    mat-header-cell 
-    *matHeaderCellDef 
-    [class.sortable]="column.sortable"
-    (click)="column.sortable ? onSort(column.property) : null"
-    [style.width]="column.width"
-  >
-          <div class="header-content">
-            <span>{{ column.header }}</span>
-            <mat-icon 
-              *ngIf="column.sortable" 
-              class="sort-icon"
-              [class.sorted]="_sortColumn() === column.property"
-              [class.asc]="_sortColumn() === column.property && _sortDirection() === 'asc'"
-              [class.desc]="_sortColumn() === column.property && _sortDirection() === 'desc'"
-            >
-              {{ _sortColumn() === column.property && _sortDirection() === 'desc' ? 'arrow_downward' : 'arrow_upward' }}
-            </mat-icon>
-          </div>
-        </th>
-        <td 
-          mat-cell 
-          *matCellDef="let element; let i = index"
-          [ngStyle]="getRowStyle(element)"
-          [style.width]="column.width"
-        >
-          <!-- Editable Cell -->
-          <ng-container *ngIf="isRowEditing(i) && column.isEditable; else displayCell">
-            <mat-form-field appearance="outline" class="inline-edit-field">
-              <input 
-                matInput 
-                [type]="column.isNumeric ? 'number' : 'text'"
-                [value]="getEditingValue(column.property)"
-                (input)="setEditingValue(column.property, $any($event.target).value)"
-                class="inline-input"
-              />
-            </mat-form-field>
-          </ng-container>
-          
-          <!-- Display Cell - Fixed the pipe issue -->
-          <ng-template #displayCell>
-            <span [class.numeric]="column.isNumeric">
-              <ng-container *ngIf="column.isNumeric; else nonNumericCell">
-                {{ getPropertyValue(element, column.property) | number:'1.2-2' }}
-              </ng-container>
-              <ng-template #nonNumericCell>
-                {{ getPropertyValue(element, column.property) }}
-              </ng-template>
-            </span>
-          </ng-template>
-        </td>
-      </ng-container>
 
-      <!-- Actions Column -->
+            <!-- Actions Column -->
       <ng-container matColumnDef="actions" *ngIf="showEditButton() || showDeleteButton() || showViewButton() || showPrintButton()">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let element; let i = index">
-          <div class="action-buttons">
+          <div class="action-buttons " >
             <!-- Edit Button -->
             <button 
                 *ngIf="showEditButton()"
@@ -187,6 +130,66 @@
           </div>
         </td>
       </ng-container>
+
+      <!-- Data Columns -->
+      <ng-container 
+        *ngFor="let column of columns()" 
+        [matColumnDef]="column.property"
+      >
+<th 
+    mat-header-cell 
+    *matHeaderCellDef 
+    [class.sortable]="column.sortable"
+    (click)="column.sortable ? onSort(column.property) : null"
+    [style.width]="column.width"
+  >
+          <div class="header-content">
+            <span>{{ column.header }}</span>
+            <mat-icon 
+              *ngIf="column.sortable" 
+              class="sort-icon"
+              [class.sorted]="_sortColumn() === column.property"
+              [class.asc]="_sortColumn() === column.property && _sortDirection() === 'asc'"
+              [class.desc]="_sortColumn() === column.property && _sortDirection() === 'desc'"
+            >
+              {{ _sortColumn() === column.property && _sortDirection() === 'desc' ? 'arrow_downward' : 'arrow_upward' }}
+            </mat-icon>
+          </div>
+        </th>
+        <td 
+          mat-cell 
+          *matCellDef="let element; let i = index"
+          [ngStyle]="getRowStyle(element)"
+          [style.width]="column.width"
+        >
+          <!-- Editable Cell -->
+          <ng-container *ngIf="isRowEditing(i) && column.isEditable; else displayCell">
+            <mat-form-field appearance="outline" class="inline-edit-field">
+              <input 
+                matInput 
+                [type]="column.isNumeric ? 'number' : 'text'"
+                [value]="getEditingValue(column.property)"
+                (input)="setEditingValue(column.property, $any($event.target).value)"
+                class="inline-input"
+              />
+            </mat-form-field>
+          </ng-container>
+          
+          <!-- Display Cell - Fixed the pipe issue -->
+          <ng-template #displayCell>
+            <span [class.numeric]="column.isNumeric">
+              <ng-container *ngIf="column.isNumeric; else nonNumericCell">
+                {{ getPropertyValue(element, column.property) | number:'1.2-2' }}
+              </ng-container>
+              <ng-template #nonNumericCell>
+                {{ getPropertyValue(element, column.property) }}
+              </ng-template>
+            </span>
+          </ng-template>
+        </td>
+      </ng-container>
+
+
 
       <!-- Row Template -->
       <tr 

@@ -1,6 +1,6 @@
-import {Component, computed, input, output, signal} from '@angular/core';
+import {Component, computed, input, output, signal, effect} from '@angular/core';
 import {MatInput} from "@angular/material/input";
-import {FormGroup, ReactiveFormsModule} from "@angular/forms";
+import {FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgClass} from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -33,6 +33,10 @@ export class IdBoxComponent {
   readonly labelText = input<string>('');
   readonly leadingZero = input<string>('');
   readonly visible = input<boolean>(true);
+  
+  // New validation inputs
+  readonly minLength = input<number>();
+  readonly maxLength = input<number>();
 
   // Outputs
   readonly valueChanged = output<string>();
@@ -40,10 +44,42 @@ export class IdBoxComponent {
   readonly onInput = output<any>();
   readonly onDoubleClick = output<void>();
 
-
   // Internal state
   isInvalidState = signal(false);
   errorMessage = signal('');
+
+  constructor() {
+    // Effect to update validators when min/max length inputs change
+    effect(() => {
+      this.updateValidators();
+    });
+  }
+
+  private updateValidators(): void {
+    const control = this.frmGroup().get(this.controlName());
+    if (!control) return;
+
+    const validators = [];
+    
+    // Check if field was already required
+    if (this.isRequired()) {
+      validators.push(Validators.required);
+    }
+    
+    // Add min length validator if specified
+    if (this.minLength() !== undefined && this.minLength()! > 0) {
+      validators.push(Validators.minLength(this.minLength()!));
+    }
+    
+    // Add max length validator if specified
+    if (this.maxLength() !== undefined && this.maxLength()! > 0) {
+      validators.push(Validators.maxLength(this.maxLength()!));
+    }
+    
+    // Update the control's validators
+    control.setValidators(validators);
+    control.updateValueAndValidity();
+  }
 
   // Computed signals for reactive styling
   inputClasses = computed(() => {
@@ -62,7 +98,6 @@ export class IdBoxComponent {
     return !!validation?.['required'];
   }
   
-
   isInvalid(): boolean {
     const control = this.frmGroup().get(this.controlName());
     return !!(control && control.invalid && (control.touched || control.dirty));
@@ -79,8 +114,8 @@ export class IdBoxComponent {
     return error;
   }
 
-    onChangeInput() {
-     const control = this.frmGroup().get(this.controlName());
-     this.valueChange.emit(control?.value);
+  onChangeInput() {
+    const control = this.frmGroup().get(this.controlName());
+    this.valueChange.emit(control?.value);
   }
 }

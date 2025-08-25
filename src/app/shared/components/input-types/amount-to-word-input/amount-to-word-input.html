@@ -1,37 +1,37 @@
 <div [formGroup]="frmGroup()" class="input-container">
-  <label class="input-label relative">
+  <!-- Label -->
+  <label class="input-label relative flex items-center gap-1">
     {{ label() }}
     @if (isRequired()) {
       <span class="text-red-500">*</span>
     }
+  </label>
 
-    @if (isInvalid()) {
-      <div class="text-red-500 text-sm mt-1 absolute right-0 top-0">
-        @if (hasError('required')) {
+  <!-- Input -->
+  <input
+    [formControlName]="controlName()"
+    [ngClass]="{ 'readonly-input': isReadonly() }"
+    type="number"
+    (keyup)="onChangeInput()"
+    [readonly]="isReadonly()"
+    matInput
+    [placeholder]="placeholder() ?? 'Enter ' + label()"
+    class="custom-input"
+  />
+
+  <!-- Error messages -->
+  @if (isInvalid()) {
+    <div class="text-red-500 text-sm mt-1">
+      @if (hasError('required')) {
         <ng-container>
           {{ label() }} is required..!
         </ng-container>
-        }
+      }
+    </div>
+  }
 
-<!--        @if (hasError('min')) {-->
-<!--          <ng-container>-->
-<!--            Minimum length required is {{ getErrorValue('min') }}-->
-<!--          </ng-container>-->
-<!--        }-->
-
-<!--        @if (hasError('max')) {-->
-<!--          <ng-container>-->
-<!--            Maximum length allowed is {{ getErrorValue('max') }}-->
-<!--          </ng-container>-->
-<!--        }-->
-
-      </div>
-    }
-  </label>
-  <input [formControlName]="controlName()" [ngClass]="{'readonly-input': isReadonly() }" type="number" (keyup)="onChangeInput()"
-         [readonly]="isReadonly()" matInput [placeholder]="placeholder() ?? 'Enter ' + label()" class="custom-input"/>
-
-  <div class="text-sm mt-1">
+  <!-- Extra helper text -->
+  <div class="text-sm mt-1 text-gray-600">
     {{ amountToWord() }}
   </div>
 </div>

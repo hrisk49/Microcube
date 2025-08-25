@@ -1,29 +1,34 @@
-<div [formGroup]="frmGroup()" class="input-container">
-  <label class="input-label">
-    {{ label() }}
-    @if (isRequired()) {
-      <span class="text-red-500">*</span>
-    }
-  </label>
-
-    <input [formControlName]="controlName()" [ngClass]="{'readonly-input': isReadonly() }"
-           [readonly]="isReadonly()" matInput [placeholder]="placeholder() ?? 'Enter ' + label()"
-           [type]="type() ?? 'text'" class="custom-input"
-           (dblclick)="onDoubleClick.emit()"/>
-           
-  @if (frmGroup().get(controlName())?.errors && 
-      (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
-
-  <div class="text-red-500 text-sm mt-1">
-    @if (frmGroup().get(controlName())?.hasError('required')) {
-      {{ label() }} is required..!
-    }
-    @if (frmGroup().get(controlName())?.hasError('minlength')) {
-      {{ label() }} must be at least {{ frmGroup().get(controlName())?.errors?.['minlength']?.requiredLength }} characters.
-    }
-    @if (frmGroup().get(controlName())?.hasError('maxlength')) {
-      {{ label() }} cannot be more than {{ frmGroup().get(controlName())?.errors?.['maxlength']?.requiredLength }} characters.
-    }
-  </div>
-}
+<div [formGroup]="frmGroup()" class="input-container"> 
+  <label class="input-label"> 
+    {{ label() }} 
+    @if (isRequired()) { 
+      <span class="text-red-500">*</span> 
+    } 
+  </label> 
+ 
+    <input [formControlName]="controlName()" 
+           [ngClass]="{'readonly-input': isReadonly() }" 
+           [readonly]="isReadonly()" 
+           matInput 
+           [placeholder]="placeholder() ?? 'Enter ' + label()" 
+           [type]="type() ?? 'text'" 
+           [maxlength]="maxLength() || null"
+           class="custom-input" 
+           (dblclick)="onDoubleClick.emit()"/> 
+            
+  @if (frmGroup().get(controlName())?.errors &&  
+      (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) { 
+ 
+  <div class="text-red-500 text-sm mt-1"> 
+    @if (frmGroup().get(controlName())?.hasError('required')) { 
+      {{ label() }} is required..! 
+    } 
+    @if (frmGroup().get(controlName())?.hasError('minlength')) { 
+      {{ label() }} must be at least {{ frmGroup().get(controlName())?.errors?.['minlength']?.requiredLength }} characters. 
+    } 
+    @if (frmGroup().get(controlName())?.hasError('maxlength')) { 
+      {{ label() }} cannot be more than {{ frmGroup().get(controlName())?.errors?.['maxlength']?.requiredLength }} characters. 
+    } 
+  </div> 
+} 
 </div>

@@ -14,8 +14,9 @@
          matInput 
          [placeholder]="placeholder() ?? 'Enter ' + label()" 
          class="custom-input"
-         step="0.01"
-         min="0"/>
+         [step]="getStepValue()"
+         [min]="allowNegative() ? null : 0"
+         [max]="maxAmt() || null"/>
 
   @if (isInvalid()) {
     <div class="text-red-500 text-sm mt-1">
@@ -34,6 +35,24 @@
       @if (hasError('max')) {
         <ng-container>
           Maximum amount allowed is {{ getErrorValue('max') }}
+        </ng-container>
+      }
+
+      @if (hasError('leadingZeros')) {
+        <ng-container>
+          Leading zeros are not allowed (e.g., 0987 should be 987)
+        </ng-container>
+      }
+
+      @if (hasError('invalidAmount')) {
+        <ng-container>
+          Invalid amount format. Maximum {{ getErrorValue('invalidAmount').maxDecimals }} decimal places allowed
+        </ng-container>
+      }
+
+      @if (hasError('negativeNotAllowed')) {
+        <ng-container>
+          Negative amounts are not allowed
         </ng-container>
       }
     </div>
