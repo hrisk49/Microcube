@@ -37,12 +37,12 @@ export class SelectOptionField {
     effect(() => {
       const opts = this.options() || [];
       const term = this.searchTerm().toLowerCase();
-      
+
       if (!term) {
         this.filteredOptions.set(opts);
       } else {
         this.filteredOptions.set(
-          opts.filter(option => 
+          opts.filter(option =>
             option.value.toLowerCase().includes(term)
           )
         );
@@ -55,7 +55,7 @@ export class SelectOptionField {
       const control = this.frmGroup().get(this.controlName());
       if (control) {
         this.selectedValue.set(control.value || '');
-        
+
         // Update search input with selected option text
         if (control.value) {
           const selectedOption = this.options()?.find(opt => opt.key === control.value);
@@ -79,7 +79,7 @@ export class SelectOptionField {
   onSearchInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.searchTerm.set(input.value);
-    
+
     if (!this.isOpen()) {
       this.openDropdown();
     }
@@ -98,7 +98,7 @@ export class SelectOptionField {
     // Delay closing to allow option clicks
     setTimeout(() => {
       this.closeDropdown();
-      
+
       // Reset search term to selected option if no selection was made
       const control = this.frmGroup().get(this.controlName());
       if (control?.value) {
@@ -114,30 +114,30 @@ export class SelectOptionField {
 
   onKeyDown(event: KeyboardEvent): void {
     const filteredOpts = this.filteredOptions();
-    
+
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
         if (!this.isOpen()) {
           this.openDropdown();
         } else {
-          const nextIndex = this.highlightedIndex() < filteredOpts.length - 1 
-            ? this.highlightedIndex() + 1 
+          const nextIndex = this.highlightedIndex() < filteredOpts.length - 1
+            ? this.highlightedIndex() + 1
             : 0;
           this.highlightedIndex.set(nextIndex);
         }
         break;
-        
+
       case 'ArrowUp':
         event.preventDefault();
         if (this.isOpen()) {
-          const prevIndex = this.highlightedIndex() > 0 
-            ? this.highlightedIndex() - 1 
+          const prevIndex = this.highlightedIndex() > 0
+            ? this.highlightedIndex() - 1
             : filteredOpts.length - 1;
           this.highlightedIndex.set(prevIndex);
         }
         break;
-        
+
       case 'Enter':
         event.preventDefault();
         if (this.isOpen() && this.highlightedIndex() >= 0) {
@@ -147,7 +147,7 @@ export class SelectOptionField {
           }
         }
         break;
-        
+
       case 'Escape':
         this.closeDropdown();
         this.searchInput.nativeElement.blur();
@@ -181,7 +181,7 @@ export class SelectOptionField {
       control.setValue(option.key);
       control.markAsTouched();
     }
-    
+
     this.searchTerm.set(option.value);
     this.closeDropdown();
   }
