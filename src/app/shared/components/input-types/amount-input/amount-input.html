@@ -1,18 +1,18 @@
-<div [formGroup]="frmGroup()" class="input-container">
+<div [formGroup]="frmGroup()" class="input-container-horizontal">
   <label class="input-label relative">
     {{ label() }}
     @if (isRequired()) {
       <span class="text-red-500">*</span>
     }
   </label>
-  
-  <input [formControlName]="controlName()" 
-         [ngClass]="{'readonly-input': isReadonly() }" 
-         type="number" 
+
+  <input [formControlName]="controlName()"
+         [ngClass]="{'readonly-input': isReadonly() }"
+         type="number"
          (keyup)="onChangeInput()"
-         [readonly]="isReadonly()" 
-         matInput 
-         [placeholder]="placeholder() ?? 'Enter ' + label()" 
+         [readonly]="isReadonly()"
+         matInput
+         [placeholder]="placeholder() ?? 'Enter ' + label()"
          class="custom-input"
          [step]="getStepValue()"
          [min]="allowNegative() ? null : 0"

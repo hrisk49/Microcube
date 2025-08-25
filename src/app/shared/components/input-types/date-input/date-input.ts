@@ -37,6 +37,7 @@ export class DateInput {
   readonly label = input.required<string>();
   readonly isReadonly = input<boolean>(false);
   readonly placeholder = input<any>();
+  readonly isVertical = input<boolean>(false);
 
   isRequired(): boolean {
     const control = this.frmGroup().get(this.controlName());

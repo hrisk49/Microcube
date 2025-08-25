@@ -1,6 +1,6 @@
 <!-- [ngClass]="containerClasses()" -->
-<div 
-class="input-container"
+<div
+class="input-container-horizontal"
 	[style]="styles()"
 	[matTooltip]="tooltip()"
 >
@@ -10,7 +10,7 @@ class="input-container"
       @if (isRequired()) { <span class="text-red-500">*</span> }
     </label>
 
-	<div class="file-input-group" 
+	<div class="file-input-group"
 		style="position: relative;"
 		[class.drag-over]="isDragOver()"
 		(dragover)="onDragOver($event)"
@@ -27,7 +27,7 @@ class="input-container"
 			</span>
 			<span>{{ fileNamesDisplay() }}</span>
 		</div>
-		<input 
+		<input
 			class="file-native-input"
 			[type]="'file'"
 			[id]="id() || null"

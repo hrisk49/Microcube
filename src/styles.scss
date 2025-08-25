@@ -29,8 +29,12 @@ input[type="number"]::placeholder {
   direction: ltr;
 }
 
-.input-container {
-  @apply w-full flex justify-start items-start;
+.input-container-horizontal {
+  @apply w-full flex flex-col sm:flex-row justify-start items-start sm:items-center gap-2;
+}
+
+.input-container-vertical {
+  @apply w-full flex flex-col justify-start;
 }
 
 .readonly-input {
@@ -516,7 +520,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 }
 
 /* mat-select or other select inputs */
-.custom-select {  
+.custom-select {
   @extend .custom-input;
 }
 
