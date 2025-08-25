@@ -7,13 +7,14 @@
   </label>
 
   <input 
-  [formControlName]="controlName()" 
-  matInput 
-  [ngClass]="{'readonly-input': isReadonly() }" 
-  type="text"
+    [formControlName]="controlName()" 
+    matInput 
+    [ngClass]="{'readonly-input': isReadonly() }" 
+    type="text"
     (keyup)="onChangeInput()" 
     [placeholder]="placeholder() ?? 'Enter ' + label()" 
     [readonly]="isReadonly()"
+    [maxlength]="maxLength() || null"
     class="custom-input" 
     />
 
@@ -34,6 +35,12 @@
     @if (hasError('maxlength')) {
     <ng-container>
       Maximum length allowed is {{ getErrorValue('maxlength')?.requiredLength }} characters
+    </ng-container>
+    }
+
+    @if (hasError('pattern')) {
+    <ng-container>
+      {{ label() }} format is invalid
     </ng-container>
     }
   </div>

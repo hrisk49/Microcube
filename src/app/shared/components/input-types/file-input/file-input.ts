@@ -37,14 +37,22 @@ export class FileComponent {
 	// Outputs
 	readonly selectedFilesChanged = output<File[]>();
 	readonly onFileChanged = output<any>();
+	readonly onInvalidFiles = output<{invalidFiles: File[], message: string}>();
 
 	// Internal state
 	public selectedFiles = signal<File[]>([]);
 	isDragOver = signal<boolean>(false);
 	fileNamesDisplay = computed(() => {
-		const files = this.selectedFiles();
-		return files && files.length > 0 ? files.map(f => f.name).join(', ') : 'Choose file...';
-	});
+  const files = this.selectedFiles();
+  if (files && files.length > 0) {
+    return files.map(f => f.name).join(', ');
+  }
+
+  // When no files are selected, show extensions
+  const ext = this.getDisplayExtensions();
+  return `Choose file ${ext ? '(' + ext + ')' : ''}`;
+});
+
 
 	isRequired(): boolean {
 		const group = this.frmGroup();
@@ -68,25 +76,95 @@ export class FileComponent {
 		const accept = this.fileExtension();
 		return accept && accept.length > 0 ? accept : null;
 	}
+
+	/**
+	 * Validates if files match the allowed extension(s)
+	 */
+	private validateFileExtensions(files: File[]): { validFiles: File[], invalidFiles: File[] } {
+		const allowedExtensions = this.fileExtension();
+		
+		// If no extension specified or wildcard, allow all
+		if (!allowedExtensions || allowedExtensions === '*/*' || allowedExtensions === '*') {
+			return { validFiles: files, invalidFiles: [] };
+		}
+
+		const validFiles: File[] = [];
+		const invalidFiles: File[] = [];
+
+		// Parse allowed extensions - handle multiple extensions separated by comma
+		const extensions = allowedExtensions.toLowerCase().split(',').map(ext => ext.trim());
+
+		files.forEach(file => {
+			const fileName = file.name.toLowerCase();
+			const isValid = extensions.some(ext => {
+				// Handle different extension formats: .pdf, pdf, *.pdf
+				const cleanExt = ext.replace(/^\*\.?/, '').replace(/^\./, '');
+				return fileName.endsWith('.' + cleanExt);
+			});
+
+			if (isValid) {
+				validFiles.push(file);
+			} else {
+				invalidFiles.push(file);
+			}
+		});
+
+		return { validFiles, invalidFiles };
+	}
+
+	/**
+	 * Processes file selection with validation
+	 */
+	private processFiles(files: File[]): void {
+		if (!files || files.length === 0) {
+			this.selectedFiles.set([]);
+			this.selectedFilesChanged.emit([]);
+			return;
+		}
+
+		// Validate extensions
+		const { validFiles, invalidFiles } = this.validateFileExtensions(files);
+
+		// Handle invalid files
+		if (invalidFiles.length > 0) {
+			const allowedExt = this.fileExtension();
+			const message = `Only ${allowedExt} files are allowed. Invalid files: ${invalidFiles.map(f => f.name).join(', ')}`;
+			this.onInvalidFiles.emit({ invalidFiles, message });
+		}
+
+		// Handle multiple file restriction
+		let finalFiles = validFiles;
+		if (!this.multipleFile() && finalFiles.length > 1) {
+			finalFiles = finalFiles.slice(0, 1);
+		}
+
+		// Update state and emit events
+		this.selectedFiles.set(finalFiles);
+		this.selectedFilesChanged.emit(finalFiles);
+		
+		if (finalFiles.length > 0) {
+			this.onFileChanged.emit({ 
+				files: finalFiles, 
+				savePath: this.savePath(), 
+				customFileName: this.customFileName() 
+			});
+		}
+	}
+
 	onFileInputChange(event: Event) {
 		const inputEl = event.target as HTMLInputElement;
 		const files = inputEl.files ? Array.from(inputEl.files) : [];
-		this.selectedFiles.set(files);
-		this.selectedFilesChanged.emit(files);
-		this.onFileChanged.emit({ files, savePath: this.savePath(), customFileName: this.customFileName() });
+		this.processFiles(files);
 	}
 
 	onDrop(event: DragEvent) {
 		event.preventDefault();
 		this.isDragOver.set(false);
+		
 		if (!event.dataTransfer) return;
-		let files = Array.from(event.dataTransfer.files || []);
-		if (!this.multipleFile() && files.length > 1) {
-			files = files.slice(0, 1);
-		}
-		this.selectedFiles.set(files);
-		this.selectedFilesChanged.emit(files);
-		this.onFileChanged.emit({ files, savePath: this.savePath(), customFileName: this.customFileName() });
+		
+		const files = Array.from(event.dataTransfer.files || []);
+		this.processFiles(files);
 	}
 
 	onDragOver(event: DragEvent) {
@@ -98,7 +176,28 @@ export class FileComponent {
 		event.preventDefault();
 		this.isDragOver.set(false);
 	}
+
+	/**
+	 * Clear selected files
+	 */
+	clearFiles(): void {
+		this.selectedFiles.set([]);
+		this.selectedFilesChanged.emit([]);
+		
+		// Also clear the file input
+		const inputEl = document.getElementById(this.id()) as HTMLInputElement;
+		if (inputEl) {
+			inputEl.value = '';
+		}
+	}
+
+	/**
+	 * Get readable extension list for display
+	 */
+getDisplayExtensions(): string {
+  const ext = this.fileExtension();
+  if (!ext || ext === '*/*' || ext === '*') return '';
+  return ext.toLowerCase();
 }
 
-
-
+}

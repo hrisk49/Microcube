@@ -379,13 +379,15 @@ private getColumnWidth(property: string): string {
     if (this.enableSelection()) {
       columns.push('selection');
     }
-    
-    const dataColumns = this.columns().map(col => col.property);
-    columns.push(...dataColumns);
-    
+
     if (this.showEditButton() || this.showDeleteButton() || this.showViewButton() || this.showPrintButton()) {
       columns.push('actions');
     }
+     
+    const dataColumns = this.columns().map(col => col.property);
+    columns.push(...dataColumns);
+    
+
 
     // console.log('Displayed columns:', columns);
     return columns;

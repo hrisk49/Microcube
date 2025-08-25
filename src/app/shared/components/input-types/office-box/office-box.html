@@ -1,0 +1,41 @@
+<div [formGroup]="frmGroup()" class="input-container">
+  <label class="input-label">
+    {{ labelText() }}
+    @if (isRequired()) {
+      <span class="text-red-500">*</span>
+    }
+  </label>
+
+  <div class="office-box-input-group">
+    <!-- Office Code Input -->
+    <input
+      [formControlName]="controlName()"
+      [ngClass]="{'readonly-input': isReadonly() }"
+      [readonly]="isReadonly()"
+      matInput
+      [placeholder]="placeholder() ?? 'Enter ' + labelText()"
+      class="custom-input office-box-input"
+    />
+
+    <!-- Office Name Display -->
+    <span class="office-box-name" *ngIf="officeName()">
+      {{ officeName() }}
+    </span>
+  </div>
+
+  @if (frmGroup().get(controlName())?.errors && 
+      (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
+
+    <div class="text-red-500 text-sm mt-1">
+      @if (frmGroup().get(controlName())?.hasError('required')) {
+        {{ labelText() }} is required..!
+      }
+      @if (frmGroup().get(controlName())?.hasError('minlength')) {
+        {{ labelText() }} must be at least {{ frmGroup().get(controlName())?.errors?.['minlength']?.requiredLength }} characters.
+      }
+      @if (frmGroup().get(controlName())?.hasError('maxlength')) {
+        {{ labelText() }} cannot be more than {{ frmGroup().get(controlName())?.errors?.['maxlength']?.requiredLength }} characters.
+      }
+    </div>
+  }
+</div>

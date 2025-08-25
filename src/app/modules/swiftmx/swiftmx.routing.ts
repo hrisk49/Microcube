@@ -21,6 +21,7 @@ import {Pacs053} from './feature/pacs-053/pacs-053';
 import {PrimeTable} from '../../shared/components/prime-table/prime-table';
 import { PrimeTableOut } from '../../shared/components/prime-table-out/prime-table-out';
 import { SwiftMessagingInterface } from '../../shared/components/swift-messaging-interface/swift-messaging-interface';
+import { AllComponentsPage } from '../../shared/components/all-components-page/all-components-page';
 
 export const SwiftmxRouting: Routes = [
   {path: 'pacs-002', component: Pacs002},
@@ -48,4 +49,5 @@ export const SwiftmxRouting: Routes = [
   {path: 'swift-messaging-interface', component: SwiftMessagingInterface},
   {path: 'optimus-prime', component: PrimeTable},
   {path: 'optimus-prime-out', component: PrimeTableOut},
+  {path: 'components', component: AllComponentsPage},
 ];
