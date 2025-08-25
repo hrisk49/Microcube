@@ -70,11 +70,12 @@
     .data-table {
       // Set minimum width to prevent table from being too compressed
       // min-width: 100%;
-    width: 100%;
-  min-width: 1200px; 
-  border-collapse: collapse;
-  table-layout: auto;
-  overflow-x: auto;
+      width: 100%;
+      min-width: 1200px; 
+      border-collapse: collapse;
+      table-layout: auto;
+      overflow-x: auto;
+      
       .mat-mdc-header-cell,
       .mat-mdc-cell {
         padding: 12px 16px;
@@ -97,9 +98,9 @@
       }
 
       .mat-mdc-header-cell {
-        background: #f8f9fa;
+        background: #f1f3f5;
         font-weight: 600;
-        color: #495057;
+        color: #212529;
         position: sticky;
         top: 0;
         z-index: 10; // Increased z-index for sticky headers
@@ -207,6 +208,8 @@
         // gap: 4px;
         // justify-content: center;
         // min-width: fit-content; 
+        // position: relative;
+       
 
         .action-btn {
           // width: 32px;
@@ -251,13 +254,14 @@
         min-width: fit-content;
         text-align: center;
         padding: 12px 8px;
-        // position: sticky;
+        position: sticky;
         right: 0;
         background: inherit;
         z-index: 5;
         
         // Add border to distinguish sticky column
         border-left: 1px solid #e9ecef;
+        border-right: 1px solid #e9ecef;
       }
     }
   }

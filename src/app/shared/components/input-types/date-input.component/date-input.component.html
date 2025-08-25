@@ -27,7 +27,6 @@
     ></mat-datepicker-toggle>
     <mat-datepicker #dobPicker></mat-datepicker>
   </div>
-
   @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
     <div class="text-red-500 text-xs mt-1">
       @if (frmGroup().get(controlName())?.errors?.['required']) {

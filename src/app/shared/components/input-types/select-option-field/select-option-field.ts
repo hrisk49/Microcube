@@ -38,7 +38,6 @@ export class SelectOptionField {
     effect(() => {
       const opts = this.options() || [];
       const term = this.searchTerm().toLowerCase();
-
       if (!term) {
         this.filteredOptions.set(opts);
       } else {
@@ -56,7 +55,6 @@ export class SelectOptionField {
       const control = this.frmGroup().get(this.controlName());
       if (control) {
         this.selectedValue.set(control.value || '');
-
         // Update search input with selected option text
         if (control.value) {
           const selectedOption = this.options()?.find(opt => opt.key === control.value);
@@ -80,7 +78,6 @@ export class SelectOptionField {
   onSearchInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.searchTerm.set(input.value);
-
     if (!this.isOpen()) {
       this.openDropdown();
     }
@@ -99,7 +96,6 @@ export class SelectOptionField {
     // Delay closing to allow option clicks
     setTimeout(() => {
       this.closeDropdown();
-
       // Reset search term to selected option if no selection was made
       const control = this.frmGroup().get(this.controlName());
       if (control?.value) {
@@ -115,7 +111,6 @@ export class SelectOptionField {
 
   onKeyDown(event: KeyboardEvent): void {
     const filteredOpts = this.filteredOptions();
-
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
@@ -138,7 +133,6 @@ export class SelectOptionField {
           this.highlightedIndex.set(prevIndex);
         }
         break;
-
       case 'Enter':
         event.preventDefault();
         if (this.isOpen() && this.highlightedIndex() >= 0) {
@@ -148,7 +142,6 @@ export class SelectOptionField {
           }
         }
         break;
-
       case 'Escape':
         this.closeDropdown();
         this.searchInput.nativeElement.blur();
