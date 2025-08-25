@@ -284,8 +284,8 @@ export class Pacs009 implements OnInit {
         if (response.payload && response.payload.length > 0) {
           // Map the response to SelectOptionsModel format
           this.settlementOptions = response.payload.map((item: any) => ({
-            key: item.lookName,
-            value: item.lookDescription
+            value: item.lookName,
+            key: item.lookDescription,
           }));
         }
       },
@@ -315,15 +315,16 @@ export class Pacs009 implements OnInit {
       toBicfi: ['', Validators.required],
       toClrSysIdCd: [''],
       toLei: [''],
+      bizMsgIdr: ['PACS009_' + new Date().getTime(), Validators.required],
+      msgDefIdr: ['pacs.009.001.08', Validators.required],
+      bizSvc: ['swift.cbprplus.02', Validators.required],
+      creDt: ['', Validators.required],
 
       rltdBizMsgIdr: [''],
       rltdMsgDefIdr: [''],
       rltdBizSvc: [''],
       rltdCreDt: [''],
-      bizMsgIdr: ['PACS009_' + new Date().getTime(), Validators.required],
-      msgDefIdr: ['pacs.009.001.08', Validators.required],
-      bizSvc: ['swift.cbprplus.02', Validators.required],
-      creDt: ['', Validators.required],
+
       cpyDplct: [null],
       psblDplct: [null],
       priority: ['NORM'],
@@ -342,9 +343,9 @@ export class Pacs009 implements OnInit {
       sttlmAcctIssr: [''],
 
       // Payment Identification
-      instrId: [''],
-      endToEndId: [''],
-      txId: ['TX_' + new Date().getTime(), Validators.required],
+      instrId: ['',Validators.required],
+      endToEndId: ['', Validators.required],
+      txId: ['TX_' + new Date().getTime()],
       uetr: [''],
       clrSysRef: [''],
 
@@ -359,7 +360,7 @@ export class Pacs009 implements OnInit {
 
       // Interbank Settlement
       intrBkSttlmAmtCcy: [null, Validators.required],
-      intrBkSttlmAmt: ['1000.00', Validators.required],
+      intrBkSttlmAmt: ['', Validators.required],
       intrBkSttlmDt: [new Date().toISOString().split('T')[0], Validators.required],
       sttlmPrty: [null],
 
@@ -637,7 +638,7 @@ export class Pacs009 implements OnInit {
       dbtrAcctIssr: [''],
 
       // Debtor Agent (flat)
-      dbtrAgtBicfi: ['', Validators.required],
+      dbtrAgtBicfi: [''],
       dbtrAgtClrSysIdCd: [''],
       dbtrAgtMmbId: [''],
       dbtrAgtLei: [''],
@@ -669,7 +670,7 @@ export class Pacs009 implements OnInit {
       dbtrAgtAcctIssr: [''],
 
       // Creditor Agent (flat)
-      cdtrAgtBicfi: ['', Validators.required],
+      cdtrAgtBicfi: [''],
       cdtrAgtClrSysIdCd: [''],
       cdtrAgtMmbId: [''],
       cdtrAgtLei: [''],

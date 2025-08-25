@@ -1,5 +1,6 @@
-<div [formGroup]="frmGroup()" class="input-container" [ngClass]="{'sm:flex-col gap-0': isLabelVertical(), 'sm:flex-row gap-2 sm:items-center': !isLabelVertical()}">
-  <label class="input-label">
+<div [formGroup]="frmGroup()" class="input-container" [ngClass]="{'sm:flex-col gap-0': isLabelVertical(), 'sm:flex-row gap-2 sm:items-center items-center': !isLabelVertical()}">
+  <label class="input-label whitespace-nowrap break-words min-w-fit self-center" 
+         style="word-break: keep-all; white-space: nowrap; overflow-wrap: break-word;">
     {{ label() }}
     @if (isRequired()) {
       <span class="text-red-500">*</span>
@@ -7,7 +8,7 @@
   </label>
 
     <select [formControlName]="controlName()" [ngClass]="{'readonly-input': isReadonly() }"
-            class="custom-select">
+            class="custom-select custom-input">
       <option [value]="null">Select {{ label() }}</option>
       @for (option of options(); track $index) {
         <option [value]="option.key">{{ option.value }}</option>

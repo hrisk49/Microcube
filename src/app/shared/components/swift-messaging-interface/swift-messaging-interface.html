@@ -1,11 +1,11 @@
 <div class="page-wrapper">
   <div
-    class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mx-8"
+    class="bg-white rounded-xl border border-gray-100 overflow-hidden mx-8"
   >
     <!-- Content Preparation Section -->
     <div class="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-4 border-b border-gray-200">
       <!-- Message Type Row -->
-      <div class="mb-3 border-b border-gray-200 pb-2 form-grid-2-col">
+      <div class="mb-3 border-b border-gray-200 pb-2 form-grid-3-col">
         <app-select-option-field
           [frmGroup]="swiftForm"
           controlName="messageType"
@@ -20,22 +20,44 @@
         <div>
           <label class="input-label">From Date</label>
           <div [formGroup]="swiftForm">
-            <input
-              type="date"
-              formControlName="fromDate"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200"
-              placeholder="Select date">
+            <div class="relative">
+              <input
+                matInput
+                formControlName="fromDate"
+                [matDatepicker]="fromDatePicker"
+                placeholder="DD/MM/YYYY"
+                class="custom-input"
+              />
+              <mat-datepicker-toggle
+                [disabled]="false"
+                matSuffix
+                [for]="fromDatePicker"
+                class="absolute top-1/2 right-2 -translate-y-1/2"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #fromDatePicker></mat-datepicker>
+            </div>
           </div>
         </div>
 
         <div>
           <label class="input-label">To Date</label>
           <div [formGroup]="swiftForm">
-            <input
-              type="date"
-              formControlName="toDate"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200"
-              placeholder="Select date">
+            <div class="relative">
+              <input
+                matInput
+                formControlName="toDate"
+                [matDatepicker]="toDatePicker"
+                placeholder="DD/MM/YYYY"
+                class="custom-input"
+              />
+              <mat-datepicker-toggle
+                [disabled]="false"
+                matSuffix
+                [for]="toDatePicker"
+                class="absolute top-1/2 right-2 -translate-y-1/2"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #toDatePicker></mat-datepicker>
+            </div>
           </div>
         </div>
 
@@ -58,7 +80,7 @@
               type="text"
               formControlName="messageRefNo"
               placeholder="Enter Message Reference Number"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200"
+              class="custom-input"
             />
           </div>
         </div>
@@ -136,7 +158,7 @@
             <th
               class="text-center py-4 px-6 font-semibold text-gray-700 text-sm tracking-wide"
             >
-              SL#
+              SL
             </th>
             <th
               class="text-left py-4 px-6 font-semibold text-gray-700 text-sm tracking-wide"
