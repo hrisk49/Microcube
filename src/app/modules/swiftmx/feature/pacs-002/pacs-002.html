@@ -21,11 +21,13 @@
 
               <app-text-base-input [frmGroup]="frmGroup"
                                    [label]="'From BIC'"
-                                   [controlName]="'rltdFrBic'"/>
+                                   [controlName]="'rltdFrBic'"
+                                    (onDoubleClick)="openBicSelectionModal('rltdFrBic')"/>
 
               <app-text-base-input [frmGroup]="frmGroup"
                                    [label]="'To BIC'"
-                                   [controlName]="'rltdToBic'"/>
+                                   [controlName]="'rltdToBic'"
+                                   (onDoubleClick)="openBicSelectionModal('rltdToBic')"/>
 
               <app-text-base-input [frmGroup]="frmGroup"
                                    [label]="'Business Message Identifier'"

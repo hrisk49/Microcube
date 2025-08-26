@@ -25,6 +25,8 @@ import {
 } from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
 import {Mx002Model} from '../../model/mx002.model';
 import {PartyModel} from '../../model/party.model';
+import { BicSelectionService } from '../../../../shared/services/bic-selection.service';
+
 
 @Component({
   selector: 'app-pacs-002',
@@ -133,7 +135,14 @@ export class Pacs002 implements OnInit {
     {key: 'PHONE', value: 'Phone'}
   ]
 
-  constructor() {
+  bicTableHeaders = new Map<string, string>([
+    ['swift', 'SWIFT Code'],
+    ['branchName', 'Branch Name'],
+    ['address', 'Address']
+  ]);
+  constructor(
+    private bicSelectionService: BicSelectionService
+  ) {
     BUTTON_VISIBILITY.set({
       save: true,
       update: false,
@@ -419,6 +428,27 @@ export class Pacs002 implements OnInit {
     })
   }
 
+
+  openBicSelectionModal(ctrlNm :string) :void{
+    const val = {
+      bicField : ctrlNm,
+      nameField : ctrlNm === 'fromBicfi' ? 'fromNm' : 'toNm',
+      defaultValue : ctrlNm === 'fromBicfi' ? 'SCBLBDDX' : 'CITIUS33'
+    };
+
+    this.bicSelectionService.openBicSelectionModal(
+      this.frmGroup,
+      {
+        bicField : ctrlNm,
+        nameField : ctrlNm === 'fromBicfi' ? 'fromNm' : 'toNm',
+        defaultValue : ctrlNm === 'fromBicfi' ? 'SCBLBDDX' : 'CITIUS33'
+      },
+      {
+        bicField: 'instgAgtBicfi',
+        nameField: 'instgAgtNm'
+      },
+      this.bicTableHeaders).subscribe();
+  }
 
   protected readonly DataSelectionModal = DataSelectionModal;
 }

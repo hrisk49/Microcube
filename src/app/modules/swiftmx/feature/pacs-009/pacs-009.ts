@@ -6,7 +6,6 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import {Router} from '@angular/router';
 import {
   FormArray,
   FormBuilder,
@@ -61,7 +60,6 @@ export class Pacs009 implements OnInit {
   externalCodeService = inject(ExternalCodeService);
   currencyService = inject(CurrencyService);
   lookupService = inject(LookupService);
-  router = inject(Router);
   frmGroup: FormGroup;
   onClickReset = ONCLICK_RESET;
   onClickSave = ONCLICK_SAVE;
@@ -174,8 +172,6 @@ export class Pacs009 implements OnInit {
   // Settlement options (loaded from LookupService)
   settlementOptions: SelectOptionsModel[] = [];
 
-  // CBS Data received from swift messaging interface
-  cbsData: any = null;
   constructor(
     private branchInfoService: BranchInfoService,
     private bicSelectionService: BicSelectionService
@@ -202,13 +198,6 @@ export class Pacs009 implements OnInit {
 
   ngOnInit(): void {
     try {
-      // Check if data was passed from swift messaging interface
-      const navigation = this.router.getCurrentNavigation();
-      if (navigation?.extras.state) {
-        this.cbsData = (navigation.extras.state as any).cbsData;
-        console.log('Received CBS data in pacs-009:', this.cbsData);
-      }
-
       this.initForm();
       this.loadServiceLevelCodes();
       this.loadCurrencies();
@@ -226,11 +215,6 @@ export class Pacs009 implements OnInit {
         setTimeout(() => {
           FormGroupSignal.set(this.frmGroup);
           console.log('FormGroupSignal updated in ngOnInit. Form valid:', this.frmGroup.valid);
-
-          // Pre-populate form fields with CBS data if available
-          if (this.cbsData) {
-            this.prePopulateFormWithCBSData();
-          }
         }, 100);
       }
     } catch (error) {
@@ -279,13 +263,13 @@ export class Pacs009 implements OnInit {
 
   private loadSettlementOptions(): void {
     // Assuming typeId 1 is for settlement methods - adjust as needed based on your backend
-    this.lookupService.getListByTypeId(16).subscribe({
+    this.lookupService.getListByTypeId(1).subscribe({
       next: (response: any) => {
         if (response.payload && response.payload.length > 0) {
           // Map the response to SelectOptionsModel format
           this.settlementOptions = response.payload.map((item: any) => ({
-            value: item.lookName,
-            key: item.lookDescription,
+            key: item.codeValue || item.code,
+            value: item.codeName || item.description || item.value
           }));
         }
       },
@@ -315,16 +299,15 @@ export class Pacs009 implements OnInit {
       toBicfi: ['', Validators.required],
       toClrSysIdCd: [''],
       toLei: [''],
-      bizMsgIdr: ['PACS009_' + new Date().getTime(), Validators.required],
-      msgDefIdr: ['pacs.009.001.08', Validators.required],
-      bizSvc: ['swift.cbprplus.02', Validators.required],
-      creDt: ['', Validators.required],
 
       rltdBizMsgIdr: [''],
       rltdMsgDefIdr: [''],
       rltdBizSvc: [''],
       rltdCreDt: [''],
-
+      bizMsgIdr: ['PACS009_' + new Date().getTime(), Validators.required],
+      msgDefIdr: ['pacs.009.001.08', Validators.required],
+      bizSvc: ['swift.cbprplus.02', Validators.required],
+      creDt: ['', Validators.required],
       cpyDplct: [null],
       psblDplct: [null],
       priority: ['NORM'],
@@ -343,9 +326,9 @@ export class Pacs009 implements OnInit {
       sttlmAcctIssr: [''],
 
       // Payment Identification
-      instrId: ['',Validators.required],
-      endToEndId: ['', Validators.required],
-      txId: ['TX_' + new Date().getTime()],
+      instrId: [''],
+      endToEndId: [''],
+      txId: ['TX_' + new Date().getTime(), Validators.required],
       uetr: [''],
       clrSysRef: [''],
 
@@ -360,7 +343,7 @@ export class Pacs009 implements OnInit {
 
       // Interbank Settlement
       intrBkSttlmAmtCcy: [null, Validators.required],
-      intrBkSttlmAmt: ['', Validators.required],
+      intrBkSttlmAmt: ['1000.00', Validators.required],
       intrBkSttlmDt: [new Date().toISOString().split('T')[0], Validators.required],
       sttlmPrty: [null],
 
@@ -638,7 +621,7 @@ export class Pacs009 implements OnInit {
       dbtrAcctIssr: [''],
 
       // Debtor Agent (flat)
-      dbtrAgtBicfi: [''],
+      dbtrAgtBicfi: ['', Validators.required],
       dbtrAgtClrSysIdCd: [''],
       dbtrAgtMmbId: [''],
       dbtrAgtLei: [''],
@@ -670,7 +653,7 @@ export class Pacs009 implements OnInit {
       dbtrAgtAcctIssr: [''],
 
       // Creditor Agent (flat)
-      cdtrAgtBicfi: [''],
+      cdtrAgtBicfi: ['', Validators.required],
       cdtrAgtClrSysIdCd: [''],
       cdtrAgtMmbId: [''],
       cdtrAgtLei: [''],
@@ -1859,27 +1842,5 @@ export class Pacs009 implements OnInit {
   // Get instruction for next agent group at specific index
   getInstructionForNextAgentGroup(index: number): FormGroup {
     return this.instructionForNextAgent.at(index) as FormGroup;
-  }
-
-  /**
-   * Pre-populate form fields with CBS data received from swift messaging interface
-   */
-  private prePopulateFormWithCBSData(): void {
-    if (!this.cbsData || !this.frmGroup) {
-      return;
-    }
-
-    try {
-      // Pre-populate form fields with CBS data using new interface
-      this.frmGroup.patchValue({
-        // Map CBS data to form fields
-        // Add field mappings based on your form structure
-        // Example: messageRefNo: this.cbsData.msgRefNo || '',
-      });
-
-      console.log('Form pre-populated with CBS data in pacs-009');
-    } catch (error) {
-      console.error('Error pre-populating form with CBS data:', error);
-    }
   }
 }
