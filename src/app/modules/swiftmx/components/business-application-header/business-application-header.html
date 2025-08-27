@@ -19,7 +19,7 @@
           [frmGroup]="frmGroup()"
           [label]="'BIC'"
           [controlName]="'fromBicfi'"
-          (onDoubleClick)="openFromBicSelectionModal()"
+          (onDoubleClick)="openBicSelectionModal('fromBicfi','fromNm')"
         />
         <app-text-base-input
           [frmGroup]="frmGroup()"
@@ -50,7 +50,7 @@
           [frmGroup]="frmGroup()"
           [label]="'BIC'"
           [controlName]="'toBicfi'"
-          (onDoubleClick)="onPickClick()"
+          (onDoubleClick)="openBicSelectionModal('toBicfi','toNm')"
         />
         <app-text-base-input
           [frmGroup]="frmGroup()"

@@ -1712,10 +1712,6 @@ dialogUtils = inject(DialogUtils);
         nameField: 'fromNm',
         defaultValue: 'SCBLBDDX'
       },
-      {
-        bicField: 'instgAgtBicfi',
-        nameField: 'instgAgtNm'
-      },
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1729,10 +1725,6 @@ dialogUtils = inject(DialogUtils);
         nameField: 'toNm',
         defaultValue: 'AANLGB21XXX'
       },
-      {
-        bicField: 'instdAgtBicfi',
-        nameField: 'instdAgtNm'
-      },
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1745,7 +1737,6 @@ dialogUtils = inject(DialogUtils);
         bicField: 'dbtrAgtBicfi',
         nameField: 'dbtrAgtNm'
       },
-      undefined,
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1758,7 +1749,6 @@ dialogUtils = inject(DialogUtils);
         bicField: 'crdtrAgtBicfi',
         nameField: 'crdtrAgtNm'
       },
-      undefined,
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1771,7 +1761,6 @@ dialogUtils = inject(DialogUtils);
         bicField: 'cdtrAgtBicfi',
         nameField: 'cdtrAgtNm'
       },
-      undefined,
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1785,7 +1774,6 @@ dialogUtils = inject(DialogUtils);
         bicField: `intrmyAgt${agentNumber}Bicfi`,
         nameField: `intrmyAgt${agentNumber}Nm`
       },
-      undefined,
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1798,7 +1786,6 @@ dialogUtils = inject(DialogUtils);
         bicField: `prvsInstgAgt${agentNumber}Bicfi`,
         nameField: `prvsInstgAgt${agentNumber}Nm`
       },
-      undefined,
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1811,7 +1798,6 @@ dialogUtils = inject(DialogUtils);
         bicField: 'instgAgtBicfi',
         nameField: 'instgAgtNm'
       },
-      undefined,
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1825,7 +1811,6 @@ dialogUtils = inject(DialogUtils);
         bicField: 'instdAgtBicfi',
         nameField: 'instdAgtNm'
       },
-      undefined,
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1838,7 +1823,6 @@ dialogUtils = inject(DialogUtils);
         bicField: 'dbtrBicfi',
         nameField: 'dbtrNm'
       },
-      undefined,
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1851,7 +1835,6 @@ dialogUtils = inject(DialogUtils);
         bicField: 'cdtrBicfi',
         nameField: 'cdtrNm'
       },
-      undefined,
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1863,7 +1846,6 @@ dialogUtils = inject(DialogUtils);
         bicField: 'ultanyBIC',
         nameField: ''
       },
-      undefined,
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1875,7 +1857,6 @@ dialogUtils = inject(DialogUtils);
         bicField: 'anyBIC',
         nameField: ''
       },
-      undefined,
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1887,7 +1868,6 @@ dialogUtils = inject(DialogUtils);
         bicField: 'ultcrdtranyBIC',
         nameField: ''
       },
-      undefined,
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1900,7 +1880,6 @@ dialogUtils = inject(DialogUtils);
         bicField: 'rltdFrBicfi',
         nameField: 'rltdFrNm'
       },
-      undefined,
       this.bicTableHeaders
     ).subscribe();
   }
@@ -1912,7 +1891,6 @@ dialogUtils = inject(DialogUtils);
         bicField: 'rltdToBicfi',
         nameField: 'rltdToNm'
       },
-      undefined,
       this.bicTableHeaders
     ).subscribe();
   }

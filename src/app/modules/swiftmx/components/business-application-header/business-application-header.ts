@@ -56,20 +56,23 @@ export class BusinessApplicationHeader {
       reset: true,
     });
   }
-  openFromBicSelectionModal(): void {
+  openBicSelectionModal(ctrlNm :string, nameField:string|null = null, targetBicField:string|null = null, targetNameField:string|null = null): void {
     this.bicSelectionService.openBicSelectionModal(
       this.frmGroup(),
       {
-        bicField: 'fromBicfi',
-        nameField: 'fromNm',
+        bicField: ctrlNm,
         defaultValue: 'SCBLBDDX'
       },
-      {
-        bicField: 'instgAgtBicfi',
-        nameField: 'instgAgtNm'
-      },
       this.bicTableHeaders
-    ).subscribe();
+    ).subscribe(selectedData => {
+      if (selectedData) {
+        const { swiftCode, branchName } = selectedData;
+        this.frmGroup().get(ctrlNm)?.setValue(swiftCode);
+        if(nameField!=null){
+          this.frmGroup().get(nameField)?.setValue(branchName);
+        }
+      }
+    });
   }
 
   onPickClick(): void {

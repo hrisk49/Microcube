@@ -210,10 +210,6 @@ export class AllComponentsPage implements OnInit {
         nameField: 'fromNm',
         defaultValue: 'SCBLBDDX'
       },
-      {
-        bicField: 'instgAgtBicfi',
-        nameField: 'instgAgtNm'
-      },
       this.bicTableHeaders
     ).subscribe();
   }

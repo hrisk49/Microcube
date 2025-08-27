@@ -3,6 +3,7 @@ import {
   effect,
   inject,
   OnInit,
+  OnDestroy,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -16,6 +17,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
+import { Subject, takeUntil } from 'rxjs';
 import {
   BUTTON_VISIBILITY,
   FormGroupSignal,
@@ -56,7 +58,7 @@ import { MessageTypeService } from '../../../../shared/services/message-type.ser
   standalone: true,
   styleUrl: './pacs-009.scss',
 })
-export class Pacs009 implements OnInit {
+export class Pacs009 implements OnInit, OnDestroy {
   dialogUtils = inject(DialogUtils);
   formBuilder = inject(FormBuilder);
   toastr = inject(ToastrService);
@@ -133,9 +135,7 @@ export class Pacs009 implements OnInit {
   prevAgent3AddressPanel:  WritableSignal<boolean> = signal(false);
   agentsPanel: WritableSignal<boolean> = signal(true);
   instructingAgentPanel: WritableSignal<boolean> = signal(true);
-  instgAgtAddressPanel: WritableSignal<boolean> = signal(false);
   instructedAgentPanel: WritableSignal<boolean> = signal(true);
-  instructedAgentAddressPanel: WritableSignal<boolean> = signal(false);
   intermediaryAgentsPanel: WritableSignal<boolean> = signal(true);
   intermediary1Panel: WritableSignal<boolean> = signal(false);
   intermediary2Panel: WritableSignal<boolean> = signal(false);
@@ -163,12 +163,6 @@ export class Pacs009 implements OnInit {
   swiftCodesFrom: any;
   swiftCodesTo: any;
 
-  bicTableHeaders = new Map<string, string>([
-    ['swift', 'SWIFT Code'],
-    ['branchName', 'Branch Name'],
-    ['address', 'Address']
-  ]);
-
   serviceLevelCodeOptions: SelectOptionsModel[] = [];
 
   currencies: CurrencyModel[] = [];
@@ -176,6 +170,8 @@ export class Pacs009 implements OnInit {
   settlementOptions: SelectOptionsModel[] = [];
 
   cbsData: any = null;
+  private destroy$ = new Subject<void>();
+
   constructor(
     private branchInfoService: BranchInfoService,
     private bicSelectionService: BicSelectionService
@@ -203,7 +199,9 @@ export class Pacs009 implements OnInit {
   ngOnInit(): void {
     try {
       this.loadCurrencies();
-      this.activatedRoute.queryParams.subscribe(params => {
+      this.activatedRoute.queryParams.pipe(
+        takeUntil(this.destroy$)
+      ).subscribe(params => {
         if (history.state?.cbsData) {
           try {
             this.cbsData = history.state?.cbsData;
@@ -213,7 +211,9 @@ export class Pacs009 implements OnInit {
               msgRefNo: this.cbsData.msgRefNo
             };
             
-            this.messageTypeService.getMessageByRefNo(payload).subscribe({
+            this.messageTypeService.getMessageByRefNo(payload).pipe(
+              takeUntil(this.destroy$)
+            ).subscribe({
               next: (response: any) => {
                 if (response.payload && response.payload.length > 0) {
                   const data = response.payload[0];
@@ -237,11 +237,15 @@ export class Pacs009 implements OnInit {
       this.loadSettlementOptions();
       setTimeout(() => {
         FormGroupSignal.set(this.frmGroup);
-        console.log('FormGroupSignal updated in ngOnInit. Form valid:', this.frmGroup.valid);
       }, 100);
     } catch (error) {
       this.toastr.error('Error during form initialization', 'Error');
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private mapServiceDataToForm(data: any): void {
@@ -275,7 +279,9 @@ export class Pacs009 implements OnInit {
 
   private loadServiceLevelCodes(): void {
     const codeSet = 'ExternalServiceLevel1Code';
-    this.externalCodeService.getSwiftExternalCodes(codeSet).subscribe({
+    this.externalCodeService.getSwiftExternalCodes(codeSet).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (res) => {
         const list = Array.isArray(res?.payload) ? res.payload : [];
         this.serviceLevelCodeOptions = list.map((item: any) => ({
@@ -292,7 +298,9 @@ export class Pacs009 implements OnInit {
   }
 
   private loadCurrencies(): void {
-    this.currencyService.getAllCurrency().subscribe({
+    this.currencyService.getAllCurrency().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response: any) => {
         if (response.payload && response.payload.length > 0) {
           this.currencies = response.payload;
@@ -313,7 +321,9 @@ export class Pacs009 implements OnInit {
 
   private loadSettlementOptions(): void {
     // Assuming typeId 1 is for settlement methods - adjust as needed based on your backend
-    this.lookupService.getListByTypeId(16).subscribe({
+    this.lookupService.getListByTypeId(16).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (response: any) => {
         if (response.payload && response.payload.length > 0) {
           // Map the response to SelectOptionsModel format
@@ -323,7 +333,7 @@ export class Pacs009 implements OnInit {
           }));
         }
       },
-      error: (err: any) => {
+      error: (err) => {
         console.error('Failed to load settlement options', err);
         this.toastr.error('Failed to load settlement options', 'Error');
         // Fallback to default options if API fails
@@ -499,49 +509,11 @@ export class Pacs009 implements OnInit {
       instgAgtClrSysIdCd: [''],
       instgAgtMmbId: [''],
       instgAgtLei: [''],
-      instgAgtNm: [''],
-      instgAgtAdrLine1: [''],
-      instgAgtAdrLine2: [''],
-      instgAgtAdrLine3: [''],
-      instgAgtAdrDept: [''],
-      instgAgtAdrSubDept: [''],
-      instgAgtAdrStrtNm: [''],
-      instgAgtAdrBldgNb: [''],
-      instgAgtAdrBldgNm: [''],
-      instgAgtAdrFlr: [''],
-      instgAgtAdrPstBx: [''],
-      instgAgtAdrRoom: [''],
-      instgAgtAdrPstCd: [''],
-      instgAgtAdrTwnNm: [''],
-      instgAgtAdrTwnLctnNm: [''],
-      instgAgtAdrDstrctNm: [''],
-      instgAgtAdrCtrySubDvsn: [''],
-      instgAgtAdrCtry: [''],
-      instgAgtAdrLine: [''],
 
       instdAgtBicfi: ['', Validators.required],
       instdAgtClrSysIdCd: [''],
       instdAgtMmbId: [''],
       instdAgtLei: [''],
-      instdAgtNm: [''],
-      instdAgtAdrLine1: [''],
-      instdAgtAdrLine2: [''],
-      instdAgtAdrLine3: [''],
-      instdAgtAdrDept: [''],
-      instdAgtAdrSubDept: [''],
-      instdAgtAdrStrtNm: [''],
-      instdAgtAdrBldgNb: [''],
-      instdAgtAdrBldgNm: [''],
-      instdAgtAdrFlr: [''],
-      instdAgtAdrPstBx: [''],
-      instdAgtAdrRoom: [''],
-      instdAgtAdrPstCd: [''],
-      instdAgtAdrTwnNm: [''],
-      instdAgtAdrTwnLctnNm: [''],
-      instdAgtAdrDstrctNm: [''],
-      instdAgtAdrCtrySubDvsn: [''],
-      instdAgtAdrCtry: [''],
-      instdAgtAdrLine: [''],
 
       // Intermediary Agent 1 (flat)
       intrmyAgt1Bicfi: [''],
@@ -859,25 +831,38 @@ export class Pacs009 implements OnInit {
     }
   }
 
-  openBicSelectionModal(ctrlNm :string, nameField:string|null = null, targetBicField:string|null = null, targetNameField:string|null = null) :void{
+  openBicSelectionModal(ctrlNm :string, nameField:string|null = null) :void{
     const val = {
       bicField : ctrlNm,
-      nameField : nameField!=null ? nameField : undefined,
-      defaultValue : 'SCBLBDDX' 
+      defaultValue : 'SCBLBDDX',
     };
-    let targetVal = undefined;
-    if(targetBicField!=null && targetNameField!=null){
-      targetVal = {
-        bicField : targetBicField,
-        nameField : targetNameField
-      }
-    }
 
     this.bicSelectionService.openBicSelectionModal(
       this.frmGroup,
-      val,
-      targetVal,
-      this.bicTableHeaders).subscribe();
+      val).subscribe(selectedData => {
+      if (selectedData) {
+        const { swiftCode, branchName } = selectedData;
+        this.frmGroup.patchValue({[ctrlNm]: swiftCode});
+        if(nameField!=null){
+          this.frmGroup.patchValue({[nameField]: branchName});
+        }
+        if(ctrlNm==='fromBicfi' ){
+          this.frmGroup.patchValue({'instgAgtBicfi': swiftCode});
+          this.frmGroup.patchValue({'instgAgtNm': branchName});
+        }
+        if(ctrlNm==='toBicfi' ){
+          this.frmGroup.patchValue({'instdAgtBicfi': swiftCode});
+        }
+        if(ctrlNm==='dbtrBicfi' ){
+          this.frmGroup.patchValue({'dbtrAgtBicfi': swiftCode});
+          this.frmGroup.patchValue({'dbtrAgtNm': branchName});
+        }
+        if(ctrlNm==='cdtrBicfi' ){
+          this.frmGroup.patchValue({'cdtrAgtBicfi': swiftCode});
+          this.frmGroup.patchValue({'cdtrAgtNm': branchName});
+        }
+      }
+    });
   }
 
   resetForm(): void {
@@ -1241,60 +1226,14 @@ export class Pacs009 implements OnInit {
       bicfi: frmValue.instgAgtBicfi,
       clrSysIdCd: frmValue.instgAgtClrSysIdCd,
       mmbId: frmValue.instgAgtMmbId,
-      lei: frmValue.instgAgtLei,
-      nm: frmValue.instgAgtNm,
-      adrLine1: frmValue.instgAgtAdrLine1,
-      adrLine2: frmValue.instgAgtAdrLine2,
-      adrLine3: frmValue.instgAgtAdrLine3,
-      adr: {
-        dept: frmValue.instgAgtAdrDept,
-        subDept: frmValue.instgAgtAdrSubDept,
-        strtNm: frmValue.instgAgtAdrStrtNm,
-        bldgNb: frmValue.instgAgtAdrBldgNb,
-        bldgNm: frmValue.instgAgtAdrBldgNm,
-        flr: frmValue.instgAgtAdrFlr,
-        pstBx: frmValue.instgAgtAdrPstBx,
-        room: frmValue.instgAgtAdrRoom,
-        pstCd: frmValue.instgAgtAdrPstCd,
-        twnNm: frmValue.instgAgtAdrTwnNm,
-        twnLctnNm: frmValue.instgAgtAdrTwnLctnNm,
-        dstrctNm: frmValue.instgAgtAdrDstrctNm,
-        ctrySubDvsn: frmValue.instgAgtAdrCtrySubDvsn,
-        ctry: frmValue.instgAgtAdrCtry,
-        adrLine: Array.isArray(frmValue.instgAgtAdrLine) ? frmValue.instgAgtAdrLine.filter(
-          (line: string) => line && line.trim() !== ''
-        ) : [],
-      },
+      lei: frmValue.instgAgtLei
     };
 
     payload.instdAgt = {
       bicfi: frmValue.instdAgtBicfi,
       clrSysIdCd: frmValue.instdAgtClrSysIdCd,
       mmbId: frmValue.instdAgtMmbId,
-      lei: frmValue.instdAgtLei,
-      nm: frmValue.instdAgtNm,
-      adrLine1: frmValue.instdAgtAdrLine1,
-      adrLine2: frmValue.instdAgtAdrLine2,
-      adrLine3: frmValue.instdAgtAdrLine3,
-      adr: {
-        dept: frmValue.instdAgtAdrDept,
-        subDept: frmValue.instdAgtAdrSubDept,
-        strtNm: frmValue.instdAgtAdrStrtNm,
-        bldgNb: frmValue.instdAgtAdrBldgNb,
-        bldgNm: frmValue.instdAgtAdrBldgNm,
-        flr: frmValue.instdAgtAdrFlr,
-        pstBx: frmValue.instdAgtAdrPstBx,
-        room: frmValue.instdAgtAdrRoom,
-        pstCd: frmValue.instdAgtAdrPstCd,
-        twnNm: frmValue.instdAgtAdrTwnNm,
-        twnLctnNm: frmValue.instdAgtAdrTwnLctnNm,
-        dstrctNm: frmValue.instdAgtAdrDstrctNm,
-        ctrySubDvsn: frmValue.instdAgtAdrCtrySubDvsn,
-        ctry: frmValue.instdAgtAdrCtry,
-        adrLine: Array.isArray(frmValue.instdAgtAdrLine) ? frmValue.instdAgtAdrLine.filter(
-          (line: string) => line && line.trim() !== ''
-        ) : [],
-      },
+      lei: frmValue.instdAgtLei
     };
 
     // Map flat intermediary agents to nested structure - Fix field name from bIcfi to bicfi
@@ -1709,7 +1648,9 @@ export class Pacs009 implements OnInit {
 
     const payload = this.generatePayload();
 
-    this.pacs009Service.save(payload).subscribe({
+    this.pacs009Service.save(payload).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (res) => {
         this.toastr.success('PACS.009 message saved successfully!', 'Success');
       },

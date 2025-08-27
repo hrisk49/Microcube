@@ -27,7 +27,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'fromBicfi'"
-            (onDoubleClick)="openBicSelectionModal('fromBicfi','fromNm', 'instgAgtBicfi', 'instgAgtNm')"
+            (onDoubleClick)="openBicSelectionModal('fromBicfi','fromNm')"
           />
           <!-- <app-text-base-input
             [frmGroup]="frmGroup"
@@ -58,7 +58,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'toBicfi'"
-            (onDoubleClick)="openBicSelectionModal('toBicfi','toNm', 'instdAgtBicfi', 'instdAgtNm')"
+            (onDoubleClick)="openBicSelectionModal('toBicfi','toNm')"
           />
           <!-- <app-text-base-input
             [frmGroup]="frmGroup"
@@ -948,7 +948,6 @@
         [panelTitle]="'Agents'"
       />
       @if (agentsPanel()) {
-
       <!-- Instructing Agent -->
       <div class="sub-panel">
         <app-expansion-sub-panel-header
@@ -978,106 +977,6 @@
             [label]="'LEI'"
             [controlName]="'instgAgtLei'"
           />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Name'"
-            [controlName]="'instgAgtNm'"
-          />
-        </div>
-        <div class="sub-panel">
-          <app-expansion-sub-panel-header
-            [isOpenSignal]="instgAgtAddressPanel"
-            [subPanelTitle]="'Postal Address'"
-          />
-          @if (instgAgtAddressPanel()) {
-          <div class="form-grid-col-1">
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 1'"
-              [controlName]="'instgAgtAdrLine1'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 2'"
-              [controlName]="'instgAgtAdrLine2'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 3'"
-              [controlName]="'instgAgtAdrLine3'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Department'"
-              [controlName]="'instgAgtAdrDept'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Sub Department'"
-              [controlName]="'instgAgtAdrSubDept'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Street Name'"
-              [controlName]="'instgAgtAdrStrtNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Building Number'"
-              [controlName]="'instgAgtAdrBldgNb'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Building Name'"
-              [controlName]="'instgAgtAdrBldgNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Floor'"
-              [controlName]="'instgAgtAdrFlr'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Post Box'"
-              [controlName]="'instgAgtAdrPstBx'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Room'"
-              [controlName]="'instgAgtAdrRoom'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Post Code'"
-              [controlName]="'instgAgtAdrPstCd'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Town Name'"
-              [controlName]="'instgAgtAdrTwnNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Town Location Name'"
-              [controlName]="'instgAgtAdrTwnLctnNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'District Name'"
-              [controlName]="'instgAgtAdrDstrctNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Country Sub Division'"
-              [controlName]="'instgAgtAdrCtrySubDvsn'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Country'"
-              [controlName]="'instgAgtAdrCtry'"
-            />
-          </div>
-          }
         </div>
         }
       </div>
@@ -1111,106 +1010,6 @@
             [label]="'LEI'"
             [controlName]="'instdAgtLei'"
           />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Name'"
-            [controlName]="'instdAgtNm'"
-          />
-        </div>
-        <div class="sub-panel">
-          <app-expansion-sub-panel-header
-            [isOpenSignal]="instructedAgentAddressPanel"
-            [subPanelTitle]="'Postal Address'"
-          />
-          @if (instructedAgentAddressPanel()) {
-          <div class="form-grid-col-1">
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 1'"
-              [controlName]="'instdAgtAdrLine1'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 2'"
-              [controlName]="'instdAgtAdrLine2'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 3'"
-              [controlName]="'instdAgtAdrLine3'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Department'"
-              [controlName]="'instdAgtAdrDept'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Sub Department'"
-              [controlName]="'instdAgtAdrSubDept'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Street Name'"
-              [controlName]="'instdAgtAdrStrtNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Building Number'"
-              [controlName]="'instdAgtAdrBldgNb'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Building Name'"
-              [controlName]="'instdAgtAdrBldgNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Floor'"
-              [controlName]="'instdAgtAdrFlr'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Post Box'"
-              [controlName]="'instdAgtAdrPstBx'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Room'"
-              [controlName]="'instdAgtAdrRoom'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Post Code'"
-              [controlName]="'instdAgtAdrPstCd'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Town Name'"
-              [controlName]="'instdAgtAdrTwnNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Town Location Name'"
-              [controlName]="'instdAgtAdrTwnLctnNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'District Name'"
-              [controlName]="'instdAgtAdrDstrctNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Country Sub Division'"
-              [controlName]="'instdAgtAdrCtrySubDvsn'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Country'"
-              [controlName]="'instdAgtAdrCtry'"
-            />
-          </div>
-          }
         </div>
         }
       </div>
@@ -1446,7 +1245,7 @@
           [frmGroup]="frmGroup"
           [label]="'Debtor BIC'"
           [controlName]="'dbtrBicfi'"
-          (onDoubleClick)="openBicSelectionModal('dbtrBicfi','dbtrNm', 'dbtrAgtBicfi', 'dbtrAgtNm')"
+          (onDoubleClick)="openBicSelectionModal('dbtrBicfi','dbtrNm')"
         />
         <app-text-base-input
           [frmGroup]="frmGroup"
@@ -1802,7 +1601,7 @@
           [frmGroup]="frmGroup"
           [label]="'Creditor BIC'"
           [controlName]="'cdtrBicfi'"
-          (onDoubleClick)="openBicSelectionModal('cdtrBicfi','cdtrNm', 'cdtrAgtBicfi', 'cdtrAgtNm')"
+          (onDoubleClick)="openBicSelectionModal('cdtrBicfi','cdtrNm')"
         />
         <app-text-base-input
           [frmGroup]="frmGroup"
