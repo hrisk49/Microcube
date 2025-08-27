@@ -41,11 +41,139 @@
       />
 
       @if (businessHeaderPanel()) {
-        <app-business-application-header
-          [frmGroup]="frmGroup"
-          [priorityOptions]="priorityOptions"
-          [duplicateOptions]="duplicateOptions"/>
-      }
+        <div class="form-grid-col-1">
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Character Set'"
+            [controlName]="'charSet'"
+          />
+        </div>
+
+        <div class="sub-panel">
+          <app-expansion-sub-panel-header
+            [isOpenSignal]="fromBicPanel"
+            [subPanelTitle]="'From'"
+          />
+          @if(fromBicPanel()) {
+            <div class="form-grid-col-1">
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'BIC'"
+                [controlName]="'fromBicfi'"
+                (onDoubleClick)="openFromBicSelectionModal()"
+              />
+              <!-- <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Clearing System ID Code'"
+                [controlName]="'fromClrSysIdCd'"
+              /> -->
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Member ID'"
+                [controlName]="'fromMembId'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'LEI'"
+                [controlName]="'fromLei'"
+              />
+            </div>
+          }
+        </div>
+        <div class="sub-panel mb-2">
+          <app-expansion-sub-panel-header
+            [isOpenSignal]="toBicPanel"
+            [subPanelTitle]="'To'"
+          />
+          @if(toBicPanel()) {
+            <div class="form-grid-col-1">
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'BIC'"
+                [controlName]="'toBicfi'"
+                (onDoubleClick)="openToBicSelectionModal()"
+              />
+              <!-- <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Clearing System ID Code'"
+                [controlName]="'toClrSysIdCd'"
+              /> -->
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Member ID'"
+                [controlName]="'toMembId'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'LEI'"
+                [controlName]="'toLei'"
+              />
+            </div>
+          }
+        </div>
+        <div class="form-grid-col-1">
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Business Message Identifier'"
+            [controlName]="'bizMsgIdr'"
+          />
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [isReadonly]="true"
+            [label]="'Message Definition Identifier'"
+            [isReadonly]="true"
+            [controlName]="'msgDefIdr'"
+          />
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [isReadonly]="true"
+            [label]="'Business Service'"
+            [controlName]="'bizSvc'"
+          />
+
+          <app-date-input
+            [frmGroup]="frmGroup"
+            [label]="'Creation Date'"
+            [controlName]="'creDt'"
+          />
+
+          <app-select-option-field
+            [frmGroup]="frmGroup"
+            [options]="duplicateOptions"
+            [label]="'Copy Duplicate'"
+            [controlName]="'cpyDplct'"
+          />
+
+          <!-- <app-select-option-field
+            [frmGroup]="frmGroup"
+            [options]="yesNoOptions"
+            [label]="'Possible Duplicate'"
+            [controlName]="'pssblDplct'"
+          /> -->
+
+          <app-select-option-field
+            [frmGroup]="frmGroup"
+            [options]="priorityOptions"
+            [label]="'Priority'"
+            [controlName]="'priority'"
+          />
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Message ID'"
+            [controlName]="'msgId'"
+          />
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [isReadonly]="true"
+            [label]="'Number of Transactions'"
+            [controlName]="'nbOfTxs'"
+          />
+        </div>
+
 
       <!-- Related Information -->
       <div class="sub-panel">
@@ -62,6 +190,7 @@
               [frmGroup]="frmGroup"
               [label]="'Related From BIC'"
               [controlName]="'rltdFrBicfi'"
+              (onDoubleClick)="openRelatedFromBicSelectionModal()"
             />
             <!-- <app-text-base-input
               [frmGroup]="frmGroup"
@@ -72,6 +201,7 @@
               [frmGroup]="frmGroup"
               [label]="'Related To BIC'"
               [controlName]="'rltdToBicfi'"
+              (onDoubleClick)="openRelatedToBicSelectionModal()"
             />
             <!-- <app-text-base-input
               [frmGroup]="frmGroup"
@@ -101,6 +231,7 @@
           </div>
         }
       </div>
+      }
     </div>
 
     <!-- F1 to F1 Customer Credit Transfer V08 -->
@@ -349,8 +480,9 @@
         <ng-container formArrayName="serviceLevels">
           @for (group of serviceLevels.controls; track $index) {
           <div [formGroupName]="$index" class="form-grid-col-1 mb-3">
-            <app-text-base-input
+            <app-select-option-field
               [frmGroup]="getServiceLevelGroup($index)"
+              [options]="serviceLevelCodeOptions"
               [label]="'Service Code'"
               [controlName]="'serviceCode'"
             />
@@ -405,6 +537,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt1Bicfi'"
+            (onDoubleClick)="openPrevInstgAgtBicSelectionModal(1)"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -559,6 +692,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt2Bicfi'"
+            (onDoubleClick)="openPrevInstgAgtBicSelectionModal(2)"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -712,6 +846,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt3Bicfi'"
+            (onDoubleClick)="openPrevInstgAgtBicSelectionModal(3)"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -875,6 +1010,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'instgAgtBicfi'"
+            (onDoubleClick)="openInstgAgtBicSelectionModal()"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1007,6 +1143,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'instdAgtBicfi'"
+            (onDoubleClick)="openInstdAgtBicSelectionModal()"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1149,6 +1286,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt1Bicfi'"
+            (onDoubleClick)="openIntermediaryBicSelectionModal"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1217,6 +1355,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt2Bicfi'"
+            (onDoubleClick)="openIntermediaryBicSelectionModal(2)"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1285,6 +1424,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt3Bicfi'"
+            (onDoubleClick)="openIntermediaryBicSelectionModal(3)"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1459,7 +1599,8 @@
 
                     <app-text-base-input [frmGroup]="frmGroup"
                                          [label]="'Any BIC'"
-                                         [controlName]="'anyBIC'"/>
+                                         [controlName]="'anyBIC'"
+                                         (onDoubleClick)="openDbtrOrgIdenBicSelectionModal()"/>
 
                     <app-text-base-input [frmGroup]="frmGroup"
                                          [label]="'LEI'"
@@ -1899,7 +2040,7 @@
         }
       </div>
 
-      <!-- UltimateDebtor -->
+      <!-- Ultimate Debtor -->
       <div class="sub-panel">
         <app-expansion-sub-panel-header
           [isOpenSignal]="ultimateDebtorPanel"
@@ -1999,7 +2140,8 @@
 
                       <app-text-base-input [frmGroup]="frmGroup"
                                            [label]="'Any BIC'"
-                                           [controlName]="'ultanyBIC'"/>
+                                           [controlName]="'ultanyBIC'"
+                                           (onDoubleClick)="openUltDbtrBicSelectionModal()"/>
 
                       <app-text-base-input [frmGroup]="frmGroup"
                                            [label]="'LEI'"
@@ -2256,7 +2398,8 @@
 
                         <app-text-base-input [frmGroup]="frmGroup"
                                              [label]="'Any BIC'"
-                                             [controlName]="'crdtranyBIC'"/>
+                                             [controlName]="'crdtranyBIC'"
+                                             (onDoubleClick)="openCdtrBicSelectionModal()"/>
 
                         <app-text-base-input [frmGroup]="frmGroup"
                                              [label]="'LEI'"
@@ -2799,7 +2942,8 @@
 
                         <app-text-base-input [frmGroup]="frmGroup"
                                              [label]="'Any BIC'"
-                                             [controlName]="'ultcrdtranyBIC'"/>
+                                             [controlName]="'ultcrdtranyBIC'"
+                                             (onDoubleClick)="openUltCdtrBicSelectionModal()"/>
 
                         <app-text-base-input [frmGroup]="frmGroup"
                                              [label]="'LEI'"

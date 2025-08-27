@@ -7,7 +7,7 @@ import { DialogUtils } from '../service/dialog-utils';
   // Define interface for field mapping
   interface BicFieldMapping {
     bicField: string;
-    nameField: string;
+    nameField?: string;
     defaultValue?: string;
   }
 @Injectable({
@@ -106,14 +106,14 @@ export class BicSelectionService {
         if (selectedBank) {
           const sourceUpdate = {
             [sourceFields.bicField]: selectedBank.swift,
-            [sourceFields.nameField]: selectedBank.branchName
+            [sourceFields?.nameField || '']: selectedBank.branchName
           };
           form.patchValue(sourceUpdate);
 
           if (targetFields) {
             const targetUpdate = {
               [targetFields.bicField]: selectedBank.swift,
-              [targetFields.nameField]: selectedBank.branchName
+              [targetFields?.nameField || '']: selectedBank.branchName
             };
             form.patchValue(targetUpdate);
           }
@@ -164,7 +164,7 @@ export class BicSelectionService {
               // Update source fields
               const sourceUpdate = {
                 [sourceFields.bicField]: selectedBank.swift,
-                [sourceFields.nameField]: selectedBank.branchName
+                [sourceFields?.nameField || '']: selectedBank.branchName
               };
               form.patchValue(sourceUpdate);
 
@@ -172,7 +172,7 @@ export class BicSelectionService {
               if (targetFields) {
                 const targetUpdate = {
                   [targetFields.bicField]: selectedBank.swift,
-                  [targetFields.nameField]: selectedBank.branchName
+                  [targetFields?.nameField || '']: selectedBank.branchName
                 };
                 form.patchValue(targetUpdate);
               }

@@ -30,4 +30,7 @@ export const SWIFT_EXTERNAL_CODE: string = "swift-external-code";
 export const GET_SWIFT_EXTERNAL_CODES: string = "get-codes";
 
 
+//CBS Master Data Api
+export const GET_MESSAGE_BY_REFNO: string = "get-msg-by-refno";
+
 
