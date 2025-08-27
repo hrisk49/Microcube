@@ -37,6 +37,7 @@
           (onClick)="populateSampleData()"
           class="bg-green-500 hover:bg-green-600">
         </lds-btn> -->
+
         <lds-btn labelText="Clear Search" (onClick)="clearSearch()">
         </lds-btn>
         <lds-btn labelText="Find from CBS" (onClick)="findFromCBS()">
@@ -135,7 +136,7 @@
                 </button>
                 <button mat-icon-button
                   class="text-purple-600 hover:text-purple-700 hover:bg-purple-50 p-1 rounded-full transition-colors duration-200"
-                  matTooltip="Process Data" (click)="processCBSData(data)">
+                  matTooltip="Process Data - Navigate to selected message type with CBS data" (click)="processCBSData(data)">
                   <mat-icon class="text-lg">settings</mat-icon>
                 </button>
               </div>

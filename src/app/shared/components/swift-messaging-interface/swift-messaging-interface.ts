@@ -4,7 +4,13 @@ import { SwiftMessage } from '../prime-table-out/prime-table-out';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ELEMENT_DATA } from '../prime-table-out/prime-table-out';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormGroup,
+  FormBuilder,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -19,14 +25,15 @@ import { Button } from '../input-types/button/button';
 import { SelectOptionField } from '../input-types/select-option-field/select-option-field';
 import { BranchInfoService } from '../../services/branch-info.service';
 import { MessageTypeService } from '../../services/message-type.service';
-import { SwiftMessageService, SwiftMessageRequest, CBSData } from '../../services/swift-message.service';
 import { TextBaseInput } from '../input-types/text-base-input/text-base-input';
 import { DateInput } from '../input-types/date-input/date-input';
+import { CBSData, SwiftMessageRequest } from '../../models/swift-message.model';
 
 @Component({
   selector: 'app-swift-messaging-interface',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     MatFormFieldModule,
     MatDatepickerModule,
     MatNativeDateModule,
@@ -43,9 +50,10 @@ import { DateInput } from '../input-types/date-input/date-input';
     DateInput,
     TextBaseInput,
     ReactiveFormsModule,
-    RouterModule],
+    RouterModule,
+  ],
   templateUrl: './swift-messaging-interface.html',
-  styleUrl: './swift-messaging-interface.scss'
+  styleUrl: './swift-messaging-interface.scss',
 })
 export class SwiftMessagingInterface implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -53,7 +61,15 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
   // Form for the interface
   swiftForm: FormGroup;
 
-  displayedColumns = ['position', 'msgRefNo', 'mtId', 'senderBic', 'makeBy', 'makeDt', 'actions'];
+  displayedColumns = [
+    'position',
+    'msgRefNo',
+    'mtId',
+    'senderBic',
+    'makeBy',
+    'makeDt',
+    'actions',
+  ];
 
   // Original data source
   private originalDataSource: SwiftMessage[] = ELEMENT_DATA;
@@ -80,7 +96,10 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
   // Message types for dropdown (MT types)
   messageTypes: any[] = [
     { key: 'pacs-008', value: 'pacs 008 - F1 to F1 Customer Credit Transfer' },
-    { key: 'pacs-009', value: 'pacs 009 - Financial Institution Credit Transfer Return' },
+    {
+      key: 'pacs-009',
+      value: 'pacs 009 - Financial Institution Credit Transfer Return',
+    },
     { key: 'pacs-003', value: 'pacs 003 - Direct Debit' },
     { key: 'pacs-002', value: 'pacs 002 - F1 to F1 Payment' },
     { key: 'pacs-010', value: 'pacs 010 - Payment Return' },
@@ -88,18 +107,33 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
     { key: 'pacs-012', value: 'pacs 012 - Request for Investigation Return' },
     { key: 'pacs-013', value: 'pacs 013 - Resolution of Investigation' },
     { key: 'pacs-014', value: 'pacs 014 - Additional Payment Information' },
-    { key: 'pacs-015', value: 'pacs 015 - Account Switching Information Request' },
-    { key: 'pacs-016', value: 'pacs 016 - Intra-Position Movement Instruction' },
-    { key: 'pacs-017', value: 'pacs 017 - Intra-Position Movement Confirmation' },
-    { key: 'pacs-018', value: 'pacs 018 - Intra-Position Movement Status Report' },
-    { key: 'pacs-019', value: 'pacs 019 - Intra-Position Movement Cancellation Request' }
+    {
+      key: 'pacs-015',
+      value: 'pacs 015 - Account Switching Information Request',
+    },
+    {
+      key: 'pacs-016',
+      value: 'pacs 016 - Intra-Position Movement Instruction',
+    },
+    {
+      key: 'pacs-017',
+      value: 'pacs 017 - Intra-Position Movement Confirmation',
+    },
+    {
+      key: 'pacs-018',
+      value: 'pacs 018 - Intra-Position Movement Status Report',
+    },
+    {
+      key: 'pacs-019',
+      value: 'pacs 019 - Intra-Position Movement Cancellation Request',
+    },
   ];
 
   // Status options for dropdown
   statusOptions: any[] = [
     { key: '', value: 'All Status' },
     { key: 'ACK', value: 'ACK' },
-    { key: 'NACK', value: 'NACK' }
+    { key: 'NACK', value: 'NACK' },
   ];
 
   // Branch options - will be populated from API
@@ -119,7 +153,6 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
     private fb: FormBuilder,
     private branchInfoService: BranchInfoService,
     private messageTypeService: MessageTypeService,
-    private swiftMessageService: SwiftMessageService,
     private router: Router
   ) {
     this.initializeForm();
@@ -146,9 +179,9 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
     this.swiftForm = this.fb.group({
       messageType: [null],
       fromDate: ['', [Validators.required]], // Add required validator if needed
-      toDate: ['', [Validators.required]],   // Add required validator if needed
+      toDate: ['', [Validators.required]], // Add required validator if needed
       branch: [null],
-      messageRefNo: ['']
+      messageRefNo: [''],
     });
   }
 
@@ -167,28 +200,36 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
           // Transform the API response to match the expected format
           this.branchOptions = response.map((branch: any) => ({
             key: branch.homeBranchId,
-            value: `${branch.branchName} (${branch.homeBranchId})`
+            value: `${branch.branchName} (${branch.homeBranchId})`,
           }));
           this.fullBranchData = response; // Store full data
         } else if (response && response.data && Array.isArray(response.data)) {
           // Handle case where response is wrapped in a data property
           this.branchOptions = response.data.map((branch: any) => ({
             key: branch.homeBranchId,
-            value: `${branch.branchName} (${branch.homeBranchId})`
+            value: `${branch.branchName} (${branch.homeBranchId})`,
           }));
           this.fullBranchData = response.data; // Store full data
-        } else if (response && response.result && Array.isArray(response.result)) {
+        } else if (
+          response &&
+          response.result &&
+          Array.isArray(response.result)
+        ) {
           // Handle case where response is wrapped in a result property
           this.branchOptions = response.result.map((branch: any) => ({
             key: branch.homeBranchId,
-            value: `${branch.branchName} (${branch.homeBranchId})`
+            value: `${branch.branchName} (${branch.homeBranchId})`,
           }));
           this.fullBranchData = response.data; // Store full data
-        } else if (response && response.payload && Array.isArray(response.payload)) {
+        } else if (
+          response &&
+          response.payload &&
+          Array.isArray(response.payload)
+        ) {
           // Handle case where response is wrapped in a payload property
           this.branchOptions = response.payload.map((branch: any) => ({
             key: branch.homeBranchId,
-            value: `${branch.branchName} (${branch.homeBranchId})`
+            value: `${branch.branchName} (${branch.homeBranchId})`,
           }));
         } else {
           console.warn('Unexpected branch data format:', response);
@@ -207,7 +248,7 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
         console.error('Error loading branch data:', error);
         this.isLoadingBranches = false;
         this.setFallbackBranchOptions();
-      }
+      },
     });
   }
 
@@ -217,8 +258,14 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
   private setFallbackBranchOptions() {
     console.log('Setting fallback branch options');
     this.branchOptions = [
-      { key: '000035', value: 'HEAD OFFICE, SOUTHEAST BANK LIMITED (SEBDBDDH)' },
-      { key: '086153', value: 'PRINCIPAL BRANCH, SOUTHEAST BANK LIMITED (SEBDBDDHSPB)' }
+      {
+        key: '000035',
+        value: 'HEAD OFFICE, SOUTHEAST BANK LIMITED (SEBDBDDH)',
+      },
+      {
+        key: '086153',
+        value: 'PRINCIPAL BRANCH, SOUTHEAST BANK LIMITED (SEBDBDDHSPB)',
+      },
     ];
   }
 
@@ -228,7 +275,7 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
   getBranchInfo(homeBranchId: string): any {
     // This method can be used to get additional branch details
     // You can extend this to fetch from a cache or make additional API calls
-    return this.branchOptions.find(branch => branch.key === homeBranchId);
+    return this.branchOptions.find((branch) => branch.key === homeBranchId);
   }
 
   /**
@@ -243,7 +290,9 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
    * Get full branch details by branch ID
    */
   getFullBranchDetails(homeBranchId: string): any {
-    return this.fullBranchData.find((branch: any) => branch.homeBranchId === homeBranchId);
+    return this.fullBranchData.find(
+      (branch: any) => branch.homeBranchId === homeBranchId
+    );
   }
 
   /**
@@ -271,8 +320,8 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
     }
 
     const regex = new RegExp(pattern.trim(), 'i'); // Case-insensitive search
-    return this.fullBranchData.filter((branch: any) =>
-      branch.swift && regex.test(branch.swift)
+    return this.fullBranchData.filter(
+      (branch: any) => branch.swift && regex.test(branch.swift)
     );
   }
 
@@ -284,8 +333,8 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
       return this.fullBranchData;
     }
 
-    return this.fullBranchData.filter((branch: any) =>
-      branch.countryId === countryId
+    return this.fullBranchData.filter(
+      (branch: any) => branch.countryId === countryId
     );
   }
 
@@ -297,7 +346,15 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
       return 'No branch data available';
     }
 
-    const headers = ['Branch ID', 'Branch Name', 'SWIFT Code', 'Address', 'Country ID', 'Branch Type', 'Open Date'];
+    const headers = [
+      'Branch ID',
+      'Branch Name',
+      'SWIFT Code',
+      'Address',
+      'Country ID',
+      'Branch Type',
+      'Open Date',
+    ];
     const csvRows = [headers.join(',')];
 
     this.fullBranchData.forEach((branch: any) => {
@@ -309,7 +366,7 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
         `"${(branch.address || '').replace(/"/g, '""')}"`, // Escape quotes in address
         branch.countryId || '',
         branch.branchTypeId || '',
-        branch.branchOpenDate || ''
+        branch.branchOpenDate || '',
       ];
       csvRows.push(row.join(','));
     });
@@ -325,17 +382,19 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
       return {
         totalBranches: 0,
         countries: 0,
-        branchTypes: 0
+        branchTypes: 0,
       };
     }
 
     const countries = new Set(this.fullBranchData.map((b: any) => b.countryId));
-    const branchTypes = new Set(this.fullBranchData.map((b: any) => b.branchTypeId));
+    const branchTypes = new Set(
+      this.fullBranchData.map((b: any) => b.branchTypeId)
+    );
 
     return {
       totalBranches: this.fullBranchData.length,
       countries: countries.size,
-      branchTypes: branchTypes.size
+      branchTypes: branchTypes.size,
     };
   }
 
@@ -353,7 +412,10 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `branch_data_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+      'download',
+      `branch_data_${new Date().toISOString().split('T')[0]}.csv`
+    );
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -428,26 +490,34 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
         if (response && Array.isArray(response)) {
           this.branchOptions = response.map((branch: any) => ({
             key: branch.homeBranchId,
-            value: `${branch.branchName} (${branch.swift})`
+            value: `${branch.branchName} (${branch.swift})`,
           }));
           this.fullBranchData = response; // Store full data
         } else if (response && response.data && Array.isArray(response.data)) {
           this.branchOptions = response.data.map((branch: any) => ({
             key: branch.homeBranchId,
-            value: `${branch.branchName} (${branch.swift})`
+            value: `${branch.branchName} (${branch.swift})`,
           }));
           this.fullBranchData = response.data; // Store full data
-        } else if (response && response.result && Array.isArray(response.result)) {
+        } else if (
+          response &&
+          response.result &&
+          Array.isArray(response.result)
+        ) {
           this.branchOptions = response.result.map((branch: any) => ({
             key: branch.homeBranchId,
-            value: `${branch.branchName} (${branch.swift})`
+            value: `${branch.branchName} (${branch.swift})`,
           }));
           this.fullBranchData = response.result; // Store full data
-        } else if (response && response.payload && Array.isArray(response.payload)) {
+        } else if (
+          response &&
+          response.payload &&
+          Array.isArray(response.payload)
+        ) {
           // Handle case where response is wrapped in a payload property
           this.branchOptions = response.payload.map((branch: any) => ({
             key: branch.homeBranchId,
-            value: `${branch.branchName} (${branch.swift})`
+            value: `${branch.branchName} (${branch.swift})`,
           }));
           this.fullBranchData = response.payload; // Store full data
         } else {
@@ -455,7 +525,9 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
           this.branchOptions = [];
         }
 
-        console.log(`Found ${this.branchOptions.length} branches for SWIFT code prefix: ${swiftCode}`);
+        console.log(
+          `Found ${this.branchOptions.length} branches for SWIFT code prefix: ${swiftCode}`
+        );
 
         if (this.branchOptions.length === 0) {
           this.setFallbackBranchOptions();
@@ -465,7 +537,7 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
         console.error('Error searching branches by SWIFT code:', error);
         this.isLoadingBranches = false;
         this.setFallbackBranchOptions();
-      }
+      },
     });
   }
 
@@ -517,7 +589,7 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
       fromDate: '2020-01-01',
       toDate: '2025-12-01',
       branch: '0031', // This should match a homeBranchId from your branch options
-      messageRefNo: ''
+      messageRefNo: '',
     });
     console.log('Form populated with sample data for testing');
   }
@@ -535,7 +607,10 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
     const request = this.buildSearchRequest();
 
     console.log('Searching CBS for messages with criteria:', request);
-    console.log('Request payload for backend:', JSON.stringify(request, null, 2));
+    console.log(
+      'Request payload for backend:',
+      JSON.stringify(request, null, 2)
+    );
 
     this.messageTypeService.getList(request).subscribe({
       next: (response: any) => {
@@ -545,7 +620,7 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
           isArray: Array.isArray(response),
           hasData: response && response.data,
           hasPayload: response && response.payload,
-          responseKeys: response ? Object.keys(response) : []
+          responseKeys: response ? Object.keys(response) : [],
         });
 
         let messages: CBSData[] = [];
@@ -554,7 +629,11 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
           messages = response;
         } else if (response && response.data && Array.isArray(response.data)) {
           messages = response.data;
-        } else if (response && response.payload && Array.isArray(response.payload)) {
+        } else if (
+          response &&
+          response.payload &&
+          Array.isArray(response.payload)
+        ) {
           messages = response.payload;
         } else {
           console.warn('Unexpected CBS response format:', response);
@@ -562,7 +641,10 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
         }
 
         console.log('Processed messages:', messages);
-        console.log('First message structure:', messages.length > 0 ? messages[0] : 'No messages');
+        console.log(
+          'First message structure:',
+          messages.length > 0 ? messages[0] : 'No messages'
+        );
 
         this.cbsDataSource.data = messages;
         console.log(`Loaded ${messages.length} messages from CBS`);
@@ -581,7 +663,7 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
         console.error('Error loading CBS messages:', error);
         alert('Failed to load messages from CBS. Please try again.');
         this.cbsDataSource.data = [];
-      }
+      },
     });
   }
 
@@ -606,7 +688,11 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
           messages = response;
         } else if (response && response.data && Array.isArray(response.data)) {
           messages = response.data;
-        } else if (response && response.payload && Array.isArray(response.payload)) {
+        } else if (
+          response &&
+          response.payload &&
+          Array.isArray(response.payload)
+        ) {
           messages = response.payload;
         } else {
           console.warn('Unexpected SWIFTLINK response format:', response);
@@ -614,7 +700,10 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
         }
 
         console.log('Processed messages:', messages);
-        console.log('First message structure:', messages.length > 0 ? messages[0] : 'No messages');
+        console.log(
+          'First message structure:',
+          messages.length > 0 ? messages[0] : 'No messages'
+        );
 
         this.cbsDataSource.data = messages;
         console.log(`Loaded ${messages.length} messages from SWIFTLINK`);
@@ -633,7 +722,7 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
         console.error('Error loading SWIFTLINK messages:', error);
         alert('Failed to load messages from SWIFTLINK. Please try again.');
         this.cbsDataSource.data = [];
-      }
+      },
     });
   }
 
@@ -649,7 +738,7 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
       refNo: formValue.messageRefNo || null,
       msgFromDate: this.formatDateForBackend(formValue.fromDate),
       msgToDate: this.formatDateForBackend(formValue.toDate),
-      orgnBrId: formValue.branch || null // Using branch as organization branch ID
+      orgnBrId: formValue.branch || null, // Using branch as organization branch ID
     };
   }
 
@@ -662,7 +751,9 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
     try {
       const date = new Date(dateString);
       const day = date.getDate().toString().padStart(2, '0');
-      const month = date.toLocaleDateString('en-US', { month: 'short' }).toLowerCase();
+      const month = date
+        .toLocaleDateString('en-US', { month: 'short' })
+        .toLowerCase();
       const year = date.getFullYear();
 
       return `${day}${month}${year}`;
@@ -682,9 +773,15 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
     const match = messageType.match(/pacs-(\d+)/);
     if (match) {
       const number = parseInt(match[1], 10);
-      return number;
-    }
 
+      if (number === 9) {
+        return 202;
+      } else if (number === 8) {
+        return 103;
+      } else {
+        return number;
+      }
+    }
     // Handle other message type formats if needed
     return 0;
   }
@@ -706,7 +803,9 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
     }
 
     if (!formValue.fromDate && !formValue.toDate && !formValue.messageRefNo) {
-      alert('Please provide at least one search criteria (date range or message reference number).');
+      alert(
+        'Please provide at least one search criteria (date range or message reference number).'
+      );
       return false;
     }
 
@@ -790,7 +889,7 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
 
     // Filter by date range
     if (this.fromDate || this.toDate) {
-      filteredData = filteredData.filter(item => {
+      filteredData = filteredData.filter((item) => {
         const itemDate = new Date(item.makeDt);
 
         if (this.fromDate && this.toDate) {
@@ -806,25 +905,26 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
 
     // Filter by message type
     if (this.selectedMessageType) {
-      filteredData = filteredData.filter(item =>
-        item.mtId.toString() === this.selectedMessageType
+      filteredData = filteredData.filter(
+        (item) => item.mtId.toString() === this.selectedMessageType
       );
     }
 
     // Filter by status
     if (this.selectedStatus) {
-      filteredData = filteredData.filter(item =>
-        item.status === this.selectedStatus
+      filteredData = filteredData.filter(
+        (item) => item.status === this.selectedStatus
       );
     }
 
     // Filter by search term
     if (this.searchTerm) {
-      filteredData = filteredData.filter(item =>
-        item.msgRefNo.toLowerCase().includes(this.searchTerm) ||
-        item.senderBic.toLowerCase().includes(this.searchTerm) ||
-        item.makeBy.toLowerCase().includes(this.searchTerm) ||
-        item.mtId.toString().includes(this.searchTerm)
+      filteredData = filteredData.filter(
+        (item) =>
+          item.msgRefNo.toLowerCase().includes(this.searchTerm) ||
+          item.senderBic.toLowerCase().includes(this.searchTerm) ||
+          item.makeBy.toLowerCase().includes(this.searchTerm) ||
+          item.mtId.toString().includes(this.searchTerm)
       );
     }
 
@@ -923,45 +1023,104 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
    * The CBS data is passed to the target component via router state.
    */
   processCBSData(data: CBSData) {
-
-    // Get the selected message type from the form
     const selectedMessageType = this.swiftForm.get('messageType')?.value;
-
     if (!selectedMessageType) {
-      // Show user-friendly error message
       alert('Please select a message type before processing the data.');
       return;
     }
 
-    // Route to appropriate component based on message type
+    if (!data || !data.msgRefNo) {
+      alert('Invalid CBS data. Please try selecting the data again.');
+      return;
+    }
+
     switch (selectedMessageType) {
       case 'pacs-009':
         this.router.navigate(['/mx/pacs-009'], {
-          state: { cbsData: data }
+          state: { cbsData: data },
         });
         break;
       case 'pacs-003':
-        console.log('Navigating to pacs-003 with data:', data);
         this.router.navigate(['/mx/pacs-003'], {
-          state: { cbsData: data }
+          state: { cbsData: data },
         });
         break;
       case 'pacs-008':
-        console.log('Navigating to pacs-008 with data:', data);
         this.router.navigate(['/mx/pacs-008'], {
-          state: { cbsData: data }
+          state: { cbsData: data },
         });
         break;
       case 'pacs-002':
-        console.log('Navigating to pacs-002 with data:', data);
         this.router.navigate(['/mx/pacs-002'], {
-          state: { cbsData: data }
+          state: { cbsData: data },
         });
         break;
       default:
-        console.warn(`Routing not implemented for message type: ${selectedMessageType}`);
-        // Show user-friendly error message
-        alert(`Routing not implemented for message type: ${selectedMessageType}. Please contact support.`);
+        console.warn(
+          `Routing not implemented for message type: ${selectedMessageType}`
+        );
+
+        break;
+    }
+  }
+
+  /**
+   * Alternative method to process CBS data using query parameters
+   * This can be used as a fallback when router state doesn't work
+   */
+  processCBSDataViaQueryParams(data: CBSData) {
+    // Get the selected message type from the form
+    const selectedMessageType = this.swiftForm.get('messageType')?.value;
+
+    if (!selectedMessageType) {
+      alert('Please select a message type before processing the data.');
+      return;
+    }
+
+    // Validate that we have valid CBS data
+    if (!data || !data.msgRefNo) {
+      alert('Invalid CBS data. Please try selecting the data again.');
+      return;
+    }
+
+    console.log(`Processing CBS data via query params for message type: ${selectedMessageType}`, data);
+
+    // Encode the CBS data for query parameters
+    const encodedData = encodeURIComponent(JSON.stringify(data));
+
+    // Route to appropriate component based on message type
+    switch (selectedMessageType) {
+      case 'pacs-009':
+        console.log('Navigating to pacs-009 with CBS data via query params:', data);
+        this.router.navigate(['/mx/pacs-009'], {
+          queryParams: { cbsData: encodedData },
+        });
+        break;
+      case 'pacs-003':
+        console.log('Navigating to pacs-003 with CBS data via query params:', data);
+        this.router.navigate(['/mx/pacs-003'], {
+          queryParams: { cbsData: encodedData },
+        });
+        break;
+      case 'pacs-008':
+        console.log('Navigating to pacs-008 with CBS data via query params:', data);
+        this.router.navigate(['/mx/pacs-008'], {
+          queryParams: { cbsData: encodedData },
+        });
+        break;
+      case 'pacs-002':
+        console.log('Navigating to pacs-002 with CBS data via query params:', data);
+        this.router.navigate(['/mx/pacs-002'], {
+          queryParams: { cbsData: encodedData },
+        });
+        break;
+      default:
+        console.warn(
+          `Routing not implemented for message type: ${selectedMessageType}`
+        );
+        alert(
+          `Routing not implemented for message type: ${selectedMessageType}. Please contact support.`
+        );
         break;
     }
   }
@@ -1000,5 +1159,29 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
     console.log('Sending CBS data via email for:', data);
     // TODO: Implement CBS data email functionality
     // Example: this.emailService.sendCBSDataEmail(data);
+  }
+
+  /**
+   * Test method to demonstrate data flow
+   * This can be used for testing the integration between components
+   */
+  testDataFlow() {
+    // Create sample CBS data for testing
+    const sampleCBSData: CBSData = {
+      msgRefNo: 'TEST_MSG_001',
+      makeBy: 'Test User',
+      makeDate: new Date().toISOString(),
+      issueDate: new Date().toISOString(),
+      auth1stBy: 'Test Authorizer',
+      auth1stDate: new Date().toISOString()
+    };
+
+    console.log('Testing data flow with sample data:', sampleCBSData);
+    
+    // Set message type to pacs-009 for testing
+    this.swiftForm.patchValue({ messageType: 'pacs-009' });
+    
+    // Process the sample data
+    this.processCBSData(sampleCBSData);
   }
 }

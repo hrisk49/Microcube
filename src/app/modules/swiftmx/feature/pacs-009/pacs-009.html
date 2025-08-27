@@ -27,7 +27,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'fromBicfi'"
-            (onDoubleClick)="openFromBicSelectionModal()"
+            (onDoubleClick)="openBicSelectionModal('fromBicfi','fromNm', 'instgAgtBicfi', 'instgAgtNm')"
           />
           <!-- <app-text-base-input
             [frmGroup]="frmGroup"
@@ -58,7 +58,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'toBicfi'"
-            (onDoubleClick)="openToBicSelectionModal()"
+            (onDoubleClick)="openBicSelectionModal('toBicfi','toNm', 'instdAgtBicfi', 'instdAgtNm')"
           />
           <!-- <app-text-base-input
             [frmGroup]="frmGroup"
@@ -155,7 +155,7 @@
             [frmGroup]="frmGroup"
             [label]="'Related From BIC'"
             [controlName]="'rltdFrBicfi'"
-            (onDoubleClick)="openRelatedFromBicSelectionModal()"
+            (onDoubleClick)="openBicSelectionModal('rltdFrBicfi','rltdFrNm')"
           />
           <!-- <app-text-base-input
             [frmGroup]="frmGroup"
@@ -166,7 +166,7 @@
             [frmGroup]="frmGroup"
             [label]="'Related To BIC'"
             [controlName]="'rltdToBicfi'"
-            (onDoubleClick)="openRelatedToBicSelectionModal()"
+            (onDoubleClick)="openBicSelectionModal('rltdToBicfi','rltdToNm')"
           />
           <!-- <app-text-base-input
             [frmGroup]="frmGroup"
@@ -488,7 +488,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt1Bicfi'"
-          (onDoubleClick)="openPrevInstgAgtBicSelectionModal(1)"
+          (onDoubleClick)="openBicSelectionModal('prvsInstgAgt1Bicfi','prvsInstgAgt1Nm')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -643,7 +643,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt2Bicfi'"
-          (onDoubleClick)="openPrevInstgAgtBicSelectionModal(2)"
+          (onDoubleClick)="openBicSelectionModal('prvsInstgAgt2Bicfi','prvsInstgAgt2Nm')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -797,7 +797,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt3Bicfi'"
-          (onDoubleClick)="openPrevInstgAgtBicSelectionModal(3)"
+          (onDoubleClick)="openBicSelectionModal('prvsInstgAgt3Bicfi','prvsInstgAgt3Nm')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -961,7 +961,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'instgAgtBicfi'"
-          (onDoubleClick)="openInstgAgtBicSelectionModal()"
+          (onDoubleClick)="openBicSelectionModal('instgAgtBicfi','instgAgtNm')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1094,7 +1094,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'instdAgtBicfi'"
-          (onDoubleClick)="openInstdAgtBicSelectionModal()"
+          (onDoubleClick)="openBicSelectionModal('instdAgtBicfi','instdAgtNm')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1237,7 +1237,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt1Bicfi'"
-          (onDoubleClick)="openIntermediaryBicSelectionModal(1)"
+            (onDoubleClick)="openBicSelectionModal('intrmyAgt1Bicfi','intrmyAgt1Nm')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1306,7 +1306,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt2Bicfi'"
-          (onDoubleClick)="openIntermediaryBicSelectionModal(2)"
+          (onDoubleClick)="openBicSelectionModal('intrmyAgt2Bicfi','intrmyAgt2Nm')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1375,7 +1375,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt3Bicfi'"
-          (onDoubleClick)="openIntermediaryBicSelectionModal(3)"
+            (onDoubleClick)="openBicSelectionModal('intrmyAgt3Bicfi','intrmyAgt3Nm')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1446,7 +1446,7 @@
           [frmGroup]="frmGroup"
           [label]="'Debtor BIC'"
           [controlName]="'dbtrBicfi'"
-          (onDoubleClick)="openDbtrBicSelectionModal()"
+          (onDoubleClick)="openBicSelectionModal('dbtrBicfi','dbtrNm', 'dbtrAgtBicfi', 'dbtrAgtNm')"
         />
         <app-text-base-input
           [frmGroup]="frmGroup"
@@ -1622,7 +1622,7 @@
             [frmGroup]="frmGroup"
             [label]="'Agent BIC'"
             [controlName]="'dbtrAgtBicfi'"
-          (onDoubleClick)="openDbtrAgtBicSelectionModal()"
+            (onDoubleClick)="openBicSelectionModal('dbtrAgtBicfi','dbtrAgtNm')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1802,7 +1802,7 @@
           [frmGroup]="frmGroup"
           [label]="'Creditor BIC'"
           [controlName]="'cdtrBicfi'"
-          (onDoubleClick)="openCdtrBicSelectionModal()"
+          (onDoubleClick)="openBicSelectionModal('cdtrBicfi','cdtrNm', 'cdtrAgtBicfi', 'cdtrAgtNm')"
         />
         <app-text-base-input
           [frmGroup]="frmGroup"
@@ -1978,7 +1978,7 @@
             [frmGroup]="frmGroup"
             [label]="'Agent BIC'"
             [controlName]="'cdtrAgtBicfi'"
-          (onDoubleClick)="openCdtrAgtBicSelectionModal()"
+            (onDoubleClick)="openBicSelectionModal('cdtrAgtBicfi','cdtrAgtNm')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -2262,75 +2262,6 @@
       </div>
       }
     </div>
-
-    <!-- Authorization -->
-    <!-- <div class="panel">
-      <app-expansion-panel-header
-        [isOpenSignal]="authorizationPanel"
-        [panelTitle]="'Authorization'"
-      />
-      @if (authorizationPanel()) {
-      <div class="form-grid-col-1">
-        <app-text-base-input
-          [frmGroup]="frmGroup"
-          [label]="'First Authorized By'"
-          [controlName]="'auth1stBy'"
-        />
-        <app-date-input
-          [frmGroup]="frmGroup"
-          [label]="'Make Date'"
-          [controlName]="'makeDt'"
-        />
-        <app-date-input
-          [frmGroup]="frmGroup"
-          [label]="'First Authorization Date'"
-          [controlName]="'auth1stDt'"
-        />
-        <app-text-base-input
-          [frmGroup]="frmGroup"
-          [label]="'Second Authorized By'"
-          [controlName]="'auth2ndBy'"
-        />
-        <app-date-input
-          [frmGroup]="frmGroup"
-          [label]="'Second Authorization Date'"
-          [controlName]="'auth2ndDt'"
-        />
-      </div>
-      }
-    </div> -->
-
-    <!-- Other Information -->
-    <!-- <div class="panel">
-      <app-expansion-panel-header
-        [isOpenSignal]="otherInfoPanel"
-        [panelTitle]="'Other Information'"
-      />
-      @if (otherInfoPanel()) {
-      <div class="form-grid-col-1">
-        <app-text-base-input
-          [frmGroup]="frmGroup"
-          [label]="'Last Action'"
-          [controlName]="'lastAction'"
-        />
-        <app-text-base-input
-          [frmGroup]="frmGroup"
-          [label]="'Branch ID'"
-          [controlName]="'branchId'"
-        />
-        <app-text-base-input
-          [frmGroup]="frmGroup"
-          [label]="'Transaction Reference Number 20'"
-          [controlName]="'trnRefNo20'"
-        />
-        <app-text-base-input
-          [frmGroup]="frmGroup"
-          [label]="'Related Reference 21'"
-          [controlName]="'relatedRef21'"
-        />
-      </div>
-      }
-    </div> -->
   </form>
   }
 </div>

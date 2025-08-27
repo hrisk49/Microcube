@@ -6,6 +6,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import {Router, ActivatedRoute} from '@angular/router';
 import {
   FormArray,
   FormBuilder,
@@ -13,6 +14,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import {
   BUTTON_VISIBILITY,
@@ -36,6 +38,7 @@ import { ExternalCodeService } from '../../../../shared/services/external-code.s
 import { CurrencyService } from '../../../../shared/services/currency.service';
 import { CurrencyModel } from '../../../../shared/models/currency.model';
 import { LookupService } from '../../../../shared/services/lookup.service';
+import { MessageTypeService } from '../../../../shared/services/message-type.service';
 
 @Component({
   selector: 'app-pacs-009',
@@ -46,7 +49,8 @@ import { LookupService } from '../../../../shared/services/lookup.service';
     DateInput,
     AmountToWordInput,
     ExpansionPanelHeader,
-    ExpansionSubPanelHeader
+    ExpansionSubPanelHeader,
+    CommonModule
 ],
   templateUrl: './pacs-009.html',
   standalone: true,
@@ -60,6 +64,9 @@ export class Pacs009 implements OnInit {
   externalCodeService = inject(ExternalCodeService);
   currencyService = inject(CurrencyService);
   lookupService = inject(LookupService);
+  messageTypeService = inject(MessageTypeService);
+  router = inject(Router);
+  activatedRoute = inject(ActivatedRoute);
   frmGroup: FormGroup;
   onClickReset = ONCLICK_RESET;
   onClickSave = ONCLICK_SAVE;
@@ -156,22 +163,19 @@ export class Pacs009 implements OnInit {
   swiftCodesFrom: any;
   swiftCodesTo: any;
 
-  // Define column headers for the BIC selection modal
   bicTableHeaders = new Map<string, string>([
     ['swift', 'SWIFT Code'],
     ['branchName', 'Branch Name'],
     ['address', 'Address']
   ]);
 
-  // Options for Service Level Code (loaded from ExternalCodeService)
   serviceLevelCodeOptions: SelectOptionsModel[] = [];
 
-  // Currency data
   currencies: CurrencyModel[] = [];
 
-  // Settlement options (loaded from LookupService)
   settlementOptions: SelectOptionsModel[] = [];
 
+  cbsData: any = null;
   constructor(
     private branchInfoService: BranchInfoService,
     private bicSelectionService: BicSelectionService
@@ -198,29 +202,75 @@ export class Pacs009 implements OnInit {
 
   ngOnInit(): void {
     try {
+      this.loadCurrencies();
+      this.activatedRoute.queryParams.subscribe(params => {
+        if (history.state?.cbsData) {
+          try {
+            this.cbsData = history.state?.cbsData;
+            // Call service to get message data
+            const payload = {
+              msgType: 202,
+              msgRefNo: this.cbsData.msgRefNo
+            };
+            
+            this.messageTypeService.getMessageByRefNo(payload).subscribe({
+              next: (response: any) => {
+                if (response.payload && response.payload.length > 0) {
+                  const data = response.payload[0];
+                  this.mapServiceDataToForm(data);
+                }
+              },
+              error: (error: any) => {
+                console.error('Error fetching message data:', error);
+              }
+            });
+            
+          } catch (error) {
+            console.warn('Could not parse CBS data from query params:', error);
+          }
+        }
+      });
+
       this.initForm();
       this.loadServiceLevelCodes();
-      this.loadCurrencies();
-      this.loadSettlementOptions();
-      if (!this.frmGroup) {
-        console.error('Form initialization failed');
-        this.toastr.error('Form initialization failed', 'Error');
-      } else {
-        // Subscribe to form value changes to update FormGroupSignal
-        this.frmGroup.valueChanges.subscribe(() => {
-          FormGroupSignal.set(this.frmGroup);
-        });
 
-        // Force update FormGroupSignal after a short delay
-        setTimeout(() => {
-          FormGroupSignal.set(this.frmGroup);
-          console.log('FormGroupSignal updated in ngOnInit. Form valid:', this.frmGroup.valid);
-        }, 100);
-      }
+      this.loadSettlementOptions();
+      setTimeout(() => {
+        FormGroupSignal.set(this.frmGroup);
+        console.log('FormGroupSignal updated in ngOnInit. Form valid:', this.frmGroup.valid);
+      }, 100);
     } catch (error) {
-      console.error('Error during form initialization:', error);
       this.toastr.error('Error during form initialization', 'Error');
     }
+  }
+
+  private mapServiceDataToForm(data: any): void {
+    if (!this.frmGroup) return;
+    
+    // Ensure currencies are loaded before mapping
+    if (this.currencyOptions.length === 0) {
+      this.loadCurrencies();
+      // Wait for currencies to load then map data
+      setTimeout(() => {
+        this.mapServiceDataToForm(data);
+      }, 100);
+      return;
+    }
+
+    // Find the correct currency option
+    const currencyOption = this.currencyOptions.find(option => 
+      option.key.toLowerCase() === data.isoSwiftCode.toLowerCase()
+    );
+
+    this.frmGroup.patchValue({
+      instrId: data.trnRefNo20,
+      endToEndId: data.relatedRef21,
+      intrBkSttlmAmt: data.valAmt32a,
+      intrBkSttlmAmtCcy: currencyOption ? currencyOption.key : data.isoSwiftCode,
+      instgAgtAdrLine: data.benfInstNmAddrs58d,
+      fromBicfi: data.senderBic,
+      instgAgtBicfi: data.senderBic,
+    });
   }
 
   private loadServiceLevelCodes(): void {
@@ -263,13 +313,13 @@ export class Pacs009 implements OnInit {
 
   private loadSettlementOptions(): void {
     // Assuming typeId 1 is for settlement methods - adjust as needed based on your backend
-    this.lookupService.getListByTypeId(1).subscribe({
+    this.lookupService.getListByTypeId(16).subscribe({
       next: (response: any) => {
         if (response.payload && response.payload.length > 0) {
           // Map the response to SelectOptionsModel format
           this.settlementOptions = response.payload.map((item: any) => ({
-            key: item.codeValue || item.code,
-            value: item.codeName || item.description || item.value
+            key: item.lookDescription,
+            value: item.lookName
           }));
         }
       },
@@ -299,15 +349,16 @@ export class Pacs009 implements OnInit {
       toBicfi: ['', Validators.required],
       toClrSysIdCd: [''],
       toLei: [''],
+      bizMsgIdr: ['PACS009_' + new Date().getTime(), Validators.required],
+      msgDefIdr: ['pacs.009.001.08', Validators.required],
+      bizSvc: ['swift.cbprplus.02', Validators.required],
+      creDt: ['', Validators.required],
 
       rltdBizMsgIdr: [''],
       rltdMsgDefIdr: [''],
       rltdBizSvc: [''],
       rltdCreDt: [''],
-      bizMsgIdr: ['PACS009_' + new Date().getTime(), Validators.required],
-      msgDefIdr: ['pacs.009.001.08', Validators.required],
-      bizSvc: ['swift.cbprplus.02', Validators.required],
-      creDt: ['', Validators.required],
+
       cpyDplct: [null],
       psblDplct: [null],
       priority: ['NORM'],
@@ -326,9 +377,9 @@ export class Pacs009 implements OnInit {
       sttlmAcctIssr: [''],
 
       // Payment Identification
-      instrId: [''],
-      endToEndId: [''],
-      txId: ['TX_' + new Date().getTime(), Validators.required],
+      instrId: ['',Validators.required],
+      endToEndId: ['', Validators.required],
+      txId: ['TX_' + new Date().getTime()],
       uetr: [''],
       clrSysRef: [''],
 
@@ -343,7 +394,7 @@ export class Pacs009 implements OnInit {
 
       // Interbank Settlement
       intrBkSttlmAmtCcy: [null, Validators.required],
-      intrBkSttlmAmt: ['1000.00', Validators.required],
+      intrBkSttlmAmt: ['', [Validators.required, Validators.pattern(/^\d{1,14}(\.\d{1,5})?$/)]],
       intrBkSttlmDt: [new Date().toISOString().split('T')[0], Validators.required],
       sttlmPrty: [null],
 
@@ -621,7 +672,7 @@ export class Pacs009 implements OnInit {
       dbtrAcctIssr: [''],
 
       // Debtor Agent (flat)
-      dbtrAgtBicfi: ['', Validators.required],
+      dbtrAgtBicfi: [''],
       dbtrAgtClrSysIdCd: [''],
       dbtrAgtMmbId: [''],
       dbtrAgtLei: [''],
@@ -653,7 +704,7 @@ export class Pacs009 implements OnInit {
       dbtrAgtAcctIssr: [''],
 
       // Creditor Agent (flat)
-      cdtrAgtBicfi: ['', Validators.required],
+      cdtrAgtBicfi: [''],
       cdtrAgtClrSysIdCd: [''],
       cdtrAgtMmbId: [''],
       cdtrAgtLei: [''],
@@ -798,7 +849,6 @@ export class Pacs009 implements OnInit {
       // Use setTimeout to ensure form is fully initialized
       setTimeout(() => {
         FormGroupSignal.set(this.frmGroup);
-        console.log('FormGroupSignal set with form:', this.frmGroup.valid, this.frmGroup.invalid);
       }, 0);
       // Initialize with one service level row
       this.addServiceRow();
@@ -809,167 +859,25 @@ export class Pacs009 implements OnInit {
     }
   }
 
-  // Open BIC selection modal for "From BIC" (Instructing Agent)
-  openFromBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'fromBicfi',
-        nameField: 'fromNm',
-        defaultValue: 'SCBLBDDX'
-      },
-      {
-        bicField: 'instgAgtBicfi',
-        nameField: 'instgAgtNm'
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
+  openBicSelectionModal(ctrlNm :string, nameField:string|null = null, targetBicField:string|null = null, targetNameField:string|null = null) :void{
+    const val = {
+      bicField : ctrlNm,
+      nameField : nameField!=null ? nameField : undefined,
+      defaultValue : 'SCBLBDDX' 
+    };
+    let targetVal = undefined;
+    if(targetBicField!=null && targetNameField!=null){
+      targetVal = {
+        bicField : targetBicField,
+        nameField : targetNameField
+      }
+    }
 
-  // Open BIC selection modal for "To BIC" (Instructed Agent)
-  openToBicSelectionModal(): void {
     this.bicSelectionService.openBicSelectionModal(
       this.frmGroup,
-      {
-        bicField: 'toBicfi',
-        nameField: 'toNm',
-        defaultValue: 'AANLGB21XXX'
-      },
-      {
-        bicField: 'instdAgtBicfi',
-        nameField: 'instdAgtNm'
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // Add new method for other BIC selections
-  openIntermediaryBicSelectionModal(agentNumber: number): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: `intrmyAgt${agentNumber}Bicfi`,
-        nameField: `intrmyAgt${agentNumber}Nm`
-      },
-      undefined,
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Previous Instructing Agents
-  openPrevInstgAgtBicSelectionModal(agentNumber: number): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: `prvsInstgAgt${agentNumber}Bicfi`,
-        nameField: `prvsInstgAgt${agentNumber}Nm`
-      },
-      undefined,
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Instructing Agent (instgAgt)
-  openInstgAgtBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'instgAgtBicfi',
-        nameField: 'instgAgtNm'
-      },
-      undefined,
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Instructed Agent (instdAgt)
-  openInstdAgtBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'instdAgtBicfi',
-        nameField: 'instdAgtNm'
-      },
-      undefined,
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Debtor (dbtr)
-  openDbtrBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'dbtrBicfi',
-        nameField: 'dbtrNm'
-      },
-      undefined,
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Debtor Agent (dbtrAgt)
-  openDbtrAgtBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'dbtrAgtBicfi',
-        nameField: 'dbtrAgtNm'
-      },
-      undefined,
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Creditor (cdtr)
-  openCdtrBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'cdtrBicfi',
-        nameField: 'cdtrNm'
-      },
-      undefined,
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Creditor Agent (cdtrAgt)
-  openCdtrAgtBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'cdtrAgtBicfi',
-        nameField: 'cdtrAgtNm'
-      },
-      undefined,
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Related From/To (rltd.fr / rltd.to)
-  openRelatedFromBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'rltdFrBicfi',
-        nameField: 'rltdFrNm'
-      },
-      undefined,
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  openRelatedToBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'rltdToBicfi',
-        nameField: 'rltdToNm'
-      },
-      undefined,
-      this.bicTableHeaders
-    ).subscribe();
+      val,
+      targetVal,
+      this.bicTableHeaders).subscribe();
   }
 
   resetForm(): void {
@@ -1004,7 +912,44 @@ export class Pacs009 implements OnInit {
 
       this.instructionForNextAgent.clear();
       this.addInstructionForNextAgentRow();
+
+      // Clear stored CBS data
+      this.clearStoredCBSData();
     }
+  }
+
+  /**
+   * Clear stored CBS data from session storage
+   */
+  private clearStoredCBSData(): void {
+    try {
+      sessionStorage.removeItem('pacs009_cbsData');
+      this.cbsData = null;
+    } catch (error) {
+      console.warn('Could not clear stored CBS data:', error);
+    }
+  }
+
+  /**
+   * Public method to manually clear CBS data
+   */
+  public clearCBSData(): void {
+    this.clearStoredCBSData();
+    this.toastr.info('CBS data cleared successfully', 'Data Cleared');
+  }
+
+  /**
+   * Check if CBS data is available
+   */
+  public hasCBSData(): boolean {
+    return this.cbsData !== null && this.cbsData !== undefined;
+  }
+
+  /**
+   * Get current CBS data
+   */
+  public getCBSData(): any {
+    return this.cbsData;
   }
 
   // Helper method to get nested form group
@@ -1196,9 +1141,9 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.prvsInstgAgt1AdrDstrctNm,
         ctrySubDvsn: frmValue.prvsInstgAgt1AdrCtrySubDvsn,
         ctry: frmValue.prvsInstgAgt1AdrCtry,
-        adrLine: (frmValue.prvsInstgAgt1AdrLine || []).filter(
+        adrLine: Array.isArray(frmValue.prvsInstgAgt1AdrLine) ? frmValue.prvsInstgAgt1AdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ),
+        ) : [],
       },
     };
 
@@ -1236,9 +1181,9 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.prvsInstgAgt2AdrDstrctNm,
         ctrySubDvsn: frmValue.prvsInstgAgt2AdrCtrySubDvsn,
         ctry: frmValue.prvsInstgAgt2AdrCtry,
-        adrLine: (frmValue.prvsInstgAgt2AdrLine || []).filter(
+        adrLine: Array.isArray(frmValue.prvsInstgAgt2AdrLine) ? frmValue.prvsInstgAgt2AdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ),
+        ) : [],
       },
     };
 
@@ -1276,9 +1221,9 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.prvsInstgAgt3AdrDstrctNm,
         ctrySubDvsn: frmValue.prvsInstgAgt3AdrCtrySubDvsn,
         ctry: frmValue.prvsInstgAgt3AdrCtry,
-        adrLine: (frmValue.prvsInstgAgt3AdrLine || []).filter(
+        adrLine: Array.isArray(frmValue.prvsInstgAgt3AdrLine) ? frmValue.prvsInstgAgt3AdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ),
+        ) : [],
       },
     };
 
@@ -1316,9 +1261,9 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.instgAgtAdrDstrctNm,
         ctrySubDvsn: frmValue.instgAgtAdrCtrySubDvsn,
         ctry: frmValue.instgAgtAdrCtry,
-        adrLine: (frmValue.instgAgtAdrLine || []).filter(
+        adrLine: Array.isArray(frmValue.instgAgtAdrLine) ? frmValue.instgAgtAdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ),
+        ) : [],
       },
     };
 
@@ -1346,9 +1291,9 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.instdAgtAdrDstrctNm,
         ctrySubDvsn: frmValue.instdAgtAdrCtrySubDvsn,
         ctry: frmValue.instdAgtAdrCtry,
-        adrLine: (frmValue.instdAgtAdrLine || []).filter(
+        adrLine: Array.isArray(frmValue.instdAgtAdrLine) ? frmValue.instdAgtAdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ),
+        ) : [],
       },
     };
 
@@ -1377,9 +1322,9 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.intrmyAgt1AdrDstrctNm,
         ctrySubDvsn: frmValue.intrmyAgt1AdrCtrySubDvsn,
         ctry: frmValue.intrmyAgt1AdrCtry,
-        adrLine: (frmValue.intrmyAgt1AdrLine || []).filter(
+        adrLine: Array.isArray(frmValue.intrmyAgt1AdrLine) ? frmValue.intrmyAgt1AdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ),
+        ) : [],
       },
     };
 
@@ -1416,9 +1361,9 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.intrmyAgt2AdrDstrctNm,
         ctrySubDvsn: frmValue.intrmyAgt2AdrCtrySubDvsn,
         ctry: frmValue.intrmyAgt2AdrCtry,
-        adrLine: (frmValue.intrmyAgt2AdrLine || []).filter(
+        adrLine: Array.isArray(frmValue.intrmyAgt2AdrLine) ? frmValue.intrmyAgt2AdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ),
+        ) : [],
       },
     };
 
@@ -1455,9 +1400,9 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.intrmyAgt3AdrDstrctNm,
         ctrySubDvsn: frmValue.intrmyAgt3AdrCtrySubDvsn,
         ctry: frmValue.intrmyAgt3AdrCtry,
-        adrLine: (frmValue.intrmyAgt3AdrLine || []).filter(
+        adrLine: Array.isArray(frmValue.intrmyAgt3AdrLine) ? frmValue.intrmyAgt3AdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ),
+        ) : [],
       },
     };
 
@@ -1495,9 +1440,9 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.dbtrAdrDstrctNm,
         ctrySubDvsn: frmValue.dbtrAdrCtrySubDvsn,
         ctry: frmValue.dbtrAdrCtry,
-        adrLine: (frmValue.dbtrAdrLine || []).filter(
+        adrLine: Array.isArray(frmValue.dbtrAdrLine) ? frmValue.dbtrAdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ),
+        ) : [],
       },
     };
 
@@ -1534,9 +1479,9 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.dbtrAgtAdrDstrctNm,
         ctrySubDvsn: frmValue.dbtrAgtAdrCtrySubDvsn,
         ctry: frmValue.dbtrAgtAdrCtry,
-        adrLine: (frmValue.dbtrAgtAdrLine || []).filter(
+        adrLine: Array.isArray(frmValue.dbtrAgtAdrLine) ? frmValue.dbtrAgtAdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ),
+        ) : [],
       },
     };
 
@@ -1574,9 +1519,9 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.cdtrAgtAdrDstrctNm,
         ctrySubDvsn: frmValue.cdtrAgtAdrCtrySubDvsn,
         ctry: frmValue.cdtrAgtAdrCtry,
-        adrLine: (frmValue.cdtrAgtAdrLine || []).filter(
+        adrLine: Array.isArray(frmValue.cdtrAgtAdrLine) ? frmValue.cdtrAgtAdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ),
+        ) : [],
       },
     };
 
@@ -1614,9 +1559,9 @@ export class Pacs009 implements OnInit {
         dstrctNm: frmValue.cdtrAdrDstrctNm,
         ctrySubDvsn: frmValue.cdtrAdrCtrySubDvsn,
         ctry: frmValue.cdtrAdrCtry,
-        adrLine: (frmValue.cdtrAdrLine || []).filter(
+        adrLine: Array.isArray(frmValue.cdtrAdrLine) ? frmValue.cdtrAdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ),
+        ) : [],
       },
     };
 
@@ -1700,9 +1645,9 @@ export class Pacs009 implements OnInit {
           dstrctNm: frmValue.rltdFrAdrDstrctNm,
           ctrySubDvsn: frmValue.rltdFrAdrCtrySubDvsn,
           ctry: frmValue.rltdFrAdrCtry,
-          adrLine: (frmValue.rltdFrAdrLine || []).filter(
+          adrLine: Array.isArray(frmValue.rltdFrAdrLine) ? frmValue.rltdFrAdrLine.filter(
             (line: string) => line && line.trim() !== ''
-          ),
+          ) : [],
         },
       },
       to: {
@@ -1729,9 +1674,9 @@ export class Pacs009 implements OnInit {
           dstrctNm: frmValue.rltdToAdrDstrctNm,
           ctrySubDvsn: frmValue.rltdToAdrCtrySubDvsn,
           ctry: frmValue.rltdToAdrCtry,
-          adrLine: (frmValue.rltdToAdrLine || []).filter(
+          adrLine: Array.isArray(frmValue.rltdToAdrLine) ? frmValue.rltdToAdrLine.filter(
             (line: string) => line && line.trim() !== ''
-          ),
+          ) : [],
         },
       },
       bizMsgIdr: frmValue.rltdBizMsgIdr,
@@ -1749,9 +1694,7 @@ export class Pacs009 implements OnInit {
   }
 
   save(): void {
-    console.log('Save method called. Form valid:', this.frmGroup.valid, 'Form invalid:', this.frmGroup.invalid);
     if (this.frmGroup.invalid) {
-      console.log('Form validation errors:', this.getFormValidationErrors());
       this.toastr.error(
         'Please fill in all required fields',
         'Validation Error'
@@ -1766,18 +1709,11 @@ export class Pacs009 implements OnInit {
 
     const payload = this.generatePayload();
 
-    // Log the payload for debugging
-    console.log('Generated payload:', payload);
-
     this.pacs009Service.save(payload).subscribe({
       next: (res) => {
-        console.log('Success response:', res);
         this.toastr.success('PACS.009 message saved successfully!', 'Success');
-        // Optionally reset form after successful save
-        // this.resetForm();
       },
       error: (error) => {
-        console.error('Error saving PACS.009:', error);
         let errorMessage = 'Failed to save PACS.009 message';
         if (error.error && error.error.message) {
           errorMessage = error.error.message;
