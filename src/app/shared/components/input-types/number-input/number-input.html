@@ -6,34 +6,46 @@
     }
   </label>
 
-  <input [formControlName]="controlName()"
-         [ngClass]="{'readonly-input': isReadonly() }"
-         type="number"
-         (keyup)="onChangeInput()"
-         [readonly]="isReadonly()"
-         matInput
-         [placeholder]="placeholder() ?? 'Enter ' + label()"
-         class="custom-input"
-         step="0.01"
-         min="0"/>
-
+  <input 
+    [formControlName]="controlName()"
+    [ngClass]="{'readonly-input': isReadonly() }"
+    type="number"
+    (keypress)="onKeyPress($event)"
+    (input)="onInput($event)"
+    [readonly]="isReadonly()"
+    [disabled]="isDisabled"
+    matInput
+    [placeholder]="placeholder() ?? 'Enter ' + label()"
+    [min]="minValue() ?? 0"
+    [max]="maxValue() ?? null"
+    [maxLength]="maxLen() ?? null"
+    [minLength]="minLen() ?? null"
+    class="custom-input"
+    step="1"/>
+  
   @if (isInvalid()) {
     <div class="text-red-500 text-sm mt-1">
       @if (hasError('required')) {
         <ng-container>
-          {{ label() }} is required..!
+          {{ label() }} is required!
         </ng-container>
       }
 
       @if (hasError('min')) {
         <ng-container>
-          Minimum amount required is {{ getErrorValue('min') }}
+          Minimum value required is {{ getErrorValue('min') }}
         </ng-container>
       }
 
       @if (hasError('max')) {
         <ng-container>
-          Maximum amount allowed is {{ getErrorValue('max') }}
+          Maximum value allowed is {{ getErrorValue('max') }}
+        </ng-container>
+      }
+
+      @if (hasError('pattern')) {
+        <ng-container>
+          Only whole numbers are allowed 
         </ng-container>
       }
     </div>

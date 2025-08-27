@@ -1,6 +1,7 @@
 import {Component, input, output, effect} from '@angular/core'; 
 import {FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms"; 
 import {MatInput} from "@angular/material/input"; 
+import {MatTooltipModule} from "@angular/material/tooltip";
 import {NgClass} from '@angular/common'; 
  
 @Component({ 
@@ -9,7 +10,8 @@ import {NgClass} from '@angular/common';
     FormsModule, 
     MatInput, 
     ReactiveFormsModule, 
-    NgClass 
+    NgClass,
+    MatTooltipModule
   ], 
   templateUrl: './text-base-input.html', 
   standalone: true, 
@@ -27,6 +29,11 @@ export class TextBaseInput {
   readonly maxLength = input<number>(); 
   readonly onDoubleClick = output<void>(); 
   readonly isVertical = input<boolean>(false);
+  // Tooltip support
+  readonly tooltip = input<string>('');
+  readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
+  readonly tooltipDelay = input<number>(500);
+  readonly tooltipClass = input<string>('custom-tooltip');
   //output 
   readonly valueChanged = output<string>(); 
   readonly onChanged = output<any>(); 

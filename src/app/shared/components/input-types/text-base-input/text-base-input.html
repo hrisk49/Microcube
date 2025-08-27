@@ -12,6 +12,10 @@
            matInput 
            [placeholder]="placeholder() ?? 'Enter ' + label()" 
            [type]="type() ?? 'text'" 
+           [matTooltip]="tooltip()"
+           [matTooltipPosition]="tooltipPosition()"
+            [matTooltipClass]="tooltipClass()"
+          [matTooltipDisabled]="!tooltip()"
            [maxlength]="maxLength() || null"
            class="custom-input" 
            (dblclick)="onDoubleClick.emit()"/> 

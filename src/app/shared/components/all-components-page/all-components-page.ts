@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, inject, OnInit, signal, TemplateRef, ViewChild, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextBaseInput } from '../input-types/text-base-input/text-base-input';
 import { IdBoxComponent } from '../input-types/id-box/id-box';
@@ -16,6 +16,9 @@ import { TextArea } from '../input-types/text-area/text-area';
 import { ToastrService } from 'ngx-toastr';
 import { BicSelectionService } from '../../services/bic-selection.service';
 import { DateFormat, DateInputComponent } from '../input-types/date-input.component/date-input.component';
+import { NumberInput } from '../input-types/number-input/number-input';
+import { DropdownOption } from '../data-grid/data-grid';
+import { LdsStepperComponent, Step } from '../lds-stepper/lds-stepper';
 
 @Component({
   selector: 'app-all-components-page',
@@ -30,9 +33,11 @@ import { DateFormat, DateInputComponent } from '../input-types/date-input.compon
     AmountToWordInput,
     SelectOptionField,
     // DateInput,
+    LdsStepperComponent,
     DateInputComponent,
     FileComponent,
     OfficeBoxComponent,
+    NumberInput,
     DataGridComponent,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
@@ -44,6 +49,12 @@ export class AllComponentsPage implements OnInit {
   frmGroup: FormGroup;
   toastr = inject(ToastrService);
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
+
+
+  @ViewChild('step1Template', { static: true }) step1Template!: TemplateRef<any>;
+  @ViewChild('step2Template', { static: true }) step2Template!: TemplateRef<any>;
+  @ViewChild('step3Template', { static: true }) step3Template!: TemplateRef<any>;
+
   // Sample data for dropdowns and grid
   dropdownOptions = [
     { key: 'option1', value: 'Option 1' },
@@ -64,97 +75,176 @@ export class AllComponentsPage implements OnInit {
   anyFiles: File[] = [];
   documentFiles: File[] = [];
   profilePicFile?: File;
-
+  steps: Step[] = [];
 
   // Sample data for data grid demonstration
-    sampleTransactions = signal([
-      {
-        id: 'TXN001',
-        transactionType: 'PACS.008',
-        amount: 50000.00,
-        currency: 'USD',
-        status: 'Pending',
-        fromAccount: '1234567890',
-        toAccount: '0987654321',
-        date: '2024-01-15',
-        priority: 'HIGH',
-  
-      },
-      {
-        id: 'TXN002',
-        transactionType: 'PACS.008',
-        amount: 25000.00,
-        currency: 'EUR',
-        status: 'Completed',
-        fromAccount: '1111111111',
-        toAccount: '2222222222',
-        date: '2024-01-14',
-        priority: 'NORM',
-      },
-      {
-        id: 'TXN003',
-        transactionType: 'PACS.008',
-        amount: 100000.00,
-        currency: 'GBP',
-        status: 'Failed',
-        fromAccount: '3333333333',
-        toAccount: '4444444444',
-        date: '2024-01-13',
-        priority: 'HIGH',
-      
-      },
-      {
-        id: 'TXN004',
-        transactionType: 'PACS.008',
-        amount: 75000.00,
-        currency: 'USD',
-        status: 'Pending',
-        fromAccount: '5555555555',
-        toAccount: '6666666666',
-        date: '2024-01-12',
-        priority: 'NORM',
-      
-      },
-      {
-        id: 'TXN005',
-        transactionType: 'PACS.008',
-        amount: 30000.00,
-        currency: 'JPY',
-        status: 'Completed',
-        fromAccount: '7777777777',
-        toAccount: '8888888888',
-        date: '2024-01-11',
-        priority: 'HIGH',
-       
-      },
-        {
-        id: 'TXN006',
-        transactionType: 'PACS.008',
-        amount: 30000.00,
-        currency: 'JPY',
-        status: 'Completed',
-        fromAccount: '7777777777',
-        toAccount: '8888888888',
-        date: '2024-01-11',
-        priority: 'HIGH',
-       
-      }
-    ]);
+sampleTransactions = signal([
+    {
+      id: 'TXN001',
+      transactionType: 'PACS.008',
+      amount: 50000.00,
+      currency: 'USD',
+      status: 'pending',
+      fromAccount: '1234567890',
+      toAccount: '0987654321',
+      date: '2024-01-15',
+      priority: 'high',
+      department: 'sales',
+      category: 'international',
+      // Dynamic dropdown source for roles
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'approver', label: 'Transaction Approver' },
+        { value: 'viewer', label: 'View Only' }
+      ],
+      assignedRole: 'approver'
+    },
+    {
+      id: 'TXN002',
+      transactionType: 'PACS.008',
+      amount: 25000.00,
+      currency: 'EUR',
+      status: 'completed',
+      fromAccount: '1111111111',
+      toAccount: '2222222222',
+      date: '2024-01-14',
+      priority: 'normal',
+      department: 'finance',
+      category: 'domestic',
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'viewer', label: 'View Only' }
+      ],
+      assignedRole: 'viewer'
+    },
+    {
+      id: 'TXN003',
+      transactionType: 'PACS.008',
+      amount: 100000.00,
+      currency: 'GBP',
+      status: 'failed',
+      fromAccount: '3333333333',
+      toAccount: '4444444444',
+      date: '2024-01-13',
+      priority: 'high',
+      department: 'operations',
+      category: 'urgent',
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'approver', label: 'Transaction Approver' },
+        { value: 'specialist', label: 'Operations Specialist' }
+      ],
+      assignedRole: 'specialist'
+    },
+    {
+      id: 'TXN004',
+      transactionType: 'PACS.008',
+      amount: 75000.00,
+      currency: 'USD',
+      status: 'pending',
+      fromAccount: '5555555555',
+      toAccount: '6666666666',
+      date: '2024-01-12',
+      priority: 'normal',
+      department: 'sales',
+      category: 'corporate',
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'approver', label: 'Transaction Approver' }
+      ],
+      assignedRole: 'approver'
+    },
+    {
+      id: 'TXN005',
+      transactionType: 'PACS.008',
+      amount: 30000.00,
+      currency: 'JPY',
+      status: 'completed',
+      fromAccount: '7777777777',
+      toAccount: '8888888888',
+      date: '2024-01-11',
+      priority: 'high',
+      department: 'treasury',
+      category: 'fx_trade',
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'trader', label: 'FX Trader' },
+        { value: 'risk_officer', label: 'Risk Officer' }
+      ],
+      assignedRole: 'trader'
+    },
+    {
+      id: 'TXN006',
+      transactionType: 'PACS.008',
+      amount: 30000.00,
+      currency: 'JPY',
+      status: 'completed',
+      fromAccount: '7777777777',
+      toAccount: '8888888888',
+      date: '2024-01-11',
+      priority: 'high',
+      department: 'treasury',
+      category: 'fx_trade',
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'viewer', label: 'View Only' }
+      ],
+      assignedRole: 'admin'
+    }
+  ]);
   
     // Custom column names for the data grid
-    transactionColumnNames = signal({
-      'id': 'Transaction ID',
-      'transactionType': 'Type',
-      'amount': 'Amount',
-      'currency': 'Currency',
-      'status': 'Status',
-      'fromAccount': 'From Account',
-      'toAccount': 'To Account',
-      'date': 'Date',
-      'priority': 'Priority',
-      'priority2': 'Priority 2',
-      'priority3': 'Priority 3'
-    });
+  transactionColumnNames = signal({
+    'id': 'Transaction ID',
+    'transactionType': 'Type',
+    'amount': 'Amount',
+    'currency': 'Currency',
+    'status': 'Status',
+    'fromAccount': 'From Account',
+    'toAccount': 'To Account',
+    'date': 'Date',
+    'priority': 'Priority',
+    'department': 'Department',
+    'category': 'Category',
+    'assignedRole': 'Assigned Role'
+  });
+
+
+  transactionDropdownOptions = signal<Record<string, DropdownOption[]>>({
+    status: [
+      { value: 'pending', label: 'Pending Review' },
+      { value: 'completed', label: 'Completed' },
+      { value: 'failed', label: 'Failed' },
+      { value: 'cancelled', label: 'Cancelled' },
+      { value: 'in_progress', label: 'In Progress' }
+    ],
+    priority: [
+      { value: 'low', label: 'Low Priority' },
+      { value: 'normal', label: 'Normal Priority' },
+      { value: 'high', label: 'High Priority' },
+      { value: 'urgent', label: 'Urgent' }
+    ],
+    department: [
+      { value: 'sales', label: 'Sales Department' },
+      { value: 'finance', label: 'Finance Department' },
+      { value: 'operations', label: 'Operations' },
+      { value: 'treasury', label: 'Treasury' },
+      { value: 'compliance', label: 'Compliance' },
+      { value: 'risk', label: 'Risk Management' }
+    ],
+    category: [
+      { value: 'domestic', label: 'Domestic Transfer' },
+      { value: 'international', label: 'International Transfer' },
+      { value: 'corporate', label: 'Corporate Payment' },
+      { value: 'retail', label: 'Retail Payment' },
+      { value: 'fx_trade', label: 'FX Trade Settlement' },
+      { value: 'urgent', label: 'Urgent Payment' }
+    ]
+  });
+
+  //which column should have dropdown
+    transactionDropdownColumns = signal(['status', 'priority', 'department', 'category', 'assignedRole']);
+      
   
     // Row designers for conditional styling
     transactionRowDesigners = signal<TableRowDesigner[]>([
@@ -191,6 +281,12 @@ export class AllComponentsPage implements OnInit {
     }
     ]);
   
+
+    //   Define dynamic dropdown sources (options from row data)
+  transactionDynamicDropdownSources = signal<Record<string, string>>({
+    assignedRole: 'availableRoles' 
+  });
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -234,6 +330,32 @@ export class AllComponentsPage implements OnInit {
     });
   }
 
+
+  ngAfterViewInit(): void {
+    // Initialize steps after view templates are available
+    setTimeout(() => {
+      this.steps = [
+        {
+          title: 'Personal Information',
+          subtitle: 'Enter your basic details',
+          form: 'personalInfoForm',
+          formContent: this.step1Template
+        },
+        {
+          title: 'Contact Details',
+          subtitle: 'Add your contact information',
+          form: 'contactForm',
+          formContent: this.step2Template
+        },
+        {
+          title: 'Review & Submit',
+          subtitle: 'Review your information',
+          form: 'reviewForm',
+          formContent: this.step3Template
+        }
+      ];
+    });
+  }
   handleFileChange(files: File[]): void {
     console.log('Selected files:', files);
   }
@@ -242,8 +364,13 @@ export class AllComponentsPage implements OnInit {
     console.log(`Grid action: ${action}`, rowData);
   }
 
+    onStepperSubmit() {
+    console.log('Stepper submitted!');
+    // Handle final submission logic here
+    // e.g., send data to API, show success message, etc.
+  }
 
-  
+   
   // File input handlers used by the template examples
 onPdfSelected(files: File[]): void {
   this.pdfFiles = files || [];

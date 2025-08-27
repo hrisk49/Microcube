@@ -13,7 +13,7 @@
         
         <!-- Switch Track -->
         <div 
-          class="relative w-14 h-7 bg-gray-200 rounded-full cursor-pointer transition-all duration-300 ease-in-out shadow-inner"
+          class="relative w-11 h-6 bg-gray-200 rounded-full cursor-pointer transition-all duration-300 ease-in-out shadow-inner"
           [ngClass]="{
             'bg-gray-200': !currentValue,
             'bg-gradient-to-r from-blue-500 to-blue-600': currentValue,
@@ -24,8 +24,8 @@
           
           <!-- Switch Thumb -->
           <div 
-            class="absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow-lg transform transition-all duration-300 ease-in-out flex items-center justify-center"
-            [ngClass]="{'translate-x-7': currentValue, 'translate-x-0': !currentValue}">
+            class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-lg transform transition-all duration-300 ease-in-out flex items-center justify-center"
+            [ngClass]="{'translate-x-5': currentValue, 'translate-x-0': !currentValue}">
             
             <!-- Check Icon (only visible when checked) -->
             @if (currentValue) {

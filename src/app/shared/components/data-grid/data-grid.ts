@@ -20,6 +20,12 @@ export interface TableRowDesigner {
   borderColor?: string;
 }
 
+export interface DropdownOption {
+  value: any;
+  label: string;
+  disabled?: boolean;
+}
+
 export interface GridColumn {
   property: string;
   header: string;
@@ -29,6 +35,10 @@ export interface GridColumn {
   width?: string;
   sortable?: boolean;
   filterable?: boolean;
+  isDropdown?: boolean;
+  dropdownOptions?: DropdownOption[];
+  dropdownOptionsSource?: string; 
+  isMultiSelect?: boolean; 
 }
 
 export interface GridAction {
@@ -85,6 +95,12 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly onChecked = output<string>();
   readonly onPrint = output<string>();
   readonly dataSourceChanged = output<T[]>();
+
+
+  readonly dropdownColumns = input<string[]>([]);
+  readonly dropdownOptions = input<Record<string, DropdownOption[]>>({});
+  readonly multiSelectColumns = input<string[]>([]);
+  readonly dynamicDropdownSources = input<Record<string, string>>({})
 
   // Internal state
   public _dataSource = signal<T[]>([]);
@@ -143,20 +159,82 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
 
   // Column management
 private buildColumns(): GridColumn[] {
-  const allProperties = this._dataSource().length > 0 ? Object.keys(this._dataSource()[0]) : [];
-  const propertiesToShow = this.selectedColumns().length > 0 ? this.selectedColumns() : allProperties;
+    const allProperties = this._dataSource().length > 0 ? Object.keys(this._dataSource()[0]) : [];
+    const propertiesToShow = this.selectedColumns().length > 0 ? this.selectedColumns() : allProperties;
 
-  return propertiesToShow.map(prop => ({
-    property: prop,
-    header: this.customColumnNames()[prop] || this.formatColumnHeader(prop),
-    isEditable: this.editableColumns().includes(prop),
-    isNumeric: this.numberColumns().includes(prop),
-    isVisible: true,
-    sortable: true,
-    filterable: true,
-    width: this.getColumnWidth(prop) // Add width calculation
-  }));
-}
+    return propertiesToShow.map(prop => ({
+      property: prop,
+      header: this.customColumnNames()[prop] || this.formatColumnHeader(prop),
+      isEditable: this.editableColumns().includes(prop),
+      isNumeric: this.numberColumns().includes(prop),
+      isVisible: true,
+      sortable: true,
+      filterable: true,
+      width: this.getColumnWidth(prop),
+      // New dropdown properties
+      isDropdown: this.dropdownColumns().includes(prop),
+      dropdownOptions: this.dropdownOptions()[prop] || [],
+      dropdownOptionsSource: this.dynamicDropdownSources()[prop],
+      isMultiSelect: this.multiSelectColumns().includes(prop)
+    }));
+  }
+
+
+  // Method to get dropdown options for a column
+  getDropdownOptions(column: GridColumn, rowData?: T): DropdownOption[] {
+    if (column.dropdownOptionsSource && rowData) {
+      // Dynamic options from row data
+      const optionsData = this.getPropertyValue(rowData, column.dropdownOptionsSource);
+      if (Array.isArray(optionsData)) {
+        return optionsData.map(item => ({
+          value: typeof item === 'object' ? item.value : item,
+          label: typeof item === 'object' ? item.label : String(item)
+        }));
+      }
+    }
+    
+    // Static options from configuration
+    return column.dropdownOptions || [];
+  }
+
+  // Method to get display text for dropdown values
+  getDropdownDisplayText(column: GridColumn, value: any, rowData?: T): string {
+    if (!column.isDropdown) return value;
+    
+    const options = this.getDropdownOptions(column, rowData);
+    
+    if (column.isMultiSelect && Array.isArray(value)) {
+      return value.map(v => {
+        const option = options.find(opt => opt.value === v);
+        return option ? option.label : v;
+      }).join(', ');
+    }
+    
+    const option = options.find(opt => opt.value === value);
+    return option ? option.label : value;
+  }
+
+  // Enhanced setEditingValue to handle dropdown selections
+  setEditingValue(property: string, value: any): void {
+    const column = this.columns().find(col => col.property === property);
+    
+    if (column?.isMultiSelect && typeof value === 'string') {
+      // Handle multi-select string conversion if needed
+      try {
+        const parsedValue = JSON.parse(value);
+        this._editingData.set({ ...this._editingData(), [property]: parsedValue } as Partial<T>);
+      } catch {
+        this._editingData.set({ ...this._editingData(), [property]: value } as Partial<T>);
+      }
+    } else {
+      this._editingData.set({ ...this._editingData(), [property]: value } as Partial<T>);
+    }
+  }
+
+  // Method to handle multi-select changes
+  onMultiSelectChange(property: string, selectedValues: any[]): void {
+    this.setEditingValue(property, selectedValues);
+  }
 
 private getColumnWidth(property: string): string {
   // Example: Define widths based on property or use a default
@@ -354,9 +432,9 @@ private getColumnWidth(property: string): string {
     return (this._editingData() as Record<string, any>)[property] || '';
   }
 
-  setEditingValue(property: string, value: any): void {
-    this._editingData.set({ ...this._editingData(), [property]: value } as Partial<T>);
-  }
+  // setEditingValue(property: string, value: any): void {
+  //   this._editingData.set({ ...this._editingData(), [property]: value } as Partial<T>);
+  // }
 
   // Public methods for external access
   getSelectedRows(): T[] {

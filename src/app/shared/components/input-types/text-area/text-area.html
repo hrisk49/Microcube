@@ -34,9 +34,11 @@
       [placeholder]="placeholder()"
       [style]="textareaAttributes().style"
       [ngClass]="inputClasses()"
-      (input)="onInputChange($event)"
-      class="transition-colors duration-200 placeholder-gray-400">
+      (input)="onInputChange($event); adjustHeight($event)"
+      class="transition-colors duration-200 placeholder-gray-400 resize-none"
+      #textareaRef>
     </textarea>
+
 
     <!-- Error Message -->
     @if (isInvalidState() && errorMessage()) {
