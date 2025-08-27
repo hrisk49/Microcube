@@ -9,7 +9,9 @@
   <input [formControlName]="controlName()"
          [ngClass]="{'readonly-input': isReadonly() }"
          type="number"
-         (keyup)="onChangeInput()"
+         (input)="onChangeInput($event)"
+         (keypress)="onKeyPress($event)"
+         (paste)="onPaste($event)"
          [readonly]="isReadonly()"
          matInput
          [placeholder]="placeholder() ?? 'Enter ' + label()"
@@ -35,6 +37,12 @@
       @if (hasError('max')) {
         <ng-container>
           Maximum amount allowed is {{ getErrorValue('max') }}
+        </ng-container>
+      }
+
+      @if (hasError('maxLengthNumber')) {
+        <ng-container>
+          Maximum {{ getErrorValue('maxLengthNumber').requiredLength }} digits allowed
         </ng-container>
       }
 

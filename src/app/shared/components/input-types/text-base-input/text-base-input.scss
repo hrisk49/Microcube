@@ -1,0 +1,9 @@
+// Component specific styles
+.vertical-layout {
+  .mat-form-field {
+    width: 100%;
+  }
+}
+
+// Custom tooltip styles - these are global styles that should be in your global styles.scss
+// or you can use ::ng-deep (though not recommended for production)

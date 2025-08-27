@@ -43,7 +43,7 @@
     >
       <!-- Selection Column -->
       <ng-container sticky matColumnDef="selection" *ngIf="enableSelection()">
-        <th mat-header-cell *matHeaderCellDef>
+        <th  mat-header-cell *matHeaderCellDef>
           <mat-checkbox
             [checked]="isAllSelected()"
             [indeterminate]="selectedCount() > 0 && selectedCount() < displayedData().length"
@@ -65,7 +65,7 @@
 
             <!-- Actions Column -->
       <ng-container sticky matColumnDef="actions" *ngIf="showEditButton() || showDeleteButton() || showViewButton() || showPrintButton()">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <th style="background: #106ebe;" mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let element; let i = index">
           <div class="action-buttons " >
             <!-- Edit Button -->
@@ -163,29 +163,58 @@
           [style.width]="column.width"
         >
           <!-- Editable Cell -->
-          <ng-container *ngIf="isRowEditing(i) && column.isEditable; else displayCell">
-            <mat-form-field appearance="outline" class="inline-edit-field">
-              <input 
-                matInput 
-                [type]="column.isNumeric ? 'number' : 'text'"
-                [value]="getEditingValue(column.property)"
-                (input)="setEditingValue(column.property, $any($event.target).value)"
-                class="inline-input"
-              />
-            </mat-form-field>
-          </ng-container>
+<ng-container *ngIf="isRowEditing(i) && column.isEditable; else displayCell">
+    
+    <!-- Dropdown/Select Field -->
+    <ng-container *ngIf="column.isDropdown; else regularInput">
+      <mat-form-field appearance="outline" class="inline-edit-field">
+        <mat-select 
+          [value]="getEditingValue(column.property)"
+          (selectionChange)="setEditingValue(column.property, $event.value)"
+          [multiple]="column.isMultiSelect"
+          class="inline-select"
+        >
+          <mat-option 
+            *ngFor="let option of getDropdownOptions(column, element)" 
+            [value]="option.value"
+            [disabled]="option.disabled"
+          >
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+    
+    <!-- Regular Input Field -->
+    <ng-template #regularInput>
+      <mat-form-field appearance="outline" class="inline-edit-field">
+        <input 
+          matInput 
+          [type]="column.isNumeric ? 'number' : 'text'"
+          [value]="getEditingValue(column.property)"
+          (input)="setEditingValue(column.property, $any($event.target).value)"
+          class="inline-input"
+        />
+      </mat-form-field>
+    </ng-template>
+  </ng-container>
           
           <!-- Display Cell - Fixed the pipe issue -->
-          <ng-template #displayCell>
-            <span [class.numeric]="column.isNumeric">
-              <ng-container *ngIf="column.isNumeric; else nonNumericCell">
-                {{ getPropertyValue(element, column.property) | number:'1.2-2' }}
-              </ng-container>
-              <ng-template #nonNumericCell>
-                {{ getPropertyValue(element, column.property) }}
-              </ng-template>
-            </span>
-          </ng-template>
+  <ng-template #displayCell>
+    <span [class.numeric]="column.isNumeric">
+      <ng-container *ngIf="column.isDropdown; else nonDropdownCell">
+        {{ getDropdownDisplayText(column, getPropertyValue(element, column.property), element) }}
+      </ng-container>
+      <ng-template #nonDropdownCell>
+        <ng-container *ngIf="column.isNumeric; else nonNumericCell">
+          {{ getPropertyValue(element, column.property) | number:'1.2-2' }}
+        </ng-container>
+        <ng-template #nonNumericCell>
+          {{ getPropertyValue(element, column.property) }}
+        </ng-template>
+      </ng-template>
+    </span>
+  </ng-template>
         </td>
       </ng-container>
 
@@ -208,18 +237,18 @@
   </div>
 
   <!-- Pagination -->
-  <div class="pagination-container" *ngIf="totalPages() > 1">
-    <mat-paginator
-      [length]="_filteredData().length"
-      [pageSize]="_pageSize()"
-      [pageIndex]="_currentPage()"
-      [pageSizeOptions]="[5, 10, 25, 50, 100]"
-      (page)="onPageChange($event)"
-      showFirstLastButtons
-      aria-label="Select page"
-    >
-    </mat-paginator>
-  </div>
+<div class="pagination-container" *ngIf="_filteredData().length > 0">
+  <mat-paginator
+    [length]="_filteredData().length"
+    [pageSize]="_pageSize()"
+    [pageIndex]="_currentPage()"
+    [pageSizeOptions]="[5, 10, 25, 50, 100]"
+    (page)="onPageChange($event)"
+    showFirstLastButtons
+    aria-label="Select page"
+  >
+  </mat-paginator>
+</div>
 
   <!-- Status Bar -->
   <div class="status-bar">

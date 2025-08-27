@@ -3,12 +3,14 @@ import {MatInput} from "@angular/material/input";
 import {FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgClass} from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatRippleModule } from '@angular/material/core';
 
 @Component({
   selector: 'lds-id-box',
   imports: [
     MatInput,
     MatTooltipModule,
+    MatRippleModule,
     ReactiveFormsModule,
     NgClass
   ],
@@ -43,6 +45,8 @@ export class IdBoxComponent {
   readonly onChanged = output<any>();
   readonly onInput = output<any>();
   readonly onDoubleClick = output<void>();
+  readonly dotsClicked = output<void>(); 
+  readonly isDotsVisible = input<boolean>(true);
 
   // Internal state
   isInvalidState = signal(false);
@@ -117,5 +121,9 @@ export class IdBoxComponent {
   onChangeInput() {
     const control = this.frmGroup().get(this.controlName());
     this.valueChange.emit(control?.value);
+  }
+
+  onDotsClick() {
+    this.dotsClicked.emit();
   }
 }

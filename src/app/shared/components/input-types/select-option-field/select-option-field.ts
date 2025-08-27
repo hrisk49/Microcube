@@ -109,45 +109,50 @@ export class SelectOptionField {
     }, 200);
   }
 
-  onKeyDown(event: KeyboardEvent): void {
-    const filteredOpts = this.filteredOptions();
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault();
-        if (!this.isOpen()) {
-          this.openDropdown();
-        } else {
-          const nextIndex = this.highlightedIndex() < filteredOpts.length - 1
-            ? this.highlightedIndex() + 1
-            : 0;
-          this.highlightedIndex.set(nextIndex);
-        }
-        break;
+onKeyDown(event: KeyboardEvent): void {
+  const filteredOpts = this.filteredOptions();
+  switch (event.key) {
+    case 'ArrowDown':
+      event.preventDefault();
+      if (!this.isOpen()) {
+        this.openDropdown();
+      } else {
+        const nextIndex = this.highlightedIndex() < filteredOpts.length - 1
+          ? this.highlightedIndex() + 1
+          : 0;
+        this.highlightedIndex.set(nextIndex);
+      }
+      break;
 
-      case 'ArrowUp':
-        event.preventDefault();
-        if (this.isOpen()) {
-          const prevIndex = this.highlightedIndex() > 0
-            ? this.highlightedIndex() - 1
-            : filteredOpts.length - 1;
-          this.highlightedIndex.set(prevIndex);
+    case 'ArrowUp':
+      event.preventDefault();
+      if (this.isOpen()) {
+        const prevIndex = this.highlightedIndex() > 0
+          ? this.highlightedIndex() - 1
+          : filteredOpts.length - 1;
+        this.highlightedIndex.set(prevIndex);
+      }
+      break;
+
+    case 'Enter':
+      event.preventDefault();
+      if (this.isOpen()) {
+        // 👇 if no highlighted index, pick first option
+        const indexToSelect = this.highlightedIndex() >= 0 ? this.highlightedIndex() : 0;
+        const option = filteredOpts[indexToSelect];
+        if (option) {
+          this.selectOption(option);
         }
-        break;
-      case 'Enter':
-        event.preventDefault();
-        if (this.isOpen() && this.highlightedIndex() >= 0) {
-          const option = filteredOpts[this.highlightedIndex()];
-          if (option) {
-            this.selectOption(option);
-          }
-        }
-        break;
-      case 'Escape':
-        this.closeDropdown();
-        this.searchInput.nativeElement.blur();
-        break;
-    }
+      }
+      break;
+
+    case 'Escape':
+      this.closeDropdown();
+      this.searchInput.nativeElement.blur();
+      break;
   }
+}
+
 
   openDropdown(): void {
     if (!this.isReadonly()) {

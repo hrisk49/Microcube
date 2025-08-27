@@ -33,7 +33,7 @@ export class FileComponent {
 	readonly visible = input<boolean>(true);
 	readonly enable = input<boolean>(true);
 	readonly tooltip = input<string>('');
-
+	readonly isVertical = input<boolean>(false);
 	// Outputs
 	readonly selectedFilesChanged = output<File[]>();
 	readonly onFileChanged = output<any>();
@@ -52,6 +52,44 @@ export class FileComponent {
   const ext = this.getDisplayExtensions();
   return `Choose file ${ext ? '(' + ext + ')' : ''}`;
 });
+
+
+/**
+ * Format file size in human readable format
+ */
+formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+/**
+ * Get file extension in uppercase
+ */
+getFileExtension(filename: string): string {
+  return filename.split('.').pop()?.toUpperCase() || 'FILE';
+}
+
+/**
+ * Remove file by index
+ */
+removeFile(index: number): void {
+  const currentFiles = this.selectedFiles();
+  const newFiles = currentFiles.filter((_, i) => i !== index);
+  
+  this.selectedFiles.set(newFiles);
+  this.selectedFilesChanged.emit(newFiles);
+  
+  // Also clear the file input if no files left
+  if (newFiles.length === 0) {
+    const inputEl = document.getElementById(this.id()) as HTMLInputElement;
+    if (inputEl) {
+      inputEl.value = '';
+    }
+  }
+}
 
 
 	isRequired(): boolean {

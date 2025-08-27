@@ -1,4 +1,4 @@
-import { Component, input, output, signal, OnInit, OnChanges, computed } from '@angular/core';
+import { Component, input, output, signal, OnInit, OnChanges, computed, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
 
@@ -28,7 +28,10 @@ interface ColLimitExceededEvent {
   templateUrl: './text-area.html',
   styleUrl: './text-area.scss'
 })
-export class TextArea implements OnInit, OnChanges {
+export class TextArea implements OnInit, OnChanges, AfterViewInit {
+  // ViewChild for direct textarea access
+  @ViewChild('textareaRef', { static: false }) textareaRef!: ElementRef<HTMLTextAreaElement>;
+
   // Form inputs
   readonly frmGroup = input.required<FormGroup>();
   readonly controlName = input.required<string>();
@@ -38,39 +41,47 @@ export class TextArea implements OnInit, OnChanges {
   readonly cssClass = input<string>('');
   readonly styles = input<string>('');
   readonly rows = input<number>(3);
-  readonly cols = input<number | undefined>(undefined); // New: column width
+  readonly cols = input<number | undefined>(undefined);
   readonly placeholder = input<string>('');
   readonly required = input<boolean>(false);
   readonly enable = input<boolean>(true);
   readonly visible = input<boolean>(true);
   readonly maxLen = input<number>(2147483647);
   readonly minLen = input<number>(-2147483648);
-  readonly maxRows = input<number | undefined>(undefined); // New: maximum rows allowed
-  readonly minRows = input<number | undefined>(undefined); // New: minimum rows required
-  readonly maxCols = input<number | undefined>(undefined); // New: maximum columns per line
-  readonly minCols = input<number | undefined>(undefined); // New: minimum columns per line
-  readonly autoResize = input<boolean>(false); // New: auto-resize textarea
+  readonly maxRows = input<number | undefined>(undefined);
+  readonly minRows = input<number | undefined>(undefined);
+  readonly maxCols = input<number | undefined>(undefined);
+  readonly minCols = input<number | undefined>(undefined);
+  readonly autoResize = input<boolean>(false);
+  readonly showManualResize = input<boolean>(true); 
+  readonly resizeStep = input<number>(1); 
   readonly labelText = input<string>('');
   readonly showCharacterCount = input<boolean>(true);
-  readonly showRowCount = input<boolean>(false); // New: show row count
-  readonly enforceRowLimits = input<boolean>(true); // New: enforce row limits strictly
+  readonly showRowCount = input<boolean>(false);
+  readonly enforceRowLimits = input<boolean>(true);
 
   // Outputs
   readonly valueChanged = output<string>();
   readonly onChanged = output<Event>();
   readonly onRowLimitExceeded = output<RowLimitExceededEvent>();
   readonly onColLimitExceeded = output<ColLimitExceededEvent>();
+  readonly onManualResize = output<{ rows: number; action: 'increase' | 'decrease' }>(); // New output
 
   // Internal state
   isInvalidState = signal(false);
   errorMessage = signal('');
   currentRows = signal(0);
   longestLine = signal(0);
+  manualRows = signal(0); // New: tracks manually set rows
+
+  // Auto-resize related properties
+  private resizeTimeout: any;
+  private initialResizeDone = false;
 
   // Computed signals for reactive styling
   inputClasses = computed(() => {
-    const baseClasses = 'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500';
-    const resizeClasses = this.autoResize() ? 'resize-none' : 'resize-vertical';
+    const baseClasses = 'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 placeholder-gray-400';
+    const resizeClasses = this.autoResize() ? 'resize-none overflow-hidden' : 'resize-vertical';
     const stateClasses = this.isDisabled ? 'bg-gray-100 cursor-not-allowed opacity-60' : 'bg-white';
     const errorClasses = this.isInvalidState() ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-300' : 'border-gray-300';
     const customClasses = this.cssClass() || '';
@@ -92,7 +103,23 @@ export class TextArea implements OnInit, OnChanges {
     return attrs;
   });
 
+  // Computed for manual resize button states
+  canIncreaseSize = computed(() => {
+    const currentRows = this.getEffectiveRows();
+    const maxAllowed = this.maxRows();
+    return !maxAllowed || currentRows < maxAllowed;
+  });
+
+  canDecreaseSize = computed(() => {
+    const currentRows = this.getEffectiveRows();
+    const minAllowed = this.minRows() || 1;
+    return currentRows > minAllowed;
+  });
+
   ngOnInit() {
+    // Set initial manual rows
+    this.manualRows.set(this.rows());
+
     // Set up value change listener
     const control = this.frmGroup().get(this.controlName());
     if (control) {
@@ -100,6 +127,11 @@ export class TextArea implements OnInit, OnChanges {
         this.analyzeText(value || '');
         this.valueChanged.emit(value || '');
         this.validateInput();
+        
+        // Trigger auto-resize on programmatic value changes
+        if (this.autoResize() && this.initialResizeDone) {
+          setTimeout(() => this.performAutoResize(), 0);
+        }
       });
       
       // Handle enable/disable state
@@ -119,6 +151,19 @@ export class TextArea implements OnInit, OnChanges {
     if (control) {
       this.analyzeText(control.value || '');
     }
+
+    // Update manual rows if rows input changes
+    this.manualRows.set(this.rows());
+  }
+
+  ngAfterViewInit() {
+    // Initialize auto-resize after view is ready
+    if (this.autoResize()) {
+      setTimeout(() => {
+        this.performInitialResize();
+        this.initialResizeDone = true;
+      }, 0);
+    }
   }
 
   private analyzeText(text: string): void {
@@ -129,7 +174,7 @@ export class TextArea implements OnInit, OnChanges {
     this.longestLine.set(longest);
   }
 
-  private getEffectiveRows(): number {
+  public getEffectiveRows(): number {
     if (this.autoResize()) {
       const currentRowCount = this.currentRows();
       const minRows = this.minRows() || this.rows();
@@ -138,7 +183,8 @@ export class TextArea implements OnInit, OnChanges {
       return Math.max(minRows, Math.min(currentRowCount, maxRows));
     }
     
-    return this.rows();
+    // Use manual rows when not auto-resizing
+    return this.manualRows();
   }
 
   private getEffectiveStyles(): string {
@@ -154,6 +200,181 @@ export class TextArea implements OnInit, OnChanges {
     return styles;
   }
 
+  // MANUAL RESIZE METHODS
+  increaseSize(): void {
+    if (!this.canIncreaseSize()) return;
+    
+    const currentRows = this.manualRows();
+    const step = this.resizeStep();
+    const newRows = Math.min(
+      currentRows + step,
+      this.maxRows() || currentRows + step
+    );
+    
+    this.manualRows.set(newRows);
+    this.onManualResize.emit({ rows: newRows, action: 'increase' });
+    
+    // Update textarea immediately
+    this.updateTextareaRows(newRows);
+  }
+
+  decreaseSize(): void {
+    if (!this.canDecreaseSize()) return;
+    
+    const currentRows = this.manualRows();
+    const step = this.resizeStep();
+    const minAllowed = this.minRows() || 1;
+    const newRows = Math.max(currentRows - step, minAllowed);
+    
+    this.manualRows.set(newRows);
+    this.onManualResize.emit({ rows: newRows, action: 'decrease' });
+    
+    // Update textarea immediately
+    this.updateTextareaRows(newRows);
+  }
+
+  setSize(rows: number): void {
+    const minAllowed = this.minRows() || 1;
+    const maxAllowed = this.maxRows() || rows;
+    const constrainedRows = Math.max(minAllowed, Math.min(rows, maxAllowed));
+    
+    this.manualRows.set(constrainedRows);
+    this.onManualResize.emit({ 
+      rows: constrainedRows, 
+      action: rows > this.manualRows() ? 'increase' : 'decrease' 
+    });
+    
+    // Update textarea immediately
+    this.updateTextareaRows(constrainedRows);
+  }
+
+  private updateTextareaRows(rows: number): void {
+    if (this.textareaRef?.nativeElement) {
+      this.textareaRef.nativeElement.rows = rows;
+    }
+  }
+
+  // Preset size methods
+  setSmallSize(): void {
+    const smallSize = this.minRows() || 2;
+    this.setSize(smallSize);
+  }
+
+  setMediumSize(): void {
+    const mediumSize = Math.floor(((this.maxRows() || 10) + (this.minRows() || 2)) / 2);
+    this.setSize(mediumSize);
+  }
+
+  setLargeSize(): void {
+    const largeSize = this.maxRows() || 8;
+    this.setSize(largeSize);
+  }
+
+  // AUTO-RESIZE METHODS (existing)
+  autoResizeTextarea(event: Event): void {
+    if (!this.autoResize()) return;
+    
+    const textarea = event.target as HTMLTextAreaElement;
+    this.performAutoResizeOnElement(textarea);
+  }
+
+  private performAutoResize(): void {
+    if (this.textareaRef?.nativeElement) {
+      this.performAutoResizeOnElement(this.textareaRef.nativeElement);
+    }
+  }
+
+  private performInitialResize(): void {
+    if (this.textareaRef?.nativeElement && this.textareaRef.nativeElement.value) {
+      this.performAutoResizeOnElement(this.textareaRef.nativeElement);
+    }
+  }
+
+  private performAutoResizeOnElement(textarea: HTMLTextAreaElement): void {
+    if (!textarea) return;
+
+    // Store scroll position
+    const scrollTop = textarea.scrollTop;
+    
+    // Reset height to auto to get correct scrollHeight
+    textarea.style.height = 'auto';
+    
+    // Get content height
+    let newHeight = textarea.scrollHeight;
+    
+    // Apply min/max constraints
+    if (this.minRows() || this.maxRows()) {
+      const computedStyle = getComputedStyle(textarea);
+      const lineHeight = parseInt(computedStyle.lineHeight) || 
+                        parseInt(computedStyle.fontSize) * 1.2;
+      
+      const paddingTop = parseInt(computedStyle.paddingTop) || 0;
+      const paddingBottom = parseInt(computedStyle.paddingBottom) || 0;
+      const borderTop = parseInt(computedStyle.borderTopWidth) || 0;
+      const borderBottom = parseInt(computedStyle.borderBottomWidth) || 0;
+      const totalVerticalSpace = paddingTop + paddingBottom + borderTop + borderBottom;
+      
+      if (this.minRows()) {
+        const minHeight = (this.minRows()! * lineHeight) + totalVerticalSpace;
+        newHeight = Math.max(newHeight, minHeight);
+      }
+      
+      if (this.maxRows()) {
+        const maxHeight = (this.maxRows()! * lineHeight) + totalVerticalSpace;
+        newHeight = Math.min(newHeight, maxHeight);
+        
+        // Add overflow-y auto if content exceeds max height
+        if (textarea.scrollHeight > maxHeight) {
+          textarea.style.overflowY = 'auto';
+        } else {
+          textarea.style.overflowY = 'hidden';
+        }
+      }
+    }
+    
+    // Apply the new height
+    textarea.style.height = newHeight + 'px';
+    
+    // Restore scroll position
+    textarea.scrollTop = scrollTop;
+    
+    // Update current rows based on actual content
+    this.updateCurrentRowsFromContent(textarea.value);
+  }
+
+  // Handle paste events with debounced auto-resize
+  onPaste(event: ClipboardEvent): void {
+    if (this.autoResize()) {
+      // Small delay to ensure pasted content is processed
+      setTimeout(() => {
+        this.performAutoResize();
+      }, 10);
+    }
+  }
+
+  // Debounced auto-resize for better performance
+  private autoResizeDebounced(event: Event): void {
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
+    
+    this.resizeTimeout = setTimeout(() => {
+      this.autoResizeTextarea(event);
+    }, 10);
+  }
+
+  private updateCurrentRowsFromContent(content: string): void {
+    if (!content) {
+      this.currentRows.set(this.minRows() || 1);
+      return;
+    }
+    
+    const lines = content.split('\n').length;
+    const actualRows = Math.max(lines, this.minRows() || 1);
+    this.currentRows.set(actualRows);
+  }
+
+  // REST OF THE EXISTING METHODS (keeping them unchanged)
   updateControlState() {
     const control = this.frmGroup().get(this.controlName());
     if (control) {
@@ -269,6 +490,11 @@ export class TextArea implements OnInit, OnChanges {
         if (control) {
           control.setValue(limitedValue);
         }
+        
+        // Trigger auto-resize after limiting
+        if (this.autoResize()) {
+          setTimeout(() => this.performAutoResize(), 0);
+        }
         return;
       }
     }
@@ -295,8 +521,18 @@ export class TextArea implements OnInit, OnChanges {
         if (control) {
           control.setValue(limitedValue);
         }
+        
+        // Trigger auto-resize after limiting
+        if (this.autoResize()) {
+          setTimeout(() => this.performAutoResize(), 0);
+        }
         return;
       }
+    }
+
+    // Trigger auto-resize
+    if (this.autoResize()) {
+      this.autoResizeDebounced(event);
     }
 
     this.onChanged.emit(event);
@@ -329,7 +565,7 @@ export class TextArea implements OnInit, OnChanges {
 
   // Helper methods for template
   getRowCountDisplay(): string {
-    const current = this.currentRows();
+    const current = this.autoResize() ? this.currentRows() : this.manualRows();
     const max = this.maxRows();
     const min = this.minRows();
     
@@ -360,10 +596,13 @@ export class TextArea implements OnInit, OnChanges {
   // Method to manually trigger resize (for auto-resize)
   triggerResize(): void {
     if (this.autoResize()) {
-      const control = this.frmGroup().get(this.controlName());
-      if (control) {
-        this.analyzeText(control.value || '');
-      }
+      this.performAutoResize();
     }
+  }
+
+  adjustHeight(event: Event): void {
+    const textarea = event.target as HTMLTextAreaElement;
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
   }
 }

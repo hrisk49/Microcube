@@ -91,6 +91,26 @@ export class AmountInput {
     };
   }
 
+  // Custom validator for maximum length on numbers
+  static maxLengthNumberValidator(maxLength: number) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) return null;
+      
+      const value = control.value.toString();
+      if (value.length > maxLength) {
+        return { 
+          maxLengthNumber: { 
+            actualLength: value.length,
+            requiredLength: maxLength,
+            value: control.value
+          } 
+        };
+      }
+      
+      return null;
+    };
+  }
+
   private updateValidators(): void {
     const control = this.frmGroup().get(this.controlName());
     if (!control) return;
@@ -109,6 +129,11 @@ export class AmountInput {
     
     if (this.maxAmt() !== undefined) {
       validators.push(Validators.max(this.maxAmt()!));
+    }
+
+    // Add max length validator for numbers
+    if (this.maxLen() !== undefined && this.maxLen()! > 0) {
+      validators.push(AmountInput.maxLengthNumberValidator(this.maxLen()!));
     }
     
     // Add custom amount validator
@@ -175,9 +200,160 @@ export class AmountInput {
     return !this.enable();
   }
 
-  onChangeInput() {
+  // Enhanced input handler with length limiting, leading zero removal, and decimal validation
+  onChangeInput(event: Event) {
+    const input = event.target as HTMLInputElement;
     const control = this.frmGroup().get(this.controlName());
+    let value = input.value;
+    
+    // Remove leading zeros (convert "0345" to "345", but keep "0" and "0.5")
+    if (value && !this.allowLeadingZeros()) {
+      // Remove leading zeros but preserve single zero and decimal numbers starting with zero
+      if (value !== '0' && !value.startsWith('0.') && /^0+/.test(value)) {
+        value = value.replace(/^0+/, '') || '0';
+      }
+    }
+    
+    // Handle decimal places restriction
+    if (value.includes('.')) {
+      const parts = value.split('.');
+      if (parts[1] && parts[1].length > this.decimalPlaces()) {
+        // Truncate decimal places
+        value = parts[0] + '.' + parts[1].substring(0, this.decimalPlaces());
+      }
+    }
+    
+    // Apply maxLength restriction if specified
+    if (this.maxLen() && value.length > this.maxLen()!) {
+      value = value.slice(0, this.maxLen()!);
+    }
+    
+    // Update input and form control if value changed
+    if (input.value !== value) {
+      input.value = value;
+      control?.setValue(value);
+    }
+    
     this.valueChange.emit(control?.value);
+  }
+
+  // Handle paste events to validate pasted content
+  onPaste(event: ClipboardEvent): void {
+    event.preventDefault();
+    
+    const paste = event.clipboardData?.getData('text') || '';
+    const input = event.target as HTMLInputElement;
+    const control = this.frmGroup().get(this.controlName());
+    
+    // Clean the pasted value
+    let cleanValue = paste.replace(/[^0-9.]/g, ''); // Remove non-numeric characters except decimal
+    
+    // Remove multiple decimal points (keep only the first one)
+    const decimalCount = (cleanValue.match(/\./g) || []).length;
+    if (decimalCount > 1) {
+      const firstDecimalIndex = cleanValue.indexOf('.');
+      cleanValue = cleanValue.substring(0, firstDecimalIndex + 1) + 
+                   cleanValue.substring(firstDecimalIndex + 1).replace(/\./g, '');
+    }
+    
+    // Handle decimal places
+    if (cleanValue.includes('.')) {
+      const parts = cleanValue.split('.');
+      if (parts[1] && parts[1].length > this.decimalPlaces()) {
+        cleanValue = parts[0] + '.' + parts[1].substring(0, this.decimalPlaces());
+      }
+      
+      // If decimal places is 0, remove decimal point
+      if (this.decimalPlaces() === 0) {
+        cleanValue = parts[0];
+      }
+    }
+    
+    // Remove leading zeros
+    if (cleanValue && !this.allowLeadingZeros()) {
+      if (cleanValue !== '0' && !cleanValue.startsWith('0.') && /^0+/.test(cleanValue)) {
+        cleanValue = cleanValue.replace(/^0+/, '') || '0';
+      }
+    }
+    
+    // Apply max length
+    if (this.maxLen() && cleanValue.length > this.maxLen()!) {
+      cleanValue = cleanValue.slice(0, this.maxLen()!);
+    }
+    
+    // Set the cleaned value
+    input.value = cleanValue;
+    control?.setValue(cleanValue);
+    this.valueChange.emit(control?.value);
+  }
+
+  // Prevent typing beyond maxLength and decimal places
+  onKeyPress(event: KeyboardEvent): boolean {
+    const input = event.target as HTMLInputElement;
+    const currentValue = input.value;
+    const currentLength = currentValue.length;
+    const char = event.key;
+    const cursorPosition = input.selectionStart || 0;
+    
+    // Allow control keys (backspace, delete, tab, escape, enter, arrows)
+    if (['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key) ||
+        // Allow Ctrl combinations
+        (event.ctrlKey && ['a', 'c', 'v', 'x', 'z'].includes(event.key.toLowerCase()))) {
+      return true;
+    }
+    
+    // Only allow numbers and decimal point
+    if (!/[\d.]/.test(char)) {
+      event.preventDefault();
+      return false;
+    }
+    
+    // Handle decimal point restrictions
+    if (char === '.') {
+      // Prevent multiple decimal points
+      if (currentValue.includes('.')) {
+        event.preventDefault();
+        return false;
+      }
+      
+      // If decimal places is 0, don't allow decimal point
+      if (this.decimalPlaces() === 0) {
+        event.preventDefault();
+        return false;
+      }
+      
+      return true;
+    }
+    
+    // Handle digit input after decimal point
+    if (currentValue.includes('.')) {
+      const decimalIndex = currentValue.indexOf('.');
+      const afterDecimal = currentValue.substring(decimalIndex + 1);
+      
+      // If cursor is after decimal point and we already have max decimal places
+      if (cursorPosition > decimalIndex && afterDecimal.length >= this.decimalPlaces()) {
+        event.preventDefault();
+        return false;
+      }
+    }
+    
+    // Prevent leading zeros (except for decimal numbers)
+    if (char === '0' && currentValue === '' && !this.allowLeadingZeros()) {
+      return true; // Allow single zero
+    }
+    
+    if (currentValue === '0' && /\d/.test(char) && char !== '.' && !this.allowLeadingZeros()) {
+      event.preventDefault();
+      return false;
+    }
+    
+    // Check max length
+    if (this.maxLen() && currentLength >= this.maxLen()!) {
+      event.preventDefault();
+      return false;
+    }
+    
+    return true;
   }
 
   // Helper method to format step attribute based on decimal places
