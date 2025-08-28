@@ -53,8 +53,8 @@ dialogUtils = inject(DialogUtils);
   onClickReset = ONCLICK_RESET;
   onClickSave = ONCLICK_SAVE;
   priorityOptions: SelectOptionsModel[] = [
-    { key: 'HIGH', value: 'High' },
-    { key: 'NORM', value: 'Normal' },
+    { key: 'HIGH', value: 'HIGH' },
+    { key: 'NORM', value: 'NORM' },
   ];
 
   duplicateOptions: SelectOptionsModel[] = [
@@ -147,6 +147,7 @@ dialogUtils = inject(DialogUtils);
   timeDatePanel: WritableSignal<boolean> = signal(true);
   fromBicPanel: WritableSignal<boolean> = signal(true);
   toBicPanel: WritableSignal<boolean> = signal(true);
+  marketPracticePanel: WritableSignal<boolean> = signal(false);
   subPanelOpen: WritableSignal<boolean> = signal(true);
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
   businessApplicationHeaderPanel: WritableSignal<boolean> = signal(true);
@@ -299,24 +300,31 @@ dialogUtils = inject(DialogUtils);
       toMembId: [''],
       toClrSysIdCd: [''],
       toLei: [''],
+      /*rltdClrSysIdCd: ['', Validators.required],
+      rltdClrSysIdMmbId: ['', Validators.required,Validators.maxLength(28),Validators.minLength(1)],
+      rltdLei: [''],*/
       rltdBizMsgIdr: [''],
       rltdMsgDefIdr: [''],
       rltdBizSvc: [''],
       rltdCreDt: [''],
+      /*rltdCpyDplct: [null],
+      rltdPriority: ['HIGH'],*/
 
       bizMsgIdr: ['PACS008_' + new Date().getTime(), Validators.required],
       msgDefIdr: ['pacs.008.001.08', Validators.required],
-      bizSvc: ['swift.cbprplus.02', Validators.required],
+      bizSvc: ['swift.cbprplus.02',Validators.required],
+      /*regy: ['', Validators.required,Validators.maxLength(350),Validators.minLength(1)],
+      mktPrctcId: ['', Validators.required,Validators.maxLength(2048),Validators.minLength(1)],*/
       creDt: [new Date().toISOString(), Validators.required],
       cpyDplct: [null],
       psblDplct: [null],
-      priority: ['high'],
+      priority: ['HIGH'],
       msgId: 'MSG_' + new Date().getTime(),
       creDtTm: [new Date().toISOString(), Validators.required],
       nbOfTxs: ['1', Validators.required],
 
       // Settlement Information
-      sttlmMtd: ['INGA', Validators.required],
+      sttlmMtd: [null, Validators.required],
       // Settlement Account (flat)
       sttlmAcctId: [''],
       sttlmAcctCcy: [null],
@@ -325,11 +333,8 @@ dialogUtils = inject(DialogUtils);
       sttlmAcctSchmeNm: [''],
       sttlmAcctIssr: [''],
 
-
-      chrgBr: [null, Validators.required],
-
       // Payment Identification
-      instrId: ['PACS008_' + new Date().getTime(), Validators.required],
+      instrId: ['PACS008_' + new Date().getTime().toString().slice(-8), Validators.required],
       endToEndId: ['', Validators.required],
       txId: ['TX_' + new Date().getTime()],
       uetr: [''],
@@ -343,6 +348,15 @@ dialogUtils = inject(DialogUtils);
       lclInstrmPrtry: [''],
       ctgyPurpCd: [''],
       ctgyPurpPrtry: [''],
+      dbtDtTm: [new Date().toISOString()],
+      cdtDtTm: [new Date().toISOString()],
+      CLSTm: [new Date().toISOString()],
+      tillTm: [new Date().toISOString()],
+      frTm: [new Date().toISOString()],
+      rjctTm: [new Date().toISOString()],
+      instdAmt: [null],
+      chrgBr: [null, Validators.required],
+      xchgRate: [''],
 
       // Interbank Settlement
       intrBkSttlmAmtCcy: [null, Validators.required],
@@ -784,7 +798,6 @@ dialogUtils = inject(DialogUtils);
       crdtrAcctPrxy: [''],
 
       // Creditor Agent (flat)
-      cdtrAgtBicfi: [''],
       crdtrAgtBicfi: ['',Validators.required],
       crdtrAgtLei: [''],
       crdtrAgtNm: [''],
@@ -888,58 +901,6 @@ dialogUtils = inject(DialogUtils);
       branchId: [''],
       trnRefNo20: [''],
       relatedRef21: [''],
-
-      // Related (flat)
-      rltdCharSet: [''],
-      rltdFrBicfi: [''],
-      rltdFrClrSysIdCd: [''],
-      rltdFrMmbId: [''],
-      rltdFrLei: [''],
-      rltdFrNm: [''],
-      rltdFrAdrLine1: [''],
-      rltdFrAdrLine2: [''],
-      rltdFrAdrLine3: [''],
-      rltdFrAdrDept: [''],
-      rltdFrAdrSubDept: [''],
-      rltdFrAdrStrtNm: [''],
-      rltdFrAdrBldgNb: [''],
-      rltdFrAdrBldgNm: [''],
-      rltdFrAdrFlr: [''],
-      rltdFrAdrPstBx: [''],
-      rltdFrAdrRoom: [''],
-      rltdFrAdrPstCd: [''],
-      rltdFrAdrTwnNm: [''],
-      rltdFrAdrTwnLctnNm: [''],
-      rltdFrAdrDstrctNm: [''],
-      rltdFrAdrCtrySubDvsn: [''],
-      rltdFrAdrCtry: [''],
-      rltdFrAdrLine: [''],
-
-      rltdToBicfi: [''],
-      rltdToClrSysIdCd: [''],
-      rltdToMmbId: [''],
-      rltdToLei: [''],
-      rltdToNm: [''],
-      rltdToAdrLine1: [''],
-      rltdToAdrLine2: [''],
-      rltdToAdrLine3: [''],
-      rltdToAdrDept: [''],
-      rltdToAdrSubDept: [''],
-      rltdToAdrStrtNm: [''],
-      rltdToAdrBldgNb: [''],
-      rltdToAdrBldgNm: [''],
-      rltdToAdrFlr: [''],
-      rltdToAdrPstBx: [''],
-      rltdToAdrRoom: [''],
-      rltdToAdrPstCd: [''],
-      rltdToAdrTwnNm: [''],
-      rltdToAdrTwnLctnNm: [''],
-      rltdToAdrDstrctNm: [''],
-      rltdToAdrCtrySubDvsn: [''],
-      rltdToAdrCtry: [''],
-      rltdToAdrLine: [''],
-      rltdCpyDplct: ['COPY'],
-      rltdPrty: ['NORM'],
     });
 
     // Ensure the form is properly initialized
@@ -951,6 +912,427 @@ dialogUtils = inject(DialogUtils);
   }
 
   generatePayload(): Mx008Model {
+    const frm = this.frmGroup.value;
+    const payload: any = {};
+
+    // 2. Business Header
+    payload.fromBicfi = frm.fromBicfi ;
+    payload.toBicfi = frm.toBicfi ;
+    payload.bizMsgIdr = frm.bizMsgIdr ;
+    payload.msgDefIdr = frm.msgDefIdr ;
+    payload.bizSvc = frm.bizSvc ;
+    payload.creDt = frm.creDt ;
+    payload.cpyDplct = frm.cpyDplct;
+    payload.psblDplct = frm.psblDplct;
+    payload.priority = frm.priority ;
+    payload.msgId = frm.msgId ;
+    payload.creDtTm = frm.creDtTm ;
+    payload.nbOfTxs = frm.nbOfTxs ;
+
+    // 3. Settlement Info
+    payload.sttlmMtd = frm.sttlmMtd ;
+    payload.sttlmAcct = {
+      id: frm.sttlmAcct ,
+      ccy: frm.sttlmAcct ,
+      tp: frm.sttlmAcct ,
+      nm: frm.sttlmAcct,
+      schmeNm: frm.sttlmAcct,
+      issr: frm.sttlmAcct,
+    };
+    payload.chrgBr = frm.chrgBr ;
+    payload.instgAgtBic = frm.instgAgtBicfi,
+    payload.instdAgtBic = frm.instdAgtBicfi,
+
+    // 4. Payment Identifiers
+    payload.instrId = frm.instrId ;
+    payload.endToEndId = frm.endToEndId ;
+    payload.txId = frm.txId ;
+    payload.uetr = frm.uetr ;
+    payload.clrSysRef = frm.clrSysRef ;
+
+    // 5. Payment Type Info
+    payload.instrPrty = frm.instrPrty ;
+    payload.clrChanl = frm.clrChanl ;
+    payload.lclInstrmCD = frm.lclInstrmCD ;
+    payload.lclInstrmPrtry = frm.lclInstrmPrtry ;
+    payload.ctgyPurpCd = frm.ctgyPurpCd ;
+    payload.ctgyPurpPrtry = frm.ctgyPurpPrtry ;
+    const serviceLevels = frm.serviceLevels || [];
+    const serviceCodes = serviceLevels
+      .map((level: any) => level.serviceCode)
+      .filter((code: string) => code);
+    const servicePriorities = serviceLevels
+      .map((level: any) => level.servicePriority)
+      .filter((priority: string) => priority);
+    payload.svcLvlCD = [
+      serviceCodes[0] || '',
+      serviceCodes[1] || '',
+      serviceCodes[2] || '',
+    ];
+    payload.svcLvlPrtry = [
+      servicePriorities[0] || '',
+      servicePriorities[1] || '',
+      servicePriorities[2] || '',
+    ];
+
+    // 6. Interbank Settlement
+    payload.intrBkSttlmAmtCcy = frm.intrBkSttlmAmtCcy ;
+    payload.intrBkSttlmAmt = frm.intrBkSttlmAmt != null ? Number(frm.intrBkSttlmAmt) : null;
+    payload.intrBkSttlmDt = frm.intrBkSttlmDt ;
+    payload.sttlmPrty = frm.sttlmPrty ;
+
+    // 7. Agents & Accounts (Generic Builder)
+    const buildParty = (pfx: string) => ({
+      bIcfi: frm[`${pfx}Bicfi`] ,
+      clrSysIdCd: frm[`${pfx}ClrSysIdCd`] ,
+      mmbId: frm[`${pfx}MmbId`] ,
+      lei: frm[`${pfx}Lei`] ,
+      nm: frm[`${pfx}Nm`] ,
+      adrLine1: frm[`${pfx}AdrLine1`] ,
+      adrLine2: frm[`${pfx}AdrLine2`] ,
+      adrLine3: frm[`${pfx}AdrLine3`] ,
+      adr: {
+        dept: frm[`${pfx}AdrDept`] ,
+        subDept: frm[`${pfx}AdrSubDept`] ,
+        strtNm: frm[`${pfx}AdrStrtNm`] ,
+        bldgNb: frm[`${pfx}AdrBldgNb`] ,
+        bldgNm: frm[`${pfx}AdrBldgNm`] ,
+        flr: frm[`${pfx}AdrFlr`] ,
+        pstBx: frm[`${pfx}AdrPstBx`] ,
+        room: frm[`${pfx}AdrRoom`] ,
+        pstCd: frm[`${pfx}AdrPstCd`] ,
+        twnNm: frm[`${pfx}AdrTwnNm`] ,
+        twnLctnNm: frm[`${pfx}AdrTwnLctnNm`] ,
+        dstrctNm: frm[`${pfx}AdrDstrctNm`] ,
+        ctrySubDvsn: frm[`${pfx}AdrCtrySubDvsn`] ,
+        ctry: frm[`${pfx}AdrCtry`] ,
+        adrLine: (frm[`${pfx}AdrLine`] || []).filter((s: string) => s?.trim()),
+      }
+    });
+
+    const buildAccount = (pfx: string) => ({
+      id: frm[`${pfx}AcctId`] ,
+      ccy: frm[`${pfx}AcctCcy`] ,
+      tp: frm[`${pfx}AcctTp`] ,
+      nm: frm[`${pfx}AcctNm`] ,
+      schmeNm: frm[`${pfx}AcctSchmeNm`] ,
+      issr: frm[`${pfx}AcctIssr`] ,
+    });
+
+    [
+      "prvsInstgAgt1", "prvsInstgAgt2", "prvsInstgAgt3",
+      "intrmyAgt1", "intrmyAgt2", "intrmyAgt3",
+      "instgAgt", "instdAgt"
+    ].forEach(pfx => {
+      payload[pfx] = buildParty(pfx);
+      payload[`${pfx}Acct`] = buildAccount(pfx);
+    });
+
+    // 8. Debtor + Account
+    payload.dbtr = {
+      nm: frm.dbtrNm ,
+      ctryOfRes: frm.dbtrCtryOfRes ,
+      address:{
+        dept: frm.dept,
+        subDept: frm.subDept,
+        strtNm: frm.strtNm,
+        bldgNb: frm.bldgNb,
+        bldgNm: frm.bldgNm,
+        flr: frm.flr,
+        pstBx: frm.pstBx,
+        room: frm.room,
+        pstCd: frm.pstCd,
+        twnNm: frm.twnNm,
+        twnLctnNm: frm.twnLctnNm,
+        dstrctNm: frm.dstrctNm,
+        ctrySubDvsn: frm.ctrySubDvsn,
+        ctry: frm.ctry,
+        adrLine: [
+          frm.adrLine1,
+          frm.adrLine2,
+          frm.adrLine3,
+        ].filter(Boolean),
+      },
+      orgIdBic: frm.anyBIC ,
+      orgIdLEI: frm.LEI ,
+      orgOtherList: (frm.orgIdOthr || []).map((e: any) => ({
+        orgIdOthrID: e.orgIdOthrId,
+        orgIdOthrScNmCD: e.orgIdOthrScmNm,
+        orgIdOthrIssr: e.orgIdOthrIssr,
+      })),
+      birthDt: frm.birthDt ,
+      prvcOfBirth: frm.prvcOfBirth ,
+      cityOfBirth: frm.cityOfBirth ,
+      ctryOfBirth: frm.ctryOfBirth ,
+      prvtOtherList: (frm.PrivtIdenOthr || []).map((e: any) => ({
+        prvtOthId: e.privtIdOthrId,
+        prvtOthIdSchNmCD: e.privtIdOthrScmNm,
+        prvtOthIdIssr: e.privtIdOthrIssr,
+      }))
+    };
+
+    payload.dbtrAcct = {
+      iban: frm.IBAN ,
+      id: frm.dbAccOthrId ,
+      tpCd: frm.dbtrAcctTp,
+      ccy: frm.dbtrAcctCcy ,
+      nm: frm.dbtrAcctNm ,
+      //schmeNmCd: frm.dbtrAcctSchmeNmCd ,
+      //schmeNmPrtry: frm.dbtrAcctSchmeNmPrtry ,
+      issr: frm.dbOthrIssr ,
+      //prxyId: frm.dbtrAcctPrxyId ,
+      //prxyTpCd: frm.dbtrAcctPrxyTpCd ,
+      //prxyTpPrtry: frm.dbtrAcctPrxyTpPrtry ,
+    };
+
+    payload.dbtrAgt = {
+      bicfi: frm.dbtrAgtBicfi ,
+      clrSysIdCd: frm.dbtrAgtClrSysIdCd ,
+      mmbId: frm.dbtrAgtMmbId ,
+      lei: frm.dbtrAgtLei ,
+      nm: frm.dbtrAgtNm ,
+      adr: {
+        dept: frm.dbtrAgtAdrDept ,
+        subDept: frm.dbtrAgtAdrSubDept ,
+        strtNm: frm.dbtrAgtAdrStrtNm ,
+        bldgNb: frm.dbtrAgtAdrBldgNb ,
+        bldgNm: frm.dbtrAgtAdrBldgNm ,
+        flr: frm.dbtrAgtAdrFlr ,
+        pstBx: frm.dbtrAgtAdrPstBx ,
+        room: frm.dbtrAgtAdrRoom ,
+        pstCd: frm.dbtrAgtAdrPstCd ,
+        twnNm: frm.dbtrAgtAdrTwnNm ,
+        twnLctnNm: frm.dbtrAgtAdrTwnLctnNm ,
+        dstrctNm: frm.dbtrAgtAdrDstrctNm ,
+        ctrySubDvsn: frm.dbtrAgtAdrCtrySubDvsn ,
+        ctry: frm.dbtrAgtAdrCtry ,
+        adrLine: (frm.dbtrAgtAdrLine || []).filter((s: string) => s?.trim()),
+      }
+    };
+
+    payload.dbtrAgtAcct = {
+      id: frm.dbtrAgtAcctId ,
+      ccy: frm.dbtrAgtAcctCcy ,
+      tp: frm.dbtrAgtAcctTp ,
+      nm: frm.dbtrAgtAcctNm ,
+      schmeNm: frm.dbtrAgtAcctSchmeNm ,
+      issr: frm.dbtrAgtAcctIssr ,
+    };
+
+    // 9. Creditor + Account
+    payload.cdtr = {
+      nm: frm.cdtrNm ,
+      ctryOfRes: frm.crdtrCtryOfRes ,
+      address: {
+        dept: frm.cdtrAdrDept ,
+        subDept: frm.cdtrAdrSubDept ,
+        strtNm: frm.cdtrAdrStrtNm ,
+        bldgNb: frm.cdtrAdrBldgNb ,
+        bldgNm: frm.cdtrAdrBldgNm ,
+        flr: frm.cdtrAdrFlr ,
+        pstBx: frm.cdtrAdrPstBx ,
+        room: frm.cdtrAdrRoom ,
+        pstCd: frm.cdtrAdrPstCd ,
+        twnNm: frm.cdtrAdrTwnNm ,
+        twnLctnNm: frm.cdtrAdrTwnLctnNm ,
+        dstrctNm: frm.cdtrAdrDstrctNm ,
+        ctrySubDvsn: frm.cdtrAdrCtrySubDvsn ,
+        ctry: frm.cdtrAdrCtry ,
+        adrLine: (frm.cdtrAdrLine || []).filter((s: string) => s?.trim()),
+      },
+      orgIdBic: frm.crdtranyBIC ,
+      orgIdLEI: frm.crdtrLEI ,
+      orgOtherList: (frm.crdtrorgIdOthr || []).map((e: any) => ({
+        orgIdOthrID: e.crdtrorgIdOthrId,
+        orgIdOthrScNmCD: e.crdtrorgIdOthrScmNm,
+        orgIdOthrIssr: e.crdtrorgIdOthrIssr,
+      })),
+      birthDt: frm.crdtrbirthDt ,
+      prvcOfBirth: frm.crdtrprvcOfBirth ,
+      cityOfBirth: frm.crdtrcityOfBirth ,
+      ctryOfBirth: frm.crdtrctryOfBirth ,
+      prvtOtherList: (frm.crdtrPrivtIdenOthr || []).map((e: any) => ({
+        prvtOthId: e.crdtrprivateIdOthrId,
+        prvtOthIdSchNmCD: e.crdtrprivateIdOthrScmNm,
+        prvtOthIdIssr: e.crdtrprivateIdOthrIssr,
+      }))
+    };
+
+    payload.cdtrAcct = {
+      iban: frm.crdtrIBAN ,
+      id: frm.cdtrAcctId ,
+      tpCd: frm.cdtrAcctTp,
+      ccy: frm.cdtrAcctCcy ,
+      nm: frm.cdtrAcctNm ,
+      //schmeNmCd: frm.cdtrAcctSchmeNmCd ,
+      //schmeNmPrtry: frm.cdtrAcctSchmeNmPrtry ,
+      issr: frm.cdtrAcctIssr ,
+      //prxyId: frm.cdtrAcctPrxyId ,
+      //prxyTpCd: frm.cdtrAcctPrxyTpCd ,
+      //prxyTpPrtry: frm.cdtrAcctPrxyTpPrtry ,
+    };
+
+    payload.cdtrAgt = {
+      bicfi: frm.crdtrAgtBicfi ,
+      clrSysIdCd: frm.cdtrAgtClrSysIdCd ,
+      mmbId: frm.cdtrAgtMmbId ,
+      lei: frm.cdtrAgtLei ,
+      nm: frm.cdtrAgtNm ,
+      adr: {
+        dept: frm.cdtrAgtAdrDept ,
+        subDept: frm.cdtrAgtAdrSubDept ,
+        strtNm: frm.cdtrAgtAdrStrtNm ,
+        bldgNb: frm.cdtrAgtAdrBldgNb ,
+        bldgNm: frm.cdtrAgtAdrBldgNm ,
+        flr: frm.cdtrAgtAdrFlr ,
+        pstBx: frm.cdtrAgtAdrPstBx ,
+        room: frm.cdtrAgtAdrRoom ,
+        pstCd: frm.cdtrAgtAdrPstCd ,
+        twnNm: frm.cdtrAgtAdrTwnNm ,
+        twnLctnNm: frm.cdtrAgtAdrTwnLctnNm ,
+        dstrctNm: frm.cdtrAgtAdrDstrctNm ,
+        ctrySubDvsn: frm.cdtrAgtAdrCtrySubDvsn ,
+        ctry: frm.cdtrAgtAdrCtry ,
+        adrLine: (frm.cdtrAgtAdrLine || []).filter((s: string) => s?.trim()),
+      },
+      //id:"3"
+    };
+
+    payload.cdtrAgtAcct = {
+      iban: frm.cdtrAgtAcctId ,
+      id: frm.cdtrAgtAcctId ,
+      ccy: frm.cdtrAgtAcctCcy ,
+      tpCd: frm.cdtrAgtAcctTp ,
+      nm: frm.cdtrAgtAcctNm ,
+      schmeNm: frm.cdtrAgtAcctSchmeNm ,
+      //schmeNmCd: frm.cdtrAgtAcctSchmeNm ,
+      //schmeNmPrtry: frm.cdtrAgtAcctSchmeNm ,
+      issr: frm.cdtrAgtAcctIssr ,
+      //prxyId: frm.cdtrAgtAcctIssr ,
+      //prxyTpCd: frm.cdtrAgtAcctIssr ,
+      //prxyTpPrtry: frm.cdtrAgtAcctIssr ,
+
+    };
+
+    // 10. Ultimate Parties
+    payload.ultmtDbtr = {
+      nm: frm.ultdbtrNm ,
+      ctryOfRes: frm.ultdbtrCtryOfRes ,
+      address: {
+        dept: frm.ultdbtrdept,
+        subDept: frm.ultdbtrsubDept,
+        strtNm: frm.ultdbtrstrtNm,
+        bldgNb: frm.ultdbtrbldgNb,
+        bldgNm: frm.dbtrAdrBldgNm,
+        flr: frm.ultdbtrflr,
+        pstBx: frm.ultdbtrpstBx,
+        room: frm.ultdbtrroom,
+        pstCd: frm.ultdbtrpstCd,
+        twnNm: frm.ultdbtrtwnNm,
+        twnLctnNm: frm.ultdbtrtwnLctnNm,
+        dstrctNm: frm.ultdbtrdstrctNm,
+        ctrySubDvsn: frm.ultdbtrctrySubDvsn,
+        ctry: frm.ultdbtrctry,
+        adrLine: [frm.dbtrAdrLine1, frm.dbtrAdrLine2, frm.dbtrAdrLine3].filter(Boolean),
+      },
+      orgIdBic: frm.ultanyBIC,
+      orgIdLEI:frm.ultLEI,
+      orgOtherList: (frm.ultorgIdOthr || []).map((e: any) => ({
+        orgIdOthrID: e.ultorgIdOthr.ultorgIdOthrId,
+        orgIdOthrScNmCD: e.ultorgIdOthr.ultorgIdOthrScmNm,
+        orgIdOthrIssr: e.ultorgIdOthr.ultorgIdOthrIssr,
+      })),
+      birthDt: frm.ultbirthDt,
+      prvcOfBirth: frm.ultprvcOfBirth,
+      cityOfBirth: frm.ultcityOfBirth,
+      ctryOfBirth: frm.ultctryOfBirth,
+      prvtOtherList: (frm.ultPrivtIdenOthr || []).map((e: any) => ({
+        prvtOthId1: e.ultPrivtIdenOthr.ultprivateIdOthrId,
+        prvtOthIdSchNmCD1: e.ultPrivtIdenOthr.ultprivateIdOthrScmNm,
+        prvtOthIdIssr1: e.ultPrivtIdenOthr.ultprivateIdOthrIssr,
+      }))
+    };
+
+    payload.ultmtCdtr = {
+      nm: frm.ultcrdtrNm ,
+      ctryOfRes: frm.ultcrdtrCtryOfRes ,
+      address: {
+        dept: frm.ultcrdtrdept,
+        subDept: frm.ultcrdtrsubDept,
+        strtNm: frm.ultcrdtrstrtNm,
+        bldgNb: frm.ultcrdtrbldgNb,
+        bldgNm: frm.ultcrdtrbldgNm,
+        flr: frm.ultcrdtrflr,
+        pstBx: frm.ultcrdtrpstBx,
+        room: frm.ultcrdtrroom,
+        pstCd: frm.ultcrdtrpstCd,
+        twnNm: frm.ultcrdtrtwnNm,
+        twnLctnNm: frm.ultcrdtrtwnLctnNm,
+        dstrctNm: frm.ultcrdtrdstrctNm,
+        ctrySubDvsn: frm.ultcrdtrctrySubDvsn,
+        ctry: frm.ultcrdtrctry,
+        //adrLine: (frm.ultmtCdtrAdrLine || []).filter((s: string) => s?.trim()),
+      },
+      orgIdBic: frm.ultcrdtranyBIC ,
+      orgIdLEI: frm.ultcrdtrLEI ,
+      orgOtherList: (frm.ultcrdtrorgIdOthr || []).map((e: any) => ({
+        orgIdOthrID: e.ultcrdtrorgIdOthrId,
+        orgIdOthrScNmCD: e.ultcrdtrorgIdOthrScmNm,
+        orgIdOthrIssr: e.ultcrdtrorgIdOthrIssr,
+      })),
+      birthDt: frm.ultcrdtrbirthDt ,
+      prvcOfBirth: frm.ultcrdtrprvcOfBirth ,
+      cityOfBirth: frm.ultcrdtrcityOfBirth ,
+      ctryOfBirth: frm.ultcrdtrctryOfBirth ,
+      prvtOtherList: (frm.ultcrdtrPrivtIdenOthr || []).map((e: any) => ({
+        prvtOthId: e.ultcrdtrprivateIdOthrId,
+        prvtOthIdSchNmCD: e.ultcrdtrprivateIdOthrScmNm,
+        prvtOthIdIssr: e.ultcrdtrprivateIdOthrIssr,
+      }))
+    };
+
+    // 11. Instruction and Purpose
+    payload.instrForCd = frm.instrForCd ;
+    payload.instrForInstrInf = frm.instrForInstrInf ;
+    payload.purpCd = frm.purpCd ;
+    payload.purpPrtry = frm.purpPrtry ;
+
+    // 12. Remittance Info
+    payload.rmtInfUstrd = (frm.rmtInfUstrd || []).filter((e: string) => e?.trim());
+    payload.rmtInfStrd = (frm.rmtInfStrd || []).map((e: any) => ({
+      cdtrRefInfTpCd: e.cdtrRefInfTpCd,
+      cdtrRefInfTpPrtry: e.cdtrRefInfTpPrtry,
+      cdtrRefInfIssr: e.cdtrRefInfIssr,
+      cdtrRef: e.cdtrRef,
+    }));
+
+    // 13. Authorization
+
+
+    // 14. Related Parties (nested rltd)
+    payload.rltd = {
+      rltdRmtInf: (frm.rltdRmtInf || []).map((info: any) => ({
+        ustrd: info.ustrd ,
+        strd: (info.strd || []).map((s: any) => ({
+          cdtrRefInfTpCd: s.cdtrRefInfTpCd,
+          cdtrRefInfTpPrtry: s.cdtrRefInfTpPrtry,
+          cdtrRefInfIssr: s.cdtrRefInfIssr,
+          cdtrRef: s.cdtrRef,
+        }))
+      })),
+      /*rltdDates: {
+        accptncDtTm: frm.rltdAccptncDtTm ,
+        tradgDt: frm.rltdTradgDt ,
+        intrBkSttlmDt: frm.rltdIntrBkSttlmDt ,
+      }*/
+    };
+
+    return payload as Mx008Model;
+  }
+
+
+
+  /*generatePayload(): Mx008Model {
     let payload: any = {};
     let frmValue = this.frmGroup.value;
 
@@ -1701,198 +2083,92 @@ dialogUtils = inject(DialogUtils);
     };
 
     return payload as Mx008Model;
-  }
+  }*/
 
-  // Open BIC selection modal for "From BIC" (Instructing Agent)
-  openFromBicSelectionModal(): void {
+  openBicSelectionModal(ctrlNm :string, nameField:string|null = null) :void{
+    const val = {
+      bicField : ctrlNm,
+      defaultValue : 'SCBLBDDX',
+    };
+
     this.bicSelectionService.openBicSelectionModal(
       this.frmGroup,
-      {
-        bicField: 'fromBicfi',
-        nameField: 'fromNm',
-        defaultValue: 'SCBLBDDX'
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
+      val).subscribe(selectedData => {
+      if (selectedData) {
+        const { swiftCode, branchName } = selectedData;
+        this.frmGroup.patchValue({[ctrlNm]: swiftCode});
+        if(nameField!=null){
+          this.frmGroup.patchValue({[nameField]: branchName});
+        }
+        if(ctrlNm==='fromBicfi' ){
+          this.frmGroup.patchValue({'instgAgtBicfi': swiftCode});
+          this.frmGroup.patchValue({'instgAgtNm': branchName});
+        }
+        if(ctrlNm==='toBicfi' ){
+          this.frmGroup.patchValue({'instdAgtBicfi': swiftCode});
+          this.frmGroup.patchValue({'instdAgtNm': branchName});
+        }
+        if(ctrlNm==='rltdFrBicfi' ){
+          this.frmGroup.patchValue({'rltdFrBicfi': swiftCode});
+        }
+        if(ctrlNm==='rltdToBicfi' ){
+          this.frmGroup.patchValue({'rltdToBicfi': swiftCode});
+        }
+        if(ctrlNm==='prvsInstgAgt1Bicfi' ){
+          this.frmGroup.patchValue({'prvsInstgAgt1Bicfi': swiftCode});
+          this.frmGroup.patchValue({'prvsInstgAgt1Nm': branchName});
+        }
+        if(ctrlNm==='prvsInstgAgt2Bicfi' ){
+          this.frmGroup.patchValue({'prvsInstgAgt2Bicfi': swiftCode});
+          this.frmGroup.patchValue({'prvsInstgAgt2Nm': branchName});
+        }
+        if(ctrlNm==='prvsInstgAgt3Bicfi' ){
+          this.frmGroup.patchValue({'prvsInstgAgt3Bicfi': swiftCode});
+          this.frmGroup.patchValue({'prvsInstgAgt3Nm': branchName});
+        }
+        if(ctrlNm==='instgAgtBicfi' ){
+          this.frmGroup.patchValue({'instgAgtBicfi': swiftCode});
+          this.frmGroup.patchValue({'instgAgtNm': branchName});
+        }
+        if(ctrlNm==='instdAgtBicfi' ){
+          this.frmGroup.patchValue({'instdAgtBicfi': swiftCode});
+          this.frmGroup.patchValue({'instdAgtNm': branchName});
+        }
+        if(ctrlNm==='intrmyAgt1Bicfi' ){
+          this.frmGroup.patchValue({'intrmyAgt1Bicfi': swiftCode});
+          this.frmGroup.patchValue({'intrmyAgt1Nm': branchName});
+        }
+        if(ctrlNm==='intrmyAgt2Bicfi' ){
+          this.frmGroup.patchValue({'intrmyAgt2Bicfi': swiftCode});
+          this.frmGroup.patchValue({'intrmyAgt2Nm': branchName});
+        }
+        if(ctrlNm==='intrmyAgt3Bicfi' ){
+          this.frmGroup.patchValue({'intrmyAgt3Bicfi': swiftCode});
+          this.frmGroup.patchValue({'intrmyAgt3Nm': branchName});
+        }
+        if(ctrlNm==='anyBIC' ){
+          this.frmGroup.patchValue({'anyBIC': swiftCode});
+        }
+        if(ctrlNm==='dbtrAgtBicfi' ){
+          this.frmGroup.patchValue({'dbtrAgtBicfi': swiftCode});
+          this.frmGroup.patchValue({'dbtrAgtNm': branchName});
+        }
+        if(ctrlNm==='ultanyBIC' ){
+          this.frmGroup.patchValue({'ultanyBIC': swiftCode});
+        }
+        if(ctrlNm==='crdtranyBIC' ){
+          this.frmGroup.patchValue({'crdtranyBIC': swiftCode});
+        }
 
-  // Open BIC selection modal for "To BIC" (Instructed Agent)
-  openToBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'toBicfi',
-        nameField: 'toNm',
-        defaultValue: 'AANLGB21XXX'
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Debtor Agent (dbtrAgt)
-  openDbtrAgtBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'dbtrAgtBicfi',
-        nameField: 'dbtrAgtNm'
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Debtor Agent (dbtrAgt)
-  openCrdtrAgtBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'crdtrAgtBicfi',
-        nameField: 'crdtrAgtNm'
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Creditor Agent (cdtrAgt)
-  openCdtrAgtBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'cdtrAgtBicfi',
-        nameField: 'cdtrAgtNm'
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-
-  // Add new method for other BIC selections
-  openIntermediaryBicSelectionModal(agentNumber: number): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: `intrmyAgt${agentNumber}Bicfi`,
-        nameField: `intrmyAgt${agentNumber}Nm`
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Previous Instructing Agents
-  openPrevInstgAgtBicSelectionModal(agentNumber: number): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: `prvsInstgAgt${agentNumber}Bicfi`,
-        nameField: `prvsInstgAgt${agentNumber}Nm`
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Instructing Agent (instgAgt)
-  openInstgAgtBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'instgAgtBicfi',
-        nameField: 'instgAgtNm'
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-
-  // BIC selection for Instructed Agent (instdAgt)
-  openInstdAgtBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'instdAgtBicfi',
-        nameField: 'instdAgtNm'
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Debtor (dbtr)
-  openDbtrBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'dbtrBicfi',
-        nameField: 'dbtrNm'
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-
-  openCdtrBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'cdtrBicfi',
-        nameField: 'cdtrNm'
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  openUltDbtrBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'ultanyBIC',
-        nameField: ''
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  openDbtrOrgIdenBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'anyBIC',
-        nameField: ''
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  openUltCdtrBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'ultcrdtranyBIC',
-        nameField: ''
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  // BIC selection for Related From/To (rltd.fr / rltd.to)
-  openRelatedFromBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'rltdFrBicfi',
-        nameField: 'rltdFrNm'
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
-
-  openRelatedToBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'rltdToBicfi',
-        nameField: 'rltdToNm'
-      },
-      this.bicTableHeaders
-    ).subscribe();
+        if(ctrlNm==='crdtrAgtBicfi' ){
+          this.frmGroup.patchValue({'crdtrAgtBicfi': swiftCode});
+          this.frmGroup.patchValue({'cdtrAgtNm': branchName});
+        }
+        if(ctrlNm==='ultcrdtranyBIC' ){
+          this.frmGroup.patchValue({'ultcrdtranyBIC': swiftCode});
+        }
+      }
+    });
   }
 
   resetForm(): void {
@@ -1987,7 +2263,7 @@ dialogUtils = inject(DialogUtils);
   addOrgIdenOthrRow() {
     if (this.orgIdenOthrGetter.length < 2) { // Max 6 as per spec
       const OrgIdenOthr = this.formBuilder.group({
-        orgIdOthrId: [''],
+        orgIdOthrId: ['',Validators.required],
         orgIdOthrScmNm: [''],
         orgIdOthrIssr: [''],
       });

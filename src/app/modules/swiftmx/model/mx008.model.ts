@@ -15,6 +15,8 @@ export interface Mx008Model {
   bizMsgIdr: string; //BusinessMessageIdentifier max 35
   msgDefIdr: string; //MessageDefinitionIdentifier example - camt.001.001.03
   bizSvc: string; //BusinessService The value "swift.cbprplus.02" must be used.
+  regy: string;
+  mktPrctcId: string;
   creDt: string;
   cpyDplct?: string;  // values can be only - CODU,COPY,DUPL
   pssblDplct?: string;  //PossibleDuplicate Values Can only  be - YES/NO
@@ -55,8 +57,8 @@ export interface Mx008Model {
   prvsInstgAgt2: AgentModel; //PreviousInstructing <>: AgentModel
   prvsInstgAgt2Acct: AccountModel; //PreviousInstructing<>:: AgentModel AccountModel
   prvsInstgAgt3Acct: AccountModel; //PreviousInstructing<>:: AgentModel AccountModel
-  instgAgtBic: AgentModel; //Instructing<>: AgentModel
-  instdAgtBic: AgentModel; //Instructed<>: AgentModel
+  instgAgtBic: string; //Instructing<>: AgentModel
+  instdAgtBic: string; //Instructed<>: AgentModel
   instgAgt: AgentModel; //Instructing<>: AgentModel
   instdAgt: AgentModel; //Instructed<>: AgentModel
   intrmyAgt1: AgentModel; //Intermediary <>: AgentModel
@@ -74,7 +76,7 @@ export interface Mx008Model {
   cdtrAgtAcct: AccountModel; //Creditor>:: AgentModel AccountModel
   cdtr: PartyModel; //Creditor <>
   cdtrAcct: AccountModel; //CreditorAccount
-  UltmtCdtr: PartyModel;//UltimateDebtor
+  ultmtCdtr: PartyModel;//UltimateDebtor
   instrForCdtrAgtCD: string; //InstructionForCreditorAgent 4//value TELB/PHOB PhoneBeneficiary
   instrForCdtrAgtInf: string; //InstructionForCreditorAgent 140
   instrForNxtAgt1: string; //InstructionForNextAgent Max35

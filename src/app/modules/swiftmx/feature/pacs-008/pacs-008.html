@@ -60,7 +60,7 @@
                 [frmGroup]="frmGroup"
                 [label]="'BIC'"
                 [controlName]="'fromBicfi'"
-                (onDoubleClick)="openFromBicSelectionModal()"
+                (onDoubleClick)="openBicSelectionModal('fromBicfi')"
               />
               <!-- <app-text-base-input
                 [frmGroup]="frmGroup"
@@ -91,7 +91,7 @@
                 [frmGroup]="frmGroup"
                 [label]="'BIC'"
                 [controlName]="'toBicfi'"
-                (onDoubleClick)="openToBicSelectionModal()"
+                (onDoubleClick)="openBicSelectionModal('toBicfi')"
               />
               <!-- <app-text-base-input
                 [frmGroup]="frmGroup"
@@ -133,6 +133,30 @@
             [controlName]="'bizSvc'"
           />
 
+          <!-- MarketPractice -->
+          <!--<div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="marketPracticePanel"
+              [subPanelTitle]="'Market Practice'"
+            />
+            @if (marketPracticePanel()) {
+              <div class="form-grid-col-1">
+
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Registry'"
+                  [controlName]="'regy'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Identification'"
+                  [controlName]="'mktPrctcId'"
+                />
+
+              </div>
+            }
+          </div>-->
+
           <app-date-input
             [frmGroup]="frmGroup"
             [label]="'Creation Date'"
@@ -146,12 +170,12 @@
             [controlName]="'cpyDplct'"
           />
 
-          <!-- <app-select-option-field
+           <app-select-option-field
             [frmGroup]="frmGroup"
             [options]="yesNoOptions"
             [label]="'Possible Duplicate'"
-            [controlName]="'pssblDplct'"
-          /> -->
+            [controlName]="'psblDplct'"
+          />
 
           <app-select-option-field
             [frmGroup]="frmGroup"
@@ -190,24 +214,31 @@
               [frmGroup]="frmGroup"
               [label]="'Related From BIC'"
               [controlName]="'rltdFrBicfi'"
-              (onDoubleClick)="openRelatedFromBicSelectionModal()"
+              (onDoubleClick)="openBicSelectionModal('rltdFrBicfi')"
             />
-            <!-- <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Related From Name'"
-              [controlName]="'rltdFrNm'"
-            /> -->
+
             <app-text-base-input
               [frmGroup]="frmGroup"
               [label]="'Related To BIC'"
               [controlName]="'rltdToBicfi'"
-              (onDoubleClick)="openRelatedToBicSelectionModal()"
+              (onDoubleClick)="openBicSelectionModal('rltdToBicfi')"
             />
-            <!-- <app-text-base-input
+
+            <!--<app-text-base-input
+               [frmGroup]="frmGroup"
+               [label]="'Clearing System ID Code'"
+               [controlName]="'rltdClrSysIdCd'"
+             />
+            <app-text-base-input
               [frmGroup]="frmGroup"
-              [label]="'Related To Name'"
-              [controlName]="'rltdToNm'"
-            /> -->
+              [label]="'Related Member ID'"
+              [controlName]="'rltdClrSysIdMmbId'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Related LEI'"
+              [controlName]="'rltdLei'"
+            />-->
             <app-text-base-input
               [frmGroup]="frmGroup"
               [label]="'Related Business Message ID'"
@@ -228,6 +259,19 @@
               [label]="'Related Creation Date'"
               [controlName]="'rltdCreDt'"
             />
+            <!--<app-select-option-field
+              [frmGroup]="frmGroup"
+              [options]="duplicateOptions"
+              [label]="'Related Copy Duplicate'"
+              [controlName]="'cpyDplct'"
+            />
+
+            <app-select-option-field
+              [frmGroup]="frmGroup"
+              [options]="priorityOptions"
+              [label]="'Related Priority'"
+              [controlName]="'priority'"
+            />-->
           </div>
         }
       </div>
@@ -332,7 +376,6 @@
         [isOpenSignal]="creditTransferTransactionPanel"
         [panelTitle]="'Credit Transfer Transaction Information'"
       />
-
       <div class="form-grid-col-1">
       <app-select-option-field
         [frmGroup]="frmGroup"
@@ -341,7 +384,6 @@
         [controlName]="'chrgBr'"
       />
       </div>
-
       @if(creditTransferTransactionPanel()){
       <div class="sub-panel">
         <app-expansion-sub-panel-header
@@ -537,7 +579,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt1Bicfi'"
-            (onDoubleClick)="openPrevInstgAgtBicSelectionModal(1)"
+            (onDoubleClick)="openBicSelectionModal('prvsInstgAgt1Bicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -692,7 +734,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt2Bicfi'"
-            (onDoubleClick)="openPrevInstgAgtBicSelectionModal(2)"
+            (onDoubleClick)="openBicSelectionModal('prvsInstgAgt2Bicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -846,7 +888,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt3Bicfi'"
-            (onDoubleClick)="openPrevInstgAgtBicSelectionModal(3)"
+            (onDoubleClick)="openBicSelectionModal('prvsInstgAgt3Bicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1010,7 +1052,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'instgAgtBicfi'"
-            (onDoubleClick)="openInstgAgtBicSelectionModal()"
+            (onDoubleClick)="openBicSelectionModal('instgAgtBicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1143,7 +1185,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'instdAgtBicfi'"
-            (onDoubleClick)="openInstdAgtBicSelectionModal()"
+            (onDoubleClick)="openBicSelectionModal('instdAgtBicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1286,7 +1328,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt1Bicfi'"
-            (onDoubleClick)="openIntermediaryBicSelectionModal"
+            (onDoubleClick)="openBicSelectionModal('intrmyAgt1Bicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1355,7 +1397,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt2Bicfi'"
-            (onDoubleClick)="openIntermediaryBicSelectionModal(2)"
+            (onDoubleClick)="openBicSelectionModal('intrmyAgt2Bicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1424,7 +1466,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt3Bicfi'"
-            (onDoubleClick)="openIntermediaryBicSelectionModal(3)"
+            (onDoubleClick)="openBicSelectionModal('intrmyAgt3Bicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1600,7 +1642,7 @@
                     <app-text-base-input [frmGroup]="frmGroup"
                                          [label]="'Any BIC'"
                                          [controlName]="'anyBIC'"
-                                         (onDoubleClick)="openDbtrOrgIdenBicSelectionModal()"/>
+                                         (onDoubleClick)="openBicSelectionModal('anyBIC')"/>
 
                     <app-text-base-input [frmGroup]="frmGroup"
                                          [label]="'LEI'"
@@ -1824,7 +1866,7 @@
               [frmGroup]="frmGroup"
               [label]="'Agent BIC'"
               [controlName]="'dbtrAgtBicfi'"
-              (onDoubleClick)="openDbtrAgtBicSelectionModal()"
+              (onDoubleClick)="openBicSelectionModal('dbtrAgtBicfi')"
             />
             <!--LEI //Name -->
             <app-text-base-input
@@ -2141,7 +2183,7 @@
                       <app-text-base-input [frmGroup]="frmGroup"
                                            [label]="'Any BIC'"
                                            [controlName]="'ultanyBIC'"
-                                           (onDoubleClick)="openUltDbtrBicSelectionModal()"/>
+                                           (onDoubleClick)="openBicSelectionModal('ultanyBIC')"/>
 
                       <app-text-base-input [frmGroup]="frmGroup"
                                            [label]="'LEI'"
@@ -2399,7 +2441,7 @@
                         <app-text-base-input [frmGroup]="frmGroup"
                                              [label]="'Any BIC'"
                                              [controlName]="'crdtranyBIC'"
-                                             (onDoubleClick)="openCdtrBicSelectionModal()"/>
+                                             (onDoubleClick)="openBicSelectionModal('crdtranyBIC')"/>
 
                         <app-text-base-input [frmGroup]="frmGroup"
                                              [label]="'LEI'"
@@ -2623,7 +2665,7 @@
                 [frmGroup]="frmGroup"
                 [label]="'Agent BIC'"
                 [controlName]="'crdtrAgtBicfi'"
-                (onDoubleClick)="openCrdtrAgtBicSelectionModal()"
+                (onDoubleClick)="openBicSelectionModal('crdtrAgtBicfi')"
               />
               <!--LEI //Name -->
               <app-text-base-input
@@ -2943,7 +2985,7 @@
                         <app-text-base-input [frmGroup]="frmGroup"
                                              [label]="'Any BIC'"
                                              [controlName]="'ultcrdtranyBIC'"
-                                             (onDoubleClick)="openUltCdtrBicSelectionModal()"/>
+                                             (onDoubleClick)="openBicSelectionModal('ultcrdtranyBIC')"/>
 
                         <app-text-base-input [frmGroup]="frmGroup"
                                              [label]="'LEI'"
