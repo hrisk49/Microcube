@@ -5,4 +5,7 @@ export interface AccountModel {
   nm: string;           // Account name
   schmeNm: string;      // Scheme name
   issr: string;         // Issuer
+  prxyCd: string;         // Issuer
+  prxyPrtry: string;         // Issuer
+  prxyId: string;         // Issuer
 }

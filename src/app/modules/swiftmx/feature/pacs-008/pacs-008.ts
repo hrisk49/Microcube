@@ -156,9 +156,12 @@ dialogUtils = inject(DialogUtils);
   financialInstitutionCreditTransferPanel: WritableSignal<boolean> =
     signal(true);
   paymentIdPanel: WritableSignal<boolean> = signal(true);
-  paymentTypePanel: WritableSignal<boolean> = signal(true);
+  paymentTypePanel: WritableSignal<boolean> = signal(false);
   serviceLevelPanel: WritableSignal<boolean> = signal(true);
   interbankPanel: WritableSignal<boolean> = signal(true);
+  sttlmTmIndctnPanel: WritableSignal<boolean> = signal(false);
+  sttmlTmRqstPanel: WritableSignal<boolean> = signal(false);
+  chargesInformationPanel: WritableSignal<boolean> = signal(true);
   previousAgentsPanel: WritableSignal<boolean> = signal(true);
   prevAgent1Panel: WritableSignal<boolean> = signal(false);
   prevAgent1AddressPanel:  WritableSignal<boolean> = signal(false);
@@ -168,11 +171,13 @@ dialogUtils = inject(DialogUtils);
   prevAgent3AddressPanel:  WritableSignal<boolean> = signal(false);
   agentsPanel: WritableSignal<boolean> = signal(true);
   instructingAgentPanel: WritableSignal<boolean> = signal(true);
-  instgAgtAddressPanel: WritableSignal<boolean> = signal(false);
   instructedAgentPanel: WritableSignal<boolean> = signal(true);
   instructedAgentAddressPanel: WritableSignal<boolean> = signal(false);
   intermediaryAgentsPanel: WritableSignal<boolean> = signal(true);
   intermediary1Panel: WritableSignal<boolean> = signal(false);
+  intrmyAgt1AddrPanel: WritableSignal<boolean> = signal(false);
+  intrmyAgt2AddrPanel: WritableSignal<boolean> = signal(false);
+  intrmyAgt3AddrPanel: WritableSignal<boolean> = signal(false);
   intermediary2Panel: WritableSignal<boolean> = signal(false);
   intermediary3Panel: WritableSignal<boolean> = signal(false);
   detorInfoPanel: WritableSignal<boolean> = signal(true);
@@ -235,6 +240,8 @@ dialogUtils = inject(DialogUtils);
   authorizationPanel: WritableSignal<boolean> = signal(true);
   otherInfoPanel: WritableSignal<boolean> = signal(true);
   relatedInfoPanel: WritableSignal<boolean> = signal(false);
+  rltdFrmBicPanel: WritableSignal<boolean> = signal(false);
+  rltdToBicPanel: WritableSignal<boolean> = signal(false);
   swiftCodesFrom: any;
   swiftCodesTo: any;
 
@@ -282,14 +289,6 @@ dialogUtils = inject(DialogUtils);
 
   initForm(): void {
     this.frmGroup = this.formBuilder.group({
-      // Time and Value Information
-      timeIndi13C: [''],
-      timeSign13C: [''],
-      timeOffset13C: [''],
-      valDate32A: [''],
-      valCurr32A: [''],
-      valAmt32A: [''],
-
       // Business Message Header
       charSet: [''],
       fromBicfi: ['', Validators.required],
@@ -300,28 +299,38 @@ dialogUtils = inject(DialogUtils);
       toMembId: [''],
       toClrSysIdCd: [''],
       toLei: [''],
-      /*rltdClrSysIdCd: ['', Validators.required],
-      rltdClrSysIdMmbId: ['', Validators.required,Validators.maxLength(28),Validators.minLength(1)],
-      rltdLei: [''],*/
-      rltdBizMsgIdr: [''],
-      rltdMsgDefIdr: [''],
-      rltdBizSvc: [''],
-      rltdCreDt: [''],
-      /*rltdCpyDplct: [null],
-      rltdPriority: ['HIGH'],*/
 
       bizMsgIdr: ['PACS008_' + new Date().getTime(), Validators.required],
       msgDefIdr: ['pacs.008.001.08', Validators.required],
       bizSvc: ['swift.cbprplus.02',Validators.required],
-      /*regy: ['', Validators.required,Validators.maxLength(350),Validators.minLength(1)],
-      mktPrctcId: ['', Validators.required,Validators.maxLength(2048),Validators.minLength(1)],*/
+      regy: ['',[Validators.maxLength(350),Validators.minLength(1)]],
+      mktPrctcId: ['',[Validators.maxLength(2048),Validators.minLength(1)]],
       creDt: [new Date().toISOString(), Validators.required],
       cpyDplct: [null],
       psblDplct: [null],
       priority: ['HIGH'],
+
+      //Related
+      rltdFrBicfi: [''],
+      rltdFrmClrSysIdCd: [''],
+      rltdFrmMembId: ['', [Validators.minLength(1), Validators.maxLength(28)]],
+      rltdFrmLei: [''],
+      rltdToBicfi: [''],
+      rltdToClrSysIdCd: [''],
+      rltdToMembId: ['', [Validators.minLength(1), Validators.maxLength(28)]],
+      rltdToLei: [''],
+      rltdBizMsgIdr: [''],
+      rltdMsgDefIdr: [''],
+      rltdBizSvc: [''],
+      rltdCreDt: [''],
+      rltdCpyDplct: [null],
+      rltdPriority: [null],
+
       msgId: 'MSG_' + new Date().getTime(),
       creDtTm: [new Date().toISOString(), Validators.required],
       nbOfTxs: ['1', Validators.required],
+
+
 
       // Settlement Information
       sttlmMtd: [null, Validators.required],
@@ -348,21 +357,28 @@ dialogUtils = inject(DialogUtils);
       lclInstrmPrtry: [''],
       ctgyPurpCd: [''],
       ctgyPurpPrtry: [''],
-      dbtDtTm: [new Date().toISOString()],
-      cdtDtTm: [new Date().toISOString()],
-      CLSTm: [new Date().toISOString()],
-      tillTm: [new Date().toISOString()],
-      frTm: [new Date().toISOString()],
-      rjctTm: [new Date().toISOString()],
-      instdAmt: [null],
-      chrgBr: [null, Validators.required],
-      xchgRate: [''],
 
       // Interbank Settlement
       intrBkSttlmAmtCcy: [null, Validators.required],
       intrBkSttlmAmt: ['', Validators.required],
       intrBkSttlmDt: [new Date().toISOString().split('T')[0], Validators.required],
       sttlmPrty: [null],
+
+      //Settlement Time Indication
+      dbtDtTm: [''],
+      cdtDtTm: [''],
+
+      //Settlement Time Request
+      CLSTm: [''],
+      tillTm: [''],
+      frTm: [''],
+      rjctTm: [''],
+
+      instdAmtCcy: [null],
+      instdAmtValue: [null],
+      chrgBr: [null,Validators.required],
+      xchgRate: [null],
+      chrgInfoForm: this.formBuilder.array([]),
 
       // Previous Instructing Agent 1 (flat)
       prvsInstgAgt1Bicfi: [''],
@@ -395,6 +411,9 @@ dialogUtils = inject(DialogUtils);
       prvsInstgAgt1AcctNm: [''],
       prvsInstgAgt1AcctSchmeNm: [''],
       prvsInstgAgt1AcctIssr: [''],
+      prvsInstgAgt1ProxyCd: [''],
+      prvsInstgAgt1ProxyPrtry: [''],
+      prvsInstgAgt1ProxyId: [''],
 
       // Previous Instructing Agent 2 (flat)
       prvsInstgAgt2Bicfi: [''],
@@ -427,6 +446,9 @@ dialogUtils = inject(DialogUtils);
       prvsInstgAgt2AcctNm: [''],
       prvsInstgAgt2AcctSchmeNm: [''],
       prvsInstgAgt2AcctIssr: [''],
+      prvsInstgAgt2ProxyCd: [''],
+      prvsInstgAgt2ProxyPrtry: [''],
+      prvsInstgAgt2ProxyId: [''],
 
       // Previous Instructing Agent 3 (flat)
       prvsInstgAgt3Bicfi: [''],
@@ -459,31 +481,16 @@ dialogUtils = inject(DialogUtils);
       prvsInstgAgt3AcctNm: [''],
       prvsInstgAgt3AcctSchmeNm: [''],
       prvsInstgAgt3AcctIssr: [''],
+      prvsInstgAgt3ProxyCd: [''],
+      prvsInstgAgt3ProxyPrtry: [''],
+      prvsInstgAgt3ProxyId: [''],
 
       // Agents (flat)
       instgAgtBicfi: [''],
       instgAgtClrSysIdCd: [''],
       instgAgtMmbId: [''],
       instgAgtLei: [''],
-      instgAgtNm: [''],
-      instgAgtAdrLine1: [''],
-      instgAgtAdrLine2: [''],
-      instgAgtAdrLine3: [''],
-      instgAgtAdrDept: [''],
-      instgAgtAdrSubDept: [''],
-      instgAgtAdrStrtNm: [''],
-      instgAgtAdrBldgNb: [''],
-      instgAgtAdrBldgNm: [''],
-      instgAgtAdrFlr: [''],
-      instgAgtAdrPstBx: [''],
-      instgAgtAdrRoom: [''],
-      instgAgtAdrPstCd: [''],
-      instgAgtAdrTwnNm: [''],
-      instgAgtAdrTwnLctnNm: [''],
-      instgAgtAdrDstrctNm: [''],
-      instgAgtAdrCtrySubDvsn: [''],
-      instgAgtAdrCtry: [''],
-      instgAgtAdrLine: [''],
+
 
       instdAgtBicfi: [''],
       instdAgtClrSysIdCd: [''],
@@ -515,9 +522,6 @@ dialogUtils = inject(DialogUtils);
       intrmyAgt1MmbId: [''],
       intrmyAgt1Lei: [''],
       intrmyAgt1Nm: [''],
-      intrmyAgt1AdrLine1: [''],
-      intrmyAgt1AdrLine2: [''],
-      intrmyAgt1AdrLine3: [''],
       intrmyAgt1AdrDept: [''],
       intrmyAgt1AdrSubDept: [''],
       intrmyAgt1AdrStrtNm: [''],
@@ -540,6 +544,9 @@ dialogUtils = inject(DialogUtils);
       intrmyAgt1AcctNm: [''],
       intrmyAgt1AcctSchmeNm: [''],
       intrmyAgt1AcctIssr: [''],
+      intrmyAgt1ProxyCd: [''],
+      intrmyAgt1ProxyPrtry: [''],
+      intrmyAgt1ProxyId: [''],
 
       // Intermediary Agent 2 (flat)
       intrmyAgt2Bicfi: [''],
@@ -547,9 +554,6 @@ dialogUtils = inject(DialogUtils);
       intrmyAgt2MmbId: [''],
       intrmyAgt2Lei: [''],
       intrmyAgt2Nm: [''],
-      intrmyAgt2AdrLine1: [''],
-      intrmyAgt2AdrLine2: [''],
-      intrmyAgt2AdrLine3: [''],
       intrmyAgt2AdrDept: [''],
       intrmyAgt2AdrSubDept: [''],
       intrmyAgt2AdrStrtNm: [''],
@@ -572,6 +576,9 @@ dialogUtils = inject(DialogUtils);
       intrmyAgt2AcctNm: [''],
       intrmyAgt2AcctSchmeNm: [''],
       intrmyAgt2AcctIssr: [''],
+      intrmyAgt2ProxyCd: [''],
+      intrmyAgt2ProxyPrtry: [''],
+      intrmyAgt2ProxyId: [''],
 
       // Intermediary Agent 3 (flat)
       intrmyAgt3Bicfi: [''],
@@ -579,9 +586,6 @@ dialogUtils = inject(DialogUtils);
       intrmyAgt3MmbId: [''],
       intrmyAgt3Lei: [''],
       intrmyAgt3Nm: [''],
-      intrmyAgt3AdrLine1: [''],
-      intrmyAgt3AdrLine2: [''],
-      intrmyAgt3AdrLine3: [''],
       intrmyAgt3AdrDept: [''],
       intrmyAgt3AdrSubDept: [''],
       intrmyAgt3AdrStrtNm: [''],
@@ -604,6 +608,9 @@ dialogUtils = inject(DialogUtils);
       intrmyAgt3AcctNm: [''],
       intrmyAgt3AcctSchmeNm: [''],
       intrmyAgt3AcctIssr: [''],
+      intrmyAgt3ProxyCd: [''],
+      intrmyAgt3ProxyPrtry: [''],
+      intrmyAgt3ProxyId: [''],
 
       // Debtor (flat)
       dbtrNm: ['',Validators.required],
@@ -873,8 +880,10 @@ dialogUtils = inject(DialogUtils);
 
 
       // Instructions
-      instrForCdtrAgtCD: [''],
-      instrForCdtrAgtInf: [''],
+      instrForCdtrAgtCD1: [''],
+      instrForCdtrAgtInf1: [''],
+      instrForCdtrAgtCD2: [''],
+      instrForCdtrAgtInf2: [''],
       instrForNxtAgt1: [''],
       instrForNxtAgt2: [''],
       instrForNxtAgt3: [''],
@@ -915,12 +924,14 @@ dialogUtils = inject(DialogUtils);
     const frm = this.frmGroup.value;
     const payload: any = {};
 
-    // 2. Business Header
+    // 1. Business Header
     payload.fromBicfi = frm.fromBicfi ;
     payload.toBicfi = frm.toBicfi ;
     payload.bizMsgIdr = frm.bizMsgIdr ;
     payload.msgDefIdr = frm.msgDefIdr ;
     payload.bizSvc = frm.bizSvc ;
+    payload.regy = frm.regy ;
+    payload.mktPrctcId = frm.mktPrctcId ;
     payload.creDt = frm.creDt ;
     payload.cpyDplct = frm.cpyDplct;
     payload.psblDplct = frm.psblDplct;
@@ -928,6 +939,22 @@ dialogUtils = inject(DialogUtils);
     payload.msgId = frm.msgId ;
     payload.creDtTm = frm.creDtTm ;
     payload.nbOfTxs = frm.nbOfTxs ;
+
+    //2. Related
+    payload.rltdFrBicfi= frm.rltdFrBicfi ;
+    payload.rltdFrmClrSysIdCd= frm.rltdFrmClrSysIdCd ;
+    payload.rltdFrmMembId= frm.rltdFrmMembId ;
+    payload.rltdFrmLei= frm.rltdFrmLei ;
+    payload.rltdToBicfi= frm.rltdToBicfi ;
+    payload.rltdToClrSysIdCd= frm.rltdToClrSysIdCd ;
+    payload.rltdToMembId= frm.rltdToMembId ;
+    payload.rltdToLei= frm.rltdToLei ;
+    payload.rltdBizMsgIdr= frm.rltdBizMsgIdr ;
+    payload.rltdMsgDefIdr= frm.rltdMsgDefIdr ;
+    payload.rltdBizSvc= frm.rltdBizSvc ;
+    payload.rltdCreDt= frm.rltdCreDt ;
+    payload.rltdCpyDplct= frm.rltdCpyDplct ;
+    payload.rltdPriority= frm.rltdPriority ;
 
     // 3. Settlement Info
     payload.sttlmMtd = frm.sttlmMtd ;
@@ -939,7 +966,6 @@ dialogUtils = inject(DialogUtils);
       schmeNm: frm.sttlmAcct,
       issr: frm.sttlmAcct,
     };
-    payload.chrgBr = frm.chrgBr ;
     payload.instgAgtBic = frm.instgAgtBicfi,
     payload.instdAgtBic = frm.instdAgtBicfi,
 
@@ -981,6 +1007,47 @@ dialogUtils = inject(DialogUtils);
     payload.intrBkSttlmDt = frm.intrBkSttlmDt ;
     payload.sttlmPrty = frm.sttlmPrty ;
 
+    payload.dbtDtTm = frm.dbtDtTm ;
+    payload.cdtDtTm = frm.cdtDtTm ;
+    payload.clsTm = frm.CLSTm ;
+    payload.tillTm = frm.tillTm ;
+    payload.frTm = frm.frTm ;
+    payload.rjctTm = frm.rjctTm ;
+    payload.instdAmtCcy = frm.instdAmtCcy ;
+    payload.instdAmtValue = frm.instdAmtValue ;
+    payload.chrgBr = frm.chrgBr ;
+    payload.xchgRate = frm.xchgRate ;
+
+    payload.chrgInfoList = frm.chrgInfoForm.map((row: any) => ({
+      chrgInfoAmt: row.chrgInfoAmt,
+      chrgInfAgtBicfi: row.chrgInfAgtBicfi,
+      chrgInfAgtClrSysIdCd: row.chrgInfAgtClrSysIdCd,
+      chrgInfoAgtMmbId: row.chrgInfoAgtMmbId,
+      chrgInfoAgtLei: row.chrgInfoAgtLei,
+      chrgInfoAgtNm: row.chrgInfoAgtNm,
+      chrgInfoAgtAdd: {
+        chrgInfoAgtDept: row.chrgInfoAgtDept,
+        chrgInfoAgtSubDept: row.chrgInfoAgtSubDept,
+        chrgInfoAgtStrtNm: row.chrgInfoAgtStrtNm,
+        chrgInfoAgtBldgNb: row.chrgInfoAgtBldgNb,
+        chrgInfoAgtBldgNm: row.chrgInfoAgtBldgNm,
+        chrgInfoAgtFlr: row.chrgInfoAgtFlr,
+        chrgInfoAgtPstBx: row.chrgInfoAgtPstBx,
+        chrgInfoAgtRoom: row.chrgInfoAgtRoom,
+        chrgInfoAgtPstCd: row.chrgInfoAgtPstCd,
+        chrgInfoAgtTwnNm: row.chrgInfoAgtTwnNm,
+        chrgInfoAgtTwnLctnNm: row.chrgInfoAgtTwnLctnNm,
+        chrgInfoAgtDstrctNm: row.chrgInfoAgtDstrctNm,
+        chrgInfoAgtCtrySubDvsn: row.chrgInfoAgtCtrySubDvsn,
+        chrgInfoAgtCtry: row.chrgInfoAgtCtry,
+        chrgInfoAgtAdd: [
+          row.chrgInfoAgtAdrLine1,
+          row.chrgInfoAgtAdrLine2,
+          row.chrgInfoAgtAdrLine3,
+        ].filter(Boolean),
+      }
+    }));
+
     // 7. Agents & Accounts (Generic Builder)
     const buildParty = (pfx: string) => ({
       bIcfi: frm[`${pfx}Bicfi`] ,
@@ -988,9 +1055,6 @@ dialogUtils = inject(DialogUtils);
       mmbId: frm[`${pfx}MmbId`] ,
       lei: frm[`${pfx}Lei`] ,
       nm: frm[`${pfx}Nm`] ,
-      adrLine1: frm[`${pfx}AdrLine1`] ,
-      adrLine2: frm[`${pfx}AdrLine2`] ,
-      adrLine3: frm[`${pfx}AdrLine3`] ,
       adr: {
         dept: frm[`${pfx}AdrDept`] ,
         subDept: frm[`${pfx}AdrSubDept`] ,
@@ -1017,16 +1081,34 @@ dialogUtils = inject(DialogUtils);
       nm: frm[`${pfx}AcctNm`] ,
       schmeNm: frm[`${pfx}AcctSchmeNm`] ,
       issr: frm[`${pfx}AcctIssr`] ,
+      prxyCd: frm[`${pfx}ProxyCd`] ,
+      prxyPrtry: frm[`${pfx}ProxyPrtry`] ,
+      prxyId: frm[`${pfx}ProxyId`] ,
     });
 
     [
       "prvsInstgAgt1", "prvsInstgAgt2", "prvsInstgAgt3",
-      "intrmyAgt1", "intrmyAgt2", "intrmyAgt3",
-      "instgAgt", "instdAgt"
+      "intrmyAgt1", "intrmyAgt2", "intrmyAgt3"
     ].forEach(pfx => {
       payload[pfx] = buildParty(pfx);
       payload[`${pfx}Acct`] = buildAccount(pfx);
     });
+
+    //instructing agent
+    payload.instgAgt = {
+      bicfi: frm.instgAgtBicfi,
+      clrSysIdCd: frm.instgAgtClrSysIdCd,
+      mmbId: frm.instgAgtMmbId,
+      lei: frm.instgAgtLei,
+    }
+
+    //instructing agent
+    payload.instdAgt = {
+      bicfi: frm.instdAgtBicfi,
+      clrSysIdCd: frm.instdAgtClrSysIdCd,
+      mmbId: frm.instdAgtMmbId,
+      lei: frm.instdAgtLei,
+    }
 
     // 8. Debtor + Account
     payload.dbtr = {
@@ -1121,7 +1203,7 @@ dialogUtils = inject(DialogUtils);
 
     // 9. Creditor + Account
     payload.cdtr = {
-      nm: frm.cdtrNm ,
+      nm: frm.crdtrNm ,
       ctryOfRes: frm.crdtrCtryOfRes ,
       address: {
         dept: frm.cdtrAdrDept ,
@@ -1292,8 +1374,17 @@ dialogUtils = inject(DialogUtils);
     };
 
     // 11. Instruction and Purpose
-    payload.instrForCd = frm.instrForCd ;
-    payload.instrForInstrInf = frm.instrForInstrInf ;
+    payload.instrForCdtrAgtCD1 = frm.instrForCdtrAgtCD1;
+    payload.instrForCdtrAgtInf1 = frm.instrForCdtrAgtInf;
+    payload.instrForCdtrAgtCD2 = frm.instrForCdtrAgtCD2;
+    payload.instrForCdtrAgtInf2 = frm.instrForCdtrAgtInf2;
+    payload.instrForNxtAgt1 = frm.instrForNxtAgt1;
+    payload.instrForNxtAgt2 = frm.instrForNxtAgt2;
+    payload.instrForNxtAgt3 = frm.instrForNxtAgt3;
+    payload.instrForNxtAgt4 = frm.instrForNxtAgt4;
+    payload.instrForNxtAgt5 = frm.instrForNxtAgt5;
+    payload.instrForNxtAgt6 = frm.instrForNxtAgt6;
+
     payload.purpCd = frm.purpCd ;
     payload.purpPrtry = frm.purpPrtry ;
 
@@ -2236,8 +2327,8 @@ dialogUtils = inject(DialogUtils);
   // Add service level row
   addServiceRow() {
     const serviceGroup = this.formBuilder.group({
-      serviceCode: [null,Validators.required],
-      servicePriority: [null,Validators.required],
+      serviceCode: [null],
+      servicePriority: [null],
     });
     this.serviceLevels.push(serviceGroup);
   }
@@ -2251,6 +2342,51 @@ dialogUtils = inject(DialogUtils);
   getServiceLevelGroup(index: number): FormGroup {
     return this.serviceLevels.at(index) as FormGroup;
   }
+
+  // Add ChrgInfo row
+  addChrgInfoRow() {
+    const serviceGroup = this.formBuilder.group({
+      chrgInfoAmt: '',
+      chrgInfAgtBicfi: '',
+      chrgInfAgtClrSysIdCd: '',
+      chrgInfoAgtMmbId: '',
+      chrgInfoAgtLei: '',
+      chrgInfoAgtNm: '',
+      chrgInfoAgtDept: '',
+      chrgInfoAgtSubDept: '',
+      chrgInfoAgtStrtNm: '',
+      chrgInfoAgtBldgNb: '',
+      chrgInfoAgtBldgNm: '',
+      chrgInfoAgtFlr: '',
+      chrgInfoAgtPstBx: '',
+      chrgInfoAgtRoom: '',
+      chrgInfoAgtPstCd: '',
+      chrgInfoAgtTwnNm: '',
+      chrgInfoAgtTwnLctnNm: '',
+      chrgInfoAgtDstrctNm: '',
+      chrgInfoAgtCtrySubDvsn: '',
+      chrgInfoAgtCtry: '',
+      chrgInfoAgtAdrLine1: '',
+      chrgInfoAgtAdrLine2: '',
+      chrgInfoAgtAdrLine3: '',
+    });
+    this.chrgInfoForm.push(serviceGroup);
+  }
+
+  get chrgInfoForm() {
+    return this.frmGroup.get('chrgInfoForm') as FormArray;
+  }
+
+  // Remove ChrgInfo row
+  removeChrgInfoRow(index: number) {
+    this.chrgInfoForm.removeAt(index);
+  }
+
+  // Get ChrgInfo group at specific index
+  getChrgInfoFormGroup(index: number): FormGroup {
+    return this.chrgInfoForm.at(index) as FormGroup;
+  }
+
 
   get orgIdenOthrGetter() {
     return this.frmGroup.get('orgIdOthr') as FormArray;
