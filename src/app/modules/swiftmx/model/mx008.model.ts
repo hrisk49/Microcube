@@ -2,29 +2,41 @@ import {AccountModel} from './account.model';
 import {AgentModel} from './agent.model';
 import {RelatedModel} from './related.model';
 import {PartyModel} from './party.model';
+import {AddressModel} from './address.model';
 
 export interface Mx008Model {
-  // timeIndi13C: string;
-  // timeSign13C: string;
-  // timeOffset13C: string;
-  // valDate32A: Date;
-  // valCurr32A: string;
-  // valAmt32A: number;
   fromBicfi: string; //[A-Z0-9]{4,4}[A-Z]{2,2}[A-Z0-9]{2,2}([A-Z0-9]{3,3}){0,1}
   toBicfi: string; //[A-Z0-9]{4,4}[A-Z]{2,2}[A-Z0-9]{2,2}([A-Z0-9]{3,3}){0,1}
   bizMsgIdr: string; //BusinessMessageIdentifier max 35
   msgDefIdr: string; //MessageDefinitionIdentifier example - camt.001.001.03
   bizSvc: string; //BusinessService The value "swift.cbprplus.02" must be used.
+  regy: string;
+  mktPrctcId: string;
   creDt: string;
   cpyDplct?: string;  // values can be only - CODU,COPY,DUPL
   pssblDplct?: string;  //PossibleDuplicate Values Can only  be - YES/NO
   priority?: string; // Header block Priority values can only be - HIGH,NORM
+
+  rltdFrBicfi: string;
+  rltdFrmClrSysIdCd: string;
+  rltdFrmMembId: string;
+  rltdFrmLei: string;
+  rltdToBicfi: string;
+  rltdToClrSysIdCd: string;
+  rltdToMembId: string;
+  rltdToLei: string;
+  rltdBizMsgIdr: string;
+  rltdMsgDefIdr: string;
+  rltdBizSvc: string;
+  rltdCreDt: string;
+  rltdCpyDplct: string;
+  rltdPriority: string;
+
   msgId: string;  // MessageIdentification  //0-9 a-z A-Z / - ? : ( ) . , '
   creDtTm: string; //CreationDateTime
   nbOfTxs: string; // Number of transactions
   sttlmMtd: string; //SettlementMethod value - COVE,INDA,INGA
   sttlmAcct: AccountModel; //SettlementMethod
-  chrgBr:string;
   //need more properties here for settlement method
   /// PaymentIdentification Tag
   /// Assigned by Instructing party to Instructed party to identify the msg uniquely
@@ -49,14 +61,33 @@ export interface Mx008Model {
   intrBkSttlmAmt: number; //InterbankSettlementAmount size 14,5
   intrBkSttlmDt: string; //InterbankSettlementDate
   sttlmPrty: string; //SettlementPriority valus HIGH/NORM/URGT
+  dbtDtTm: string;
+  cdtDtTm: string;
+  clsTm: string;
+  tillTm: string;
+  frTm: string;
+  rjctTm: string;
+  instdAmtCcy: string;
+  instdAmtValue: number;
+  chrgBr:string;
+  xchgRate:number;
+
+/*  chrgInfoAmt:string;
+  chrgInfAgtBicfi:string;
+  chrgInfAgtClrSysIdCd:string;
+  chrgInfoAgtMmbId:string;
+  chrgInfoAgtLei:string;
+  chrgInfoAgtNm:string;
+  chrgInfoAgtAdd: string[];*/
+
   prvsInstgAgt1: AgentModel; //PreviousInstructing <>: AgentModel
   prvsInstgAgt1Acct: AccountModel; //PreviousInstructing<>:: AgentModel AccountModel
   prvsInstgAgt3: AgentModel; //PreviousInstructing <>: AgentModel
   prvsInstgAgt2: AgentModel; //PreviousInstructing <>: AgentModel
   prvsInstgAgt2Acct: AccountModel; //PreviousInstructing<>:: AgentModel AccountModel
   prvsInstgAgt3Acct: AccountModel; //PreviousInstructing<>:: AgentModel AccountModel
-  instgAgtBic: AgentModel; //Instructing<>: AgentModel
-  instdAgtBic: AgentModel; //Instructed<>: AgentModel
+  instgAgtBic: string; //Instructing<>: AgentModel
+  instdAgtBic: string; //Instructed<>: AgentModel
   instgAgt: AgentModel; //Instructing<>: AgentModel
   instdAgt: AgentModel; //Instructed<>: AgentModel
   intrmyAgt1: AgentModel; //Intermediary <>: AgentModel
@@ -74,9 +105,12 @@ export interface Mx008Model {
   cdtrAgtAcct: AccountModel; //Creditor>:: AgentModel AccountModel
   cdtr: PartyModel; //Creditor <>
   cdtrAcct: AccountModel; //CreditorAccount
-  UltmtCdtr: PartyModel;//UltimateDebtor
-  instrForCdtrAgtCD: string; //InstructionForCreditorAgent 4//value TELB/PHOB PhoneBeneficiary
-  instrForCdtrAgtInf: string; //InstructionForCreditorAgent 140
+  ultmtCdtr: PartyModel;//UltimateDebtor
+
+  instrForCdtrAgtCD1: string; //InstructionForCreditorAgent 4//value TELB/PHOB PhoneBeneficiary
+  instrForCdtrAgtInf1: string; //InstructionForCreditorAgent 140
+  instrForCdtrAgtCD2: string; //InstructionForCreditorAgent 4//value TELB/PHOB PhoneBeneficiary
+  instrForCdtrAgtInf2: string; //InstructionForCreditorAgent 140
   instrForNxtAgt1: string; //InstructionForNextAgent Max35
   instrForNxtAgt2: string; //InstructionForNextAgent Max35
   instrForNxtAgt3: string; //InstructionForNextAgent Max35

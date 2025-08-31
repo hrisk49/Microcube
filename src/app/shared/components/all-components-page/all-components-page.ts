@@ -362,10 +362,6 @@ sampleTransactions = signal([
         nameField: 'fromNm',
         defaultValue: 'SCBLBDDX'
       },
-      {
-        bicField: 'instgAgtBicfi',
-        nameField: 'instgAgtNm'
-      },
       this.bicTableHeaders
     ).subscribe();
   }

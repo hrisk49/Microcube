@@ -443,10 +443,6 @@ export class Pacs002 implements OnInit {
         nameField : ctrlNm === 'fromBicfi' ? 'fromNm' : 'toNm',
         defaultValue : ctrlNm === 'fromBicfi' ? 'SCBLBDDX' : 'CITIUS33'
       },
-      {
-        bicField: 'instgAgtBicfi',
-        nameField: 'instgAgtNm'
-      },
       this.bicTableHeaders).subscribe();
   }
 

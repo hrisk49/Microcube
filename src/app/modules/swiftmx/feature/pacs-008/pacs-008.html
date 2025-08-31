@@ -1,38 +1,6 @@
 <div class="page-wrapper">
   @if (frmGroup) {
   <form [formGroup]="frmGroup" class="form-wrapper">
-    <!-- Time and Value Information -->
-    <!-- <div class="panel">
-        <app-expansion-panel-header [isOpenSignal]="timeDatePanel" [panelTitle]="'Time and Value Information'"/>
-        @if (timeDatePanel()) {
-              <div class="form-grid-col-1">
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Time Indicator 13C'"
-                                     [controlName]="'timeIndi13C'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Time Sign 13C'"
-                                     [controlName]="'timeSign13C'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Time Offset 13C'"
-                                     [controlName]="'timeOffset13C'"/>
-
-                <app-date-input [frmGroup]="frmGroup"
-                                [label]="'Value Date 32A'"
-                                [controlName]="'valDate32A'"/>
-
-                <app-text-base-input [frmGroup]="frmGroup"
-                                     [label]="'Value Currency 32A'"
-                                     [controlName]="'valCurr32A'"/>
-
-                <app-amount-to-word-input [frmGroup]="frmGroup"
-                                          [label]="'Value Amount 32A'"
-                                          [controlName]="'valAmt32A'"/>
-              </div>
-            }
-      </div> -->
-
     <!-- Business Message Header -->
     <div class="panel">
       <app-expansion-panel-header
@@ -60,7 +28,7 @@
                 [frmGroup]="frmGroup"
                 [label]="'BIC'"
                 [controlName]="'fromBicfi'"
-                (onDoubleClick)="openFromBicSelectionModal()"
+                (onDoubleClick)="openBicSelectionModal('fromBicfi')"
               />
               <!-- <app-text-base-input
                 [frmGroup]="frmGroup"
@@ -91,7 +59,7 @@
                 [frmGroup]="frmGroup"
                 [label]="'BIC'"
                 [controlName]="'toBicfi'"
-                (onDoubleClick)="openToBicSelectionModal()"
+                (onDoubleClick)="openBicSelectionModal('toBicfi')"
               />
               <!-- <app-text-base-input
                 [frmGroup]="frmGroup"
@@ -133,6 +101,30 @@
             [controlName]="'bizSvc'"
           />
 
+          <!-- MarketPractice -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="marketPracticePanel"
+              [subPanelTitle]="'Market Practice'"
+            />
+            @if (marketPracticePanel()) {
+              <div class="form-grid-col-1">
+
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Registry'"
+                  [controlName]="'regy'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Identification'"
+                  [controlName]="'mktPrctcId'"
+                />
+
+              </div>
+            }
+          </div>
+
           <app-date-input
             [frmGroup]="frmGroup"
             [label]="'Creation Date'"
@@ -146,31 +138,18 @@
             [controlName]="'cpyDplct'"
           />
 
-          <!-- <app-select-option-field
+           <app-select-option-field
             [frmGroup]="frmGroup"
             [options]="yesNoOptions"
             [label]="'Possible Duplicate'"
-            [controlName]="'pssblDplct'"
-          /> -->
+            [controlName]="'psblDplct'"
+          />
 
           <app-select-option-field
             [frmGroup]="frmGroup"
             [options]="priorityOptions"
             [label]="'Priority'"
             [controlName]="'priority'"
-          />
-
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Message ID'"
-            [controlName]="'msgId'"
-          />
-
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [isReadonly]="true"
-            [label]="'Number of Transactions'"
-            [controlName]="'nbOfTxs'"
           />
         </div>
 
@@ -186,28 +165,68 @@
             <!-- <app-text-base-input [frmGroup]="frmGroup"
                                    [label]="'Related Character Set'"
                                    [controlName]="'rltdCharSet'"/> -->
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Related From BIC'"
-              [controlName]="'rltdFrBicfi'"
-              (onDoubleClick)="openRelatedFromBicSelectionModal()"
-            />
-            <!-- <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Related From Name'"
-              [controlName]="'rltdFrNm'"
-            /> -->
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Related To BIC'"
-              [controlName]="'rltdToBicfi'"
-              (onDoubleClick)="openRelatedToBicSelectionModal()"
-            />
-            <!-- <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Related To Name'"
-              [controlName]="'rltdToNm'"
-            /> -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="rltdFrmBicPanel"
+                [subPanelTitle]="'From'"
+              />
+              @if(rltdFrmBicPanel()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Related From BIC'"
+                    [controlName]="'rltdFrBicfi'"
+                    (onDoubleClick)="openBicSelectionModal('rltdFrBicfi')"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Clearing System ID Code'"
+                    [controlName]="'rltdFrmClrSysIdCd'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Member ID'"
+                    [controlName]="'rltdFrmMembId'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'LEI'"
+                    [controlName]="'rltdFrmLei'"
+                  />
+                </div>
+              }
+            </div>
+            <div class="sub-panel mb-2">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="rltdToBicPanel"
+                [subPanelTitle]="'To'"
+              />
+              @if(rltdToBicPanel()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Related To BIC'"
+                    [controlName]="'rltdToBicfi'"
+                    (onDoubleClick)="openBicSelectionModal('rltdToBicfi')"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Clearing System ID Code'"
+                    [controlName]="'rltdToClrSysIdCd'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Member ID'"
+                    [controlName]="'rltdToMembId'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'LEI'"
+                    [controlName]="'rltdToLei'"
+                  />
+                </div>
+              }
+            </div>
             <app-text-base-input
               [frmGroup]="frmGroup"
               [label]="'Related Business Message ID'"
@@ -227,6 +246,19 @@
               [frmGroup]="frmGroup"
               [label]="'Related Creation Date'"
               [controlName]="'rltdCreDt'"
+            />
+            <app-select-option-field
+              [frmGroup]="frmGroup"
+              [options]="duplicateOptions"
+              [label]="'Related Copy Duplicate'"
+              [controlName]="'rltdCpyDplct'"
+            />
+
+            <app-select-option-field
+              [frmGroup]="frmGroup"
+              [options]="priorityOptions"
+              [label]="'Related Priority'"
+              [controlName]="'rltdPriority'"
             />
           </div>
         }
@@ -332,16 +364,6 @@
         [isOpenSignal]="creditTransferTransactionPanel"
         [panelTitle]="'Credit Transfer Transaction Information'"
       />
-
-      <div class="form-grid-col-1">
-      <app-select-option-field
-        [frmGroup]="frmGroup"
-        [options]="chargeBearerOptions"
-        [label]="'Charge Bearer'"
-        [controlName]="'chrgBr'"
-      />
-      </div>
-
       @if(creditTransferTransactionPanel()){
       <div class="sub-panel">
         <app-expansion-sub-panel-header
@@ -383,6 +405,98 @@
         }
       </div>
 
+      <!-- Payment Type Information -->
+      <div class="sub-panel">
+        <app-expansion-sub-panel-header
+          [isOpenSignal]="paymentTypePanel"
+          [subPanelTitle] ="'Payment Type Information'"
+        />
+        @if (paymentTypePanel()) {
+          <div class="form-grid-col-1">
+            <app-select-option-field
+              [frmGroup]="frmGroup"
+              [options]="priorityOptions"
+              [label]="'Instruction Priority'"
+              [controlName]="'instrPrty'"
+            />
+
+            <app-select-option-field
+              [frmGroup]="frmGroup"
+              [options]="clearingChannelOptions"
+              [label]="'Clearing Channel'"
+              [controlName]="'clrChanl'"
+            />
+
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Local Instrument Code'"
+              [controlName]="'lclInstrmCD'"
+            />
+
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Local Instrument Proprietary'"
+              [controlName]="'lclInstrmPrtry'"
+            />
+
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Category Purpose Code'"
+              [controlName]="'ctgyPurpCd'"
+            />
+
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Category Purpose Proprietary'"
+              [controlName]="'ctgyPurpPrtry'"
+            />
+          </div>
+
+          <!-- Service Level Sub-Panel -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="serviceLevelPanel"
+              [subPanelTitle]="'Service Level'"
+              [isButton]="true"
+              [buttonText]="'Add'"
+              [buttonIcon]="'add'"
+              (addAction)="addServiceRow()"
+            />
+
+            @if (serviceLevelPanel()) { @if (frmGroup) {
+              <ng-container formArrayName="serviceLevels">
+                @for (group of serviceLevels.controls; track $index) {
+                  <div [formGroupName]="$index" class="form-grid-col-1 mb-3">
+                    <app-select-option-field
+                      [frmGroup]="getServiceLevelGroup($index)"
+                      [options]="serviceLevelCodeOptions"
+                      [label]="'Service Code'"
+                      [controlName]="'serviceCode'"
+                    />
+
+                    <app-select-option-field
+                      [frmGroup]="getServiceLevelGroup($index)"
+                      [options]="priorityOptions"
+                      [label]="'Service Priority'"
+                      [controlName]="'servicePriority'"
+                    />
+                    @if (serviceLevels.controls.length > 1) {
+                      <button
+                        (click)="removeServiceRow($index)"
+                        class="remove-row-btn mt-8"
+                      >
+                        Remove
+                      </button>
+                    }
+                  </div>
+                }
+              </ng-container>
+            } }
+          </div>
+        }
+      </div>
+
+        <!-- Interbank Settlement -->
       <div class="sub-panel">
         <app-expansion-sub-panel-header
           [isOpenSignal]="interbankPanel"
@@ -418,104 +532,242 @@
         }
       </div>
 
-   <!-- Payment Type Information -->
-    <div class="panel">
-      <app-expansion-panel-header
-        [isOpenSignal]="paymentTypePanel"
-        [panelTitle]="'Payment Type Information'"
-      />
-      @if (paymentTypePanel()) {
-      <div class="form-grid-col-1">
-        <app-select-option-field
-          [frmGroup]="frmGroup"
-          [options]="priorityOptions"
-          [label]="'Instruction Priority'"
-          [controlName]="'instrPrty'"
-        />
-
-        <app-select-option-field
-          [frmGroup]="frmGroup"
-          [options]="clearingChannelOptions"
-          [label]="'Clearing Channel'"
-          [controlName]="'clrChanl'"
-        />
-
-        <app-text-base-input
-          [frmGroup]="frmGroup"
-          [label]="'Local Instrument Code'"
-          [controlName]="'lclInstrmCD'"
-        />
-
-        <app-text-base-input
-          [frmGroup]="frmGroup"
-          [label]="'Local Instrument Proprietary'"
-          [controlName]="'lclInstrmPrtry'"
-        />
-
-        <app-text-base-input
-          [frmGroup]="frmGroup"
-          [label]="'Category Purpose Code'"
-          [controlName]="'ctgyPurpCd'"
-        />
-
-        <app-text-base-input
-          [frmGroup]="frmGroup"
-          [label]="'Category Purpose Proprietary'"
-          [controlName]="'ctgyPurpPrtry'"
-        />
-      </div>
-
-      <!-- Service Level Sub-Panel -->
-      <div class="sub-panel">
-        <app-expansion-sub-panel-header
-          [isOpenSignal]="serviceLevelPanel"
-          [subPanelTitle]="'Service Level'"
-          [isButton]="true"
-          [buttonText]="'Add'"
-          [buttonIcon]="'add'"
-          (addAction)="addServiceRow()"
-        />
-
-        @if (serviceLevelPanel()) { @if (frmGroup) {
-        <ng-container formArrayName="serviceLevels">
-          @for (group of serviceLevels.controls; track $index) {
-          <div [formGroupName]="$index" class="form-grid-col-1 mb-3">
-            <app-select-option-field
-              [frmGroup]="getServiceLevelGroup($index)"
-              [options]="serviceLevelCodeOptions"
-              [label]="'Service Code'"
-              [controlName]="'serviceCode'"
-            />
-
-            <app-select-option-field
-              [frmGroup]="getServiceLevelGroup($index)"
-              [options]="priorityOptions"
-              [label]="'Service Priority'"
-              [controlName]="'servicePriority'"
-            />
-            @if (serviceLevels.controls.length > 1) {
-            <button
-              (click)="removeServiceRow($index)"
-              class="remove-row-btn mt-8"
-            >
-              Remove
-            </button>
-            }
-          </div>
+        <!-- Settlement Time Indication -->
+        <div class="sub-panel">
+          <app-expansion-sub-panel-header
+            [isOpenSignal]="sttlmTmIndctnPanel"
+            [subPanelTitle]="'Settlement Time Indication'"
+          />
+          @if (sttlmTmIndctnPanel()) {
+            <div class="form-grid-col-1">
+              <app-date-input
+                [frmGroup]="frmGroup"
+                [label]="'Debit Date Time'"
+                [controlName]="'dbtDtTm'"
+              />
+              <app-date-input
+                [frmGroup]="frmGroup"
+                [label]="'Credit Date Time'"
+                [controlName]="'cdtDtTm'"
+              />
+            </div>
           }
-        </ng-container>
-        } }
-      </div>
+        </div>
+
+
+        <!-- Settlement Time Request -->
+        <div class="sub-panel">
+          <app-expansion-sub-panel-header
+            [isOpenSignal]="sttmlTmRqstPanel"
+            [subPanelTitle]="'Settlement Time Indication'"
+          />
+          @if (sttmlTmRqstPanel()) {
+            <div class="form-grid-col-1">
+              <app-date-input
+                [frmGroup]="frmGroup"
+                [label]="'CLS Time'"
+                [controlName]="'CLSTm'"
+              />
+              <app-date-input
+                [frmGroup]="frmGroup"
+                [label]="'Till Time'"
+                [controlName]="'tillTm'"
+              />
+              <app-date-input
+                [frmGroup]="frmGroup"
+                [label]="'From Time'"
+                [controlName]="'frTm'"
+              />
+              <app-date-input
+                [frmGroup]="frmGroup"
+                [label]="'Reject Time'"
+                [controlName]="'rjctTm'"
+              />
+            </div>
+          }
+        </div>
+
+        <!-- InstructedAmount -->
+
+        <app-select-option-field
+          [frmGroup]="frmGroup"
+          [options]="currencyOptions"
+          [label]="'Instructed Currency'"
+          [controlName]="'instdAmtCcy'"
+        />
+
+        <app-amount-to-word-input
+          [frmGroup]="frmGroup"
+          [label]="'Instructed Amount'"
+          [controlName]="'instdAmtValue'"
+        />
+        <!-- ExchangeRate -->
+        <app-amount-to-word-input
+          [frmGroup]="frmGroup"
+          [label]="'ExchangeRate'"
+          [controlName]="'xchgRate'"
+        />
+        <!-- ChargeBearer -->
+        <app-select-option-field
+          [frmGroup]="frmGroup"
+          [options]="chargeBearerOptions"
+          [label]="'Charge Bearer'"
+          [controlName]="'chrgBr'"
+        />
+        <!-- ChargesInformation -->
+        <div class="sub-panel">
+          <app-expansion-sub-panel-header
+            [isOpenSignal]="chargesInformationPanel"
+            [subPanelTitle]="'Charges Information'"
+            [isButton]="true"
+            [buttonText]="'Add'"
+            [buttonIcon]="'add'"
+            (addAction)="addChrgInfoRow()"
+          />
+
+          @if (chargesInformationPanel()) { @if (frmGroup) {
+            <ng-container formArrayName="chrgInfoForm">
+              @for (group of chrgInfoForm.controls; track $index) {
+                <div [formGroupName]="$index" class="form-grid-col-1 mb-3">
+
+                  <app-select-option-field
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [options]="currencyOptions"
+                    [label]="'Amount'"
+                    [controlName]="'chrgInfoAmt'"
+                  />
+
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Agent BICFI'"
+                    [controlName]="'chrgInfAgtBicfi'"
+                    (onDoubleClick)="openBicSelectionModal('agtBicfi')"
+                  />
+
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Agent Clearing System ID Code'"
+                    [controlName]="'chrgInfAgtClrSysIdCd'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Agent Member ID'"
+                    [controlName]="'chrgInfoAgtMmbId'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Agent LEI'"
+                    [controlName]="'chrgInfoAgtLei'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Agent Name'"
+                    [controlName]="'chrgInfoAgtNm'"
+                  />
+
+                  <!--agent PostalAddr-->
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Department'"
+                    [controlName]="'chrgInfoAgtDept'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Sub Department'"
+                    [controlName]="'chrgInfoAgtSubDept'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Street Name'"
+                    [controlName]="'chrgInfoAgtStrtNm'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Building Number'"
+                    [controlName]="'chrgInfoAgtBldgNb'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Building Name'"
+                    [controlName]="'chrgInfoAgtBldgNm'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Floor'"
+                    [controlName]="'chrgInfoAgtFlr'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Post Box'"
+                    [controlName]="'chrgInfoAgtPstBx'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Room'"
+                    [controlName]="'chrgInfoAgtRoom'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Post Code'"
+                    [controlName]="'chrgInfoAgtPstCd'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Town Name'"
+                    [controlName]="'chrgInfoAgtTwnNm'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Town Location Name'"
+                    [controlName]="'chrgInfoAgtTwnLctnNm'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'District Name'"
+                    [controlName]="'chrgInfoAgtDstrctNm'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Country Sub Division'"
+                    [controlName]="'chrgInfoAgtCtrySubDvsn'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Country'"
+                    [controlName]="'chrgInfoAgtCtry'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Address Line 1'"
+                    [controlName]="'chrgInfoAgtAdrLine1'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Address Line 2'"
+                    [controlName]="'chrgInfoAgtAdrLine2'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="getChrgInfoFormGroup($index)"
+                    [label]="'Address Line 3'"
+                    [controlName]="'chrgInfoAgtAdrLine3'"
+                  />
+
+                  @if (chrgInfoForm.controls.length > 1) {
+                    <button
+                      (click)="removeChrgInfoRow($index)"
+                      class="remove-row-btn mt-8"
+                    >
+                      Remove
+                    </button>
+                  }
+                </div>
+              }
+            </ng-container>
+          } }
+        </div>
       }
     </div>
 
-
-      }
-    </div>
-
-
-
-    <!-- Interbank Settlement -->
 
     <!-- Previous Instructing Agents -->
     <div class="panel">
@@ -537,7 +789,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt1Bicfi'"
-            (onDoubleClick)="openPrevInstgAgtBicSelectionModal(1)"
+            (onDoubleClick)="openBicSelectionModal('prvsInstgAgt1Bicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -676,6 +928,22 @@
             [label]="'Account Issuer'"
             [controlName]="'prvsInstgAgt1AcctIssr'"
           />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy Type Code'"
+            [controlName]="'prvsInstgAgt1ProxyCd'"
+          />
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy Type Proprietary'"
+            [controlName]="'prvsInstgAgt1ProxyPrtry'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy ID'"
+            [controlName]="'prvsInstgAgt1ProxyId'"
+          />
         </div>
         }
       </div>
@@ -692,7 +960,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt2Bicfi'"
-            (onDoubleClick)="openPrevInstgAgtBicSelectionModal(2)"
+            (onDoubleClick)="openBicSelectionModal('prvsInstgAgt2Bicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -830,6 +1098,22 @@
             [label]="'Account Issuer'"
             [controlName]="'prvsInstgAgt2AcctIssr'"
           />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy Type Code'"
+            [controlName]="'prvsInstgAgt2ProxyCd'"
+          />
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy Type Proprietary'"
+            [controlName]="'prvsInstgAgt2ProxyPrtry'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy ID'"
+            [controlName]="'prvsInstgAgt2ProxyId'"
+          />
         </div>
         }
       </div>
@@ -846,7 +1130,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt3Bicfi'"
-            (onDoubleClick)="openPrevInstgAgtBicSelectionModal(3)"
+            (onDoubleClick)="openBicSelectionModal('prvsInstgAgt3Bicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -984,6 +1268,22 @@
             [label]="'Account Issuer'"
             [controlName]="'prvsInstgAgt3AcctIssr'"
           />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy Type Code'"
+            [controlName]="'prvsInstgAgt3ProxyCd'"
+          />
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy Type Proprietary'"
+            [controlName]="'prvsInstgAgt3ProxyPrtry'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy ID'"
+            [controlName]="'prvsInstgAgt3ProxyId'"
+          />
         </div>
         }
       </div>
@@ -1010,7 +1310,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'instgAgtBicfi'"
-            (onDoubleClick)="openInstgAgtBicSelectionModal()"
+            (onDoubleClick)="openBicSelectionModal('instgAgtBicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1027,106 +1327,6 @@
             [label]="'LEI'"
             [controlName]="'instgAgtLei'"
           />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Name'"
-            [controlName]="'instgAgtNm'"
-          />
-        </div>
-        <div class="sub-panel">
-          <app-expansion-sub-panel-header
-            [isOpenSignal]="instgAgtAddressPanel"
-            [subPanelTitle]="'Postal Address'"
-          />
-          @if (instgAgtAddressPanel()) {
-          <div class="form-grid-col-1">
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 1'"
-              [controlName]="'instgAgtAdrLine1'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 2'"
-              [controlName]="'instgAgtAdrLine2'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 3'"
-              [controlName]="'instgAgtAdrLine3'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Department'"
-              [controlName]="'instgAgtAdrDept'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Sub Department'"
-              [controlName]="'instgAgtAdrSubDept'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Street Name'"
-              [controlName]="'instgAgtAdrStrtNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Building Number'"
-              [controlName]="'instgAgtAdrBldgNb'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Building Name'"
-              [controlName]="'instgAgtAdrBldgNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Floor'"
-              [controlName]="'instgAgtAdrFlr'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Post Box'"
-              [controlName]="'instgAgtAdrPstBx'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Room'"
-              [controlName]="'instgAgtAdrRoom'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Post Code'"
-              [controlName]="'instgAgtAdrPstCd'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Town Name'"
-              [controlName]="'instgAgtAdrTwnNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Town Location Name'"
-              [controlName]="'instgAgtAdrTwnLctnNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'District Name'"
-              [controlName]="'instgAgtAdrDstrctNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Country Sub Division'"
-              [controlName]="'instgAgtAdrCtrySubDvsn'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Country'"
-              [controlName]="'instgAgtAdrCtry'"
-            />
-          </div>
-          }
         </div>
         }
       </div>
@@ -1143,7 +1343,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'instdAgtBicfi'"
-            (onDoubleClick)="openInstdAgtBicSelectionModal()"
+            (onDoubleClick)="openBicSelectionModal('instdAgtBicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1160,106 +1360,6 @@
             [label]="'LEI'"
             [controlName]="'instdAgtLei'"
           />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Name'"
-            [controlName]="'instdAgtNm'"
-          />
-        </div>
-        <div class="sub-panel">
-          <app-expansion-sub-panel-header
-            [isOpenSignal]="instructedAgentAddressPanel"
-            [subPanelTitle]="'Postal Address'"
-          />
-          @if (instructedAgentAddressPanel()) {
-          <div class="form-grid-col-1">
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 1'"
-              [controlName]="'instdAgtAdrLine1'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 2'"
-              [controlName]="'instdAgtAdrLine2'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 3'"
-              [controlName]="'instdAgtAdrLine3'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Department'"
-              [controlName]="'instdAgtAdrDept'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Sub Department'"
-              [controlName]="'instdAgtAdrSubDept'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Street Name'"
-              [controlName]="'instdAgtAdrStrtNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Building Number'"
-              [controlName]="'instdAgtAdrBldgNb'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Building Name'"
-              [controlName]="'instdAgtAdrBldgNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Floor'"
-              [controlName]="'instdAgtAdrFlr'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Post Box'"
-              [controlName]="'instdAgtAdrPstBx'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Room'"
-              [controlName]="'instdAgtAdrRoom'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Post Code'"
-              [controlName]="'instdAgtAdrPstCd'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Town Name'"
-              [controlName]="'instdAgtAdrTwnNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Town Location Name'"
-              [controlName]="'instdAgtAdrTwnLctnNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'District Name'"
-              [controlName]="'instdAgtAdrDstrctNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Country Sub Division'"
-              [controlName]="'instdAgtAdrCtrySubDvsn'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Country'"
-              [controlName]="'instdAgtAdrCtry'"
-            />
-          </div>
-          }
         </div>
         }
       </div>
@@ -1286,7 +1386,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt1Bicfi'"
-            (onDoubleClick)="openIntermediaryBicSelectionModal"
+            (onDoubleClick)="openBicSelectionModal('intrmyAgt1Bicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1308,6 +1408,103 @@
             [label]="'Name'"
             [controlName]="'intrmyAgt1Nm'"
           />
+          <!--PostalAddress -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="intrmyAgt1AddrPanel"
+              [subPanelTitle]="'Postal Address'"
+            />
+            @if (intrmyAgt1AddrPanel()) {
+              <div class="form-grid-col-1">
+
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Department'"
+                  [controlName]="'intrmyAgt1AdrDept'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Sub Department'"
+                  [controlName]="'intrmyAgt1AdrSubDept'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Street Name'"
+                  [controlName]="'intrmyAgt1AdrStrtNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Building Number'"
+                  [controlName]="'intrmyAgt1AdrBldgNb'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Building Name'"
+                  [controlName]="'intrmyAgt1AdrBldgNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Floor'"
+                  [controlName]="'intrmyAgt1AdrFlr'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Post Box'"
+                  [controlName]="'intrmyAgt1AdrPstBx'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Room'"
+                  [controlName]="'intrmyAgt1AdrRoom'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Post Code'"
+                  [controlName]="'intrmyAgt1AdrPstCd'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Town Name'"
+                  [controlName]="'intrmyAgt1AdrTwnNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Town Location Name'"
+                  [controlName]="'intrmyAgt1AdrTwnLctnNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'District Name'"
+                  [controlName]="'intrmyAgt1AdrDstrctNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Country Sub Division'"
+                  [controlName]="'intrmyAgt1AdrCtrySubDvsn'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Country'"
+                  [controlName]="'intrmyAgt1AdrCtry'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Address Line 1'"
+                  [controlName]="'intrmyAgt1AdrLine1'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Address Line 2'"
+                  [controlName]="'intrmyAgt1AdrLine2'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Address Line 3'"
+                  [controlName]="'intrmyAgt1AdrLine3'"
+                />
+              </div>
+            }
+          </div>
           <app-select-option-field
             [frmGroup]="frmGroup"
             [options]="currencyOptions"
@@ -1339,6 +1536,22 @@
             [label]="'Account Issuer'"
             [controlName]="'intrmyAgt1AcctIssr'"
           />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy Type Code'"
+            [controlName]="'intrmyAgt1ProxyCd'"
+          />
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy Type Proprietary'"
+            [controlName]="'intrmyAgt1ProxyPrtry'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy ID'"
+            [controlName]="'intrmyAgt1ProxyId'"
+          />
         </div>
         }
       </div>
@@ -1355,7 +1568,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt2Bicfi'"
-            (onDoubleClick)="openIntermediaryBicSelectionModal(2)"
+            (onDoubleClick)="openBicSelectionModal('intrmyAgt2Bicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1377,6 +1590,105 @@
             [label]="'Name'"
             [controlName]="'intrmyAgt2Nm'"
           />
+
+          <!--PostalAddress -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="intrmyAgt2AddrPanel"
+              [subPanelTitle]="'Postal Address'"
+            />
+            @if (intrmyAgt2AddrPanel()) {
+              <div class="form-grid-col-1">
+
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Department'"
+                  [controlName]="'intrmyAgt2AdrDept'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Sub Department'"
+                  [controlName]="'intrmyAgt2AdrSubDept'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Street Name'"
+                  [controlName]="'intrmyAgt2AdrStrtNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Building Number'"
+                  [controlName]="'intrmyAgt2AdrBldgNb'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Building Name'"
+                  [controlName]="'intrmyAgt2AdrBldgNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Floor'"
+                  [controlName]="'intrmyAgt2AdrFlr'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Post Box'"
+                  [controlName]="'intrmyAgt2AdrPstBx'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Room'"
+                  [controlName]="'intrmyAgt2AdrRoom'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Post Code'"
+                  [controlName]="'intrmyAgt2AdrPstCd'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Town Name'"
+                  [controlName]="'intrmyAgt2AdrTwnNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Town Location Name'"
+                  [controlName]="'intrmyAgt2AdrTwnLctnNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'District Name'"
+                  [controlName]="'intrmyAgt2AdrDstrctNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Country Sub Division'"
+                  [controlName]="'intrmyAgt2AdrCtrySubDvsn'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Country'"
+                  [controlName]="'intrmyAgt2AdrCtry'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Address Line 1'"
+                  [controlName]="'intrmyAgt2AdrLine1'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Address Line 2'"
+                  [controlName]="'intrmyAgt2AdrLine2'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Address Line 3'"
+                  [controlName]="'intrmyAgt2AdrLine3'"
+                />
+              </div>
+            }
+          </div>
+
           <app-select-option-field
             [frmGroup]="frmGroup"
             [options]="currencyOptions"
@@ -1408,6 +1720,22 @@
             [label]="'Account Issuer'"
             [controlName]="'intrmyAgt2AcctIssr'"
           />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy Type Code'"
+            [controlName]="'intrmyAgt2ProxyCd'"
+          />
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy Type Proprietary'"
+            [controlName]="'intrmyAgt2ProxyPrtry'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy ID'"
+            [controlName]="'intrmyAgt2ProxyId'"
+          />
         </div>
         }
       </div>
@@ -1424,7 +1752,7 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt3Bicfi'"
-            (onDoubleClick)="openIntermediaryBicSelectionModal(3)"
+            (onDoubleClick)="openBicSelectionModal('intrmyAgt3Bicfi')"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1446,6 +1774,105 @@
             [label]="'Name'"
             [controlName]="'intrmyAgt3Nm'"
           />
+
+          <!--PostalAddress -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="intrmyAgt3AddrPanel"
+              [subPanelTitle]="'Postal Address'"
+            />
+            @if (intrmyAgt3AddrPanel()) {
+              <div class="form-grid-col-1">
+
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Department'"
+                  [controlName]="'intrmyAgt3AdrDept'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Sub Department'"
+                  [controlName]="'intrmyAgt3AdrSubDept'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Street Name'"
+                  [controlName]="'intrmyAgt3AdrStrtNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Building Number'"
+                  [controlName]="'intrmyAgt3AdrBldgNb'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Building Name'"
+                  [controlName]="'intrmyAgt3AdrBldgNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Floor'"
+                  [controlName]="'intrmyAgt3AdrFlr'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Post Box'"
+                  [controlName]="'intrmyAgt3AdrPstBx'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Room'"
+                  [controlName]="'intrmyAgt3AdrRoom'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Post Code'"
+                  [controlName]="'intrmyAgt3AdrPstCd'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Town Name'"
+                  [controlName]="'intrmyAgt3AdrTwnNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Town Location Name'"
+                  [controlName]="'intrmyAgt3AdrTwnLctnNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'District Name'"
+                  [controlName]="'intrmyAgt3AdrDstrctNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Country Sub Division'"
+                  [controlName]="'intrmyAgt3AdrCtrySubDvsn'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Country'"
+                  [controlName]="'intrmyAgt3AdrCtry'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Address Line 1'"
+                  [controlName]="'intrmyAgt3AdrLine1'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Address Line 2'"
+                  [controlName]="'intrmyAgt3AdrLine2'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Address Line 3'"
+                  [controlName]="'intrmyAgt3AdrLine3'"
+                />
+              </div>
+            }
+          </div>
+
           <app-select-option-field
             [frmGroup]="frmGroup"
             [options]="currencyOptions"
@@ -1476,6 +1903,22 @@
             [frmGroup]="frmGroup"
             [label]="'Account Issuer'"
             [controlName]="'intrmyAgt3AcctIssr'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy Type Code'"
+            [controlName]="'intrmyAgt3ProxyCd'"
+          />
+
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy Type Proprietary'"
+            [controlName]="'intrmyAgt3ProxyPrtry'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Proxy ID'"
+            [controlName]="'intrmyAgt3ProxyId'"
           />
         </div>
         }
@@ -1600,7 +2043,7 @@
                     <app-text-base-input [frmGroup]="frmGroup"
                                          [label]="'Any BIC'"
                                          [controlName]="'anyBIC'"
-                                         (onDoubleClick)="openDbtrOrgIdenBicSelectionModal()"/>
+                                         (onDoubleClick)="openBicSelectionModal('anyBIC')"/>
 
                     <app-text-base-input [frmGroup]="frmGroup"
                                          [label]="'LEI'"
@@ -1824,7 +2267,7 @@
               [frmGroup]="frmGroup"
               [label]="'Agent BIC'"
               [controlName]="'dbtrAgtBicfi'"
-              (onDoubleClick)="openDbtrAgtBicSelectionModal()"
+              (onDoubleClick)="openBicSelectionModal('dbtrAgtBicfi')"
             />
             <!--LEI //Name -->
             <app-text-base-input
@@ -2141,7 +2584,7 @@
                       <app-text-base-input [frmGroup]="frmGroup"
                                            [label]="'Any BIC'"
                                            [controlName]="'ultanyBIC'"
-                                           (onDoubleClick)="openUltDbtrBicSelectionModal()"/>
+                                           (onDoubleClick)="openBicSelectionModal('ultanyBIC')"/>
 
                       <app-text-base-input [frmGroup]="frmGroup"
                                            [label]="'LEI'"
@@ -2399,7 +2842,7 @@
                         <app-text-base-input [frmGroup]="frmGroup"
                                              [label]="'Any BIC'"
                                              [controlName]="'crdtranyBIC'"
-                                             (onDoubleClick)="openCdtrBicSelectionModal()"/>
+                                             (onDoubleClick)="openBicSelectionModal('crdtranyBIC')"/>
 
                         <app-text-base-input [frmGroup]="frmGroup"
                                              [label]="'LEI'"
@@ -2623,7 +3066,7 @@
                 [frmGroup]="frmGroup"
                 [label]="'Agent BIC'"
                 [controlName]="'crdtrAgtBicfi'"
-                (onDoubleClick)="openCrdtrAgtBicSelectionModal()"
+                (onDoubleClick)="openBicSelectionModal('crdtrAgtBicfi')"
               />
               <!--LEI //Name -->
               <app-text-base-input
@@ -2943,7 +3386,7 @@
                         <app-text-base-input [frmGroup]="frmGroup"
                                              [label]="'Any BIC'"
                                              [controlName]="'ultcrdtranyBIC'"
-                                             (onDoubleClick)="openUltCdtrBicSelectionModal()"/>
+                                             (onDoubleClick)="openBicSelectionModal('ultcrdtranyBIC')"/>
 
                         <app-text-base-input [frmGroup]="frmGroup"
                                              [label]="'LEI'"
@@ -3091,13 +3534,23 @@
       <div class="form-grid-col-1">
         <app-text-base-input
           [frmGroup]="frmGroup"
-          [label]="'Instruction For Creditor Agent Code'"
-          [controlName]="'instrForCdtrAgtCD'"
+          [label]="'Instruction For Creditor Agent Code 1'"
+          [controlName]="'instrForCdtrAgtCD1'"
         />
         <app-text-base-input
           [frmGroup]="frmGroup"
-          [label]="'Instruction For Creditor Agent Info'"
-          [controlName]="'instrForCdtrAgtInf'"
+          [label]="'Instruction For Creditor Agent Info 1'"
+          [controlName]="'instrForCdtrAgtInf1'"
+        />
+        <app-text-base-input
+          [frmGroup]="frmGroup"
+          [label]="'Instruction For Creditor Agent Code 2'"
+          [controlName]="'instrForCdtrAgtCD2'"
+        />
+        <app-text-base-input
+          [frmGroup]="frmGroup"
+          [label]="'Instruction For Creditor Agent Info 2'"
+          [controlName]="'instrForCdtrAgtInf2'"
         />
         <app-text-base-input
           [frmGroup]="frmGroup"
