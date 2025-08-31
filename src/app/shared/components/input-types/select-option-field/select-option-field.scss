@@ -118,8 +118,8 @@
 }
 
 // Error state styling
-.input-container-horizontal:has(.ng-invalid.ng-touched) .custom-input,
-.input-container-horizontal:has(.ng-invalid.ng-dirty) .custom-input {
+.input-container-horizontal:has(.ng-invalid.ng-touched) .custom-select,
+.input-container-horizontal:has(.ng-invalid.ng-dirty) .custom-select {
   border-color: #ef4444;
 
   &:focus {
