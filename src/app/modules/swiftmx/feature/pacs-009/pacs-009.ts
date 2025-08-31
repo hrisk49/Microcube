@@ -440,7 +440,9 @@ export class Pacs009 implements OnInit, OnDestroy {
       toBicfi: ['', Validators.required],
       toClrSysIdCd: ['', Validators.maxLength(10)],
       toLei: [''],
-      bizMsgIdr: ['PACS009_' + new Date().getTime(), Validators.required],
+      bizMsgIdr: ['PACS009' + new Date().getTime(),
+        [Validators.required, Validators.minLength(1), 
+          Validators.maxLength(35)]],
       msgDefIdr: ['pacs.009.001.08', Validators.required],
       bizSvc: ['swift.cbprplus.02', Validators.required],
 
@@ -502,7 +504,7 @@ export class Pacs009 implements OnInit, OnDestroy {
       rltdCpyDplct: [null],
       rltdPrty: [null],
       
-      rltdBizMsgIdr: [''],
+      rltdBizMsgIdr: ['', Validators.maxLength(35)],
       rltdMsgDefIdr: [''],
       rltdBizSvc: [''],
       rltdCreDt: [''],
@@ -510,7 +512,7 @@ export class Pacs009 implements OnInit, OnDestroy {
       cpyDplct: [null],
       pssblDplct: [null],
       priority: ['NORM'],
-      msgId: ['MSG_' + new Date().getTime(), [
+      msgId: ['MSG' + new Date().getTime(), [
         Validators.required,
         Validators.maxLength(35),
         Validators.minLength(1),
@@ -1010,7 +1012,7 @@ export class Pacs009 implements OnInit, OnDestroy {
       this.frmGroup.reset();
       // Set default values for required fields
       this.frmGroup.patchValue({
-        bizMsgIdr: 'PACS009_' + new Date().getTime(),
+        bizMsgIdr: 'PACS009' + new Date().getTime(),
         msgDefIdr: 'pacs.009.001.08',
         bizSvc: 'swift.cbprplus.02',
         mktPrctcRegy: '',
@@ -1018,7 +1020,7 @@ export class Pacs009 implements OnInit, OnDestroy {
         creDt: new Date().toISOString().split('T')[0],
         cpyDplct: null,
         priority: null,
-        msgId: 'MSG_' + new Date().getTime(),
+        msgId: 'MSG' + new Date().getTime(),
         creDtTm: new Date().toISOString(),
         nbOfTxs: '1',
         sttlmMtd: null,
