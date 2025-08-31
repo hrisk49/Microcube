@@ -88,13 +88,26 @@
       ></app-select-option-field>
     </div>
 
+    <!-- Multi-Select Dropdown -->
+    <div class="component-section">
+      <app-multi-select-option-field
+        [frmGroup]="frmGroup"
+        [controlName]="'multiSelect'"
+        [label]="'Multi-Select Dropdown'"
+        [options]="dropdownOptions"
+      ></app-multi-select-option-field>
+    </div>
+
+
+
+
+
     <!-- Date Input -->
     <div class="component-section">
       <lds-date-input
         [frmGroup]="frmGroup"
         [controlName]="'date'"
         [label]="'Date Input'"
-        [isVertical]="true"
         dateFormat="YYYY/MM/DD"
       ></lds-date-input>
     </div>
@@ -251,73 +264,6 @@
     </div>
 
 
-        <!-- Stepper Component -->
-<div class="component-section">
-  <lds-stepper 
-    [steps]="steps" 
-    cssClass="my-custom-stepper"
-    id="registrationStepper"
-    (onSubmitCallback)="onStepperSubmit()">
-  </lds-stepper>
-
-  
- <ng-template #step1Template>
-    <form id="personalInfoForm">
-      <h3>Personal Information</h3>
-      <div class="form-group">
-        <label for="firstName">First Name:</label>
-        <input type="text" id="firstName" name="firstName" required>
-      </div>
-      <div class="form-group">
-        <label for="lastName">Last Name:</label>
-        <input type="text" id="lastName" name="lastName" required>
-      </div>
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-      </div>
-    </form>
-  </ng-template>
-
-  <ng-template #step2Template>
-    <form id="contactForm">
-      <h3>Contact Details</h3>
-      <div class="form-group">
-        <label for="phone">Phone:</label>
-        <input type="tel" id="phone" name="phone" required>
-      </div>
-      <div class="form-group">
-        <label for="address">Address:</label>
-        <textarea id="address" name="address" rows="3"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="city">City:</label>
-        <input type="text" id="city" name="city" required>
-      </div>
-    </form>
-  </ng-template>
-
-  <ng-template #step3Template>
-    <form id="reviewForm">
-      <h3>Review Your Information</h3>
-      <div class="review-section">
-        <p><strong>Name:</strong> John Doe</p>
-       <p><strong>Email:</strong> john&#64;example.com</p>
-        <p><strong>Phone:</strong> (555) 123-4567</p>
-        <p><strong>Address:</strong> 123 Main St, City</p>
-      </div>
-      <div class="form-group">
-        <label>
-          <input type="checkbox" required> I agree to the terms and conditions
-        </label>
-      </div>
-    </form>
-  </ng-template>
-
-
-  
-
-</div>
     </div>
             </div>
         </div>

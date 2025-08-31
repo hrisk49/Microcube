@@ -14,11 +14,12 @@
            [type]="type() ?? 'text'" 
            [matTooltip]="tooltip()"
            [matTooltipPosition]="tooltipPosition()"
-            [matTooltipClass]="tooltipClass()"
-          [matTooltipDisabled]="!tooltip()"
+           [matTooltipClass]="tooltipClass()"
+           [matTooltipDisabled]="!tooltip()"
            [maxlength]="maxLength() || null"
            class="custom-input" 
-           (dblclick)="onDoubleClick.emit()"/> 
+           (dblclick)="onDoubleClick.emit()"
+           (keydown)="preventSpecialChars($event)"/> 
             
   @if (frmGroup().get(controlName())?.errors &&  
       (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) { 
@@ -33,6 +34,9 @@
     @if (frmGroup().get(controlName())?.hasError('maxlength')) { 
       {{ label() }} cannot be more than {{ frmGroup().get(controlName())?.errors?.['maxlength']?.requiredLength }} characters. 
     } 
+    @if (frmGroup().get(controlName())?.hasError('specialCharacterNotAllowed')) {
+      {{ label() }} contains invalid characters.
+    }
   </div> 
 } 
 </div>

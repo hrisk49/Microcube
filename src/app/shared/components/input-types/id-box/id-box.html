@@ -17,6 +17,7 @@
       [readonly]="isReadonly()"
       [maxlength]="maxLength() || null"
       class="custom-input"
+      (keydown)="preventSpecialChars($event)"
       />
     
     @if (isDotsVisible()) {
@@ -55,6 +56,10 @@
     <ng-container>
       {{ label() }} format is invalid
     </ng-container>
+    }
+
+     @if (frmGroup().get(controlName())?.hasError('specialCharacterNotAllowed')) {
+      {{ label() }} contains invalid characters.
     }
   </div>
   }

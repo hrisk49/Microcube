@@ -15,6 +15,7 @@
       matInput
       [placeholder]="placeholder() ?? 'Enter ' + labelText()"
       class="custom-input office-box-input"
+      (keydown)="preventSpecialChars($event)"
     />
 
     <!-- Office Name Display -->

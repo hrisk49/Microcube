@@ -1,6 +1,6 @@
 import {Component, computed, input, output, signal, effect} from '@angular/core';
 import {MatInput} from "@angular/material/input";
-import {FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgClass} from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatRippleModule } from '@angular/material/core';
@@ -8,11 +8,13 @@ import { MatRippleModule } from '@angular/material/core';
 @Component({
   selector: 'lds-id-box',
   imports: [
+    FormsModule,
     MatInput,
     MatTooltipModule,
     MatRippleModule,
     ReactiveFormsModule,
-    NgClass
+    NgClass,
+    
   ],
   templateUrl: './id-box.html',
   standalone: true,
@@ -31,15 +33,17 @@ export class IdBoxComponent {
   readonly label = input.required<string>();
   readonly valueChange = output<any>();
   readonly placeholder = input<any>();
-  readonly tooltip = input<string>('');
+  readonly tooltip = input<string>();
   readonly labelText = input<string>('');
   readonly leadingZero = input<string>('');
   readonly visible = input<boolean>(true);
-  
+  readonly allowSpecialChars = input<boolean>(false);
   // New validation inputs
   readonly minLength = input<number>();
   readonly maxLength = input<number>();
-
+  readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
+  readonly tooltipDelay = input<number>(500);
+  readonly tooltipClass = input<string>('custom-tooltip');
   // Outputs
   readonly valueChanged = output<string>();
   readonly onChanged = output<any>();
@@ -57,6 +61,15 @@ export class IdBoxComponent {
     effect(() => {
       this.updateValidators();
     });
+  }
+
+
+  private specialCharacterValidator(control: any): { [key: string]: boolean } | null {
+    const specialCharRegex = /^[a-zA-Z0-9 ]*$/; // Allow only alphanumeric and spaces
+    if (control.value && !specialCharRegex.test(control.value)) {
+      return { specialCharacterNotAllowed: true };
+    }
+    return null;
   }
 
   private updateValidators(): void {
@@ -78,6 +91,11 @@ export class IdBoxComponent {
     // Add max length validator if specified
     if (this.maxLength() !== undefined && this.maxLength()! > 0) {
       validators.push(Validators.maxLength(this.maxLength()!));
+    }
+
+        // Add special character validator if not allowed
+    if (!this.allowSpecialChars()) {
+      validators.push(this.specialCharacterValidator);
     }
     
     // Update the control's validators
@@ -125,5 +143,15 @@ export class IdBoxComponent {
 
   onDotsClick() {
     this.dotsClicked.emit();
+  }
+
+    preventSpecialChars(event: KeyboardEvent): void {
+    if (!this.allowSpecialChars()) {
+      const specialCharRegex = /^[a-zA-Z0-9 ]$/; // Allow only alphanumeric and spaces
+      const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab']; // Allow navigation and editing keys
+      if (!specialCharRegex.test(event.key) && !allowedKeys.includes(event.key)) {
+        event.preventDefault();
+      }
+    }
   }
 }
