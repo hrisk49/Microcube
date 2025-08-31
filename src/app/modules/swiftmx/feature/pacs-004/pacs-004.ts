@@ -1,4 +1,12 @@
-import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  OnInit,
+  OnDestroy,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
@@ -16,14 +24,19 @@ import {SubPanelHeader} from '../../../../shared/components/sub-panel-header/sub
 import {Mx004Service} from '../../service/mx004.service';
 import {AmountToWordInput} from "../../../../shared/components/input-types/amount-to-word-input/amount-to-word-input";
 import {AgentComponent} from '../../components/agent/agent';
+import { Mx004Model } from '../../model/mx004.model';
 import {BusinessApplicationHeader} from '../../components/business-application-header/business-application-header';
 import {DataSelectionModal} from '../../../../shared/components/data-selection-modal/data-selection-modal';
 import {BranchInfoService} from '../../../../shared/services/branch-info.service';
 import {ExpansionPanelHeader} from '../../../../shared/components/expansion-panel-header/expansion-panel-header';
+import { BicSelectionService } from '../../../../shared/services/bic-selection.service';
 import {
   ExpansionSubPanelHeader
 } from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
 
+import {Subject, takeUntil} from 'rxjs';
+
+// @ts-ignore
 @Component({
   selector: 'app-pacs-004',
   imports: [
@@ -32,7 +45,7 @@ import {
     TextBaseInput,
     DateInput,
 
-    BusinessApplicationHeader,
+    //BusinessApplicationHeader,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader
   ],
@@ -40,12 +53,12 @@ import {
   standalone: true,
   styleUrl: './pacs-004.scss'
 })
-export class Pacs004 implements OnInit {
+export class Pacs004 implements OnInit, OnDestroy {
   branchInfoService = inject(BranchInfoService);
   formBuilder = inject(FormBuilder);
   mx004Service = inject(Mx004Service);
   toastr = inject(ToastrService);
-  frmGroup : FormGroup;
+  frmGroup: FormGroup;
 
   onClickReset = ONCLICK_RESET;
   onClickSave = ONCLICK_SAVE;
@@ -54,18 +67,19 @@ export class Pacs004 implements OnInit {
   pickTablePair = signal<Map<string, string>>(new Map());
   pickTableDataSource = signal<any[]>([]);
 
-  businessAppHeader: WritableSignal<boolean> = signal(true);
-  rltdPanelOpen: WritableSignal<boolean> = signal(true);
-  pmtRtr : WritableSignal<boolean> = signal(true);
-  orgnlGrpInfAndSts : WritableSignal<boolean> = signal(true);
-  GrpHdr : WritableSignal<boolean> = signal(true);
-  SttlmInf : WritableSignal<boolean> = signal(true);
-  SttlmAcct : WritableSignal<boolean> = signal(true);
-  SttlmAcctId : WritableSignal<boolean> = signal(true);
-  SttlmAcctIdOthr : WritableSignal<boolean> = signal(true);
-  SttlmAcctIdOthrSchmeNm : WritableSignal<boolean> = signal(true);
-  SttlmAcctTp : WritableSignal<boolean> = signal(true);
-  SttlmAcctPrxy : WritableSignal<boolean> = signal(true);
+  businessHeaderPanel: WritableSignal<boolean> = signal(true);
+  fromBicPanel: WritableSignal<boolean> = signal(true);
+  pmtRtr: WritableSignal<boolean> = signal(true);
+  toBicPanel: WritableSignal<boolean> = signal(true);
+  relatedInfoPanel: WritableSignal<boolean> = signal(true);
+  GrpHdr: WritableSignal<boolean> = signal(true);
+  SttlmInf: WritableSignal<boolean> = signal(true);
+  SttlmAcct: WritableSignal<boolean> = signal(true);
+  SttlmAcctId: WritableSignal<boolean> = signal(true);
+  SttlmAcctIdOthr: WritableSignal<boolean> = signal(true);
+  SttlmAcctIdOthrSchmeNm: WritableSignal<boolean> = signal(true);
+  SttlmAcctTp: WritableSignal<boolean> = signal(true);
+  SttlmAcctPrxy: WritableSignal<boolean> = signal(true);
   SttlmAcctPrxyTp: WritableSignal<boolean> = signal(true);
   TxInf: WritableSignal<boolean> = signal(true);
   TxInfOrgnlGrpInf: WritableSignal<boolean> = signal(true);
@@ -94,7 +108,34 @@ export class Pacs004 implements OnInit {
   TxInfRtrChainUltmtDbtrPtyIdOrgIdOthrSchmeNm: WritableSignal<boolean> = signal(true);
   TxInfRtrChainUltmtDbtrPtyIdPrvtId: WritableSignal<boolean> = signal(true);
   TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirth: WritableSignal<boolean> = signal(true);
-
+  TxInfRtrChainUltmtDbtrPtyIdPrvtIdOthr: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainUltmtDbtrPtyIdPrvtIdOthrSchmeNm: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtr: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrPty: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrPtyPstlAdr: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrPtyPstlAdrId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrPtyIdOrgId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrPtyIdOrgIdOthr: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrPtyIdOrgIdOthrSchmeNm: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrPtyIdPrvtId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrPtyIdPrvtIdDtAndPlcOfBirth: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrPtyIdPrvtIdOthr: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrPtyIdPrvtIdOthrSchmeNm: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrAgt: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrAgtFinInstnId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrAgtFinInstnIdClrSysMmbId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrAgtFinInstnIdClrSysMmbIdClrSysId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrAgtFinInstnIdPstlAdr: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrAgt1: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrAgt1FinInstnId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrAgt1FinInstnIdClrSysMmbId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrAgt1FinInstnIdClrSysMmbIdClrSysId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainDbtrAgt1FinInstnIdPstlAdr: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainPrvsInstgAgt1: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainPrvsInstgAgt1FinInstnId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainPrvsInstgAgt1FinInstnIdClrSysMmbId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainPrvsInstgAgt1FinInstnIdClrSysMmbIdClrSysId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdr: WritableSignal<boolean> = signal(true);
 
   onPickclick(): void {
     this.isPickTableDialogOpen.set(true);
@@ -133,7 +174,7 @@ export class Pacs004 implements OnInit {
     {key: 'urgent', value: 'Urgent'}
   ];
 
-  duplicateOptions : SelectOptionsModel[] = [
+  duplicateOptions: SelectOptionsModel[] = [
     {key: 'codu', value: 'CODU'},
     {key: 'copy', value: 'COPY'},
     {key: 'dupl', value: 'DUPL'}
@@ -148,13 +189,27 @@ export class Pacs004 implements OnInit {
     {key: '002', value: 'Bangladesh'},
     {key: '003', value: 'India'}
   ];
-
-  TxInfInstgAgtFinInstnPstlAdrStrtCtryOptions: SelectOptionsModel[] = [
+  TxInfRtrChainUltmtDbtrPtyCtryOfResOptions: SelectOptionsModel[] = [
+    {key: '001', value: 'USA'},
+    {key: '002', value: 'Bangladesh'},
+    {key: '003', value: 'India'}
+  ];
+  TxInfRtrChainDbtrPtyIdPrvtIdDtAndPlcOfBirthCtryOfBirthOptions: SelectOptionsModel[] = [
+    {key: '001', value: 'USA'},
+    {key: '002', value: 'Bangladesh'},
+    {key: '003', value: 'India'}
+  ];
+  TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirthCtryOfBirthOptions: SelectOptionsModel[] = [
     {key: '001', value: 'USA'},
     {key: '002', value: 'Bangladesh'},
     {key: '003', value: 'India'}
   ];
 
+  TxInfRtrChainDbtrPtyPstlAdrCtryOptions: SelectOptionsModel[] = [
+    {key: '001', value: 'USA'},
+    {key: '002', value: 'Bangladesh'},
+    {key: '003', value: 'India'}
+  ];
   settlementOptions: SelectOptionsModel[] = [
     {key: 'clrg', value: 'CLRG'},
     {key: 'cove', value: 'COVE'},
@@ -172,35 +227,38 @@ export class Pacs004 implements OnInit {
     {key: 'YES', value: 'Yes'},
     {key: 'NO', value: 'No'}
   ];
-  TypeOptions: SelectOptionsModel[] =[
+  TypeOptions: SelectOptionsModel[] = [
     {key: 'Cd', value: 'Code'},
     {key: 'Prtry', value: 'Proprietary'}
   ];
 
-  SttlmInfSttlmMtdOptions: SelectOptionsModel[] =[
-    {key: 'CLRG', value: 'Clearing System'},
+  sttlmMtdOptions: SelectOptionsModel[] = [
+
     {key: 'COVE', value: 'Cover Method'},
     {key: 'INDA', value: 'Instructed Agent'},
     {key: 'INGA', value: 'Instructing Agent'}
   ];
 
-  TxInfChrgBrOptions: SelectOptionsModel[] =[
+  TxInfChrgBrOptions: SelectOptionsModel[] = [
     {key: 'CRED', value: 'Borne By Creditor'},
     {key: 'DEBT', value: 'Borne By Debtor'},
     {key: 'SHAR', value: 'Shared'},
     {key: 'SLEV', value: 'Following Service Level'},
   ];
 
-  SttlmAcctCcyOptions: SelectOptionsModel[] =[
+  SttlmAcctCcyOptions: SelectOptionsModel[] = [
     {key: '001', value: 'USD'},
     {key: '000', value: 'BDT'}
   ];
-  TxInfSttlmPrtyOptions: SelectOptionsModel[] =[
+  TxInfSttlmPrtyOptions: SelectOptionsModel[] = [
     {key: 'HIGH', value: 'High'},
     {key: 'NORM', value: 'Normal'},
     {key: 'URGT', value: 'Urgent'}
   ];
-  constructor() {
+  private destroy$ = new Subject<void>();
+  constructor(
+    private bicSelectionService: BicSelectionService
+  ) {
     BUTTON_VISIBILITY.set({
       save: true,
       update: false,
@@ -215,59 +273,71 @@ export class Pacs004 implements OnInit {
         this.resetForm();
         ONCLICK_RESET.set(false);
       } else if (this.onClickSave()) {
-        //this.save();
+        this.save();
         ONCLICK_SAVE.set(false);
       }
     });
   }
 
+  ngOnDestroy(): void {
+        this.destroy$.next();
+      this.destroy$.complete();
+    }
 
 
-  ngOnInit():void {
+  ngOnInit(): void {
     this.initForm();
   }
 
   initForm(): void {
     this.frmGroup = this.formBuilder.group({
-      // Business Application Header
-      fromBic:['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
-      toBic: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
-      bizMsgIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
-      msgDefIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
-      bizSvc: ['',[Validators.required, Validators.minLength(6),Validators.maxLength(35),Validators.pattern(/^[a-z0-9]{1,10}(\.[a-z0-9]{1,10})+\.\d\d$/)]],
-      CreDt: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
+      // Business Message Header
+      charSet: [''],
+      fromBicfi: ['', Validators.required],
+      fromMembId: [''],
+      fromClrSysIdCd: [''],
+      fromLei: [''],
+      toMembId: [''],
+      toBicfi: ['', Validators.required],
+      toClrSysIdCd: [''],
+      toLei: [''],
+      bizMsgIdr: ['PACS009_' + new Date().getTime(), Validators.required],
+      msgDefIdr: ['pacs.009.001.08', Validators.required],
+      bizSvc: ['swift.cbprplus.02', Validators.required],
+      creDt: ['', Validators.required],
+      rltdToBicfi:[''],
+      rltdFrBicfi:[''],
+      rltdBizMsgIdr: [''],
+      rltdMsgDefIdr: [''],
+      rltdBizSvc: [''],
+      rltdCreDt: [''],
 
       cpyDplct: [null],
       psblDplct: [null],
-      prty: ['high'],
-
-      // Business Application Header -> related
-      rltdFrBic: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
-      rltdToBic: ['',Validators.required,Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)],
-      rltdBizMsgIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
-      rltdMsgDefIdr: [''],
-      rltdBizSvc: ['',[Validators.required, Validators.minLength(6),Validators.maxLength(35),Validators.pattern(/^[a-z0-9]{1,10}(\.[a-z0-9]{1,10})+\.\d\d$/)]],
-      rltdCpyDplct: ['codu'],
-      rltdPrty: ['high'],
-
+      priority: ['NORM'],
+      msgId: ['MSG_' + new Date().getTime(), Validators.required],
+      creDtTm: [new Date().toISOString(), Validators.required],
+      nbOfTxs: ['1', Validators.required],
 
 
       //  Payment Return V09
       //  Payment Return V09 -> Group Header
-      GrpHdrmsgId: ['', [Validators.required, Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
-      GrpHdrcreDtTm: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
+      GrpHdrmsgId: ['', Validators.required], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
+      GrpHdrcreDtTm: ['', [Validators.required, Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
       GrpHdrNbOfTxs: ['', [Validators.required, Validators.pattern(/^[0-9]{1,15}$/)]],
       //  Payment Return V09 -> Group Header -> Settlement Information
-      SttlmInfSttlmMtd: ['CLRG', [Validators.required]],
+      sttlmMtd: [null, [Validators.required]],
       // Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account
-      SttlmAcctCcy:['001'],
-      SttlmAcctNm: ['', [Validators.minLength(1),Validators.maxLength(70),Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
       // Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account ->Identification
-      SttlmAcctIdIBAN: ['', [Validators.required,Validators.pattern(/^[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}$/)]],
+      SttlmAcctiban: ['', Validators.required],
+
+      SttlmAcctCcy: [null],
+      SttlmAcctNm: [''],
+
 
 
       // Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account ->Proxy
-      SttlmAcctPrxyId: ['', [Validators.required,Validators.minLength(1),Validators.maxLength(320),Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ !#$%&\*=^_`\{\|\}~";<>@\[\\\]]+$/)]],
+      SttlmAcctPrxyId: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(320), Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ !#$%&\*=^_`\{\|\}~";<>@\[\\\]]+$/)]],
 
 
       // Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account ->Identification -> Other
@@ -300,33 +370,33 @@ export class Pacs004 implements OnInit {
 
 
       // Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account ->Type
-      SttlmAcctTpCd: ['',[Validators.required,Validators.minLength(1),Validators.maxLength(4)]],
-      SttlmAcctTpPrtry: ['',[Validators.required,Validators.minLength(1),Validators.maxLength(4),Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
+      SttlmAcctTpCd: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(4)]],
+      SttlmAcctTpPrtry: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(4), Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
 
 
       // Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account -> Proxy ->Type
-      SttlmAcctPrxyTpCd: ['',[Validators.required,Validators.minLength(1),Validators.maxLength(4)]],
-      SttlmAcctPrxyTpPrtry: ['',[Validators.required,Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
-
+      SttlmAcctPrxyTpCd: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(4)]],
+      SttlmAcctPrxyTpPrtry: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(35), Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
 
 
       // Payment Return V09 ->  Transaction Information
-      TxInfRtrId: ['',[Validators.minLength(1),Validators.maxLength(30),Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
-      TxInfOrgnlInstrId:  ['',[Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
-      TxInfOrgnlEndToEndId:  ['',[Validators.required,Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
-      TxInfOrgnlTxId:  ['',[Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
-      TxInfOrgnlUETR:  ['',[Validators.pattern(/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/)]],
-      TxInfOrgnlClrSysRef: ['',[Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
+      TxInfRtrId: ['',],
+      TxInfOrgnlInstrId: ['',],
+      TxInfOrgnlEndToEndId: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(35), Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
+      TxInfOrgnlTxId: ['', [Validators.minLength(1), Validators.maxLength(35), Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
+      TxInfOrgnlUETR: ['', [Validators.pattern(/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/)]],
+      TxInfOrgnlClrSysRef: ['', [Validators.minLength(1), Validators.maxLength(35), Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
       TxInfOrgnlIntrBkSttlmAmt: [],
+      TxInfRtrdIntrBkSttlmAmt: [],
       TxInfOrgnlIntrBkSttlmDt: [],
       TxInfSttlmPrty: ['HIGH'],
       TxInfRtrdInstdAmt: [],
       TxInfXchgRate: [],
-      TxInfChrgBr: ['CRED',Validators.required],
+      TxInfChrgBr: ['CRED', Validators.required],
 
       // Payment Return V09 -> Transaction Information->Original Group Information
-      TxInforgnlMsgId:['', [Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
-      TxInforgnlMsgNmId:['', [Validators.minLength(1),Validators.maxLength(35),Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
+      TxInforgnlMsgId: ['', [Validators.minLength(1), Validators.maxLength(35), Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
+      TxInforgnlMsgNmId: ['', [Validators.minLength(1), Validators.maxLength(35), Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
       TxInforgnlCreDtTm: ['', [Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
       TxInfChrgsInfAgtFinInstnIdPstlAdrDept: [],
       TxInfChrgsInfAgtFinInstnIdPstlAdrSubDept: [],
@@ -341,10 +411,9 @@ export class Pacs004 implements OnInit {
       TxInfChrgsInfAgtFinInstnIdPstlAdrStrtTwnLctnNm: [],
       TxInfChrgsInfAgtFinInstnIdPstlAdrStrtDstrctNm: [],
       TxInfChrgsInfAgtFinInstnIdPstlAdrStrtCtrySubDvsn: [],
-      TxInfChrgsInfAgtFinInstnIdPstlAdrStrtCtry: ['001'],
+      TxInfChrgsInfAgtFinInstnIdPstlAdrStrtCtry: [null],
       TxInfChrgsInfAgtFinInstnIdPstlAdrStrtAdrLine: [],
       TxInfClrSysRef: [],
-
 
 
       // Payment Return V09 -> Transaction Information->Original Group Information -> Settlement Time Indication
@@ -356,7 +425,7 @@ export class Pacs004 implements OnInit {
       TxInfChrgsInfAgtFinInstnIdNm: [],
       TxInfChrgsInfAgtFinInstnIdClrSysIdCd: [],
       TxInfChrgsInfAgtFinInstnIdClrSysMmbIdMmbId: [],
-     // Payment Return V09 -> Transaction Information->Original Group Information -> Charges Information
+      // Payment Return V09 -> Transaction Information->Original Group Information -> Charges Information
       TxInfChrgsInfAmt: [],
 
       TxInfInstgAgtFinInstnIdBICFI: [],
@@ -385,7 +454,7 @@ export class Pacs004 implements OnInit {
       TxInfRtrChainUltmtDbtrPtyPstlAdrTwnLctnNm: [],
       TxInfRtrChainUltmtDbtrPtyPstlAdrDstrctNm: [],
       TxInfRtrChainUltmtDbtrPtyPstlAdrCtrySubDvsn: [],
-      TxInfRtrChainUltmtDbtrPtyPstlAdrCtry: ['001'],
+      TxInfRtrChainUltmtDbtrPtyPstlAdrCtry: [null],
 
       TxInfRtrChainUltmtDbtrPtyIdOrgIdAnyBIC: [],
       TxInfRtrChainUltmtDbtrPtyIdOrgIdLEI: [],
@@ -395,7 +464,116 @@ export class Pacs004 implements OnInit {
       TxInfRtrChainUltmtDbtrPtyIdOrgIdOthrSchmeNmPrtry: [],
       TxInfRtrChainUltmtDbtrPtyIdOrgIdOthrIssr: [],
 
+      TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirthBirthDt: [],
+      TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirthPrvcOfBirth: [],
+      TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirthCityOfBirth: [],
+      TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirthCtryOfBirth: [null],
+      TxInfRtrChainUltmtDbtrPtyIdPrvtIdOthrId: [],
+      TxInfRtrChainUltmtDbtrPtyIdPrvtIdOthrSchmeNmCd: [],
+      TxInfRtrChainUltmtDbtrPtyIdPrvtIdOthrIssr: [],
+      TxInfRtrChainUltmtDbtrPtyCtryOfRes: [null],
+
+
+      TxInfRtrChainDbtrPtyNm: [],
+      TxInfRtrChainDbtrPtyPstlAdrDept: [],
+      TxInfRtrChainDbtrPtyPstlAdrSubDept: [],
+      TxInfRtrChainDbtrPtyPstlAdrBldgNb: [],
+      TxInfRtrChainDbtrPtyPstlAdrBldgNm: [],
+      TxInfRtrChainDbtrPtyPstlAdrFlr: [],
+      TxInfRtrChainDbtrPtyPstlAdrPstBx: [],
+      TxInfRtrChainDbtrPtyPstlAdrRoom: [],
+      TxInfRtrChainDbtrPtyPstlAdrPstCd: [],
+      TxInfRtrChainDbtrPtyPstlAdrTwnNm: [],
+      TxInfRtrChainDbtrPtyPstlAdrTwnLctnNm: [],
+      TxInfRtrChainDbtrPtyPstlAdrDstrctNm: [],
+      TxInfRtrChainDbtrPtyPstlAdrCtrySubDvsn: [],
+      TxInfRtrChainDbtrPtyPstlAdrCtry: [null],
+      TxInfRtrChainDbtrPtyPstlAdrAdrLine: [],
+      TxInfRtrChainDbtrPtyIdOrgIdAnyBIC: [],
+      TxInfRtrChainDbtrPtyIdOrgIdLEI: [],
+      TxInfRtrChainDbtrPtyIdOrgIdOthrId: [],
+      TxInfRtrChainDbtrPtyIdOrgIdOthrSchmeNmCd: [],
+      TxInfRtrChainDbtrPtyIdOrgIdOthrSchmeNmPrtry: [],
+      TxInfRtrChainDbtrPtyIdOrgIdOthrIssr: [],
+
+      TxInfRtrChainDbtrPtyIdPrvtIdDtAndPlcOfBirthBirthDt: [],
+      TxInfRtrChainDbtrPtyIdPrvtIdDtAndPlcOfBirthPrvcOfBirth: [],
+      TxInfRtrChainDbtrPtyIdPrvtIdDtAndPlcOfBirthCityOfBirth: [],
+      TxInfRtrChainDbtrPtyIdPrvtIdDtAndPlcOfBirthCtryOfBirth: [null],
+      TxInfRtrChainDbtrPtyIdPrvtIdOthrId: [],
+      TxInfRtrChainDbtrPtyIdPrvtIdOthrSchmeNmCd: [],
+      TxInfRtrChainDbtrPtyIdPrvtIdOthrSchmeNmPrtry: [],
+      TxInfRtrChainDbtrPtyIdPrvtIdOthrIssr: [],
+      TxInfRtrChainDbtrPtyCtryOfRes: [],
+      TxInfRtrChainDbtrAgtFinInstnIdBICFI: [],
+      TxInfRtrChainDbtrAgtFinInstnIdClrSysMmbIdClrSysIdCd: [],
+      TxInfRtrChainDbtrAgtFinInstnIdClrSysMmbIdMmbId: [],
+      TxInfRtrChainDbtrAgtFinInstnIdLEI: [],
+      TxInfRtrChainDbtrAgtFinInstnIdNm: [],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrDept: [],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrSubDept: [],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrStrtNm: [],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrBldgNb: [],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrBldgNm: [],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrFlr: [],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrPstBx: [],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrRoom: [],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrPstCd: [],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrTwnNm: [],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrTwnLctnNm: [],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrDstrctNm: [],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrCtrySubDvsn: [],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrCtry: [null],
+      TxInfRtrChainDbtrAgtFinInstnIdPstlAdrAdrLine: [],
+      TxInfRtrChainInitgPty: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdBICFI: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdLEI: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdNm: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdClrSysMmbIdClrSysIdCd: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdClrSysMmbIdMmbId: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrDept: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrSubDept: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrStrtNm: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrBldgNb: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrBldgNm: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrFlr: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrPstBx: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrRoom: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrPstCd: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrTwnNm: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrTwnLctnNm: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrDstrctNm: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrCtrySubDvsn: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrCtry: [],
+      TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrAdrLine: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdBICFI: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdClrSysMmbIdMmbId: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdClrSysMmbIdClrSysIdCd: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdLEI: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdNm: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrDept: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrSubDept: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrStrtNm: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrBldgNb: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrBldgNm: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrFlr: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrPstBx: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrRoom: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrPstCd: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrTwnNm: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrTwnLctnNm: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrDstrctNm: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrCtrySubDvsn: [],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrCtry: [null],
+      TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrAdrLine: [],
+
+
     });
+
+
+
+
+
 
     this.frmGroup.get('rsnCd')?.valueChanges.subscribe(value => {
       const prtryControl = this.frmGroup.get('rsnPrtry');
@@ -405,7 +583,7 @@ export class Pacs004 implements OnInit {
       } else {
         prtryControl?.setValidators(Validators.required);
       }
-      prtryControl?.updateValueAndValidity({ emitEvent: false });
+      prtryControl?.updateValueAndValidity({emitEvent: false});
     });
 
     this.frmGroup.get('rsnPrtry')?.valueChanges.subscribe(value => {
@@ -416,11 +594,208 @@ export class Pacs004 implements OnInit {
       } else {
         cdControl?.setValidators(Validators.required);
       }
-      cdControl?.updateValueAndValidity({ emitEvent: false });
+      cdControl?.updateValueAndValidity({emitEvent: false});
     });
   }
 
-  resetForm(): void{
+  generatePayload(): Mx004Model {
+    let payload: any = {};
+    let frmValue = this.frmGroup.value;
+
+    // Business Message Header - Only fields that exist in DTO
+    payload.bizMsgIdr = frmValue.bizMsgIdr;
+    payload.msgDefIdr = frmValue.msgDefIdr;
+    payload.bizSvc = frmValue.bizSvc;
+    payload.creDt = frmValue.creDt;
+    payload.cpyDplct = frmValue.cpyDplct;
+    payload.pssblDplct = frmValue.pssblDplct;
+    payload.priority = frmValue.priority;
+    payload.msgId = frmValue.msgId;
+    payload.creDtTm = frmValue.creDtTm;
+    payload.nbOfTxs = frmValue.nbOfTxs;
+
+    // Group Header  Information
+    payload.GrpHdrmsgId = frmValue.GrpHdrmsgId;
+    payload.GrpHdrNbOfTxs = frmValue.GrpHdrNbOfTxs;
+    payload.GrpHdrcreDtTm = frmValue.GrpHdrcreDtTm;
+
+    // Settlement Information
+    payload.sttlmMtd = frmValue.sttlmMtd;
+
+    // // Map flat settlement account to nested structure
+    payload.sttlmAcct = {
+      iban: frmValue.SttlmAcctiban,
+      id:frmValue.SttlmAcctIdOthrId,
+      issr: frmValue.SttlmAcctIdOthrIssr,
+      schmeNmCd:frmValue.SttlmAcctIdOthrSchmeNmCd,
+      schmeNmPrtry:frmValue.SttlmAcctIdOthrSchmeNmPrtry,
+      tpCd: frmValue.SttlmAcctTpCd,
+      tpPrtry: frmValue.SttlmAcctTpPrtry,
+      ccy: frmValue.SttlmAcctCcy,
+      nm: frmValue.SttlmAcctNm,
+      prxyTpCd: frmValue.SttlmAcctPrxyTpCd,
+      prxyTpPrtry: frmValue.SttlmAcctPrxyTpPrtry,
+      prxyId: frmValue.SttlmAcctPrxyId,
+    };
+    //
+    // // Payment Return V09 -> Transaction Information
+    payload.OrgnlMsgId = frmValue.TxInforgnlMsgId;
+    payload.OrgnlMsgNmId = frmValue.TxInforgnlMsgNmId;
+    payload.OrgnlCreDtTm = frmValue.TxInforgnlCreDtTm;
+    payload.OrgnlInstrId = frmValue.TxInfOrgnlInstrId;
+    payload.OrgnlEndToEndId = frmValue.TxInfOrgnlEndToEndId;
+    payload.OrgnlTxId = frmValue.TxInfOrgnlTxId;
+    payload.OrgnlUETR = frmValue.TxInfOrgnlUETR;
+    payload.OrgnlClrSysRef = frmValue.TxInfOrgnlClrSysRef;
+    payload.OrgnlIntrBkSttlmAmt = frmValue.TxInfOrgnlIntrBkSttlmAmt;
+    payload.OrgnlIntrBkSttlmDt = frmValue.TxInfOrgnlIntrBkSttlmDt;
+    payload.RtrdIntrBkSttlmAmt = frmValue.TxInfRtrdIntrBkSttlmAmt;
+    payload.SttlmPrty = frmValue.TxInfSttlmPrty;
+    payload.RtrdInstdAmt = frmValue.TxInfRtrdInstdAmt;
+    payload.XchgRate = frmValue.TxInfXchgRate;
+    payload.ChrgBr = frmValue.TxInfChrgBr;
+    payload.ClrSysRef = frmValue.TxInfClrSysRef;
+
+    //Payment Return V09 -> Transaction Information->Original Group Information -> Settlement Time Indication
+    payload.DbtDtTm = frmValue.TxInfSttlmTmIndctnDbtDtTm;
+    payload.CdtDtTm = frmValue.TxInfSttlmTmIndctnCdtDtTm;
+
+    //Payment Return V09 -> Transaction Information->Original Group Information -> Charges Information
+    payload.ChgAmt = frmValue.TxInfChrgsInfAmt;
+    //Payment Return V09 -> Transaction Information->Original Group Information -> Charges Information -> Agent
+    payload.ChrgsInfAgnt = {
+      bicfi: frmValue.TxInfChrgsInfAgtFinInstnIdBICFI,
+      clrSysIdCd: frmValue.TxInfChrgsInfAgtFinInstnIdClrSysIdCd,
+      mmbId: frmValue.TxInfChrgsInfAgtFinInstnIdClrSysMmbIdMmbId,
+      lei: frmValue.TxInfChrgsInfAgtFinInstnIdLEI,
+      nm: frmValue.TxInfChrgsInfAgtFinInstnIdNm,
+        adr: {
+          dept: frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrDept,
+          subDept: frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrSubDept,
+          strtNm: frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrStrtNm,
+          bldgNb: frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrStrtBldgNb,
+          bldgNm: frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrStrtBldgNm,
+          flr: frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrStrtFlr,
+          pstBx: frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrStrtPstBx,
+          room: frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrStrtRoom,
+          pstCd: frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrStrtPstCd,
+          twnNm: frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrStrtTwnNm,
+          twnLctnNm: frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrStrtTwnLctnNm,
+          dstrctNm: frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrStrtDstrctNm,
+          ctrySubDvsn: frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrStrtCtrySubDvsn,
+          ctry: frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrStrtCtry,
+          adrLine: Array.isArray(frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrStrtAdrLine) ? frmValue.TxInfChrgsInfAgtFinInstnIdPstlAdrStrtAdrLine.filter(
+            (line: string) => line && line.trim() !== ''
+          ) : [],
+        },
+    };
+    //Payment Return V09 -> Transaction Information->Charges Information -> Instructing Agent
+    payload.ChrgsInfAgnt = {
+      bicfi: frmValue.TxInfInstgAgtFinInstnIdBICFI,
+      clrSysIdCd: frmValue.TxInfInstgAgtFinInstnIdClrSysMmbIdClrSysIdCd,
+      mmbId: frmValue.TxInfInstgAgtFinInstnIdClrSysMmbIdMmbId,
+      lei: frmValue.TxInfInstgAgtFinInstnIdLEI,
+
+    };
+    //Payment Return V09 -> Transaction Information->Charges Information -> Instructed Agent
+    payload.InstdAgt = {
+      bicfi: frmValue.TxInfInstdAgtFinInstnIdBICFI,
+      clrSysIdCd: frmValue.TxInfInstdAgtFinInstnIdClrSysMmbIdClrSysIdCd,
+      mmbId: frmValue.TxInfInstdAgtFinInstnIdClrSysMmbIdMmbId,
+      lei: frmValue.TxInfInstdAgtFinInstnIdLEI,
+
+    };
+    //Payment Return V09 -> Transaction Information->ReturnChain
+    //
+
+
+    return payload as Mx004Model;
+  }
+
+  save(): void {
+    debugger;
+    if (this.frmGroup.invalid) {
+      this.toastr.error(
+        'Please fill in all required fields',
+        'Validation Error'
+      );
+      return;
+    }
+
+    // Additional validation for required fields
+    if (!this.validateRequiredFields()) {
+      return;
+    }
+
+    const payload = this.generatePayload();
+
+    this.mx004Service.save(payload).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (res) => {
+        this.toastr.success('PACS.004 message saved successfully!', 'Success');
+      },
+      error: (error) => {
+        let errorMessage = 'Failed to save PACS.009 message';
+        if (error.error && error.error.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        this.toastr.error(errorMessage, 'Error');
+      },
+    });
+  }
+
+
+  // Helper method to validate required fields
+  validateRequiredFields(): boolean {
+    const requiredFields = ['bizMsgIdr', 'txId', 'uetr'];
+    for (const field of requiredFields) {
+      const control = this.frmGroup.get(field);
+      if (control && control.invalid) {
+        this.toastr.error(`Field ${field} is required`, 'Validation Error');
+        return false;
+      }
+    }
+    return true;
+  }
+
+  openBicSelectionModal(ctrlNm :string, nameField:string|null = null) :void{
+    const val = {
+      bicField : ctrlNm,
+      defaultValue : 'SCBLBDDX',
+    };
+
+    this.bicSelectionService.openBicSelectionModal(
+      this.frmGroup,
+      val).subscribe(selectedData => {
+      if (selectedData) {
+        const { swiftCode, branchName } = selectedData;ctrlNm
+        this.frmGroup.patchValue({[ctrlNm]: swiftCode});
+        if(nameField!=null){
+          this.frmGroup.patchValue({[nameField]: branchName});
+        }
+        if(ctrlNm==='fromBicfi' ){
+          this.frmGroup.patchValue({'instgAgtBicfi': swiftCode});
+          this.frmGroup.patchValue({'instgAgtNm': branchName});
+        }
+        if(ctrlNm==='toBicfi' ){
+          this.frmGroup.patchValue({'instdAgtBicfi': swiftCode});
+        }
+        if(ctrlNm==='dbtrBicfi' ){
+          this.frmGroup.patchValue({'dbtrAgtBicfi': swiftCode});
+          this.frmGroup.patchValue({'dbtrAgtNm': branchName});
+        }
+        if(ctrlNm==='cdtrBicfi' ){
+          this.frmGroup.patchValue({'cdtrAgtBicfi': swiftCode});
+          this.frmGroup.patchValue({'cdtrAgtNm': branchName});
+        }
+      }
+    });
+  }
+
+  resetForm(): void {
     this.frmGroup.reset();
     this.frmGroup.patchValue({
       date: new Date()
@@ -433,5 +808,4 @@ export class Pacs004 implements OnInit {
   //   })
   // }
 
-  protected readonly DataSelectionModal = DataSelectionModal;
 }

@@ -210,7 +210,7 @@ export class Pacs009 implements OnInit, OnDestroy {
               msgType: 202,
               msgRefNo: this.cbsData.msgRefNo
             };
-            
+
             this.messageTypeService.getMessageByRefNo(payload).pipe(
               takeUntil(this.destroy$)
             ).subscribe({
@@ -224,7 +224,7 @@ export class Pacs009 implements OnInit, OnDestroy {
                 console.error('Error fetching message data:', error);
               }
             });
-            
+
           } catch (error) {
             console.warn('Could not parse CBS data from query params:', error);
           }
@@ -250,7 +250,7 @@ export class Pacs009 implements OnInit, OnDestroy {
 
   private mapServiceDataToForm(data: any): void {
     if (!this.frmGroup) return;
-    
+
     // Ensure currencies are loaded before mapping
     if (this.currencyOptions.length === 0) {
       this.loadCurrencies();
@@ -262,7 +262,7 @@ export class Pacs009 implements OnInit, OnDestroy {
     }
 
     // Find the correct currency option
-    const currencyOption = this.currencyOptions.find(option => 
+    const currencyOption = this.currencyOptions.find(option =>
       option.key.toLowerCase() === data.isoSwiftCode.toLowerCase()
     );
 
