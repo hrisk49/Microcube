@@ -18,7 +18,7 @@
           (blur)="onInputBlur()"
           (keydown)="onKeyDown($event)"
           [disabled]="isReadonly()"
-          class="search-input"
+          class="custom-input"
           autocomplete="off"
         />
         <!-- Dropdown Toggle Button -->
@@ -34,7 +34,7 @@
           </svg>
         </button>
 
-        <!-- Dropdown Options -->
+      <!--Dropdown Options-->
         @if (isOpen()) {
           <div class="dropdown-menu">
             @if (filteredOptions().length === 0) {
