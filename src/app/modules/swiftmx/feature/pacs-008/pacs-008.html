@@ -2246,8 +2246,19 @@
                 <!-- Proxy -->
                 <app-text-base-input
                   [frmGroup]="frmGroup"
-                  [label]="'Proxy'"
-                  [controlName]="'dbtrAcctPrxy'"
+                  [label]="'Proxy Type Code'"
+                  [controlName]="'dbtrAcctProxyCd'"
+                />
+
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Proxy Type Proprietary'"
+                  [controlName]="'dbtrAcctProxyPrtry'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Proxy ID'"
+                  [controlName]="'dbtrAcctProxyId'"
                 />
               </div>
             }
@@ -2446,7 +2457,6 @@
                             [label]="'Account Issuer'"
                             [controlName]="'dbtrAgtAcctIssr'"
                           />
-
                         </div>
                       }
                     </div>
@@ -2476,8 +2486,19 @@
               <!-- Proxy -->
               <app-text-base-input
                 [frmGroup]="frmGroup"
-                [label]="'Proxy'"
-                [controlName]="'dbtrAcctPrxy'"
+                [label]="'Proxy Type Code'"
+                [controlName]="'dbtrAgtAcctProxyCd'"
+              />
+
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Proxy Type Proprietary'"
+                [controlName]="'dbtrAgtAcctProxyPrtry'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Proxy ID'"
+                [controlName]="'dbtrAgtAcctProxyId'"
               />
             </div>
         }
@@ -2718,7 +2739,280 @@
           </div>
         }
       </div>
-      }
+
+          <!-- Initiating Party -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="initiatingPrtyPanel"
+              [subPanelTitle]="'InitiatingParty'"
+            />
+            @if (initiatingPrtyPanel()) {
+              <div class="form-grid-col-1">
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Party Name'"
+                  [controlName]="'initiatingPrtyNm'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Country Of Residence'"
+                  [controlName]="'initiatingPrtyCtryOfRes'"
+                />
+
+                <!-- Postal Address -->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header
+                    [isOpenSignal]="initiatingPrtyAddressPanel"
+                    [subPanelTitle]="'Postal Address'"
+                  />
+                  @if (initiatingPrtyAddressPanel()) {
+                    <div class="form-grid-col-1">
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Department'"
+                        [controlName]="'initiatingPrtydept'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Sub Department'"
+                        [controlName]="'initiatingPrtysubDept'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Street Name'"
+                        [controlName]="'initiatingPrtystrtNm'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Building Name'"
+                        [controlName]="'initiatingPrtybldgNm'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Building Number'"
+                        [controlName]="'initiatingPrtybldgNb'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Floor'"
+                        [controlName]="'initiatingPrtyflr'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Post Box'"
+                        [controlName]="'initiatingPrtypstBx'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Room'"
+                        [controlName]="'initiatingPrtyroom'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Post Code'"
+                        [controlName]="'initiatingPrtypstCd'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Town Name'"
+                        [controlName]="'initiatingPrtytwnNm'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Town Location Name'"
+                        [controlName]="'initiatingPrtytwnLctnNm'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'District Name'"
+                        [controlName]="'initiatingPrtydstrctNm'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Country Sub Division'"
+                        [controlName]="'initiatingPrtyctrySubDvsn'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Country'"
+                        [controlName]="'initiatingPrtyctry'"
+                      />
+                    </div>
+                  }
+                </div>
+
+                <!-- Identification -->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header
+                    [isOpenSignal]="initiatingPrtyIdenPanel"
+                    [subPanelTitle]="'Identification'"
+                  />
+                  @if(initiatingPrtyIdenPanel()){
+
+                    <!-- OrganisationIdentification -->
+                    <div class="sub-panel">
+                      <app-expansion-sub-panel-header
+                        [isOpenSignal]="initiatingPrtyOrgIden"
+                        [subPanelTitle]="'Organisation Identification'"
+                      ></app-expansion-sub-panel-header>
+                      @if(initiatingPrtyOrgIden()){
+                        <div class="form-grid-col-1">
+                          <app-text-base-input
+                            [frmGroup]="frmGroup"
+                            [label]="'Any BIC'"
+                            [controlName]="'initiatingPrtyanyBIC'"
+                            (onDoubleClick)="openBicSelectionModal('initiatingPrtyanyBIC')"
+                          />
+                          <app-text-base-input
+                            [frmGroup]="frmGroup"
+                            [label]="'LEI'"
+                            [controlName]="'initiatingPrtyLEI'"
+                          />
+
+                          <!-- Other -->
+                          <div class="sub-panel">
+                            <app-expansion-sub-panel-header
+                              [isOpenSignal]="initiatingPrtyOrgIdenOthr"
+                              [subPanelTitle]="'Other'"
+                              [isButton]="true"
+                              [buttonText]="'Add'"
+                              [buttonIcon]="'add'"
+                              (addAction)="addIniPrtyOrgIdenRow()"
+                            />
+                            @if (initiatingPrtyOrgIdenOthr()) { @if (frmGroup) {
+                              <ng-container formArrayName="iniPrtyOrgIden">
+                                @for (group of iniPrtyOrgIdenGetter.controls; track $index) {
+                                  <div [formGroupName]="$index" class="form-grid-col-1 mb-3">
+                                    <app-text-base-input
+                                      [frmGroup]="getIniPrtyOrgIden($index)"
+                                      [label]="'Identification'"
+                                      [controlName]="'iniPrtyOrgIdenId'"
+                                    />
+                                    <app-select-option-field
+                                      [frmGroup]="getIniPrtyOrgIden($index)"
+                                      [options]="TypeOptions"
+                                      [label]="'Scheme Name'"
+                                      [controlName]="'iniPrtySchmNm'"
+                                    />
+                                    <app-text-base-input
+                                      [frmGroup]="getIniPrtyOrgIden($index)"
+                                      [label]="'Issuer'"
+                                      [controlName]="'iniPrtyOrgIdenIssr'"
+                                    />
+                                    @if (iniPrtyOrgIdenGetter.controls.length > 1) {
+                                      <button
+                                        (click)="rmvIniPrtyOrgIdenRow($index)"
+                                        class="remove-row-btn mt-8"
+                                      >
+                                        Remove
+                                      </button>
+                                    }
+                                  </div>
+                                }
+                              </ng-container>
+                            } }
+                          </div>
+
+                        </div>
+                      }
+                    </div>
+
+                    <!-- PrivateIdentification -->
+                    <div class="sub-panel">
+                      <app-expansion-sub-panel-header
+                        [isOpenSignal]="initiatingPrtyPrivateIden"
+                        [subPanelTitle]="'Private Identification'"
+                      ></app-expansion-sub-panel-header>
+                      @if(initiatingPrtyPrivateIden()){
+                        <div class="form-grid-col-1">
+
+                          <!-- DateAndPlaceOfBirth -->
+                          <div class="sub-panel">
+                            <app-expansion-sub-panel-header
+                              [isOpenSignal]="initiatingPrtyDateNPlaceOfBirth"
+                              [subPanelTitle]="'Date And Place Of Birth'"
+                            ></app-expansion-sub-panel-header>
+                            @if(initiatingPrtyDateNPlaceOfBirth()){
+                              <div class="form-grid-col-1">
+
+                                <app-text-base-input
+                                  [frmGroup]="frmGroup"
+                                  [label]="'Birth Date'"
+                                  [controlName]="'initiatingPrtybirthDt'"
+                                />
+                                <app-text-base-input
+                                  [frmGroup]="frmGroup"
+                                  [label]="'Province Of Birth'"
+                                  [controlName]="'initiatingPrtyprvcOfBirth'"
+                                />
+                                <app-text-base-input
+                                  [frmGroup]="frmGroup"
+                                  [label]="'City Of Birth'"
+                                  [controlName]="'initiatingPrtycityOfBirth'"
+                                />
+                                <app-text-base-input
+                                  [frmGroup]="frmGroup"
+                                  [label]="'Country Of Birth'"
+                                  [controlName]="'initiatingPrtyctryOfBirth'"
+                                />
+                              </div>
+                            }
+                          </div>
+
+                          <!-- Other -->
+                          <div class="sub-panel">
+                            <app-expansion-sub-panel-header
+                              [isOpenSignal]="initiatingPrtyPrivateIdenOthr"
+                              [subPanelTitle]="'Other'"
+                              [isButton]="true"
+                              [buttonText]="'Add'"
+                              [buttonIcon]="'add'"
+                              (addAction)="iniPrtyAddPrivtIdRow()"
+                            />
+                            @if (initiatingPrtyPrivateIdenOthr()) { @if (frmGroup) {
+                              <ng-container formArrayName="iniPrtyPrvtIdenOthr">
+                                @for (group of iniPrtyPrvtIdGetter.controls; track $index) {
+                                  <div [formGroupName]="$index" class="form-grid-col-1 mb-3">
+                                    <app-text-base-input
+                                      [frmGroup]="getIniPrtyPrvtId($index)"
+                                      [label]="'Identification'"
+                                      [controlName]="'iniPrtyprivtId'"
+                                    />
+                                    <app-select-option-field
+                                      [frmGroup]="getIniPrtyPrvtId($index)"
+                                      [options]="TypeOptions"
+                                      [label]="'Scheme Name'"
+                                      [controlName]="'iniPrtySchmNm'"
+                                    />
+                                    <app-text-base-input
+                                      [frmGroup]="getIniPrtyPrvtId($index)"
+                                      [label]="'Issuer'"
+                                      [controlName]="'iniPrtyIssr'"
+                                    />
+                                    @if (iniPrtyPrvtIdGetter.controls.length > 1) {
+                                      <button
+                                        (click)="rmvIniPrtPrivtIden($index)"
+                                        class="remove-row-btn mt-8"
+                                      >
+                                        Remove
+                                      </button>
+                                    }
+                                  </div>
+                                }
+                              </ng-container>
+                            } }
+                          </div>
+
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+        }
     </div>
 
 
@@ -3045,8 +3339,19 @@
               <!-- Proxy -->
               <app-text-base-input
                 [frmGroup]="frmGroup"
-                [label]="'Proxy'"
-                [controlName]="'crdtrAcctPrxy'"
+                [label]="'Proxy Type Code'"
+                [controlName]="'cdtrAcctPrxyTpCd'"
+              />
+
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Proxy Type Proprietary'"
+                [controlName]="'cdtrAcctPrxyTpPrtry'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Proxy ID'"
+                [controlName]="'cdtrAcctPrxyId'"
               />
             </div>
           }
@@ -3276,8 +3581,19 @@
                 <!-- Proxy -->
                 <app-text-base-input
                   [frmGroup]="frmGroup"
-                  [label]="'Proxy'"
-                  [controlName]="'crdtrAcctPrxy'"
+                  [label]="'Proxy Type Code'"
+                  [controlName]="'crdtrAgtAcctPrxyTpCd'"
+                />
+
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Proxy Type Proprietary'"
+                  [controlName]="'crdtrAgtAcctPrxyTpPrtry'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Proxy ID'"
+                  [controlName]="'crdtrAgtAcctPrxyId'"
                 />
               </div>
 
@@ -3532,8 +3848,9 @@
       />
       @if (instructionsPanel()) {
       <div class="form-grid-col-1">
-        <app-text-base-input
+        <app-select-option-field
           [frmGroup]="frmGroup"
+          [options]="InstructionCdOptions"
           [label]="'Instruction For Creditor Agent Code 1'"
           [controlName]="'instrForCdtrAgtCD1'"
         />
@@ -3542,8 +3859,9 @@
           [label]="'Instruction For Creditor Agent Info 1'"
           [controlName]="'instrForCdtrAgtInf1'"
         />
-        <app-text-base-input
+        <app-select-option-field
           [frmGroup]="frmGroup"
+          [options]="InstructionCdOptions"
           [label]="'Instruction For Creditor Agent Code 2'"
           [controlName]="'instrForCdtrAgtCD2'"
         />

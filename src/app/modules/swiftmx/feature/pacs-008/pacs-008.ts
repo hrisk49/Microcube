@@ -24,6 +24,7 @@ import {BusinessApplicationHeader} from '../../components/business-application-h
 import {BicSelectionService} from '../../../../shared/services/bic-selection.service';
 import {Mx008Model} from '../../model/mx008.model';
 import {ExternalCodeService} from '../../../../shared/services/external-code.service';
+import {Subject, takeUntil} from 'rxjs';
 
 @Component({
     selector: 'app-pacs-008',
@@ -141,6 +142,13 @@ dialogUtils = inject(DialogUtils);
     {key: 'Prtry', value: 'Proprietary'}
   ];
 
+  InstructionCdOptions: SelectOptionsModel[] = [
+    { key: 'CHQB', value: 'CHQB' },
+    { key: 'HOLD', value: 'HOLD' },
+    { key: 'PHOB', value: 'PHOB' },
+    { key: 'TELB', value: 'TELB' },
+  ];
+
   serviceLevelCodeOptions: SelectOptionsModel[] = [];
 
   // Panel visibility signals
@@ -201,6 +209,16 @@ dialogUtils = inject(DialogUtils);
   ultorgIdenOthr : WritableSignal<boolean> = signal(true);
   ultdateNPlaceOfBirth : WritableSignal<boolean> = signal(false);
   ultprivateIdenOthr : WritableSignal<boolean> = signal(true);
+  //
+  initiatingPrtyPanel: WritableSignal<boolean> = signal(false);
+  initiatingPrtyAddressPanel: WritableSignal<boolean> = signal(false);
+  initiatingPrtyIdenPanel: WritableSignal<boolean> = signal(false);
+  initiatingPrtyOrgIden: WritableSignal<boolean> = signal(true);
+  initiatingPrtyPrivateIden: WritableSignal<boolean> = signal(true);
+  initiatingPrtyOrgIdenOthr: WritableSignal<boolean> = signal(true);
+  initiatingPrtyDateNPlaceOfBirth: WritableSignal<boolean> = signal(false);
+  initiatingPrtyPrivateIdenOthr: WritableSignal<boolean> = signal(true);
+//
   orgIden : WritableSignal<boolean> = signal(true);
   orgIdenOthr : WritableSignal<boolean> = signal(true);
   privateIden : WritableSignal<boolean> = signal(true);
@@ -251,7 +269,7 @@ dialogUtils = inject(DialogUtils);
     ['branchName', 'Branch Name'],
     ['address', 'Address']
   ]);
-
+  private destroy$ = new Subject<void>();
   constructor(private branchInfoService: BranchInfoService,private bicSelectionService: BicSelectionService) {
     BUTTON_VISIBILITY.set({
       save: true,
@@ -514,7 +532,6 @@ dialogUtils = inject(DialogUtils);
       instdAgtAdrDstrctNm: [''],
       instdAgtAdrCtrySubDvsn: [''],
       instdAgtAdrCtry: [''],
-      instdAgtAdrLine: [''],
 
       // Intermediary Agent 1 (flat)
       intrmyAgt1Bicfi: [''],
@@ -536,7 +553,9 @@ dialogUtils = inject(DialogUtils);
       intrmyAgt1AdrDstrctNm: [''],
       intrmyAgt1AdrCtrySubDvsn: [''],
       intrmyAgt1AdrCtry: [''],
-      intrmyAgt1AdrLine: [''],
+      intrmyAgt1AdrLine1: [''],
+      intrmyAgt1AdrLine2: [''],
+      intrmyAgt1AdrLine3: [''],
       // Intermediary Agent 1 Account (flat)
       intrmyAgt1AcctId: [''],
       intrmyAgt1AcctCcy: [''],
@@ -568,7 +587,9 @@ dialogUtils = inject(DialogUtils);
       intrmyAgt2AdrDstrctNm: [''],
       intrmyAgt2AdrCtrySubDvsn: [''],
       intrmyAgt2AdrCtry: [''],
-      intrmyAgt2AdrLine: [''],
+      intrmyAgt2AdrLine1: [''],
+      intrmyAgt2AdrLine2: [''],
+      intrmyAgt2AdrLine3: [''],
       // Intermediary Agent 2 Account (flat)
       intrmyAgt2AcctId: [''],
       intrmyAgt2AcctCcy: [''],
@@ -600,7 +621,9 @@ dialogUtils = inject(DialogUtils);
       intrmyAgt3AdrDstrctNm: [''],
       intrmyAgt3AdrCtrySubDvsn: [''],
       intrmyAgt3AdrCtry: [''],
-      intrmyAgt3AdrLine: [''],
+      intrmyAgt3AdrLine1: [''],
+      intrmyAgt3AdrLine2: [''],
+      intrmyAgt3AdrLine3: [''],
       // Intermediary Agent 3 Account (flat)
       intrmyAgt3AcctId: [''],
       intrmyAgt3AcctCcy: [''],
@@ -670,7 +693,9 @@ dialogUtils = inject(DialogUtils);
       dbtrAcctTp: [''],
       dbtrAcctCcy: [''],
       dbtrAcctNm: [''],
-      dbtrAcctPrxy: [''],
+      dbtrAcctProxyCd: [''],
+      dbtrAcctProxyPrtry: [''],
+      dbtrAcctProxyId: [''],
 
       // Debtor Agent (flat)
       dbtrAgtBicfi: ['',Validators.required],
@@ -703,6 +728,9 @@ dialogUtils = inject(DialogUtils);
       dbtrAgtAcctNm: [''],
       dbtrAgtAcctSchmeNm: [''],
       dbtrAgtAcctIssr: [''],
+      dbtrAgtAcctProxyCd: [''],
+      dbtrAgtAcctProxyPrtry: [''],
+      dbtrAgtAcctProxyId: [''],
 
 
       // Ultimate Debtor
@@ -744,6 +772,47 @@ dialogUtils = inject(DialogUtils);
       ultPrivtIdenOthr: this.formBuilder.array([]),
 
       // Ultimate Debtor ends
+
+      // Initiating Party
+      initiatingPrtyNm: [''],
+      initiatingPrtyCtryOfRes: [''],
+
+// Postal address
+      initiatingPrtydept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      initiatingPrtysubDept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      initiatingPrtystrtNm: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      initiatingPrtybldgNb: ['', [Validators.maxLength(16)]],
+      initiatingPrtybldgNm: ['', [Validators.maxLength(35)]],
+      initiatingPrtyflr: ['', Validators.maxLength(70)],
+      initiatingPrtypstBx: ['', [Validators.maxLength(16)]],
+      initiatingPrtyroom: ['', [Validators.maxLength(70)]],
+      initiatingPrtypstCd: ['', [Validators.maxLength(16)]],
+      initiatingPrtytwnNm: ['', [Validators.maxLength(35)]],
+      initiatingPrtytwnLctnNm: ['', [Validators.maxLength(35)]],
+      initiatingPrtydstrctNm: ['', [Validators.maxLength(35)]],
+      initiatingPrtyctrySubDvsn: ['', [Validators.maxLength(35)]],
+      initiatingPrtyctry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      initiatingPrtyctryOfRes: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      initiatingPrtyTp: ['Cd'],
+
+// Identification starts
+// Organisation Identification starts
+      initiatingPrtyanyBIC: [''],
+      initiatingPrtyLEI: [''],
+
+      iniPrtyOrgIden: this.formBuilder.array([]),
+
+// Private Identification starts
+// DateAndPlaceOfBirth
+      initiatingPrtybirthDt: [''],
+      initiatingPrtyprvcOfBirth: [''],
+      initiatingPrtycityOfBirth: [''],
+      initiatingPrtyctryOfBirth: [''],
+      iniPrtyprivtId: [''],
+      iniPrtySchmNm: [''],
+      iniPrtyIssr: [''],
+
+      iniPrtyPrvtIdenOthr: this.formBuilder.array([]),
 
 
       // Creditor Starts
@@ -802,7 +871,9 @@ dialogUtils = inject(DialogUtils);
       crdtrAcctTp: [''],
       crdtrAcctCcy: [''],
       crdtrAcctNm: [''],
-      crdtrAcctPrxy: [''],
+      cdtrAcctPrxyId: [''],
+      cdtrAcctPrxyTpCd: [''],
+      cdtrAcctPrxyTpPrtry: [''],
 
       // Creditor Agent (flat)
       crdtrAgtBicfi: ['',Validators.required],
@@ -836,6 +907,9 @@ dialogUtils = inject(DialogUtils);
       crdtrAgtAcctNm: [''],
       crdtrAgtAcctSchmeNm: [''],
       crdtrAgtAcctIssr: [''],
+      crdtrAgtAcctPrxyId: [''],
+      crdtrAgtAcctPrxyTpCd: [''],
+      crdtrAgtAcctPrxyTpPrtry: [''],
 
 
       // Ultimate Debtor
@@ -880,9 +954,9 @@ dialogUtils = inject(DialogUtils);
 
 
       // Instructions
-      instrForCdtrAgtCD1: [''],
+      instrForCdtrAgtCD1: [null],
       instrForCdtrAgtInf1: [''],
-      instrForCdtrAgtCD2: [''],
+      instrForCdtrAgtCD2: [null],
       instrForCdtrAgtInf2: [''],
       instrForNxtAgt1: [''],
       instrForNxtAgt2: [''],
@@ -926,7 +1000,11 @@ dialogUtils = inject(DialogUtils);
 
     // 1. Business Header
     payload.fromBicfi = frm.fromBicfi ;
+    payload.fromMembId = frm.fromMembId ;
+    payload.fromLei = frm.fromLei ;
     payload.toBicfi = frm.toBicfi ;
+    payload.toMembId = frm.toMembId ;
+    payload.toLei = frm.toLei ;
     payload.bizMsgIdr = frm.bizMsgIdr ;
     payload.msgDefIdr = frm.msgDefIdr ;
     payload.bizSvc = frm.bizSvc ;
@@ -959,15 +1037,21 @@ dialogUtils = inject(DialogUtils);
     // 3. Settlement Info
     payload.sttlmMtd = frm.sttlmMtd ;
     payload.sttlmAcct = {
-      id: frm.sttlmAcct ,
-      ccy: frm.sttlmAcct ,
+      id: frm.sttlmAcctId ,
+      ccy: frm.sttlmAcctCcy ,
       tp: frm.sttlmAcct ,
       nm: frm.sttlmAcct,
       schmeNm: frm.sttlmAcct,
       issr: frm.sttlmAcct,
     };
     payload.instgAgtBic = frm.instgAgtBicfi,
-    payload.instdAgtBic = frm.instdAgtBicfi,
+      payload.instgAgtClrSysIdCd = frm.instgAgtClrSysIdCd,
+      payload.instgAgtMembId = frm.instgAgtMmbId,
+      payload.instgAgtLei = frm.instgAgtLei,
+      payload.instdAgtBic = frm.instdAgtBicfi,
+      payload.instdAgtClrSysIdCd = frm.instdAgtClrSysIdCd,
+      payload.instdAgtMembId = frm.instdAgtMmbId,
+      payload.instdAgtLei = frm.instdAgtLei,
 
     // 4. Payment Identifiers
     payload.instrId = frm.instrId ;
@@ -1018,29 +1102,28 @@ dialogUtils = inject(DialogUtils);
     payload.chrgBr = frm.chrgBr ;
     payload.xchgRate = frm.xchgRate ;
 
-    payload.chrgInfoList = frm.chrgInfoForm.map((row: any) => ({
-      chrgInfoAmt: row.chrgInfoAmt,
-      chrgInfAgtBicfi: row.chrgInfAgtBicfi,
-      chrgInfAgtClrSysIdCd: row.chrgInfAgtClrSysIdCd,
-      chrgInfoAgtMmbId: row.chrgInfoAgtMmbId,
-      chrgInfoAgtLei: row.chrgInfoAgtLei,
-      chrgInfoAgtNm: row.chrgInfoAgtNm,
-      chrgInfoAgtAdd: {
-        chrgInfoAgtDept: row.chrgInfoAgtDept,
-        chrgInfoAgtSubDept: row.chrgInfoAgtSubDept,
-        chrgInfoAgtStrtNm: row.chrgInfoAgtStrtNm,
-        chrgInfoAgtBldgNb: row.chrgInfoAgtBldgNb,
-        chrgInfoAgtBldgNm: row.chrgInfoAgtBldgNm,
-        chrgInfoAgtFlr: row.chrgInfoAgtFlr,
-        chrgInfoAgtPstBx: row.chrgInfoAgtPstBx,
-        chrgInfoAgtRoom: row.chrgInfoAgtRoom,
-        chrgInfoAgtPstCd: row.chrgInfoAgtPstCd,
-        chrgInfoAgtTwnNm: row.chrgInfoAgtTwnNm,
-        chrgInfoAgtTwnLctnNm: row.chrgInfoAgtTwnLctnNm,
-        chrgInfoAgtDstrctNm: row.chrgInfoAgtDstrctNm,
-        chrgInfoAgtCtrySubDvsn: row.chrgInfoAgtCtrySubDvsn,
-        chrgInfoAgtCtry: row.chrgInfoAgtCtry,
-        chrgInfoAgtAdd: [
+    payload.chrgsInfAgnt = frm.chrgInfoForm.map((row: any) => ({
+      bicfi: row.chrgInfAgtBicfi,
+      clrSysIdCd: row.chrgInfAgtClrSysIdCd,
+      mmbId: row.chrgInfoAgtMmbId,
+      lei: row.chrgInfoAgtLei,
+      nm: row.chrgInfoAgtNm,
+      adr: {
+        dept: row.chrgInfoAgtDept,
+        subDept: row.chrgInfoAgtSubDept,
+        strtNm: row.chrgInfoAgtStrtNm,
+        bldgNb: row.chrgInfoAgtBldgNb,
+        bldgNm: row.chrgInfoAgtBldgNm,
+        flr: row.chrgInfoAgtFlr,
+        pstBx: row.chrgInfoAgtPstBx,
+        room: row.chrgInfoAgtRoom,
+        pstCd: row.chrgInfoAgtPstCd,
+        twnNm: row.chrgInfoAgtTwnNm,
+        twnLctnNm: row.chrgInfoAgtTwnLctnNm,
+        dstrctNm: row.chrgInfoAgtDstrctNm,
+        ctrySubDvsn: row.chrgInfoAgtCtrySubDvsn,
+        ctry: row.chrgInfoAgtCtry,
+        adrLine: [
           row.chrgInfoAgtAdrLine1,
           row.chrgInfoAgtAdrLine2,
           row.chrgInfoAgtAdrLine3,
@@ -1070,14 +1153,18 @@ dialogUtils = inject(DialogUtils);
         dstrctNm: frm[`${pfx}AdrDstrctNm`] ,
         ctrySubDvsn: frm[`${pfx}AdrCtrySubDvsn`] ,
         ctry: frm[`${pfx}AdrCtry`] ,
-        adrLine: (frm[`${pfx}AdrLine`] || []).filter((s: string) => s?.trim()),
+        adrLine: [
+          frm[`${pfx}AdrLine1`],
+          frm[`${pfx}AdrLine2`],
+          frm[`${pfx}AdrLine3`],
+        ].filter(Boolean),
       }
     });
 
     const buildAccount = (pfx: string) => ({
       id: frm[`${pfx}AcctId`] ,
       ccy: frm[`${pfx}AcctCcy`] ,
-      tp: frm[`${pfx}AcctTp`] ,
+      tpCd: frm[`${pfx}AcctTp`] ,
       nm: frm[`${pfx}AcctNm`] ,
       schmeNm: frm[`${pfx}AcctSchmeNm`] ,
       issr: frm[`${pfx}AcctIssr`] ,
@@ -1093,6 +1180,7 @@ dialogUtils = inject(DialogUtils);
       payload[pfx] = buildParty(pfx);
       payload[`${pfx}Acct`] = buildAccount(pfx);
     });
+
 
     //instructing agent
     payload.instgAgt = {
@@ -1159,12 +1247,11 @@ dialogUtils = inject(DialogUtils);
       tpCd: frm.dbtrAcctTp,
       ccy: frm.dbtrAcctCcy ,
       nm: frm.dbtrAcctNm ,
-      //schmeNmCd: frm.dbtrAcctSchmeNmCd ,
-      //schmeNmPrtry: frm.dbtrAcctSchmeNmPrtry ,
+      schmeNm: frm.dbAccOthrScmNm ,
       issr: frm.dbOthrIssr ,
-      //prxyId: frm.dbtrAcctPrxyId ,
-      //prxyTpCd: frm.dbtrAcctPrxyTpCd ,
-      //prxyTpPrtry: frm.dbtrAcctPrxyTpPrtry ,
+      prxyId: frm.dbtrAcctProxyId ,
+      prxyTpCd: frm.dbtrAcctProxyCd ,
+      prxyTpPrtry: frm.dbtrAcctProxyPrtry ,
     };
 
     payload.dbtrAgt = {
@@ -1195,10 +1282,13 @@ dialogUtils = inject(DialogUtils);
     payload.dbtrAgtAcct = {
       id: frm.dbtrAgtAcctId ,
       ccy: frm.dbtrAgtAcctCcy ,
-      tp: frm.dbtrAgtAcctTp ,
+      tpCd: frm.dbtrAgtAcctTp ,
       nm: frm.dbtrAgtAcctNm ,
       schmeNm: frm.dbtrAgtAcctSchmeNm ,
       issr: frm.dbtrAgtAcctIssr ,
+      prxyId: frm.dbtrAgtAcctProxyId ,
+      prxyTpCd: frm.dbtrAgtAcctProxyCd ,
+      prxyTpPrtry: frm.dbtrAgtAcctProxyPrtry ,
     };
 
     // 9. Creditor + Account
@@ -1242,16 +1332,15 @@ dialogUtils = inject(DialogUtils);
 
     payload.cdtrAcct = {
       iban: frm.crdtrIBAN ,
-      id: frm.cdtrAcctId ,
-      tpCd: frm.cdtrAcctTp,
-      ccy: frm.cdtrAcctCcy ,
-      nm: frm.cdtrAcctNm ,
-      //schmeNmCd: frm.cdtrAcctSchmeNmCd ,
-      //schmeNmPrtry: frm.cdtrAcctSchmeNmPrtry ,
-      issr: frm.cdtrAcctIssr ,
-      //prxyId: frm.cdtrAcctPrxyId ,
-      //prxyTpCd: frm.cdtrAcctPrxyTpCd ,
-      //prxyTpPrtry: frm.cdtrAcctPrxyTpPrtry ,
+      id: frm.crdtrAccOthrId ,
+      tpCd: frm.crdtrAcctTp,
+      ccy: frm.crdtrAcctCcy ,
+      nm: frm.crdtrAcctNm ,
+      schmeNm: frm.crdtrAccOthrScmNm ,
+      issr: frm.crdtrOthrIssr ,
+      prxyId: frm.cdtrAcctPrxyId ,
+      prxyTpCd: frm.cdtrAcctPrxyTpCd ,
+      prxyTpPrtry: frm.cdtrAcctPrxyTpPrtry ,
     };
 
     payload.cdtrAgt = {
@@ -1281,18 +1370,16 @@ dialogUtils = inject(DialogUtils);
     };
 
     payload.cdtrAgtAcct = {
-      iban: frm.cdtrAgtAcctId ,
-      id: frm.cdtrAgtAcctId ,
-      ccy: frm.cdtrAgtAcctCcy ,
-      tpCd: frm.cdtrAgtAcctTp ,
-      nm: frm.cdtrAgtAcctNm ,
-      schmeNm: frm.cdtrAgtAcctSchmeNm ,
-      //schmeNmCd: frm.cdtrAgtAcctSchmeNm ,
-      //schmeNmPrtry: frm.cdtrAgtAcctSchmeNm ,
-      issr: frm.cdtrAgtAcctIssr ,
-      //prxyId: frm.cdtrAgtAcctIssr ,
-      //prxyTpCd: frm.cdtrAgtAcctIssr ,
-      //prxyTpPrtry: frm.cdtrAgtAcctIssr ,
+      iban: frm.crdtrAgAccIBAN ,
+      id: frm.crdtrAgtAcctId ,
+      ccy: frm.crdtrAgtAcctCcy ,
+      tpCd: frm.crdtrAgtAcctTp ,
+      nm: frm.crdtrAgtAcctNm ,
+      schmeNm: frm.crdtrAgtAcctSchmeNm ,
+      issr: frm.crdtrAgtAcctIssr ,
+      prxyId: frm.crdtrAgtAcctPrxyId ,
+      prxyTpCd: frm.crdtrAgtAcctPrxyTpCd ,
+      prxyTpPrtry: frm.crdtrAgtAcctPrxyTpPrtry ,
 
     };
 
@@ -1329,11 +1416,53 @@ dialogUtils = inject(DialogUtils);
       cityOfBirth: frm.ultcityOfBirth,
       ctryOfBirth: frm.ultctryOfBirth,
       prvtOtherList: (frm.ultPrivtIdenOthr || []).map((e: any) => ({
-        prvtOthId1: e.ultPrivtIdenOthr.ultprivateIdOthrId,
-        prvtOthIdSchNmCD1: e.ultPrivtIdenOthr.ultprivateIdOthrScmNm,
-        prvtOthIdIssr1: e.ultPrivtIdenOthr.ultprivateIdOthrIssr,
+        prvtOthId: e.ultPrivtIdenOthr.ultprivateIdOthrId,
+        prvtOthIdSchNmCD: e.ultPrivtIdenOthr.ultprivateIdOthrScmNm,
+        prvtOthIdIssr: e.ultPrivtIdenOthr.ultprivateIdOthrIssr,
       }))
     };
+
+    //initiating party
+    payload.initgPty = {
+      nm: frm.initiatingPrtyNm,
+      ctryOfRes: frm.initiatingPrtyCtryOfRes,
+      address: {
+        dept: frm.initiatingPrtydept,
+        subDept: frm.initiatingPrtysubDept,
+        strtNm: frm.initiatingPrtystrtNm,
+        bldgNb: frm.initiatingPrtybldgNb,
+        bldgNm: frm.initiatingPrtybldgNm,
+        flr: frm.initiatingPrtyflr,
+        pstBx: frm.initiatingPrtypstBx,
+        room: frm.initiatingPrtyroom,
+        pstCd: frm.initiatingPrtypstCd,
+        twnNm: frm.initiatingPrtytwnNm,
+        twnLctnNm: frm.initiatingPrtytwnLctnNm,
+        dstrctNm: frm.initiatingPrtydstrctNm,
+        ctrySubDvsn: frm.initiatingPrtyctrySubDvsn,
+        ctry: frm.initiatingPrtyctry,
+        adrLine: [frm.initiatingPrtyAdrLine1, frm.initiatingPrtyAdrLine2, frm.initiatingPrtyAdrLine3].filter(Boolean),
+      },
+      orgIdBic: frm.initiatingPrtyanyBIC,
+      orgIdLEI: frm.initiatingPrtyLEI,
+      orgOtherList: (frm.iniPrtyOrgIden || []).map((e: any) => ({
+        orgIdOthrID: e.iniPrtyOrgIdenId,
+        orgIdOthrScNmCD: e.iniPrtySchmNm,
+        orgIdOthrIssr: e.iniPrtyOrgIdenIssr,
+      })),
+      birthDt: frm.initiatingPrtybirthDt,
+      prvcOfBirth: frm.initiatingPrtyprvcOfBirth,
+      cityOfBirth: frm.initiatingPrtycityOfBirth,
+      ctryOfBirth: frm.initiatingPrtyctryOfBirth,
+      prvtOtherList: (frm.iniPrtyPrvtIdenOthr || []).map((e: any) => ({
+        prvtOthId: e.iniPrtyprivtId,
+        prvtOthIdSchNmCD: e.iniPrtySchmNm,
+        prvtOthIdIssr: e.iniPrtyIssr,
+      }))
+
+
+    };
+
 
     payload.ultmtCdtr = {
       nm: frm.ultcrdtrNm ,
@@ -1387,6 +1516,7 @@ dialogUtils = inject(DialogUtils);
 
     payload.purpCd = frm.purpCd ;
     payload.purpPrtry = frm.purpPrtry ;
+    payload.rmtInf = frm.rmtInf ;
 
     // 12. Remittance Info
     payload.rmtInfUstrd = (frm.rmtInfUstrd || []).filter((e: string) => e?.trim());
@@ -2488,6 +2618,56 @@ dialogUtils = inject(DialogUtils);
     this.ultprivateIdenOthrGetter.removeAt(index);
   }
 
+  //initiating party
+  // Get Organisation Identification Other List
+  get iniPrtyOrgIdenGetter() {
+    return this.frmGroup.get('iniPrtyOrgIden') as FormArray;
+  }
+
+  getIniPrtyOrgIden(index: number): FormGroup {
+    return this.iniPrtyOrgIdenGetter.at(index) as FormGroup;
+  }
+
+  addIniPrtyOrgIdenRow() {
+    const serviceGroup = this.formBuilder.group({
+      iniPrtyOrgIdenId: [''],
+      iniPrtySchmNm: [''],
+      iniPrtyOrgIdenIssr: [''],
+    });
+    this.iniPrtyOrgIdenGetter.push(serviceGroup);
+  }
+
+// Remove Organisation Identification Other row
+  rmvIniPrtyOrgIdenRow(index: number) {
+    this.iniPrtyOrgIdenGetter.removeAt(index);
+  }
+
+// Get Private Identification Other List
+  get iniPrtyPrvtIdGetter() {
+    return this.frmGroup.get('iniPrtyPrvtIdenOthr') as FormArray;
+  }
+
+// Get Private Identification Other at specific index
+  getIniPrtyPrvtId(index: number): FormGroup {
+    return this.iniPrtyPrvtIdGetter.at(index) as FormGroup;
+  }
+
+  iniPrtyAddPrivtIdRow() {
+    const row = this.formBuilder.group({
+      iniPrtyprivtId: [''],
+      iniPrtySchmNm: [''],
+      iniPrtyIssr: [''],
+    });
+    this.iniPrtyPrvtIdGetter.push(row);
+  }
+
+// Remove Private Identification Other row
+  rmvIniPrtPrivtIden(index: number) {
+    this.iniPrtyPrvtIdGetter.removeAt(index);
+  }
+
+  //initiating party
+
   //Creditor
   get crdtrorgIdenOthrGetter() {
     return this.frmGroup.get('crdtrorgIdOthr') as FormArray;
@@ -2631,15 +2811,13 @@ dialogUtils = inject(DialogUtils);
     // Log the payload for debugging
     console.log('Generated payload:', payload);
 
-    this.pacs008Service.save(payload).subscribe({
+    this.pacs008Service.save(payload).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
       next: (res) => {
-        console.log('Success response:', res);
         this.toastr.success('PACS.008 message saved successfully!', 'Success');
-        // Optionally reset form after successful save
-        // this.resetForm();
       },
       error: (error) => {
-        console.error('Error saving PACS.008:', error);
         let errorMessage = 'Failed to save PACS.008 message';
         if (error.error && error.error.message) {
           errorMessage = error.error.message;
