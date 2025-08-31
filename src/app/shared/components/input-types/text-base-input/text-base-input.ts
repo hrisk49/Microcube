@@ -30,6 +30,8 @@ export class TextBaseInput {
   readonly onDoubleClick = output<void>(); 
   readonly isVertical = input<boolean>(false);
   // Tooltip support
+
+  readonly allowSpecialChars = input<boolean>(false);
   readonly tooltip = input<string>('');
   readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
   readonly tooltipDelay = input<number>(500);
@@ -43,6 +45,14 @@ export class TextBaseInput {
     effect(() => {
       this.updateValidators();
     });
+  }
+
+  private specialCharacterValidator(control: any): { [key: string]: boolean } | null {
+    const specialCharRegex = /^[a-zA-Z0-9 ]*$/; // Allow only alphanumeric and spaces
+    if (control.value && !specialCharRegex.test(control.value)) {
+      return { specialCharacterNotAllowed: true };
+    }
+    return null;
   }
 
   private updateValidators(): void {
@@ -66,6 +76,11 @@ export class TextBaseInput {
       validators.push(Validators.maxLength(this.maxLength()!));
     }
     
+    // Add special character validator if not allowed
+    if (!this.allowSpecialChars()) {
+      validators.push(this.specialCharacterValidator);
+    }
+    
     // Update the control's validators
     control.setValidators(validators);
     control.updateValueAndValidity();
@@ -77,4 +92,14 @@ export class TextBaseInput {
     const validation = control.validator({} as any); 
     return !!validation?.['required']; 
   } 
+
+  preventSpecialChars(event: KeyboardEvent): void {
+    if (!this.allowSpecialChars()) {
+      const specialCharRegex = /^[a-zA-Z0-9 ]$/; // Allow only alphanumeric and spaces
+      const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab']; // Allow navigation and editing keys
+      if (!specialCharRegex.test(event.key) && !allowedKeys.includes(event.key)) {
+        event.preventDefault();
+      }
+    }
+  }
 }

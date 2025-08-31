@@ -31,6 +31,7 @@ export class OfficeBoxComponent implements OnInit {
   readonly tooltip = input<string>('');
   readonly errorMessage = input<string>('Invalid Office Code');
   readonly isReadonly = input<boolean>(false);
+  readonly allowSpecialChars = input<boolean>(false);
   // Outputs
   readonly valueChanged = output<number>();
   readonly onChanged = output<{ officeCode: string; officeName: string }>();
@@ -71,4 +72,19 @@ private lookupOfficeName(code: string): string {
   };
   return officeLookup[code] || '';
 }
+
+
+
+  preventSpecialChars(event: KeyboardEvent): void {
+    if (!this.allowSpecialChars()) {
+      const specialCharRegex = /^[a-zA-Z0-9 ]$/; // Allow only alphanumeric and spaces
+      const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab']; // Allow navigation and editing keys
+      if (!specialCharRegex.test(event.key) && !allowedKeys.includes(event.key)) {
+        event.preventDefault();
+      }
+    }
+  }
+
+
+
 }
