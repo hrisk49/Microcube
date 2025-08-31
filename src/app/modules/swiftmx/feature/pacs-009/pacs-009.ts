@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {
+  AbstractControl,
   FormArray,
   FormBuilder,
   FormGroup,
@@ -720,7 +721,7 @@ export class Pacs009 implements OnInit, OnDestroy {
       toClrSysIdCd: ['', Validators.maxLength(10)],
       toLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       bizMsgIdr: ['PACS009' + new Date().getTime(),
-        [Validators.required, Validators.minLength(1), 
+        [Validators.required, Validators.minLength(1),
           Validators.maxLength(35)]],
       msgDefIdr: ['pacs.009.001.08', Validators.required],
       bizSvc: ['swift.cbprplus.02', Validators.required],
@@ -780,7 +781,7 @@ export class Pacs009 implements OnInit, OnDestroy {
       rltdToAdrLine: [''],
       rltdCpyDplct: [null],
       rltdPrty: [null],
-      
+
       rltdBizMsgIdr: ['', Validators.maxLength(35)],
       rltdMsgDefIdr: [''],
       rltdBizSvc: [''],
@@ -1272,6 +1273,7 @@ export class Pacs009 implements OnInit, OnDestroy {
       relatedRef21: [''],
     });
 
+
     // Ensure the form is properly initialized
     if (this.frmGroup) {
       // Use setTimeout to ensure form is fully initialized
@@ -1284,7 +1286,21 @@ export class Pacs009 implements OnInit, OnDestroy {
       this.addInstructionForCreditorAgentRow();
       // Initialize with one instruction for next agent row
       this.addInstructionForNextAgentRow();
+
+      // this.forceValid(this.frmGroup);
     }
+  }
+
+  private forceValid(ctrl: AbstractControl): void {
+    ctrl.clearValidators();
+    ctrl.clearAsyncValidators();
+    ctrl.setErrors(null);
+    if (ctrl instanceof FormGroup) {
+      Object.values(ctrl.controls).forEach((child) => this.forceValid(child));
+    } else if (ctrl instanceof FormArray) {
+      ctrl.controls.forEach((child) => this.forceValid(child));
+    }
+    ctrl.updateValueAndValidity({ emitEvent: false, onlySelf: true });
   }
 
   openBicSelectionModal(ctrlNm :string, nameField:string|null = null) :void{
@@ -1632,7 +1648,7 @@ export class Pacs009 implements OnInit, OnDestroy {
     // Only add if at least one time field has a value
     if (sttlmTmReq.clsTm || sttlmTmReq.tillTm || sttlmTmReq.frTm || sttlmTmReq.rjctTm) {
       payload.sttlmTmReq = sttlmTmReq;
-    } 
+    }
 
     // Agent BIC fields as per DTO
     payload.instgAgtBic = frmValue.instgAgtBicfi;
@@ -1742,7 +1758,7 @@ export class Pacs009 implements OnInit, OnDestroy {
       mmbId: frmValue.prvsInstgAgt3MmbId,
       lei: frmValue.prvsInstgAgt3Lei,
       nm: frmValue.prvsInstgAgt3Nm,
-      
+
       adr: {
         dept: frmValue.prvsInstgAgt3AdrDept,
         subDept: frmValue.prvsInstgAgt3AdrSubDept,
