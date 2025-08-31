@@ -51,15 +51,15 @@ input[type="number"]::placeholder {
 }
 
 .panel {
-  @apply rounded-lg border border-gray-200 p-4 sm:p-6 border border-l-2 border-b-3 border-b-slate-400;
+  @apply rounded-lg border border-gray-200 px-4 border border-l-2 border-b-3 border-b-slate-400;
 }
 
 .sub-panel {
-  @apply rounded-lg border border-gray-200 p-4 sm:p-6 border-l-2;
+  @apply rounded-lg border border-gray-300 px-4 border-l-2 mt-2 pb-2;
 }
 
 .form-grid {
-  @apply grid grid-cols-1 gap-2 sm:gap-3 mb-4;
+  @apply grid grid-cols-1 space-y-2 mt-2;
 }
 
 .form-grid-col-1 {
@@ -97,20 +97,18 @@ input[type="number"]::placeholder {
 }
 
 .expansion-header {
-  @apply font-medium tracking-[0.8px] cursor-pointer
-  -mx-4 sm:-mx-6 md:-mx-6
-  -mt-4 sm:-mt-6
-  p-4 py-3 mb-4 sm:mb-6 bg-[#106ebe] text-white rounded-t-lg
+  @apply font-medium tracking-[0.8px] cursor-pointer text-[15px]
+  -mx-4
+  p-4 py-1.5 bg-[#106ebe] text-white rounded-t-lg
   hover:bg-[#0d5aa3]
   transition-colors duration-200 ease-in-out
   shadow-sm hover:shadow-md;
 }
 
 .expansion-sub-header {
-  @apply font-medium tracking-[0.8px] cursor-pointer
-  -mx-4 sm:-mx-6 md:-mx-6
-  -mt-4 sm:-mt-6
-  p-4 py-2.5 mb-4 sm:mb-6 rounded-t-md
+  @apply font-medium tracking-[0.7px] cursor-pointer text-[15px]
+  -mx-4
+  p-4 py-1 rounded-t-md
   bg-[#106ebe]/5 text-slate-700
   border-l-4 border-l-[#106ebe] border-r border-r-slate-100
   hover:bg-[#106ebe]/10 transition-colors duration-200;
@@ -498,17 +496,17 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 
 .custom-input {
   /* Base styling - Standard width instead of full */
-  @apply w-90 max-w-full px-4 py-2 text-base leading-6; /* w-80 = 320px standard width */
-  @apply border border-slate-300 rounded-md;
+  @apply w-80 max-w-full px-2 py-1 !text-sm leading-6; /* w-80 = 320px standard width */
+  @apply border border-[#106ebe] border-slate-500 rounded-md;
   @apply bg-slate-50 placeholder-slate-400 placeholder:text-sm;
 
   /* Focus states */
-  @apply focus:outline-none focus:ring-1 focus:ring-slate-800 focus:border-slate-800;
+  @apply focus:outline-none focus:ring-1 focus:ring-[#106ebe] focus:border-[#106ebe];
   @apply focus:bg-white;
   @apply transition-all duration-200 ease-in-out;
 
   /* Hover state */
-  @apply hover:border-slate-400 hover:bg-white;
+  @apply hover:border-slate-800 hover:bg-white;
 
   /* Disabled states */
   @apply disabled:bg-slate-100 disabled:cursor-not-allowed;
