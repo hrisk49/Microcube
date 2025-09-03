@@ -11,3 +11,14 @@ export const AppDateFormatsConstant: MatDateFormats = {
     monthYearA11yLabel: 'MMMM yyyy',
   }
 };
+
+// Extended formats for custom date adapter
+export const ExtendedDateFormats = {
+  'DD/MM/YYYY': 'DD/MM/YYYY',
+  'MM/DD/YYYY': 'MM/DD/YYYY',
+  'YYYY/MM/DD': 'YYYY/MM/DD',
+  'DD-MM-YYYY': 'DD-MM-YYYY',
+  'MM-DD-YYYY': 'MM-DD-YYYY',
+  'YYYY-MM-DD': 'YYYY-MM-DD',
+  'DD MMM, YYYY': 'DD MMM, YYYY'
+};

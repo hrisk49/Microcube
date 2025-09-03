@@ -12,6 +12,10 @@
         matInput
         [readonly]="isReadonly()"
         [formControlName]="controlName()"
+        [matTooltip]="tooltip()"
+        [matTooltipPosition]="tooltipPosition()"
+        [matTooltipClass]="tooltipClass()"
+        [matTooltipDisabled]="!tooltip()"
         [matDatepicker]="dobPicker"
         placeholder="DD/MM/YYYY"
         class="custom-input"

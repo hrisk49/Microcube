@@ -2,12 +2,21 @@ import {Component, input, output, effect} from '@angular/core';
 import {MatInput} from "@angular/material/input";
 import {FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors} from "@angular/forms";
 import {NgClass} from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
+export interface CurrencyConfig {
+  code: string;
+  name: string;
+  subunit: string;
+  symbol: string;
+}
 
 @Component({
   selector: 'app-amount-to-word-input',
   imports: [
     MatInput,
     ReactiveFormsModule,
+    MatTooltipModule,
     NgClass
   ],
   templateUrl: './amount-to-word-input.html',
@@ -23,13 +32,75 @@ export class AmountToWordInput {
   readonly valueChange = output<any>();
   readonly isVertical = input<boolean>(false);
   
-  // New validation inputs (same as AmountInput)
+  // Currency parameter - defaults to BDT
+  readonly currency = input<string>('BDT');
+  
+  // Validation inputs (same as AmountInput)
   readonly decimalPlaces = input<number>(2);
   readonly allowNegative = input<boolean>(false);
   readonly allowLeadingZeros = input<boolean>(false);
   readonly maxLen = input<number>();
   readonly maxAmt = input<number>();
   readonly minAmt = input<number>();
+  readonly tooltip = input<string>();
+  readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
+  readonly tooltipDelay = input<number>(500);
+  readonly tooltipClass = input<string>('custom-tooltip');
+
+  // Custom error messages
+  readonly customErrorMessages = input<{ [key: string]: string }>({});
+
+  // Currency configurations
+  private currencyConfigs: { [key: string]: CurrencyConfig } = {
+    'BDT': {
+      code: 'BDT',
+      name: 'Taka',
+      subunit: 'Paisa',
+      symbol: '৳'
+    },
+    'USD': {
+      code: 'USD',
+      name: 'Dollar',
+      subunit: 'Cent',
+      symbol: '$'
+    },
+    'EUR': {
+      code: 'EUR',
+      name: 'Euro',
+      subunit: 'Cent',
+      symbol: '€'
+    },
+    'GBP': {
+      code: 'GBP',
+      name: 'Pound',
+      subunit: 'Pence',
+      symbol: '£'
+    },
+    'INR': {
+      code: 'INR',
+      name: 'Rupee',
+      subunit: 'Paisa',
+      symbol: '₹'
+    },
+    'JPY': {
+      code: 'JPY',
+      name: 'Yen',
+      subunit: 'Sen',
+      symbol: '¥'
+    },
+    'CAD': {
+      code: 'CAD',
+      name: 'Dollar',
+      subunit: 'Cent',
+      symbol: 'C$'
+    },
+    'AUD': {
+      code: 'AUD',
+      name: 'Dollar',
+      subunit: 'Cent',
+      symbol: 'A$'
+    }
+  };
 
   constructor() {
     // Effect to update validators when validation inputs change
@@ -102,7 +173,9 @@ export class AmountToWordInput {
     const control = this.frmGroup().get(this.controlName());
     if (!control) return;
 
-    const validators = [];
+  const existingValidators = control.validator ? [control.validator] : [];
+
+  const validators = [...existingValidators];
     
     // Check if field was already required
     if (this.isRequired()) {
@@ -321,27 +394,87 @@ export class AmountToWordInput {
     return '0.' + '0'.repeat(this.decimalPlaces() - 1) + '1';
   }
 
-  amountToWord() {
+  // Get current currency configuration
+  public getCurrencyConfig(): CurrencyConfig {
+    return this.currencyConfigs[this.currency()] || this.currencyConfigs['BDT'];
+  }
+
+  // Enhanced amount to words with currency support
+  amountToWord(): string {
     const value = this.frmGroup().get(this.controlName())?.value;
     if (!value || isNaN(value)) return '';
     
+    const currencyConfig = this.getCurrencyConfig();
     const [wholeStr, decimalStr] = value.toString().split('.');
     const wholeNumber = parseInt(wholeStr, 10);
     
-    const words = this.convertNumberToWords(wholeNumber);
+    let result = '';
     
-    // Handle decimal part with "point"
-    if (decimalStr && decimalStr.length > 0) {
-      const decimalWords = decimalStr.split('').map((digit: string) => 
-        this.convertNumberToWords(parseInt(digit, 10))
-      ).join(' ');
-      
-      return words + ' Point ' + decimalWords;
+    // Convert whole number part
+    if (wholeNumber === 0) {
+      result = 'Zero';
+    } else {
+      result = this.convertNumberToWords(wholeNumber);
     }
     
-    return words;
+    // Add currency name for whole part
+    if (wholeNumber === 1) {
+      result += ` ${currencyConfig.name}`;
+    } else if (wholeNumber > 1) {
+      // For most currencies, plural form is same as singular + 's'
+      // Special handling for specific currencies can be added here
+      const pluralName = this.getPluralCurrencyName(currencyConfig.name);
+      result += ` ${pluralName}`;
+    } else {
+      result += ` ${currencyConfig.name}`;
+    }
+    
+    // Handle decimal part (subunit)
+    if (decimalStr && decimalStr.length > 0 && parseInt(decimalStr) > 0) {
+      // Convert decimal part to proper subunit value
+      const decimalPadded = decimalStr.padEnd(2, '0'); // Ensure 2 digits for most currencies
+      const subunitValue = parseInt(decimalPadded, 10);
+      
+      if (subunitValue > 0) {
+        const subunitWords = this.convertNumberToWords(subunitValue);
+        const subunitName = subunitValue === 1 
+          ? currencyConfig.subunit 
+          : this.getPluralSubunitName(currencyConfig.subunit);
+        
+        result += ` and ${subunitWords} ${subunitName}`;
+      }
+    }
+    
+    return result;
   }
 
+  // Helper method to get plural form of currency name
+  private getPluralCurrencyName(currencyName: string): string {
+    const pluralMap: { [key: string]: string } = {
+      'Taka': 'Taka', // BDT doesn't change in plural
+      'Dollar': 'Dollars',
+      'Euro': 'Euros',
+      'Pound': 'Pounds',
+      'Rupee': 'Rupees',
+      'Yen': 'Yen', // JPY doesn't change in plural
+    };
+    
+    return pluralMap[currencyName] || currencyName + 's';
+  }
+
+  // Helper method to get plural form of subunit name
+  private getPluralSubunitName(subunitName: string): string {
+    const pluralMap: { [key: string]: string } = {
+      'Paisa': 'Paisa', // Doesn't change in plural
+      'Cent': 'Cents',
+      'Pence': 'Pence', // Already plural
+      'Sen': 'Sen', // Doesn't change in plural
+    };
+    
+    return pluralMap[subunitName] || subunitName + 's';
+  }
+
+  // Enhanced number to words conversion with currency-specific formatting
   convertNumberToWords(num: number): string {
     const a = [
       '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
@@ -356,8 +489,56 @@ export class AmountToWordInput {
     if (num < 20) return a[num];
     if (num < 100) return b[Math.floor(num / 10)] + (num % 10 ? ' ' + a[num % 10] : '');
     if (num < 1000) return a[Math.floor(num / 100)] + ' Hundred' + (num % 100 ? ' ' + this.convertNumberToWords(num % 100) : '');
-    if (num < 100000) return this.convertNumberToWords(Math.floor(num / 1000)) + ' Thousand' + (num % 1000 ? ' ' + this.convertNumberToWords(num % 1000) : '');
-    if (num < 10000000) return this.convertNumberToWords(Math.floor(num / 100000)) + ' Lakh' + (num % 100000 ? ' ' + this.convertNumberToWords(num % 100000) : '');
-    return this.convertNumberToWords(Math.floor(num / 10000000)) + ' Crore' + (num % 10000000 ? ' ' + this.convertNumberToWords(num % 10000000) : '');
+    
+    // Use different number systems based on currency
+    const currencyConfig = this.getCurrencyConfig();
+    if (this.shouldUseIndianNumberSystem(currencyConfig.code)) {
+      // Indian number system (Lakh, Crore) for BDT, INR
+      if (num < 100000) return this.convertNumberToWords(Math.floor(num / 1000)) + ' Thousand' + (num % 1000 ? ' ' + this.convertNumberToWords(num % 1000) : '');
+      if (num < 10000000) return this.convertNumberToWords(Math.floor(num / 100000)) + ' Lakh' + (num % 100000 ? ' ' + this.convertNumberToWords(num % 100000) : '');
+      return this.convertNumberToWords(Math.floor(num / 10000000)) + ' Crore' + (num % 10000000 ? ' ' + this.convertNumberToWords(num % 10000000) : '');
+    } else {
+      // Western number system (Million, Billion) for USD, EUR, GBP, etc.
+      if (num < 1000000) return this.convertNumberToWords(Math.floor(num / 1000)) + ' Thousand' + (num % 1000 ? ' ' + this.convertNumberToWords(num % 1000) : '');
+      if (num < 1000000000) return this.convertNumberToWords(Math.floor(num / 1000000)) + ' Million' + (num % 1000000 ? ' ' + this.convertNumberToWords(num % 1000000) : '');
+      return this.convertNumberToWords(Math.floor(num / 1000000000)) + ' Billion' + (num % 1000000000 ? ' ' + this.convertNumberToWords(num % 1000000000) : '');
+    }
+  }
+
+  // Determine if currency should use Indian number system
+  private shouldUseIndianNumberSystem(currencyCode: string): boolean {
+    return ['BDT', 'INR'].includes(currencyCode);
+  }
+
+  // Method to add new currency configurations dynamically
+  addCurrencyConfig(currencyConfig: CurrencyConfig): void {
+    this.currencyConfigs[currencyConfig.code] = currencyConfig;
+  }
+
+  // Method to get available currencies
+  getAvailableCurrencies(): CurrencyConfig[] {
+    return Object.values(this.currencyConfigs);
+  }
+
+
+  
+  // Get custom error message for a specific error key
+  getCustomErrorMessage(errorKey: string): string {
+    const customMessages = this.customErrorMessages();
+    return customMessages[errorKey] || `${this.label()} has validation error: ${errorKey}`;
+  }
+
+  // Get all error keys that are not handled by default error messages
+  getCustomErrorKeys(): string[] {
+    const control = this.frmGroup().get(this.controlName());
+    if (!control?.errors) return [];
+
+    const defaultErrorKeys = ['required', 'minlength', 'maxlength', 'specialCharacterNotAllowed'];
+    return Object.keys(control.errors).filter(key => !defaultErrorKeys.includes(key));
+  }
+
+  // Check if there are any custom errors to display
+  hasCustomErrors(): boolean {
+    return this.getCustomErrorKeys().length > 0;
   }
 }

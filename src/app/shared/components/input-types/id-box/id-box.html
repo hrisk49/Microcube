@@ -1,8 +1,8 @@
-<div [formGroup]="frmGroup()" class="input-container-horizontal" [matTooltip]="tooltip()">
+<div [formGroup]="frmGroup()" class="input-container-horizontal">
   <label class="input-label relative">
     {{ label() }}
     @if (isRequired()) {
-    <span class="text-red-500">*</span>
+      <span class="text-red-500">*</span>
     }
   </label>
 
@@ -11,56 +11,68 @@
       [formControlName]="controlName()"
       matInput
       [ngClass]="{'readonly-input': isReadonly() }"
-      type="text"
+      type="text" 
+      inputmode="numeric"
       (keyup)="onChangeInput()"
+      [matTooltip]="tooltip()"
+      [matTooltipPosition]="tooltipPosition()"
+      [matTooltipClass]="tooltipClass()"
+      [matTooltipDisabled]="!tooltip()"
       [placeholder]="placeholder() ?? 'Enter ' + label()"
       [readonly]="isReadonly()"
-      [maxlength]="maxLength() || null"
       class="custom-input"
       (keydown)="preventSpecialChars($event)"
       />
     
     @if (isDotsVisible()) {
-    <button 
-      type="button"
-      class="dots-button"
-      (click)="onDotsClick()"
-      [disabled]="isReadonly()"
-      matRipple>
-      ...
-    </button>
+      <button 
+        type="button"
+        class="dots-button"
+        (click)="onDotsClick()"
+        [disabled]="isReadonly()"
+        matRipple>
+        ...
+      </button>
     }
   </div>
 
   @if (isInvalid()) {
-  <div class="text-red-500 text-sm mt-1">
-    @if (hasError('required')) {
-    <ng-container>
-      {{ label() }} is required..!
-    </ng-container>
-    }
+    <div class="text-red-500 text-sm mt-1">
+      <!-- Default error messages -->
+      @if (hasError('required')) {
+        <div>{{ label() }} is required!</div>
+      }
 
-    @if (hasError('minlength')) {
-    <ng-container>
-      Minimum length required is {{ getErrorValue('minlength')?.requiredLength }} characters
-    </ng-container>
-    }
+      @if (hasError('min')) {
+        <div>Minimum value is {{ getErrorValue('min')?.min }}</div>
+      }
 
-    @if (hasError('maxlength')) {
-    <ng-container>
-      Maximum length allowed is {{ getErrorValue('maxlength')?.requiredLength }} characters
-    </ng-container>
-    }
+      @if (hasError('max')) {
+        <div>Maximum value is {{ getErrorValue('max')?.max }}</div>
+      }
 
-    @if (hasError('pattern')) {
-    <ng-container>
-      {{ label() }} format is invalid
-    </ng-container>
-    }
+      @if (hasError('minlength')) {
+        <div>Minimum length required is {{ getErrorValue('minlength')?.requiredLength }} characters</div>
+      }
 
-     @if (frmGroup().get(controlName())?.hasError('specialCharacterNotAllowed')) {
-      {{ label() }} contains invalid characters.
-    }
-  </div>
+      @if (hasError('maxlength')) {
+        <div>Maximum length allowed is {{ getErrorValue('maxlength')?.requiredLength }} characters</div>
+      }
+
+      @if (hasError('pattern')) {
+        <div>{{ label() }} format is invalid</div>
+      }
+
+      @if (hasError('specialCharacterNotAllowed')) {
+        <div>{{ label() }} contains invalid characters</div>
+      }
+
+      <!-- Custom error messages for any other validation errors -->
+      @if (hasCustomErrors()) {
+        @for (errorKey of getCustomErrorKeys(); track errorKey) {
+          <div>{{ getCustomErrorMessage(errorKey) }}</div>
+        }
+      }
+    </div>
   }
 </div>

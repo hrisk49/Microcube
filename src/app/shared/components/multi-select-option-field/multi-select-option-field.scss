@@ -107,15 +107,14 @@
 
 /* Dropdown toggle - matches your single-select exactly */
 .dropdown-toggle {
+  position: absolute;
+  right: 0.75rem;
   background: none;
   border: none;
-  padding: 0.5rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 0.25rem;
   color: #6b7280;
-  border-left: 1px solid #e5e7eb;
+  transition: color 0.2s ease-in-out;
 }
 
 .dropdown-toggle:hover:not(:disabled) {

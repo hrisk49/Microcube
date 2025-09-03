@@ -20,6 +20,7 @@ import { NumberInput } from '../input-types/number-input/number-input';
 import { DropdownOption } from '../data-grid/data-grid';
 import { LdsStepperComponent, Step } from '../lds-stepper/lds-stepper';
 import { MultiSelectOptionField } from '../multi-select-option-field/multi-select-option-field';
+import { DataSelectionModal } from '../data-selection-modal/data-selection-modal';
 
 @Component({
   selector: 'app-all-components-page',
@@ -33,7 +34,7 @@ import { MultiSelectOptionField } from '../multi-select-option-field/multi-selec
     TextArea,
     AmountToWordInput,
     SelectOptionField,
-    // DateInput,
+    DateInput,
     MultiSelectOptionField,
     LdsStepperComponent,
     DateInputComponent,
@@ -43,6 +44,7 @@ import { MultiSelectOptionField } from '../multi-select-option-field/multi-selec
     DataGridComponent,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
+    DataSelectionModal
   ],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],
@@ -51,7 +53,65 @@ export class AllComponentsPage implements OnInit {
   frmGroup: FormGroup;
   toastr = inject(ToastrService);
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
+  isDataSelectionModalOpen = signal(false);
 
+  dataSelectionConfig = signal<any>({
+  // Sample data - replace with your actual data source
+  pickTableDataSource: [
+    { id: 'ITEM001', name: 'Sample Item 1', description: 'First sample item', category: 'Electronics' },
+    { id: 'ITEM002', name: 'Sample Item 2', description: 'Second sample item', category: 'Books' },
+    { id: 'ITEM003', name: 'Sample Item 3', description: 'Third sample item', category: 'Clothing' },
+    { id: 'ITEM004', name: 'Sample Item 4', description: 'Fourth sample item', category: 'Electronics' },
+    { id: 'ITEM005', name: 'Sample Item 5', description: 'Fifth sample item', category: 'Sports' },
+    // Add more sample data as needed
+  ],
+  
+  // Define column mapping - key is the data property, value is display name
+  pickTablePair: new Map<string, string>([
+    ['id', 'Item ID'],
+    ['name', 'Item Name'],
+    ['description', 'Description'],
+    ['category', 'Category']
+  ]),
+  
+  // Customizable text
+  apiSearchPlaceholder: 'Search for items...',
+  findButtonText: 'Search',
+  loadingText: 'Searching...',
+  noDataMessage: 'No items found. Use search to find items.',
+  loadingMessage: 'Loading items...'
+});
+
+private mockItemService = {
+  getItems: async (params: any) => {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    const items = [
+      { id: 'ITEM001', name: 'Sample Item 1', description: 'First sample item', category: 'Electronics' },
+      { id: 'ITEM002', name: 'Sample Item 2', description: 'Second sample item', category: 'Books' },
+      { id: 'ITEM003', name: 'Sample Item 3', description: 'Third sample item', category: 'Clothing' },
+      { id: 'ITEM004', name: 'Sample Item 4', description: 'Fourth sample item', category: 'Electronics' },
+      { id: 'ITEM005', name: 'Sample Item 5', description: 'Fifth sample item', category: 'Sports' },
+    ];
+
+    // Filter based on search if provided
+    let filteredItems = items;
+    if (params?.search) {
+      const searchTerm = params.search.toLowerCase();
+      filteredItems = items.filter(item => 
+        item.name.toLowerCase().includes(searchTerm) ||
+        item.description.toLowerCase().includes(searchTerm) ||
+        item.category.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    return {
+      data: filteredItems,
+      totalRecords: filteredItems.length
+    };
+  }
+};
 
   @ViewChild('step1Template', { static: true }) step1Template!: TemplateRef<any>;
   @ViewChild('step2Template', { static: true }) step2Template!: TemplateRef<any>;
@@ -368,17 +428,18 @@ sampleTransactions = signal([
 
   ngOnInit(): void {
     this.frmGroup = this.formBuilder.group({
-      textBox: ['', Validators.required],
-      textArea: ['', Validators.required],
+      textBox: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20),Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
+      id: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
+      textArea: ['', [Validators.required, Validators.maxLength(500)]],
       switch: [false],
-      id: ['', Validators.required],
-      amount: ['', [Validators.required, Validators.max(200),Validators.min(2)]],
-      amountToWord: ['', Validators.required],
+      amount: ['', [Validators.required, Validators.max(200), Validators.min(2)]],
+      amountToWord: ['', [Validators.required, Validators.max(200), Validators.min(2)]],
       dropdown: ['', Validators.required],
+      multiSelect: [[]],
       categories: [[], Validators.required],
       date: ['', Validators.required],
       number: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
-      officeCode: ['', Validators.required],
+      officeCode: ['', [Validators.required, Validators.maxLength(10), Validators.minLength(3)]],
       fileUpload: [null],
     });
   }
@@ -508,4 +569,113 @@ onPdfSelected(files: File[]): void {
     this.toastr.success('Transaction data updated successfully', 'Data Updated');
     // Add your data change logic here - save to backend, update local state, etc.
   }
+
+  handleCategorySelection(event: { selectedOption: any; selectedKey: string; selectedValue: string }): void {
+  console.log('Selected option:', event.selectedOption);
+  console.log('Selected key:', event.selectedKey);
+  console.log('Selected value:', event.selectedValue);
+  
+}
+
+openDataSelectionModal(): void {
+  this.dataSelectionConfig.set({
+    title: 'Select Item',
+    service: this.mockItemService,
+    serviceMethod: 'getItems',
+    columns: [
+      { field: 'id', header: 'Item ID', width: '120px', sortable: true, filterable: true },
+      { field: 'name', header: 'Item Name', width: '200px', sortable: true, filterable: true },
+      { field: 'description', header: 'Description', width: '250px', sortable: true, filterable: true },
+      { field: 'category', header: 'Category', width: '120px', sortable: true, filterable: true }
+    ],
+    pageSize: 10,
+    enablePagination: true,
+    enableSorting: true,
+    enableFiltering: true,
+    enableSelection: true,
+    enableSearch: true,
+    searchPlaceholder: 'Search for items...',
+    showInsertButton: true,
+    insertButtonText: 'Select Item',
+    showCloseButton: true,
+    closeButtonText: 'Cancel'
+  });
+  this.isDataSelectionModalOpen.set(true);
+}
+
+closeDataSelectionModal(): void {
+  this.isDataSelectionModalOpen.set(false);
+}
+
+onDataSelectionResult(selectedItem: any): void {
+  console.log('Selected item:', selectedItem);
+  
+  if (selectedItem) {
+    // Example: Set the selected item to a form control
+    this.frmGroup.patchValue({
+      id: selectedItem.id,
+      textBox: selectedItem.name
+    });
+    
+    // Show success message
+    this.toastr.success(`Selected: ${selectedItem.name}`, 'Item Selected');
+  }
+  
+  // Close the modal
+  this.closeDataSelectionModal();
+}
+
+// Handle search functionality - called when user clicks "Find" button
+onFindClicked = (searchTerm: string): void => {
+  console.log('Search term:', searchTerm);
+  
+  // Set loading state
+  const currentConfig = this.dataSelectionConfig();
+  // Note: You'll need to manage loading state through the modal's setLoading method
+  
+  // Simulate API call
+  setTimeout(() => {
+    // Example: Filter or fetch data based on search term
+    const filteredData = this.generateSearchResults(searchTerm);
+    
+    // Update the data source
+    this.dataSelectionConfig.update(config => ({
+      ...config,
+      pickTableDataSource: filteredData
+    }));
+    
+    this.toastr.info(`Found ${filteredData.length} results for "${searchTerm}"`, 'Search Complete');
+  }, 1500); // Simulate API delay
+};
+
+// Generate sample search results
+private generateSearchResults(searchTerm: string): any[] {
+  if (!searchTerm.trim()) {
+    // Return original data if no search term
+    return [
+      { id: 'ITEM001', name: 'Sample Item 1', description: 'First sample item', category: 'Electronics' },
+      { id: 'ITEM002', name: 'Sample Item 2', description: 'Second sample item', category: 'Books' },
+      // ... other items
+    ];
+  }
+  
+  // Generate filtered results based on search term
+  const searchResults = [];
+  for (let i = 1; i <= 10; i++) {
+    searchResults.push({
+      id: `SEARCH${i.toString().padStart(3, '0')}`,
+      name: `${searchTerm} Result ${i}`,
+      description: `Search result ${i} for "${searchTerm}"`,
+      category: ['Electronics', 'Books', 'Clothing', 'Sports'][i % 4]
+    });
+  }
+  
+  return searchResults;
+}
+
+// Update your existing onDotsClick method:
+onDotsClick(): void {
+  console.log('Dots clicked - opening data selection modal');
+  this.openDataSelectionModal();
+}
 }

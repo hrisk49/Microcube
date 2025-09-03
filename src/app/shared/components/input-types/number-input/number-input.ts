@@ -2,12 +2,14 @@ import {Component, computed, input, output, signal, effect} from '@angular/core'
 import {MatInput} from "@angular/material/input";
 import {FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgClass} from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'lds-number',
   imports: [
     MatInput,
     ReactiveFormsModule,
+    MatTooltipModule,
     NgClass
   ],
   templateUrl: './number-input.html',
@@ -26,10 +28,18 @@ export class NumberInput {
   readonly maxLen = input<number>();
   readonly minLen = input<number>();
   readonly labelText = input<string>('');
-  
+  readonly tooltip = input<string>('Enter a number');
+  readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
+  readonly tooltipClass = input<string>('custom-tooltip');
+  readonly tooltipDelay = input<number>(500);
+
   // Add min and max value inputs for validation
   readonly minValue = input<number>();
   readonly maxValue = input<number>();
+  readonly customErrorMessages = input<{ [key: string]: string }>({});
+
+  // Option to allow leading zeros (default: false)
+  readonly allowLeadingZeros = input<boolean>(false);
 
   // Outputs
   readonly valueChanged = output<string>();
@@ -50,7 +60,9 @@ export class NumberInput {
     const control = this.frmGroup().get(this.controlName());
     if (!control) return;
 
-    const validators = [];
+      const existingValidators = control.validator ? [control.validator] : [];
+
+      const validators = [...existingValidators];
     
     // Check if field was already required
     if (this.isRequired()) {
@@ -136,6 +148,7 @@ export class NumberInput {
     const input = event.target as HTMLInputElement;
     const currentValue = input.value || '';
     const maxLength = this.maxLen();
+    const char = event.key;
     
     const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
     
@@ -145,15 +158,35 @@ export class NumberInput {
     }
     
     // Prevent decimal point specifically
-    if (event.key === '.' || event.key === ',') {
+    if (char === '.' || char === ',') {
       event.preventDefault();
       return;
     }
     
     // Check if it's a numeric character
-    if (!/^\d$/.test(event.key)) {
+    if (!/^\d$/.test(char)) {
       event.preventDefault();
       return;
+    }
+    
+    // Prevent leading zeros unless explicitly allowed
+    if (!this.allowLeadingZeros()) {
+      // If current value is empty and user types '0', allow it (single zero is valid)
+      if (currentValue === '' && char === '0') {
+        return;
+      }
+      
+      // If current value is '0' and user types any digit, prevent the '0' from staying
+      // This will be handled in onInput where we remove leading zeros
+      if (currentValue === '0' && char !== '0') {
+        // Allow the keystroke, onInput will handle removing the leading zero
+        return;
+      }
+      
+      // Prevent typing '0' at the beginning if there's already content
+      if (currentValue.length > 0 && currentValue === '0' && char === '0') {
+        return;
+      }
     }
     
     // Prevent typing if max length is reached and no text is selected
@@ -169,7 +202,7 @@ export class NumberInput {
     }
   }
 
-  // Additional input validation with max length enforcement
+  // Enhanced input validation with leading zero removal and max length enforcement
   onInput(event: any): void {
     const input = event.target;
     let value = input.value;
@@ -177,6 +210,21 @@ export class NumberInput {
     
     // Remove any non-numeric characters (including decimal points)
     value = value.replace(/[^0-9]/g, '');
+    
+    // Remove leading zeros unless explicitly allowed
+    if (!this.allowLeadingZeros() && value.length > 0) {
+      // Special case: if value is all zeros, keep one zero
+      if (/^0+$/.test(value)) {
+        value = '0';
+      } else {
+        // Remove leading zeros: "0098" becomes "98", "000123" becomes "123"
+        value = value.replace(/^0+/, '');
+        // If after removing leading zeros we get empty string, set to '0'
+        if (value === '') {
+          value = '0';
+        }
+      }
+    }
     
     // Enforce max length by truncating if necessary
     if (maxLength && value.length > maxLength) {
@@ -197,8 +245,91 @@ export class NumberInput {
     this.onChangeInput();
   }
 
+  // Handle paste events to clean pasted content
+  onPaste(event: ClipboardEvent): void {
+    event.preventDefault();
+    
+    const paste = event.clipboardData?.getData('text') || '';
+    const input = event.target as HTMLInputElement;
+    const control = this.frmGroup().get(this.controlName());
+    const maxLength = this.maxLen();
+    
+    // Clean the pasted value - remove non-numeric characters
+    let cleanValue = paste.replace(/[^0-9]/g, '');
+    
+    // Remove leading zeros unless explicitly allowed
+    if (!this.allowLeadingZeros() && cleanValue.length > 0) {
+      // Special case: if value is all zeros, keep one zero
+      if (/^0+$/.test(cleanValue)) {
+        cleanValue = '0';
+      } else {
+        // Remove leading zeros
+        cleanValue = cleanValue.replace(/^0+/, '');
+        // If after removing leading zeros we get empty string, set to '0'
+        if (cleanValue === '') {
+          cleanValue = '0';
+        }
+      }
+    }
+    
+    // Apply max length
+    if (maxLength && cleanValue.length > maxLength) {
+      cleanValue = cleanValue.slice(0, maxLength);
+    }
+    
+    input.value = cleanValue;
+    control?.setValue(cleanValue ? parseInt(cleanValue, 10) : null);
+    this.onChangeInput();
+  }
+
+  // Handle blur event to ensure final cleanup
+  onBlur(event: any): void {
+    const input = event.target;
+    let value = input.value;
+    
+    // Final cleanup on blur
+    if (!this.allowLeadingZeros() && value && value.length > 1 && value.startsWith('0')) {
+      // Remove leading zeros one more time
+      if (/^0+$/.test(value)) {
+        value = '0';
+      } else {
+        value = value.replace(/^0+/, '') || '0';
+      }
+      
+      if (input.value !== value) {
+        input.value = value;
+        const control = this.frmGroup().get(this.controlName());
+        if (control) {
+          control.setValue(value ? parseInt(value, 10) : null);
+        }
+        this.onChangeInput();
+      }
+    }
+  }
+
   onChangeInput() {
     const control = this.frmGroup().get(this.controlName());
     this.valueChange.emit(control?.value);
+  }
+
+
+  // Get custom error message for a specific error key
+  getCustomErrorMessage(errorKey: string): string {
+    const customMessages = this.customErrorMessages();
+    return customMessages[errorKey] || `${this.label()} has validation error: ${errorKey}`;
+  }
+
+  // Get all error keys that are not handled by default error messages
+  getCustomErrorKeys(): string[] {
+    const control = this.frmGroup().get(this.controlName());
+    if (!control?.errors) return [];
+
+    const defaultErrorKeys = ['required', 'minlength', 'maxlength', 'specialCharacterNotAllowed'];
+    return Object.keys(control.errors).filter(key => !defaultErrorKeys.includes(key));
+  }
+
+  // Check if there are any custom errors to display
+  hasCustomErrors(): boolean {
+    return this.getCustomErrorKeys().length > 0;
   }
 }

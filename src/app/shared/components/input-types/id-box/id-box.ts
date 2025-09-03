@@ -1,6 +1,6 @@
 import {Component, computed, input, output, signal, effect} from '@angular/core';
 import {MatInput} from "@angular/material/input";
-import {FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormGroup, FormsModule, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors} from "@angular/forms";
 import {NgClass} from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatRippleModule } from '@angular/material/core';
@@ -14,7 +14,6 @@ import { MatRippleModule } from '@angular/material/core';
     MatRippleModule,
     ReactiveFormsModule,
     NgClass,
-    
   ],
   templateUrl: './id-box.html',
   standalone: true,
@@ -38,12 +37,18 @@ export class IdBoxComponent {
   readonly leadingZero = input<string>('');
   readonly visible = input<boolean>(true);
   readonly allowSpecialChars = input<boolean>(false);
+  
   // New validation inputs
-  readonly minLength = input<number>();
-  readonly maxLength = input<number>();
+  readonly minLen = input<number>();
+  readonly maxLen = input<number>();
   readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
   readonly tooltipDelay = input<number>(500);
   readonly tooltipClass = input<string>('custom-tooltip');
+  readonly isRequired = input<boolean>(false);
+
+  // Custom error messages support
+  readonly customErrorMessages = input<{ [key: string]: string }>({});
+
   // Outputs
   readonly valueChanged = output<string>();
   readonly onChanged = output<any>();
@@ -57,16 +62,22 @@ export class IdBoxComponent {
   errorMessage = signal('');
 
   constructor() {
-    // Effect to update validators when min/max length inputs change
+    // Effect to update validators when validation inputs change
     effect(() => {
+      const minLen = this.minLen();
+      const maxLen = this.maxLen();
+      const allowSpecialChars = this.allowSpecialChars();
+      const isRequired = this.isRequired();
+      
       this.updateValidators();
     });
   }
 
-
-  private specialCharacterValidator(control: any): { [key: string]: boolean } | null {
+  private specialCharacterValidator = (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) return null; // Don't validate empty values here
+    
     const specialCharRegex = /^[a-zA-Z0-9 ]*$/; // Allow only alphanumeric and spaces
-    if (control.value && !specialCharRegex.test(control.value)) {
+    if (!specialCharRegex.test(control.value)) {
       return { specialCharacterNotAllowed: true };
     }
     return null;
@@ -76,50 +87,54 @@ export class IdBoxComponent {
     const control = this.frmGroup().get(this.controlName());
     if (!control) return;
 
-    const validators = [];
+    // Start with parent validators (they may already be a composed function)
+    let validators: any[] = [];
+
+    const parentValidatorFn = control.validator;
+    if (parentValidatorFn) {
+      validators.push(parentValidatorFn);
+    }
+    console.log('Existing Validators:', parentValidatorFn);
     
-    // Check if field was already required
+    // Add required validator if needed
     if (this.isRequired()) {
       validators.push(Validators.required);
     }
-    
-    // Add min length validator if specified
-    if (this.minLength() !== undefined && this.minLength()! > 0) {
-      validators.push(Validators.minLength(this.minLength()!));
-    }
-    
-    // Add max length validator if specified
-    if (this.maxLength() !== undefined && this.maxLength()! > 0) {
-      validators.push(Validators.maxLength(this.maxLength()!));
-    }
 
-        // Add special character validator if not allowed
+    // Add special character validator if not allowing special chars
     if (!this.allowSpecialChars()) {
       validators.push(this.specialCharacterValidator);
     }
-    
-    // Update the control's validators
-    control.setValidators(validators);
+
+    // Handle length/range rules depending on input type
+    const inputType = this.getInputType();
+
+    if (this.minLen() !== undefined && this.minLen()! > 0) {
+      validators.push(Validators.minLength(this.minLen()!));
+    }
+    if (this.maxLen() !== undefined && this.maxLen()! > 0) {
+      validators.push(Validators.maxLength(this.maxLen()!));
+    }
+
+    // ✅ Combine parent + child validators properly
+    control.setValidators(Validators.compose(validators));
     control.updateValueAndValidity();
+  }
+
+  private getInputType(): string {
+    // Check template or return default based on your logic
+    return 'number'; // Since your template shows type="number"
   }
 
   // Computed signals for reactive styling
   inputClasses = computed(() => {
     const baseClasses = 'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500';
-    const errorClasses = this.isInvalidState() ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-300' : 'border-gray-300';
-
+    const errorClasses = this.isInvalid() ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-300' : 'border-gray-300';
     const visibilityClasses = this.visible() ? '' : 'hidden';
     
     return `${baseClasses} ${errorClasses} ${visibilityClasses}`;
   });
 
-  isRequired(): boolean {
-    const control = this.frmGroup().get(this.controlName());
-    if (!control?.validator) return false;
-    const validation = control.validator({} as any);
-    return !!validation?.['required'];
-  }
-  
   isInvalid(): boolean {
     const control = this.frmGroup().get(this.controlName());
     return !!(control && control.invalid && (control.touched || control.dirty));
@@ -136,6 +151,26 @@ export class IdBoxComponent {
     return error;
   }
 
+  // Get custom error message for a specific error key
+  getCustomErrorMessage(errorKey: string): string {
+    const customMessages = this.customErrorMessages();
+    return customMessages[errorKey] || `${this.label()} has validation error: ${errorKey}`;
+  }
+
+  // Get all error keys that are not handled by default error messages
+  getCustomErrorKeys(): string[] {
+    const control = this.frmGroup().get(this.controlName());
+    if (!control?.errors) return [];
+
+    const defaultErrorKeys = ['required', 'min', 'max', 'minlength', 'maxlength', 'pattern', 'specialCharacterNotAllowed'];
+    return Object.keys(control.errors).filter(key => !defaultErrorKeys.includes(key));
+  }
+
+  // Check if there are any custom errors to display
+  hasCustomErrors(): boolean {
+    return this.getCustomErrorKeys().length > 0;
+  }
+
   onChangeInput() {
     const control = this.frmGroup().get(this.controlName());
     this.valueChange.emit(control?.value);
@@ -145,10 +180,12 @@ export class IdBoxComponent {
     this.dotsClicked.emit();
   }
 
-    preventSpecialChars(event: KeyboardEvent): void {
+  preventSpecialChars(event: KeyboardEvent): void {
     if (!this.allowSpecialChars()) {
-      const specialCharRegex = /^[a-zA-Z0-9 ]$/; // Allow only alphanumeric and spaces
-      const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab']; // Allow navigation and editing keys
+      // const specialCharRegex = /^[a-zA-Z0-9 ]$/; 
+      const specialCharRegex = /^[0-9 ]$/; 
+      const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab', 'Enter']; // Allow navigation and editing keys
+      
       if (!specialCharRegex.test(event.key) && !allowedKeys.includes(event.key)) {
         event.preventDefault();
       }

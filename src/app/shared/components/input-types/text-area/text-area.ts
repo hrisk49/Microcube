@@ -1,6 +1,7 @@
 import { Component, input, output, signal, OnInit, OnChanges, computed, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface TextareaAttributes {
   rows: number;
@@ -23,7 +24,8 @@ interface ColLimitExceededEvent {
   selector: 'lds-txt-area',
   imports: [
     ReactiveFormsModule,
-    NgClass
+    NgClass,
+    MatTooltipModule
   ],
   templateUrl: './text-area.html',
   styleUrl: './text-area.scss'
@@ -59,14 +61,17 @@ export class TextArea implements OnInit, OnChanges, AfterViewInit {
   readonly showCharacterCount = input<boolean>(true);
   readonly showRowCount = input<boolean>(false);
   readonly enforceRowLimits = input<boolean>(true);
-
+  readonly isVertical = input<boolean>(false);
   // Outputs
   readonly valueChanged = output<string>();
   readonly onChanged = output<Event>();
   readonly onRowLimitExceeded = output<RowLimitExceededEvent>();
   readonly onColLimitExceeded = output<ColLimitExceededEvent>();
   readonly onManualResize = output<{ rows: number; action: 'increase' | 'decrease' }>(); // New output
-
+  readonly tooltip = input<string>('');
+  readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
+  readonly tooltipClass = input<string>('custom-tooltip');
+  readonly tooltipDelay = input<number>(500)
   // Internal state
   isInvalidState = signal(false);
   errorMessage = signal('');
@@ -80,13 +85,14 @@ export class TextArea implements OnInit, OnChanges, AfterViewInit {
 
   // Computed signals for reactive styling
   inputClasses = computed(() => {
-    const baseClasses = 'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 placeholder-gray-400';
-    const resizeClasses = this.autoResize() ? 'resize-none overflow-hidden' : 'resize-vertical';
-    const stateClasses = this.isDisabled ? 'bg-gray-100 cursor-not-allowed opacity-60' : 'bg-white';
-    const errorClasses = this.isInvalidState() ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-300' : 'border-gray-300';
-    const customClasses = this.cssClass() || '';
+    // const baseClasses = 'w-full  border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 placeholder-gray-400';
+    // const resizeClasses = this.autoResize() ? 'resize-none overflow-hidden' : 'resize-vertical';
+    // const stateClasses = this.isDisabled ? 'bg-gray-100 cursor-not-allowed opacity-60' : 'bg-white';
+    // const errorClasses = this.isInvalidState() ? 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-300' : 'border-gray-300';
+    // const customClasses = this.cssClass() || '';
     
-    return `${baseClasses} ${resizeClasses} ${stateClasses} ${errorClasses} ${customClasses}`;
+    // return ` ${resizeClasses} ${stateClasses} ${errorClasses} ${customClasses}`;
+    return null;
   });
 
   // Computed textarea attributes
@@ -457,6 +463,7 @@ export class TextArea implements OnInit, OnChanges, AfterViewInit {
           line: violatingLine + 1,
           currentCols: lines[violatingLine].length,
           maxCols: this.maxCols()!
+          
         });
       }
     }
@@ -492,9 +499,9 @@ export class TextArea implements OnInit, OnChanges, AfterViewInit {
         }
         
         // Trigger auto-resize after limiting
-        if (this.autoResize()) {
-          setTimeout(() => this.performAutoResize(), 0);
-        }
+        // if (this.autoResize()) {
+        //   setTimeout(() => this.performAutoResize(), 0);
+        // }
         return;
       }
     }
@@ -600,9 +607,14 @@ export class TextArea implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  adjustHeight(event: Event): void {
-    const textarea = event.target as HTMLTextAreaElement;
-    textarea.style.height = 'auto';
-    textarea.style.height = `${textarea.scrollHeight}px`;
-  }
+  // adjustHeight(event: Event): void {
+
+  //   if (!this.autoResize()) return;
+
+  //   const textarea = event.target as HTMLTextAreaElement;
+  //    requestAnimationFrame(() => {
+  //     textarea.style.height = 'auto';
+  //     textarea.style.height = `${textarea.scrollHeight}px`;
+  //   });
+  // }
 }

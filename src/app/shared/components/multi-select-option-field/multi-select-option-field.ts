@@ -14,6 +14,7 @@ import {NgClass, NgFor, NgIf} from '@angular/common';
 import { MatPseudoCheckboxModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 type Option = { key: any; value: string };
 
@@ -27,6 +28,7 @@ type Option = { key: any; value: string };
     NgIf,
     MatPseudoCheckboxModule,
     MatIconModule,
+    MatTooltipModule,
     MatInputModule
   ],
   templateUrl: './multi-select-option-field.html',
@@ -49,6 +51,10 @@ export class MultiSelectOptionField implements OnInit {
   readonly searchable = input<boolean>(true); // New input to control search functionality
   readonly searchPlaceholder = input<string>('Search options...');
   readonly minSearchLength = input<number>(0); // Minimum characters before filtering
+  readonly tooltip = input<string>('Select options');
+  readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
+  readonly tooltipDelay = input<number>(500);
+  readonly tooltipClass = input<string>('custom-tooltip');
 
   // Component state
   isOpen = signal(false);

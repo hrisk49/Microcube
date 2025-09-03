@@ -11,9 +11,15 @@
     [ngClass]="{'readonly-input': isReadonly() }"
     type="number"
     (keypress)="onKeyPress($event)"
+    inputmode="numeric"
     (input)="onInput($event)"
+    [matTooltip]="tooltip()"
+    [matTooltipPosition]="tooltipPosition()"
+    [matTooltipClass]="tooltipClass()"
+    [matTooltipDisabled]="!tooltip()"
     [readonly]="isReadonly()"
     [disabled]="isDisabled"
+    (blur)="onBlur($event)"
     matInput
     [placeholder]="placeholder() ?? 'Enter ' + label()"
     [min]="minValue() ?? 0"
@@ -21,6 +27,7 @@
     [maxLength]="maxLen() ?? null"
     [minLength]="minLen() ?? null"
     class="custom-input"
+     autocomplete="off"
     step="1"/>
   
   @if (isInvalid()) {
@@ -48,6 +55,13 @@
           Only whole numbers are allowed 
         </ng-container>
       }
+
+      @if (hasCustomErrors()) {
+        @for (errorKey of getCustomErrorKeys(); track errorKey) {
+          <div>{{ getCustomErrorMessage(errorKey) }}</div>
+        }
+      }
+
     </div>
   }
 </div>

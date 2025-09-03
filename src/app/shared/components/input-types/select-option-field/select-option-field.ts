@@ -1,7 +1,8 @@
 // select-option-field.component.ts
-import {Component, input, signal, effect, ElementRef, ViewChild} from '@angular/core';
+import {Component, input, signal, effect, ElementRef, ViewChild, output} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgClass} from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 type Option = { key: any; value: string };
 
@@ -10,6 +11,7 @@ type Option = { key: any; value: string };
   imports: [
     FormsModule,
     ReactiveFormsModule,
+    MatTooltipModule,
     NgClass
   ],
   templateUrl: './select-option-field.html',
@@ -25,6 +27,19 @@ export class SelectOptionField {
   readonly isReadonly = input<boolean>();
   readonly options = input<Option[] | null>(null);
   readonly isVertical = input<boolean>(false);
+  readonly searchable = input<boolean>(true); // NEW: Toggle searchability
+  readonly tooltip = input<string>();
+  readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
+  readonly tooltipDelay = input<number>(500);
+  readonly tooltipClass = input<string>('custom-tooltip');
+
+  // Output event for when an option is selected
+  readonly onSelect = output<{
+    selectedOption: Option;
+    selectedKey: any;
+    selectedValue: string;
+    formControl: any;
+  }>();
 
   // Component state
   searchTerm = signal('');
@@ -32,20 +47,27 @@ export class SelectOptionField {
   highlightedIndex = signal(-1);
   selectedValue = signal<any>('');
   filteredOptions = signal<Option[]>([]);
+  displayText = signal<string>(''); // NEW: For display in non-searchable mode
 
   constructor() {
     // Update filtered options when search term or options change
     effect(() => {
       const opts = this.options() || [];
-      const term = this.searchTerm().toLowerCase();
-      if (!term) {
+      if (!this.searchable()) {
+        // Non-searchable mode: show all options
         this.filteredOptions.set(opts);
       } else {
-        this.filteredOptions.set(
-          opts.filter(option =>
-            option.value.toLowerCase().includes(term)
-          )
-        );
+        // Searchable mode: filter by search term
+        const term = this.searchTerm().toLowerCase();
+        if (!term) {
+          this.filteredOptions.set(opts);
+        } else {
+          this.filteredOptions.set(
+            opts.filter(option =>
+              option.value.toLowerCase().includes(term)
+            )
+          );
+        }
       }
       this.highlightedIndex.set(-1);
     });
@@ -55,14 +77,20 @@ export class SelectOptionField {
       const control = this.frmGroup().get(this.controlName());
       if (control) {
         this.selectedValue.set(control.value || '');
-        // Update search input with selected option text
+        // Update display based on mode
         if (control.value) {
           const selectedOption = this.options()?.find(opt => opt.key === control.value);
           if (selectedOption) {
-            this.searchTerm.set(selectedOption.value);
+            this.displayText.set(selectedOption.value);
+            if (this.searchable()) {
+              this.searchTerm.set(selectedOption.value);
+            }
           }
         } else {
-          this.searchTerm.set('');
+          this.displayText.set('');
+          if (this.searchable()) {
+            this.searchTerm.set('');
+          }
         }
       }
     });
@@ -76,6 +104,8 @@ export class SelectOptionField {
   }
 
   onSearchInput(event: Event): void {
+    if (!this.searchable()) return; // Skip if not searchable
+
     const input = event.target as HTMLInputElement;
     this.searchTerm.set(input.value);
     if (!this.isOpen()) {
@@ -92,67 +122,74 @@ export class SelectOptionField {
     }
   }
 
+  onInputClick(): void {
+    if (!this.searchable()) {
+      // In non-searchable mode, clicking input opens dropdown
+      this.toggleDropdown();
+    }
+  }
+
   onInputBlur(): void {
     // Delay closing to allow option clicks
     setTimeout(() => {
       this.closeDropdown();
-      // Reset search term to selected option if no selection was made
-      const control = this.frmGroup().get(this.controlName());
-      if (control?.value) {
-        const selectedOption = this.options()?.find(opt => opt.key === control.value);
-        if (selectedOption) {
-          this.searchTerm.set(selectedOption.value);
+      // Reset based on mode
+      if (this.searchable()) {
+        const control = this.frmGroup().get(this.controlName());
+        if (control?.value) {
+          const selectedOption = this.options()?.find(opt => opt.key === control.value);
+          if (selectedOption) {
+            this.searchTerm.set(selectedOption.value);
+          }
+        } else {
+          this.searchTerm.set('');
         }
-      } else {
-        this.searchTerm.set('');
       }
     }, 200);
   }
 
-onKeyDown(event: KeyboardEvent): void {
-  const filteredOpts = this.filteredOptions();
-  switch (event.key) {
-    case 'ArrowDown':
-      event.preventDefault();
-      if (!this.isOpen()) {
-        this.openDropdown();
-      } else {
-        const nextIndex = this.highlightedIndex() < filteredOpts.length - 1
-          ? this.highlightedIndex() + 1
-          : 0;
-        this.highlightedIndex.set(nextIndex);
-      }
-      break;
-
-    case 'ArrowUp':
-      event.preventDefault();
-      if (this.isOpen()) {
-        const prevIndex = this.highlightedIndex() > 0
-          ? this.highlightedIndex() - 1
-          : filteredOpts.length - 1;
-        this.highlightedIndex.set(prevIndex);
-      }
-      break;
-
-    case 'Enter':
-      event.preventDefault();
-      if (this.isOpen()) {
-        // 👇 if no highlighted index, pick first option
-        const indexToSelect = this.highlightedIndex() >= 0 ? this.highlightedIndex() : 0;
-        const option = filteredOpts[indexToSelect];
-        if (option) {
-          this.selectOption(option);
+  onKeyDown(event: KeyboardEvent): void {
+    const filteredOpts = this.filteredOptions();
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        if (!this.isOpen()) {
+          this.openDropdown();
+        } else {
+          const nextIndex = this.highlightedIndex() < filteredOpts.length - 1
+            ? this.highlightedIndex() + 1
+            : 0;
+          this.highlightedIndex.set(nextIndex);
         }
-      }
-      break;
+        break;
 
-    case 'Escape':
-      this.closeDropdown();
-      this.searchInput.nativeElement.blur();
-      break;
+      case 'ArrowUp':
+        event.preventDefault();
+        if (this.isOpen()) {
+          const prevIndex = this.highlightedIndex() > 0
+            ? this.highlightedIndex() - 1
+            : filteredOpts.length - 1;
+          this.highlightedIndex.set(prevIndex);
+        }
+        break;
+
+      case 'Enter':
+        event.preventDefault();
+        if (this.isOpen()) {
+          const indexToSelect = this.highlightedIndex() >= 0 ? this.highlightedIndex() : 0;
+          const option = filteredOpts[indexToSelect];
+          if (option) {
+            this.selectOption(option);
+          }
+        }
+        break;
+
+      case 'Escape':
+        this.closeDropdown();
+        this.searchInput.nativeElement.blur();
+        break;
+    }
   }
-}
-
 
   openDropdown(): void {
     if (!this.isReadonly()) {
@@ -170,7 +207,9 @@ onKeyDown(event: KeyboardEvent): void {
       this.closeDropdown();
     } else {
       this.openDropdown();
-      this.searchInput.nativeElement.focus();
+      if (this.searchable()) {
+        this.searchInput.nativeElement.focus();
+      }
     }
   }
 
@@ -181,7 +220,18 @@ onKeyDown(event: KeyboardEvent): void {
       control.markAsTouched();
     }
 
-    this.searchTerm.set(option.value);
+    this.displayText.set(option.value);
+    if (this.searchable()) {
+      this.searchTerm.set(option.value);
+    }
     this.closeDropdown();
+
+    // Emit the onSelect event with comprehensive data
+    this.onSelect.emit({
+      selectedOption: option,
+      selectedKey: option.key,
+      selectedValue: option.value,
+      formControl: control
+    });
   }
 }

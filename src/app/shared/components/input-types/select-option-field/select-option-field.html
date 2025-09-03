@@ -14,11 +14,15 @@
           [placeholder]="'Search ' + label().toLowerCase() + '...'"
           [value]="searchTerm()"
           (input)="onSearchInput($event)"
+          [matTooltip]="tooltip()"
+          [matTooltipPosition]="tooltipPosition()"
+          [matTooltipClass]="tooltipClass()"
+          [matTooltipDisabled]="!tooltip()"
           (focus)="openDropdown()"
           (blur)="onInputBlur()"
           (keydown)="onKeyDown($event)"
           [disabled]="isReadonly()"
-          class="search-input"
+          class="custom-select"
           autocomplete="off"
         />
         <!-- Dropdown Toggle Button -->
@@ -34,7 +38,7 @@
           </svg>
         </button>
 
-        <!-- Dropdown Options -->
+      <!--Dropdown Options-->
         @if (isOpen()) {
           <div class="dropdown-menu">
             @if (filteredOptions().length === 0) {

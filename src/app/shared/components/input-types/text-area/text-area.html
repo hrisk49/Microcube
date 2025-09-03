@@ -1,109 +1,30 @@
-@if (!isHidden) {
-  <div class="w-full" [formGroup]="frmGroup()">
-    <!-- Label -->
-    @if (labelText()) {
-      <label class="input-label relative flex justify-between items-start">
-        <span>
-          {{ labelText() }}
-          @if (isRequired()) {
-            <span class="text-red-500">*</span>
-          }
-        </span>
-
-        <!-- Counters in label -->
-        <div class="flex flex-col items-end gap-1 text-xs">
-          @if (showRowCount()) {
-            <div class="text-gray-500">
-              {{ getRowCountDisplay() }}
-            </div>
-          }
-          
-    
-          
-
-        </div>
-      </label>
+<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'"> 
+  <label class="input-label">
+    {{ labelText() }}
+    @if (isRequired()) {
+      <span class="text-red-500">*</span>
     }
-    
-    <!-- Textarea -->
-    <textarea
-      [id]="id()"
-      [formControlName]="controlName()"
-      [rows]="textareaAttributes().rows"
-      [attr.cols]="textareaAttributes().cols || null"
-      [placeholder]="placeholder()"
-      [ngClass]="inputClasses()"
-      (input)="onInputChange($event); adjustHeight($event)"
-      class="transition-colors duration-200 placeholder-gray-400 resize-none"
-      #textareaRef>
-    </textarea>
+  </label>
 
+  <textarea
+    [id]="id()"
+    [formControlName]="controlName()"
+    [rows]="textareaAttributes().rows"
+    [attr.cols]="textareaAttributes().cols || null"
+    [placeholder]="placeholder()"
+    [ngClass]="inputClasses()"
+    (input)="onInputChange($event)"
+    [matTooltip]="tooltip()"
+    [matTooltipPosition]="tooltipPosition()"
+    [matTooltipClass]="tooltipClass()"
+    [matTooltipDisabled]="!tooltip()"
+    class="custom-input transition-colors duration-200 placeholder-gray-400"
+    #textareaRef>
+  </textarea>
 
-    <!-- Error Message -->
-    @if (isInvalidState() && errorMessage()) {
-      <div class="text-red-500 text-sm mt-1">
-        {{ errorMessage() }}
-      </div>
-    }
-
-    <!-- Info Section -->
-    <div class="flex justify-between items-center mt-1 text-xs text-gray-500">
-      <div class="flex gap-4">
-        @if (minRows() || maxRows()) {
-          <span>
-            Rows: {{ currentRows() }}
-            @if (minRows() && maxRows()) {
-              ({{ minRows() }}-{{ maxRows() }})
-            } @else if (maxRows()) {
-              / {{ maxRows() }}
-            } @else if (minRows()) {
-              (min: {{ minRows() }})
-            }
-          </span>
-        }
-        
-        @if (minCols() || maxCols()) {
-          <span>
-            Line width: {{ longestLineLength }}
-            @if (minCols() && maxCols()) {
-              ({{ minCols() }}-{{ maxCols() }})
-            } @else if (maxCols()) {
-              / {{ maxCols() }}
-            } @else if (minCols()) {
-              (min: {{ minCols() }})
-            }
-          </span>
-        }
-      </div>
-      
-      <!-- Character count (if not shown in label) -->
-      @if (!showCharacterCount() && maxLen() < 2147483647) {
-        <span [class.text-red-500]="characterCount > maxLen()">
-          {{ characterCount }} / {{ maxLen() }}
-        </span>
-      }
+  @if (isInvalidState() && errorMessage()) {
+    <div class="text-red-500 text-sm mt-1">
+      {{ errorMessage() }}
     </div>
-
-    <!-- Limits Summary (Optional Helper Text) -->
-    @if (minRows() || maxRows() || minCols() || maxCols() || (maxLen() < 2147483647)) {
-      <div class="text-xs text-gray-400 mt-1">
-        <span>Limits: </span>
-        @if (minLen() > -2147483648 || maxLen() < 2147483647) {
-          <span>{{ minLen() > -2147483648 ? minLen() + '-' : '' }}{{ maxLen() < 2147483647 ? maxLen() : '' }} chars</span>
-        }
-        @if ((minRows() || maxRows()) && (minLen() > -2147483648 || maxLen() < 2147483647)) {
-          <span> • </span>
-        }
-        @if (minRows() || maxRows()) {
-          <span>{{ minRows() || '' }}{{ minRows() && maxRows() ? '-' : '' }}{{ maxRows() || '' }} rows</span>
-        }
-        @if ((minCols() || maxCols()) && ((minRows() || maxRows()) || (minLen() > -2147483648 || maxLen() < 2147483647))) {
-          <span> • </span>
-        }
-        @if (minCols() || maxCols()) {
-          <span>{{ minCols() || '' }}{{ minCols() && maxCols() ? '-' : '' }}{{ maxCols() || '' }} chars/line</span>
-        }
-      </div>
-    }
-  </div>
-}
+  }
+</div>
