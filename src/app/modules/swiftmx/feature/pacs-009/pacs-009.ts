@@ -41,6 +41,8 @@ import { CurrencyModel } from '../../../../shared/models/currency.model';
 import { LookupService } from '../../../../shared/services/lookup.service';
 import { MessageTypeService } from '../../../../shared/services/message-type.service';
 import { DateInput } from '../../../../shared/components/input-types/date-input/date-input';
+import { LEI_PATTERN } from '../../../../shared/constant/value-patterns.constant';
+
 
 @Component({
   selector: 'app-pacs-009',
@@ -112,6 +114,11 @@ export class Pacs009 implements OnInit, OnDestroy {
 
   currencyOptions: SelectOptionsModel[] = [];
 
+  instructionCodeOptions: SelectOptionsModel[] = [
+    { key: 'PHOB', value: 'PhoneBeneficiary - Please advise/contact (ultimate) creditor/claimant by phone.' },
+    { key: 'TELB', value: 'Telecom - Please advise/contact (ultimate) creditor/claimant by the most efficient means of telecommunication.' },
+  ];
+
   // Panel visibility signals
   timeDatePanel: WritableSignal<boolean> = signal(true);
   fromBicPanel: WritableSignal<boolean> = signal(true);
@@ -125,6 +132,7 @@ export class Pacs009 implements OnInit, OnDestroy {
   rltdToBicPanel: WritableSignal<boolean> = signal(false);
   groupHeaderPanel: WritableSignal<boolean> = signal(true);
   settlementPanel: WritableSignal<boolean> = signal(true);
+  sttlmAccountPanel: WritableSignal<boolean> = signal(false);
   instructingReimbursementAgentPanel: WritableSignal<boolean> = signal(false);
   instructingReimbursementAgentAddressPanel: WritableSignal<boolean> = signal(false);
   instructingReimbursementAgentAccountPanel: WritableSignal<boolean> = signal(false);
@@ -193,6 +201,8 @@ export class Pacs009 implements OnInit, OnDestroy {
   // Additional options for reimbursement agents
   accountTypeOptions: SelectOptionsModel[] = [];
   rmbrsmntAgtPrxyCdOptions: SelectOptionsModel[] = [];
+  purposeCodeOptions: SelectOptionsModel[] = [];
+  clearingSystemIdOptions: SelectOptionsModel[] = [];
 
   cbsData: any = null;
   private destroy$ = new Subject<void>();
@@ -235,7 +245,12 @@ export class Pacs009 implements OnInit, OnDestroy {
       this.loadSettlementOptions();
       this.loadAccountTypeOptions();
       this.loadReimbursementAgentProxyCodeOptions();
+      this.loadPurposeCodeOptions();
+      this.loadClearingSystemIdOptions();
       FormGroupSignal.set(this.frmGroup);
+      this.setupPurposeMutualExclusivity();
+      this.setupBicAgentSynchronization();
+      this.setupConditionalValidation();
       this.activatedRoute.queryParams.pipe(
         takeUntil(this.destroy$)
       ).subscribe(params => {
@@ -272,9 +287,196 @@ export class Pacs009 implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
+    ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private setupConditionalValidation(): void {
+    // Simple conditional validation for all clearing system and member ID pairs
+    this.setupFieldPairValidation('fromClrSysIdCd', 'fromMmbId');
+    this.setupFieldPairValidation('toClrSysIdCd', 'toMmbId');
+    this.setupFieldPairValidation('rltdFromClrSysIdCd', 'rltdFromMmbId');
+    this.setupFieldPairValidation('rltdToClrSysIdCd', 'rltdToMmbId');
+    this.setupFieldPairValidation('instgRmbrsmntAgtClrSysIdCd', 'instgRmbrsmntAgtMmbId');
+    this.setupFieldPairValidation('instdRmbrsmntAgtClrSysIdCd', 'instdRmbrsmntAgtMmbId');
+    this.setupFieldPairValidation('prvsInstgAgt1ClrSysIdCd', 'prvsInstgAgt1MmbId');
+    this.setupFieldPairValidation('prvsInstgAgt2ClrSysIdCd', 'prvsInstgAgt2MmbId');
+    this.setupFieldPairValidation('prvsInstgAgt3ClrSysIdCd', 'prvsInstgAgt3MmbId');
+    this.setupFieldPairValidation('instgAgtClrSysIdCd', 'instgAgtMmbId');
+    this.setupFieldPairValidation('instdAgtClrSysIdCd', 'instdAgtMmbId');
+    this.setupFieldPairValidation('intrmyAgt1ClrSysIdCd', 'intrmyAgt1MmbId');
+    this.setupFieldPairValidation('intrmyAgt2ClrSysIdCd', 'intrmyAgt2MmbId');
+    this.setupFieldPairValidation('intrmyAgt3ClrSysIdCd', 'intrmyAgt3MmbId');
+    this.setupFieldPairValidation('dbtrClrSysIdCd', 'dbtrMmbId');
+    this.setupFieldPairValidation('dbtrAgtClrSysIdCd', 'dbtrAgtMmbId');
+    this.setupFieldPairValidation('cdtrClrSysIdCd', 'cdtrMmbId');
+    this.setupFieldPairValidation('cdtrAgtClrSysIdCd', 'cdtrAgtMmbId');
+    
+    // Market Practice conditional validation
+    this.setupFieldPairValidation('mktPrctcRegy', 'mktPrctcId');
+  }
+
+  private setupFieldPairValidation(clearingSystemField: string, memberIdField: string): void {
+    const clearingSystemControl = this.frmGroup.get(clearingSystemField);
+    const memberIdControl = this.frmGroup.get(memberIdField);
+
+    if (!clearingSystemControl || !memberIdControl) return;
+
+    // Listen to clearing system field changes
+    clearingSystemControl.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      const hasValue = value && value.toString().trim() !== '';
+      if (hasValue) {
+        // Add required to member ID
+        memberIdControl.setValidators([Validators.required]);
+      } else {
+        // Remove required from member ID
+        memberIdControl.setValidators([]);
+      }
+      memberIdControl.updateValueAndValidity({ emitEvent: false });
+    });
+
+    // Listen to member ID field changes
+    memberIdControl.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      const hasValue = value && value.toString().trim() !== '';
+      if (hasValue) {
+        // Add required to clearing system
+        clearingSystemControl.setValidators([Validators.required]);
+      } else {
+        // Remove required from clearing system
+        clearingSystemControl.setValidators([]);
+      }
+      clearingSystemControl.updateValueAndValidity({ emitEvent: false });
+    });
+  }
+
+  private setupPurposeMutualExclusivity(): void {
+    // Subscribe to purpCD changes and clear purpPrtry when purpCD is selected
+    this.frmGroup.get('purpCD')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      if (value && value.trim() !== '') {
+        this.frmGroup.get('purpPrtry')?.setValue('', { emitEvent: false });
+      }
+    });
+
+    // Subscribe to purpPrtry changes and clear purpCD immediately when user starts typing
+    this.frmGroup.get('purpPrtry')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      // Clear purpCD as soon as user starts typing (even if just one character)
+      if (value && value.length > 0) {
+        this.frmGroup.get('purpCD')?.setValue('', { emitEvent: false });
+      }
+    });
+  }
+
+  private setupBicAgentSynchronization(): void {
+    // FROM BIC Panel -> Instructing Agent Panel synchronization
+    this.frmGroup.get('fromBicfi')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('instgAgtBicfi')?.setValue(value, { emitEvent: false });
+    });
+
+    this.frmGroup.get('fromClrSysIdCd')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('instgAgtClrSysIdCd')?.setValue(value, { emitEvent: false });
+    });
+
+    this.frmGroup.get('fromMmbId')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('instgAgtMmbId')?.setValue(value, { emitEvent: false });
+    });
+
+    this.frmGroup.get('fromLei')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('instgAgtLei')?.setValue(value, { emitEvent: false });
+    });
+
+    // TO BIC Panel -> Instructed Agent Panel synchronization
+    this.frmGroup.get('toBicfi')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('instdAgtBicfi')?.setValue(value, { emitEvent: false });
+    });
+
+    this.frmGroup.get('toClrSysIdCd')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('instdAgtClrSysIdCd')?.setValue(value, { emitEvent: false });
+    });
+
+    this.frmGroup.get('toMmbId')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('instdAgtMmbId')?.setValue(value, { emitEvent: false });
+    });
+
+    this.frmGroup.get('toLei')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('instdAgtLei')?.setValue(value, { emitEvent: false });
+    });
+
+    // REVERSE SYNCHRONIZATION: Agent Panels -> BIC Panels
+    
+    // Instructing Agent Panel -> FROM BIC Panel synchronization
+    this.frmGroup.get('instgAgtBicfi')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('fromBicfi')?.setValue(value, { emitEvent: false });
+    });
+
+    this.frmGroup.get('instgAgtClrSysIdCd')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('fromClrSysIdCd')?.setValue(value, { emitEvent: false });
+    });
+
+    this.frmGroup.get('instgAgtMmbId')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('fromMmbId')?.setValue(value, { emitEvent: false });
+    });
+
+    this.frmGroup.get('instgAgtLei')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('fromLei')?.setValue(value, { emitEvent: false });
+    });
+
+    // Instructed Agent Panel -> TO BIC Panel synchronization
+    this.frmGroup.get('instdAgtBicfi')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('toBicfi')?.setValue(value, { emitEvent: false });
+    });
+
+    this.frmGroup.get('instdAgtClrSysIdCd')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('toClrSysIdCd')?.setValue(value, { emitEvent: false });
+    });
+
+    this.frmGroup.get('instdAgtMmbId')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('toMmbId')?.setValue(value, { emitEvent: false });
+    });
+
+    this.frmGroup.get('instdAgtLei')?.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(value => {
+      this.frmGroup.get('toLei')?.setValue(value, { emitEvent: false });
+    });
   }
 
   private mapServiceDataToForm(data: any): void {
@@ -296,6 +498,7 @@ export class Pacs009 implements OnInit, OnDestroy {
     );
 
     this.frmGroup.patchValue({
+      bizMsgIdr: data.relatedRef21,
       instrId: data.trnRefNo20,
       endToEndId: data.relatedRef21,
       intrBkSttlmAmt: data.valAmt32a,
@@ -428,18 +631,94 @@ export class Pacs009 implements OnInit, OnDestroy {
     });
   }
 
+  private loadPurposeCodeOptions(): void {
+    // Load purpose code options using ExternalPurpose1Code type
+    this.externalCodeService.getSwiftExternalCodes('ExternalPurpose1Code').pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (response: any) => {
+        if (response.payload && response.payload.length > 0) {
+          this.purposeCodeOptions = response.payload.map((item: any) => ({
+            key: item.codeValue,
+            value: item.codeName ? `${item.codeValue} - ${item.codeName}` : item.codeValue,
+          }));
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load purpose code options', err);
+        this.toastr.error('Failed to load purpose code options', 'Error');
+        // Fallback to default options if API fails
+        this.purposeCodeOptions = [
+          { key: 'IPRT', value: 'IPRT - Instant Payments Return' },
+          { key: 'IPU2', value: 'IPU2 - Instant Payments Unattended Vending Machine With 2FA' },
+          { key: 'IPUW', value: 'IPUW - Instant Payments Unattended Vending Machine Without 2FA' },
+          { key: 'ANNI', value: 'ANNI - Annuity' },
+          { key: 'CAFI', value: 'CAFI - Custodian Management Fee Inhouse' },
+          { key: 'CFDI', value: 'CFDI - Capital Falling Due Inhouse' },
+          { key: 'CMDT', value: 'CMDT - Commodity Transfer' },
+          { key: 'DERI', value: 'DERI - Derivatives' },
+          { key: 'DIVI', value: 'DIVI - Dividend' },
+          { key: 'FREX', value: 'FREX - Foreign Exchange' },
+          { key: 'HEDG', value: 'HEDG - Hedging' },
+          { key: 'INVS', value: 'INVS - Investment And Securities' },
+          { key: 'PRME', value: 'PRME - Precious Metal' },
+          { key: 'SAVG', value: 'SAVG - Savings' },
+          { key: 'SECU', value: 'SECU - Securities' },
+          { key: 'SEPI', value: 'SEPI - Securities Purchase Inhouse' },
+          { key: 'TREA', value: 'TREA - Treasury Payment' },
+        ];
+      }
+    });
+  }
+
+  private loadClearingSystemIdOptions(): void {
+    // Load clearing system identification options using ExternalClearingSystemIdentification1Code type
+    this.externalCodeService.getSwiftExternalCodes('ExternalClearingSystemIdentification1Code').pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (response: any) => {
+        if (response.payload && response.payload.length > 0) {
+          this.clearingSystemIdOptions = response.payload.map((item: any) => ({
+            key: item.codeValue,
+            value: item.codeName ? `${item.codeValue} - ${item.codeName}` : item.codeValue,
+          }));
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load clearing system ID options', err);
+        this.toastr.error('Failed to load clearing system ID options', 'Error');
+        // Fallback to default options if API fails
+        this.clearingSystemIdOptions = [
+          { key: 'BD', value: 'BD - Bangladesh Clearing System ID' },
+          { key: 'USABA', value: 'USABA - US Domestic ABA Routing Number' },
+          { key: 'GBDSC', value: 'GBDSC - UK Domestic Sort Code' },
+          { key: 'CACPA', value: 'CACPA - Canadian Payments Association Routing Number' },
+          { key: 'CHBCC', value: 'CHBCC - Swiss Bank Code' },
+          { key: 'DEBLZ', value: 'DEBLZ - German Bankleitzahl' },
+          { key: 'FRRIB', value: 'FRRIB - French RIB' },
+          { key: 'ZANCC', value: 'ZANCC - South African National Clearing Code' },
+          { key: 'HKNCC', value: 'HKNCC - Hong Kong Bank Code' },
+          { key: 'AUSBP', value: 'AUSBP - Australian BSB Code' },
+          { key: 'JPZGN', value: 'JPZGN - Japanese Zengin Code' },
+          { key: 'INFSC', value: 'INFSC - Indian Financial System Code' },
+          { key: 'SGIBG', value: 'SGIBG - Singapore Interbank GIRO' },
+        ];
+      }
+    });
+  }
+
   initForm(): void {
     this.frmGroup = this.formBuilder.group({
       // Business Message Header
       charSet: [''],
-      fromBicfi: ['', Validators.required],
-      fromMembId: [''],
+      fromBicfi: ['', [Validators.required, Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
+      fromMmbId: [''],
       fromClrSysIdCd: ['', Validators.maxLength(10)],
-      fromLei: [''],
-      toMembId: [''],
-      toBicfi: ['', Validators.required],
+      fromLei: ['',[Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
+      toMmbId: [''],
+      toBicfi: ['', [Validators.required, Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       toClrSysIdCd: ['', Validators.maxLength(10)],
-      toLei: [''],
+      toLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       bizMsgIdr: ['PACS009' + new Date().getTime(),
         [Validators.required, Validators.minLength(1), 
           Validators.maxLength(35)]],
@@ -453,11 +732,10 @@ export class Pacs009 implements OnInit, OnDestroy {
 
       // Related (flat)
       rltdCharSet: [''],
-      rltdFromBicfi: [''],
+      rltdFromBicfi: ['', [Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       rltdFromClrSysIdCd: ['', Validators.maxLength(10)],
       rltdFromMmbId: [''],
-      rltdFromMembId: [''],
-      rltdFromLei: [''],
+      rltdFromLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       rltdFromNm: [''],
       rltdFromAdrLine1: [''],
       rltdFromAdrLine2: [''],
@@ -477,9 +755,8 @@ export class Pacs009 implements OnInit, OnDestroy {
       rltdFromAdrCtrySubDvsn: [''],
       rltdFromAdrCtry: ['', Validators.maxLength(3)],
       rltdFromAdrLine: [''],
-      rltdToMembId: [''],
-      rltdToLei: [''],
-      rltdToBicfi: [''],
+      rltdToLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
+      rltdToBicfi: ['', [Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       rltdToClrSysIdCd: ['', Validators.maxLength(10)],
       rltdToMmbId: [''],
       rltdToNm: [''],
@@ -528,15 +805,35 @@ export class Pacs009 implements OnInit, OnDestroy {
       sttlmAcctCcy: [null],
       sttlmAcctTp: [''],
       sttlmAcctNm: [''],
+      sttlmAgtAcctPrxyCd: [''],
+      sttlmAgtAcctPrxyId: [''],
       sttlmAcctSchmeNm: [''],
       sttlmAcctIssr: [''],
 
       // Instructing Reimbursement Agent
-      instgRmbrsmntAgtBicfi: [''],
+      instgRmbrsmntAgtBicfi: ['', [Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       instgRmbrsmntAgtClrSysIdCd: ['', Validators.maxLength(10)],
       instgRmbrsmntAgtMmbId: [''],
-      instgRmbrsmntAgtLei: [''],
+      instgRmbrsmntAgtLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       instgRmbrsmntAgtNm: [''],
+      instgRmbrsmntAgtAdrLine1: [''],
+      instgRmbrsmntAgtAdrLine2: [''],
+      instgRmbrsmntAgtAdrLine3: [''],
+      instgRmbrsmntAgtAdrDept: [''],
+      instgRmbrsmntAgtAdrSubDept: [''],
+      instgRmbrsmntAgtAdrStrtNm: [''],
+      instgRmbrsmntAgtAdrBldgNb: [''],
+      instgRmbrsmntAgtAdrBldgNm: [''],
+      instgRmbrsmntAgtAdrFlr: [''],
+      instgRmbrsmntAgtAdrPstBx: [''],
+      instgRmbrsmntAgtAdrRoom: [''],
+      instgRmbrsmntAgtAdrPstCd: [''],
+      instgRmbrsmntAgtAdrTwnNm: [''],
+      instgRmbrsmntAgtAdrTwnLctnNm: [''],
+      instgRmbrsmntAgtAdrDstrctNm: [''],
+      instgRmbrsmntAgtAdrCtrySubDvsn: [''],
+      instgRmbrsmntAgtAdrCtry: ['', Validators.maxLength(3)],
+      instgRmbrsmntAgtAdrLine: [''],
       instgRmbrsmntAgtAcctId: [''],
       instgRmbrsmntAgtAcctTp: [null],
       instgRmbrsmntAgtAcctCcy: [null],
@@ -545,11 +842,29 @@ export class Pacs009 implements OnInit, OnDestroy {
       instgRmbrsmntAgtPrxyId: [''],
 
       // Instructed Reimbursement Agent
-      instdRmbrsmntAgtBicfi: [''],
+      instdRmbrsmntAgtBicfi: ['', [Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       instdRmbrsmntAgtClrSysIdCd: ['', Validators.maxLength(10)],
       instdRmbrsmntAgtMmbId: [''],
-      instdRmbrsmntAgtLei: [''],
+      instdRmbrsmntAgtLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       instdRmbrsmntAgtNm: [''],
+      instdRmbrsmntAgtAdrLine1: [''],
+      instdRmbrsmntAgtAdrLine2: [''],
+      instdRmbrsmntAgtAdrLine3: [''],
+      instdRmbrsmntAgtAdrDept: [''],
+      instdRmbrsmntAgtAdrSubDept: [''],
+      instdRmbrsmntAgtAdrStrtNm: [''],
+      instdRmbrsmntAgtAdrBldgNb: [''],
+      instdRmbrsmntAgtAdrBldgNm: [''],
+      instdRmbrsmntAgtAdrFlr: [''],
+      instdRmbrsmntAgtAdrPstBx: [''],
+      instdRmbrsmntAgtAdrRoom: [''],
+      instdRmbrsmntAgtAdrPstCd: [''],
+      instdRmbrsmntAgtAdrTwnNm: [''],
+      instdRmbrsmntAgtAdrTwnLctnNm: [''],
+      instdRmbrsmntAgtAdrDstrctNm: [''],
+      instdRmbrsmntAgtAdrCtrySubDvsn: [''],
+      instdRmbrsmntAgtAdrCtry: ['', Validators.maxLength(3)],
+      instdRmbrsmntAgtAdrLine: [''],
       instdRmbrsmntAgtAcctId: [''],
       instdRmbrsmntAgtAcctTp: [null],
       instdRmbrsmntAgtAcctCcy: [null],
@@ -560,7 +875,7 @@ export class Pacs009 implements OnInit, OnDestroy {
       // Payment Identification
       instrId: ['',Validators.required],
       endToEndId: ['', Validators.required],
-      txId: ['TX_' + new Date().getTime()],
+      txId: ['TX' + new Date().getTime()],
       uetr: [''],
       clrSysRef: [''],
 
@@ -588,10 +903,10 @@ export class Pacs009 implements OnInit, OnDestroy {
       rjcttm: [''],
 
       // Previous Instructing Agent 1 (flat)
-      prvsInstgAgt1Bicfi: [''],
+      prvsInstgAgt1Bicfi: ['', [Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       prvsInstgAgt1ClrSysIdCd: ['', Validators.maxLength(10)],
       prvsInstgAgt1MmbId: [''],
-      prvsInstgAgt1Lei: [''],
+      prvsInstgAgt1Lei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       prvsInstgAgt1Nm: [''],
       prvsInstgAgt1AdrLine1: [''],
       prvsInstgAgt1AdrLine2: [''],
@@ -622,10 +937,10 @@ export class Pacs009 implements OnInit, OnDestroy {
       prvsInstgAgt1PrxyId: [''],
 
       // Previous Instructing Agent 2 (flat)
-      prvsInstgAgt2Bicfi: [''],
+      prvsInstgAgt2Bicfi: ['', [Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       prvsInstgAgt2ClrSysIdCd: ['', Validators.maxLength(10)],
       prvsInstgAgt2MmbId: [''],
-      prvsInstgAgt2Lei: [''],
+      prvsInstgAgt2Lei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       prvsInstgAgt2Nm: [''],
       prvsInstgAgt2AdrLine1: [''],
       prvsInstgAgt2AdrLine2: [''],
@@ -656,10 +971,10 @@ export class Pacs009 implements OnInit, OnDestroy {
       prvsInstgAgt2PrxyId: [''],
 
       // Previous Instructing Agent 3 (flat)
-      prvsInstgAgt3Bicfi: [''],
+      prvsInstgAgt3Bicfi: ['', [Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       prvsInstgAgt3ClrSysIdCd: ['', Validators.maxLength(10)],
       prvsInstgAgt3MmbId: [''],
-      prvsInstgAgt3Lei: [''],
+      prvsInstgAgt3Lei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       prvsInstgAgt3Nm: [''],
       prvsInstgAgt3AdrLine1: [''],
       prvsInstgAgt3AdrLine2: [''],
@@ -690,23 +1005,23 @@ export class Pacs009 implements OnInit, OnDestroy {
       prvsInstgAgt3PrxyId: [''],
 
       // Agents (flat)
-      instgAgtBicfi: ['', Validators.required],
+      instgAgtBicfi: ['', [Validators.required, Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       instgAgtClrSysIdCd: ['', Validators.maxLength(10)],
       instgAgtMmbId: [''],
-      instgAgtLei: [''],
+      instgAgtLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       instgAgtNm: [''],
 
-      instdAgtBicfi: ['', Validators.required],
+      instdAgtBicfi: ['', [Validators.required, Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       instdAgtClrSysIdCd: ['', Validators.maxLength(10)],
       instdAgtMmbId: [''],
-      instdAgtLei: [''],
+      instdAgtLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       instdAgtNm: [''],
 
       // Intermediary Agent 1 (flat)
-      intrmyAgt1Bicfi: [''],
+      intrmyAgt1Bicfi: ['', [Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       intrmyAgt1ClrSysIdCd: ['', Validators.maxLength(10)],
       intrmyAgt1MmbId: [''],
-      intrmyAgt1Lei: [''],
+      intrmyAgt1Lei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       intrmyAgt1Nm: [''],
       intrmyAgt1AdrLine1: [''],
       intrmyAgt1AdrLine2: [''],
@@ -737,10 +1052,10 @@ export class Pacs009 implements OnInit, OnDestroy {
       intrmyAgt1PrxyId: [''],
 
       // Intermediary Agent 2 (flat)
-      intrmyAgt2Bicfi: [''],
+      intrmyAgt2Bicfi: ['', [Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       intrmyAgt2ClrSysIdCd: ['', Validators.maxLength(10)],
       intrmyAgt2MmbId: [''],
-      intrmyAgt2Lei: [''],
+      intrmyAgt2Lei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       intrmyAgt2Nm: [''],
       intrmyAgt2AdrLine1: [''],
       intrmyAgt2AdrLine2: [''],
@@ -771,10 +1086,10 @@ export class Pacs009 implements OnInit, OnDestroy {
       intrmyAgt2PrxyId: [''],
 
       // Intermediary Agent 3 (flat)
-      intrmyAgt3Bicfi: [''],
+      intrmyAgt3Bicfi: ['', [Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       intrmyAgt3ClrSysIdCd: ['', Validators.maxLength(10)],
       intrmyAgt3MmbId: [''],
-      intrmyAgt3Lei: [''],
+      intrmyAgt3Lei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       intrmyAgt3Nm: [''],
       intrmyAgt3AdrLine1: [''],
       intrmyAgt3AdrLine2: [''],
@@ -806,10 +1121,10 @@ export class Pacs009 implements OnInit, OnDestroy {
 
       // Debtor (flat)
       dbtrNm: [''],
-      dbtrBicfi: ['', Validators.required],
+      dbtrBicfi: ['', [Validators.required, Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       dbtrClrSysIdCd: ['', Validators.maxLength(10)],
       dbtrMmbId: [''],
-      dbtrLei: [''],
+      dbtrLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       dbtrAdrDept: [''],
       dbtrAdrSubDept: [''],
       dbtrAdrStrtNm: [''],
@@ -839,10 +1154,10 @@ export class Pacs009 implements OnInit, OnDestroy {
       dbtrAcctPrxyId: [''],
 
       // Debtor Agent (flat)
-      dbtrAgtBicfi: [''],
+      dbtrAgtBicfi: ['', [Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       dbtrAgtClrSysIdCd: ['', Validators.maxLength(10)],
       dbtrAgtMmbId: [''],
-      dbtrAgtLei: [''],
+      dbtrAgtLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       dbtrAgtNm: [''],
       dbtrAgtAdrLine1: [''],
       dbtrAgtAdrLine2: [''],
@@ -873,10 +1188,10 @@ export class Pacs009 implements OnInit, OnDestroy {
       dbtrAgtAcctPrxyId: [''],
 
       // Creditor Agent (flat)
-      cdtrAgtBicfi: [''],
+      cdtrAgtBicfi: ['', [Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       cdtrAgtClrSysIdCd: ['', Validators.maxLength(10)],
       cdtrAgtMmbId: [''],
-      cdtrAgtLei: [''],
+      cdtrAgtLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       cdtrAgtNm: [''],
       cdtrAgtAdrLine1: [''],
       cdtrAgtAdrLine2: [''],
@@ -908,10 +1223,10 @@ export class Pacs009 implements OnInit, OnDestroy {
 
       // Creditor (flat)
       cdtrNm: [''],
-      cdtrBicfi: ['', Validators.required],
+      cdtrBicfi: ['', [Validators.required, Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
       cdtrClrSysIdCd: ['', Validators.maxLength(10)],
       cdtrMmbId: [''],
-      cdtrLei: [''],
+      cdtrLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       cdtrAdrDept: [''],
       cdtrAdrSubDept: [''],
       cdtrAdrStrtNm: [''],
@@ -945,8 +1260,8 @@ export class Pacs009 implements OnInit, OnDestroy {
       instructionForNextAgent: this.formBuilder.array([]),
 
       // Purpose
-      purpCD: [''],
-      purpPrtry: [''],
+      purpCD: ['', Validators.maxLength(4)], // Purpose ExternalPurpose1Code max 4
+      purpPrtry: ['', Validators.maxLength(35)], // Purpose Proprietary max 35
 
       // Remittance
       rmtInf: [''],
@@ -1026,7 +1341,7 @@ export class Pacs009 implements OnInit, OnDestroy {
         sttlmMtd: null,
         fromBicfi: '',
         toBicfi: '',
-        txId: 'TX_' + new Date().getTime(),
+        txId: 'TX' + new Date().getTime(),
         intrBkSttlmAmtCcy: null,
         intrBkSttlmAmt: '1000.00',
         intrBkSttlmDt: new Date().toISOString().split('T')[0],
@@ -1035,7 +1350,44 @@ export class Pacs009 implements OnInit, OnDestroy {
         clstm: '',
         tilltm: '',
         frtm: '',
-        rjcttm: ''
+        rjcttm: '',
+        // Reset reimbursement agent address fields
+        instgRmbrsmntAgtAdrLine1: '',
+        instgRmbrsmntAgtAdrLine2: '',
+        instgRmbrsmntAgtAdrLine3: '',
+        instgRmbrsmntAgtAdrDept: '',
+        instgRmbrsmntAgtAdrSubDept: '',
+        instgRmbrsmntAgtAdrStrtNm: '',
+        instgRmbrsmntAgtAdrBldgNb: '',
+        instgRmbrsmntAgtAdrBldgNm: '',
+        instgRmbrsmntAgtAdrFlr: '',
+        instgRmbrsmntAgtAdrPstBx: '',
+        instgRmbrsmntAgtAdrRoom: '',
+        instgRmbrsmntAgtAdrPstCd: '',
+        instgRmbrsmntAgtAdrTwnNm: '',
+        instgRmbrsmntAgtAdrTwnLctnNm: '',
+        instgRmbrsmntAgtAdrDstrctNm: '',
+        instgRmbrsmntAgtAdrCtrySubDvsn: '',
+        instgRmbrsmntAgtAdrCtry: '',
+        instgRmbrsmntAgtAdrLine: '',
+        instdRmbrsmntAgtAdrLine1: '',
+        instdRmbrsmntAgtAdrLine2: '',
+        instdRmbrsmntAgtAdrLine3: '',
+        instdRmbrsmntAgtAdrDept: '',
+        instdRmbrsmntAgtAdrSubDept: '',
+        instdRmbrsmntAgtAdrStrtNm: '',
+        instdRmbrsmntAgtAdrBldgNb: '',
+        instdRmbrsmntAgtAdrBldgNm: '',
+        instdRmbrsmntAgtAdrFlr: '',
+        instdRmbrsmntAgtAdrPstBx: '',
+        instdRmbrsmntAgtAdrRoom: '',
+        instdRmbrsmntAgtAdrPstCd: '',
+        instdRmbrsmntAgtAdrTwnNm: '',
+        instdRmbrsmntAgtAdrTwnLctnNm: '',
+        instdRmbrsmntAgtAdrDstrctNm: '',
+        instdRmbrsmntAgtAdrCtrySubDvsn: '',
+        instdRmbrsmntAgtAdrCtry: '',
+        instdRmbrsmntAgtAdrLine: ''
       });
       // Clear service levels and add one default row
       this.serviceLevels.clear();
@@ -1179,12 +1531,18 @@ export class Pacs009 implements OnInit, OnDestroy {
     let frmValue = this.frmGroup.value;
 
     // Business Message Header - Only fields that exist in DTO
+    payload.charSet = frmValue.charSet;
     payload.bizMsgIdr = frmValue.bizMsgIdr;
     payload.msgDefIdr = frmValue.msgDefIdr;
     payload.bizSvc = frmValue.bizSvc;
     payload.mktPrctcRegy = frmValue.mktPrctcRegy;
     payload.mktPrctcId = frmValue.mktPrctcId;
-    payload.creDt = frmValue.creDt;
+    // Ensure date is in YYYY-MM-DD format only (no time/timezone)
+    payload.creDt = frmValue.creDt 
+      ? (typeof frmValue.creDt === 'string' 
+          ? frmValue.creDt.split('T')[0] 
+          : new Date(frmValue.creDt).toISOString().split('T')[0])
+      : null;
     payload.cpyDplct = frmValue.cpyDplct;
     payload.pssblDplct = frmValue.pssblDplct;
     payload.priority = frmValue.priority;
@@ -1198,10 +1556,17 @@ export class Pacs009 implements OnInit, OnDestroy {
     // Map flat settlement account to nested structure
     payload.sttlmAcct = {
       id: frmValue.sttlmAcctId,
+      iban: frmValue.sttlmAcctIban,
       ccy: frmValue.sttlmAcctCcy,
       tp: frmValue.sttlmAcctTp,
+      tpCd: frmValue.sttlmAcctTpCd,
+      tpPrtry: frmValue.sttlmAcctTpPrtry,
       nm: frmValue.sttlmAcctNm,
-      schmeNm: frmValue.sttlmAcctSchmeNm,
+      prxyTpPrtry: frmValue.sttlmAcctPrxyTpPrtry,
+      prxyTpCd: frmValue.sttlmAcctPrxyTpCd,
+      prxyId: frmValue.sttlmAcctPrxyId,
+      schmeNmCd: frmValue.sttlmAcctSchmeNmCd,
+      schmeNmPrtry: frmValue.sttlmAcctSchmeNmPrtry,
       issr: frmValue.sttlmAcctIssr,
     };
 
@@ -1246,7 +1611,12 @@ export class Pacs009 implements OnInit, OnDestroy {
     payload.intrBkSttlmAmt = frmValue.intrBkSttlmAmt
       ? Number(frmValue.intrBkSttlmAmt)
       : null;
-    payload.intrBkSttlmDt = frmValue.intrBkSttlmDt;
+    // Ensure date is in YYYY-MM-DD format only (no time/timezone)
+    payload.intrBkSttlmDt = frmValue.intrBkSttlmDt 
+      ? (typeof frmValue.intrBkSttlmDt === 'string' 
+          ? frmValue.intrBkSttlmDt.split('T')[0] 
+          : new Date(frmValue.intrBkSttlmDt).toISOString().split('T')[0])
+      : null;
     payload.intrBkSttlmDbtDtTm = frmValue.intrBkSttlmDbtDtTm;
     payload.intrBkSttlmCdtDtTm = frmValue.intrBkSttlmCdtDtTm;
     payload.sttlmPrty = frmValue.sttlmPrty;
@@ -1273,16 +1643,14 @@ export class Pacs009 implements OnInit, OnDestroy {
       bicfi: frmValue.instgAgtBicfi,
       clrSysIdCd: frmValue.instgAgtClrSysIdCd,
       mmbId: frmValue.instgAgtMmbId,
-      lei: frmValue.instgAgtLei,
-      nm: frmValue.instgAgtNm
+      lei: frmValue.instgAgtLei || frmValue.fromLei,
     };
 
     payload.instdAgt = {
       bicfi: frmValue.instdAgtBicfi,
       clrSysIdCd: frmValue.instdAgtClrSysIdCd,
       mmbId: frmValue.instdAgtMmbId,
-      lei: frmValue.instdAgtLei,
-      nm: frmValue.instdAgtNm
+      lei: frmValue.instdAgtLei || frmValue.toLei,
     };
 
     // Map flat previous instructing agent 1 to nested structure - Fix field name from bIcfi to bicfi
@@ -1292,9 +1660,6 @@ export class Pacs009 implements OnInit, OnDestroy {
       mmbId: frmValue.prvsInstgAgt1MmbId,
       lei: frmValue.prvsInstgAgt1Lei,
       nm: frmValue.prvsInstgAgt1Nm,
-      adrLine1: frmValue.prvsInstgAgt1AdrLine1,
-      adrLine2: frmValue.prvsInstgAgt1AdrLine2,
-      adrLine3: frmValue.prvsInstgAgt1AdrLine3,
       adr: {
         dept: frmValue.prvsInstgAgt1AdrDept,
         subDept: frmValue.prvsInstgAgt1AdrSubDept,
@@ -1312,7 +1677,7 @@ export class Pacs009 implements OnInit, OnDestroy {
         ctry: frmValue.prvsInstgAgt1AdrCtry,
         adrLine: Array.isArray(frmValue.prvsInstgAgt1AdrLine) ? frmValue.prvsInstgAgt1AdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ) : [],
+        ) : [frmValue.prvsInstgAgt1AdrLine1, frmValue.prvsInstgAgt1AdrLine2, frmValue.prvsInstgAgt1AdrLine3],
       },
     };
 
@@ -1336,9 +1701,6 @@ export class Pacs009 implements OnInit, OnDestroy {
       mmbId: frmValue.prvsInstgAgt2MmbId,
       lei: frmValue.prvsInstgAgt2Lei,
       nm: frmValue.prvsInstgAgt2Nm,
-      adrLine1: frmValue.prvsInstgAgt2AdrLine1,
-      adrLine2: frmValue.prvsInstgAgt2AdrLine2,
-      adrLine3: frmValue.prvsInstgAgt2AdrLine3,
       adr: {
         dept: frmValue.prvsInstgAgt2AdrDept,
         subDept: frmValue.prvsInstgAgt2AdrSubDept,
@@ -1356,7 +1718,7 @@ export class Pacs009 implements OnInit, OnDestroy {
         ctry: frmValue.prvsInstgAgt2AdrCtry,
         adrLine: Array.isArray(frmValue.prvsInstgAgt2AdrLine) ? frmValue.prvsInstgAgt2AdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ) : [],
+        ) : [frmValue.prvsInstgAgt2AdrLine1, frmValue.prvsInstgAgt2AdrLine2, frmValue.prvsInstgAgt2AdrLine3],
       },
     };
 
@@ -1422,9 +1784,6 @@ export class Pacs009 implements OnInit, OnDestroy {
       mmbId: frmValue.intrmyAgt1MmbId,
       lei: frmValue.intrmyAgt1Lei,
       nm: frmValue.intrmyAgt1Nm,
-      adrLine1: frmValue.intrmyAgt1AdrLine1,
-      adrLine2: frmValue.intrmyAgt1AdrLine2,
-      adrLine3: frmValue.intrmyAgt1AdrLine3,
       adr: {
         dept: frmValue.intrmyAgt1AdrDept,
         subDept: frmValue.intrmyAgt1AdrSubDept,
@@ -1442,7 +1801,7 @@ export class Pacs009 implements OnInit, OnDestroy {
         ctry: frmValue.intrmyAgt1AdrCtry,
         adrLine: Array.isArray(frmValue.intrmyAgt1AdrLine) ? frmValue.intrmyAgt1AdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ) : [],
+        ) : [frmValue.intrmyAgt1AdrLine1, frmValue.intrmyAgt1AdrLine2, frmValue.intrmyAgt1AdrLine3],
       },
     };
 
@@ -1465,9 +1824,6 @@ export class Pacs009 implements OnInit, OnDestroy {
       mmbId: frmValue.intrmyAgt2MmbId,
       lei: frmValue.intrmyAgt2Lei,
       nm: frmValue.intrmyAgt2Nm,
-      adrLine1: frmValue.intrmyAgt2AdrLine1,
-      adrLine2: frmValue.intrmyAgt2AdrLine2,
-      adrLine3: frmValue.intrmyAgt2AdrLine3,
       adr: {
         dept: frmValue.intrmyAgt2AdrDept,
         subDept: frmValue.intrmyAgt2AdrSubDept,
@@ -1485,7 +1841,7 @@ export class Pacs009 implements OnInit, OnDestroy {
         ctry: frmValue.intrmyAgt2AdrCtry,
         adrLine: Array.isArray(frmValue.intrmyAgt2AdrLine) ? frmValue.intrmyAgt2AdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ) : [],
+        ) : [frmValue.intrmyAgt2AdrLine1, frmValue.intrmyAgt2AdrLine2, frmValue.intrmyAgt2AdrLine3],
       },
     };
 
@@ -1508,9 +1864,6 @@ export class Pacs009 implements OnInit, OnDestroy {
       mmbId: frmValue.intrmyAgt3MmbId,
       lei: frmValue.intrmyAgt3Lei,
       nm: frmValue.intrmyAgt3Nm,
-      adrLine1: frmValue.intrmyAgt3AdrLine1,
-      adrLine2: frmValue.intrmyAgt3AdrLine2,
-      adrLine3: frmValue.intrmyAgt3AdrLine3,
       adr: {
         dept: frmValue.intrmyAgt3AdrDept,
         subDept: frmValue.intrmyAgt3AdrSubDept,
@@ -1528,7 +1881,7 @@ export class Pacs009 implements OnInit, OnDestroy {
         ctry: frmValue.intrmyAgt3AdrCtry,
         adrLine: Array.isArray(frmValue.intrmyAgt3AdrLine) ? frmValue.intrmyAgt3AdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ) : [],
+        ) : [frmValue.intrmyAgt3AdrLine1, frmValue.intrmyAgt3AdrLine2, frmValue.intrmyAgt3AdrLine3],
       },
     };
 
@@ -1552,9 +1905,6 @@ export class Pacs009 implements OnInit, OnDestroy {
       mmbId: frmValue.dbtrMmbId || '',
       lei: frmValue.dbtrLei || '',
       nm: frmValue.dbtrNm,
-      adrLine1: frmValue.dbtrAdrLine1 || '',
-      adrLine2: frmValue.dbtrAdrLine2 || '',
-      adrLine3: frmValue.dbtrAdrLine3 || '',
       adr: {
         dept: frmValue.dbtrAdrDept,
         subDept: frmValue.dbtrAdrSubDept,
@@ -1572,7 +1922,7 @@ export class Pacs009 implements OnInit, OnDestroy {
         ctry: frmValue.dbtrAdrCtry,
         adrLine: Array.isArray(frmValue.dbtrAdrLine) ? frmValue.dbtrAdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ) : [],
+        ) : [frmValue.dbtrAdrLine1, frmValue.dbtrAdrLine2, frmValue.dbtrAdrLine3],
       },
     };
 
@@ -1595,9 +1945,6 @@ export class Pacs009 implements OnInit, OnDestroy {
       mmbId: frmValue.dbtrAgtMmbId,
       lei: frmValue.dbtrAgtLei,
       nm: frmValue.dbtrAgtNm,
-      adrLine1: frmValue.dbtrAgtAdrLine1,
-      adrLine2: frmValue.dbtrAgtAdrLine2,
-      adrLine3: frmValue.dbtrAgtAdrLine3,
       adr: {
         dept: frmValue.dbtrAgtAdrDept,
         subDept: frmValue.dbtrAgtAdrSubDept,
@@ -1615,7 +1962,7 @@ export class Pacs009 implements OnInit, OnDestroy {
         ctry: frmValue.dbtrAgtAdrCtry,
         adrLine: Array.isArray(frmValue.dbtrAgtAdrLine) ? frmValue.dbtrAgtAdrLine.filter(
           (line: string) => line && line.trim() !== ''
-        ) : [],
+        ) : [frmValue.dbtrAgtAdrLine1, frmValue.dbtrAgtAdrLine2, frmValue.dbtrAgtAdrLine3],
       },
     };
 
@@ -1723,13 +2070,12 @@ export class Pacs009 implements OnInit, OnDestroy {
     // Instructions
     // Map instruction for creditor agent FormArray to individual fields as per DTO
     const creditorAgentInstructions = frmValue.instructionForCreditorAgent || [];
-    if (creditorAgentInstructions.length > 0) {
-      payload.instrForCdtrAgtCD = creditorAgentInstructions[0]?.code || '';
-      payload.instrForCdtrAgtInf = creditorAgentInstructions[0]?.info || '';
-    } else {
-      payload.instrForCdtrAgtCD = '';
-      payload.instrForCdtrAgtInf = '';
-    }
+    // First instruction (CD1/Inf1)
+    payload.instrForCdtrAgtCD = creditorAgentInstructions[0]?.code || '';
+    payload.instrForCdtrAgtInf = creditorAgentInstructions[0]?.info || '';
+    // Second instruction (CD2/Inf2)
+    payload.instrForCdtrAgtCD2 = creditorAgentInstructions[1]?.code || '';
+    payload.instrForCdtrAgtInf2 = creditorAgentInstructions[1]?.info || '';
 
     // Map instruction for next agent FormArray to individual fields as per DTO
     const nextAgentInstructions = frmValue.instructionForNextAgent || [];
@@ -1772,7 +2118,6 @@ export class Pacs009 implements OnInit, OnDestroy {
         clrSysIdCd: frmValue.rltdFromClrSysIdCd,
         mmbId: frmValue.rltdFromMmbId,
         lei: frmValue.rltdFromLei,
-        membId: frmValue.rltdFromMembId,
       },
       to: {
         bicfi: frmValue.rltdToBicfi,
@@ -1797,7 +2142,26 @@ export class Pacs009 implements OnInit, OnDestroy {
       clrSysIdCd: frmValue.instgRmbrsmntAgtClrSysIdCd,
       mmbId: frmValue.instgRmbrsmntAgtMmbId,
       lei: frmValue.instgRmbrsmntAgtLei,
-      nm: frmValue.instgRmbrsmntAgtNm
+      nm: frmValue.instgRmbrsmntAgtNm,
+      adr: {
+        dept: frmValue.instgRmbrsmntAgtAdrDept,
+        subDept: frmValue.instgRmbrsmntAgtAdrSubDept,
+        strtNm: frmValue.instgRmbrsmntAgtAdrStrtNm,
+        bldgNb: frmValue.instgRmbrsmntAgtAdrBldgNb,
+        bldgNm: frmValue.instgRmbrsmntAgtAdrBldgNm,
+        flr: frmValue.instgRmbrsmntAgtAdrFlr,
+        pstBx: frmValue.instgRmbrsmntAgtAdrPstBx,
+        room: frmValue.instgRmbrsmntAgtAdrRoom,
+        pstCd: frmValue.instgRmbrsmntAgtAdrPstCd,
+        twnNm: frmValue.instgRmbrsmntAgtAdrTwnNm,
+        twnLctnNm: frmValue.instgRmbrsmntAgtAdrTwnLctnNm,
+        dstrctNm: frmValue.instgRmbrsmntAgtAdrDstrctNm,
+        ctrySubDvsn: frmValue.instgRmbrsmntAgtAdrCtrySubDvsn,
+        ctry: frmValue.instgRmbrsmntAgtAdrCtry,
+        adrLine: Array.isArray(frmValue.instgRmbrsmntAgtAdrLine) ? frmValue.instgRmbrsmntAgtAdrLine.filter(
+          (line: string) => line && line.trim() !== ''
+        ) : [frmValue.instgRmbrsmntAgtAdrLine1, frmValue.instgRmbrsmntAgtAdrLine2, frmValue.instgRmbrsmntAgtAdrLine3],
+      },
     };
 
     payload.instgRmbrsmntAgtAcct = {
@@ -1816,7 +2180,26 @@ export class Pacs009 implements OnInit, OnDestroy {
       clrSysIdCd: frmValue.instdRmbrsmntAgtClrSysIdCd,
       mmbId: frmValue.instdRmbrsmntAgtMmbId,
       lei: frmValue.instdRmbrsmntAgtLei,
-      nm: frmValue.instdRmbrsmntAgtNm
+      nm: frmValue.instdRmbrsmntAgtNm,
+      adr: {
+        dept: frmValue.instdRmbrsmntAgtAdrDept,
+        subDept: frmValue.instdRmbrsmntAgtAdrSubDept,
+        strtNm: frmValue.instdRmbrsmntAgtAdrStrtNm,
+        bldgNb: frmValue.instdRmbrsmntAgtAdrBldgNb,
+        bldgNm: frmValue.instdRmbrsmntAgtAdrBldgNm,
+        flr: frmValue.instdRmbrsmntAgtAdrFlr,
+        pstBx: frmValue.instdRmbrsmntAgtAdrPstBx,
+        room: frmValue.instdRmbrsmntAgtAdrRoom,
+        pstCd: frmValue.instdRmbrsmntAgtAdrPstCd,
+        twnNm: frmValue.instdRmbrsmntAgtAdrTwnNm,
+        twnLctnNm: frmValue.instdRmbrsmntAgtAdrTwnLctnNm,
+        dstrctNm: frmValue.instdRmbrsmntAgtAdrDstrctNm,
+        ctrySubDvsn: frmValue.instdRmbrsmntAgtAdrCtrySubDvsn,
+        ctry: frmValue.instdRmbrsmntAgtAdrCtry,
+        adrLine: Array.isArray(frmValue.instdRmbrsmntAgtAdrLine) ? frmValue.instdRmbrsmntAgtAdrLine.filter(
+          (line: string) => line && line.trim() !== ''
+        ) : [ frmValue.instdRmbrsmntAgtAdrLine1, frmValue.instdRmbrsmntAgtAdrLine2, frmValue.instdRmbrsmntAgtAdrLine3],
+      },
     };
 
     payload.instdRmbrsmntAgtAcct = {
@@ -1899,7 +2282,7 @@ export class Pacs009 implements OnInit, OnDestroy {
   addInstructionForNextAgentRow() {
     if (this.instructionForNextAgent.length < 6) { // Max 6 as per spec
       const instructionGroup = this.formBuilder.group({
-        instruction: [''],
+        instruction: ['', Validators.maxLength(35)],
       });
       this.instructionForNextAgent.push(instructionGroup);
     } else {

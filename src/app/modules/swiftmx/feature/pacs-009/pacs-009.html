@@ -13,6 +13,7 @@
           [frmGroup]="frmGroup"
           [label]="'Character Set'"
           [controlName]="'charSet'"
+          [maxLength]="35"
         />
       </div>
 
@@ -27,22 +28,29 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'fromBicfi'"
+            [maxLength]="11"
+            [minLength]="8"
             (onDoubleClick)="openBicSelectionModal('fromBicfi')"
           />
-          <!-- <app-text-base-input
+          <app-select-option-field
             [frmGroup]="frmGroup"
+            [options]="clearingSystemIdOptions"
             [label]="'Clearing System ID Code'"
             [controlName]="'fromClrSysIdCd'"
-          /> -->
+          />
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Member ID'"
-            [controlName]="'fromMembId'"
+            [controlName]="'fromMmbId'"
+            [maxLength]="28"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'LEI'"
             [controlName]="'fromLei'"
+            [maxLength]="20"
+            [minLength]="20"
+            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
           />
         </div>
         }
@@ -59,21 +67,28 @@
             [label]="'BIC'"
             [controlName]="'toBicfi'"
             (onDoubleClick)="openBicSelectionModal('toBicfi', 'toNm')"
+            [maxLength]="11"
+            [minLength]="8"
           />
-          <!-- <app-text-base-input
+          <app-select-option-field
             [frmGroup]="frmGroup"
+            [options]="clearingSystemIdOptions"
             [label]="'Clearing System ID Code'"
             [controlName]="'toClrSysIdCd'"
-          /> -->
+          />
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Member ID'"
-            [controlName]="'toMembId'"
+            [controlName]="'toMmbId'"
+            [maxLength]="28"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'LEI'"
             [controlName]="'toLei'"
+            [maxLength]="20"
+            [minLength]="20"
+            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
           />
         </div>
         }
@@ -167,6 +182,7 @@
             [frmGroup]="frmGroup"
             [label]="'Character Set'"
             [controlName]="'rltdCharSet'"
+            [maxLength]="35"
           />
           <div class="sub-panel">
             <app-expansion-sub-panel-header
@@ -175,28 +191,36 @@
             />
             @if(rltdFromBicPanel()) {
             <div class="form-grid-col-1">
-              <app-text-base-input
+                            <app-text-base-input
                 [frmGroup]="frmGroup"
                 [label]="'BIC'"
                 [controlName]="'rltdFromBicfi'"
+                [maxLength]="11"
+                [minLength]="8"
                 (onDoubleClick)="
                   openBicSelectionModal('rltdFromBicfi', 'rltdFromNm')
                 "
               />
-              <!-- <app-text-base-input
+              <app-select-option-field
                 [frmGroup]="frmGroup"
+                [options]="clearingSystemIdOptions"
                 [label]="'Clearing System ID Code'"
-                [controlName]="'fromClrSysIdCd'"
-              /> -->
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+                [controlName]="'rltdFromClrSysIdCd'"
+              />
+    
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Member ID'"
-                [controlName]="'rltdFromMembId'"
+                [controlName]="'rltdFromMmbId'"
+                [maxLength]="28"
               />
               <app-text-base-input
                 [frmGroup]="frmGroup"
                 [label]="'LEI'"
                 [controlName]="'rltdFromLei'"
+                [maxLength]="20"
+                [minLength]="20"
+                [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
               />
             </div>
             }
@@ -213,24 +237,31 @@
                 [frmGroup]="frmGroup"
                 [label]="'BIC'"
                 [controlName]="'rltdToBicfi'"
+                [maxLength]="11"
+                [minLength]="8"
                 (onDoubleClick)="
                   openBicSelectionModal('rltdToBicfi', 'rltdToNm')
                 "
               />
-              <!-- <app-text-base-input
-                [frmGroup]="frmGroup"
+              <app-select-option-field
+            [frmGroup]="frmGroup"
+                [options]="clearingSystemIdOptions"
                 [label]="'Clearing System ID Code'"
-                [controlName]="'fromClrSysIdCd'"
-              /> -->
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+                [controlName]="'rltdToClrSysIdCd'"  
+              />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Member ID'"
-                [controlName]="'rltdToMembId'"
+                [controlName]="'rltdToMmbId'"
+                [maxLength]="28"
               />
               <app-text-base-input
                 [frmGroup]="frmGroup"
                 [label]="'LEI'"
                 [controlName]="'rltdToLei'"
+                [maxLength]="20"
+                [minLength]="20"
+                [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
               />
             </div>
             }
@@ -262,10 +293,11 @@
             [label]="'Copy Duplicate'"
             [controlName]="'rltdCpyDplct'"
           />
-          <app-date-input
-            [frmGroup]="frmGroup"
-            [label]="'Priority'"
-            [controlName]="'rltdPrty'"
+          <app-select-option-field
+          [frmGroup]="frmGroup"
+          [options]="priorityOptions"
+          [label]="'Priority'"
+          [controlName]="'rltdPrty'"
           />
         </div>
         }
@@ -321,8 +353,52 @@
             [label]="'Settlement Method'"
             [controlName]="'sttlmMtd'"
           />
-
           <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="sttlmAccountPanel"
+              [subPanelTitle]="'Settlement Account'"
+            />
+            @if(sttlmAccountPanel()) {
+            <div class="form-grid-col-1">
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Account ID'"
+                [controlName]="'sttlmAcctId'"
+              />
+          <app-select-option-field
+            [frmGroup]="frmGroup"
+            [options]="currencyOptions"
+                [label]="'Account Currency'"
+            [controlName]="'sttlmAcctCcy'"
+          />
+              <app-select-option-field
+                [frmGroup]="frmGroup"
+                [options]="accountTypeOptions"
+                [label]="'Account Type'"
+                [controlName]="'sttlmAcctTp'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Account Name'"
+                [controlName]="'sttlmAcctNm'"
+              />
+    
+              <app-select-option-field
+                [frmGroup]="frmGroup"
+                [options]="rmbrsmntAgtPrxyCdOptions"
+                [label]="'Proxy Code'"
+                [controlName]="'sttlmAgtAcctPrxyCd'"
+              />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+                [label]="'Proxy ID'"
+                [controlName]="'sttlmAgtAcctPrxyId'"
+              />
+            </div>
+            }
+          </div>
+
+          <div class="sub-panel hidden">
             <app-expansion-sub-panel-header
               [isOpenSignal]="instructingReimbursementAgentPanel"
               [subPanelTitle]="'Instructing Reimbursement Agent'"
@@ -333,10 +409,12 @@
                 [frmGroup]="frmGroup"
                 [label]="'BIC'"
                 [controlName]="'instgRmbrsmntAgtBicfi'"
+                [maxLength]="11"
+                [minLength]="8"
                 (onDoubleClick)="openBicSelectionModal('instgRmbrsmntAgtBicfi')"
               />
-              <!-- <app-text-base-input
-                  [frmGroup]="frmGroup"
+          <!-- <app-text-base-input
+            [frmGroup]="frmGroup"
                   [label]="'Clearing System ID Code'"
                   [controlName]="'instdRmbrsmntAgtClrSysIdCd'"
                 /> -->
@@ -344,11 +422,15 @@
                 [frmGroup]="frmGroup"
                 [label]="'Member ID'"
                 [controlName]="'instgRmbrsmntAgtMmbId'"
+                [maxLength]="28"
               />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'LEI'"
                 [controlName]="'instgRmbrsmntAgtLei'"
+                [maxLength]="20"
+                [minLength]="20"
+                [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
               />
               <app-text-base-input
                 [frmGroup]="frmGroup"
@@ -372,11 +454,11 @@
                     [label]="'Address Line 2'"
                     [controlName]="'instgRmbrsmntAgtAdrLine2'"
                   />
-                  <app-text-base-input
+                  <!-- <app-text-base-input
                     [frmGroup]="frmGroup"
                     [label]="'Address Line 3'"
                     [controlName]="'instgRmbrsmntAgtAdrLine3'"
-                  />
+                  /> -->
                   <app-text-base-input
                     [frmGroup]="frmGroup"
                     [label]="'Department'"
@@ -446,6 +528,9 @@
                     [frmGroup]="frmGroup"
                     [label]="'Country'"
                     [controlName]="'instgRmbrsmntAgtAdrCtry'"
+                    [maxLength]="2"
+                    [minLength]="2"
+                    [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
                   />
                 </div>
                 }
@@ -454,15 +539,15 @@
             }
           </div>
 
-          <div class="sub-panel">
+          <div class="sub-panel hidden">
             <app-expansion-sub-panel-header
               [isOpenSignal]="instructingReimbursementAgentAccountPanel"
               [subPanelTitle]="'Instructing Reimbursement Agent Account'"
             />
             @if (instructingReimbursementAgentAccountPanel()) {
             <div class="form-grid-col-1">
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Account ID'"
                 [controlName]="'instgRmbrsmntAgtAcctId'"
               />
@@ -498,33 +583,39 @@
             }
           </div>
 
-          <div class="sub-panel">
+          <div class="sub-panel hidden">
             <app-expansion-sub-panel-header
               [isOpenSignal]="instructedReimbursementAgentPanel"
               [subPanelTitle]="'Instructed Reimbursement Agent'"
             />
             @if (instructedReimbursementAgentPanel()) {
             <div class="form-grid-col-1">
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'BIC'"
                 [controlName]="'instdRmbrsmntAgtBicfi'"
+                [maxLength]="11"
+                [minLength]="8"
                 (onDoubleClick)="openBicSelectionModal('instdRmbrsmntAgtBicfi', 'instdRmbrsmntAgtNm')"
               />
               <!-- <app-text-base-input
                   [frmGroup]="frmGroup"
                   [label]="'Clearing System ID Code'"
                   [controlName]="'instdRmbrsmntAgtClrSysIdCd'"
-                /> -->
+          /> -->
               <app-text-base-input
                 [frmGroup]="frmGroup"
                 [label]="'Member ID'"
                 [controlName]="'instdRmbrsmntAgtMmbId'"
+                [maxLength]="28"
               />
               <app-text-base-input
                 [frmGroup]="frmGroup"
                 [label]="'LEI'"
                 [controlName]="'instdRmbrsmntAgtLei'"
+                [maxLength]="20"
+                [minLength]="20"
+                [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
               />
               <app-text-base-input
                 [frmGroup]="frmGroup"
@@ -548,11 +639,11 @@
                     [label]="'Address Line 2'"
                     [controlName]="'instdRmbrsmntAgtAdrLine2'"
                   />
-                  <app-text-base-input
+                  <!-- <app-text-base-input
                     [frmGroup]="frmGroup"
                     [label]="'Address Line 3'"
                     [controlName]="'instdRmbrsmntAgtAdrLine3'"
-                  />
+                  /> -->
                   <app-text-base-input
                     [frmGroup]="frmGroup"
                     [label]="'Department'"
@@ -622,6 +713,9 @@
                     [frmGroup]="frmGroup"
                     [label]="'Country'"
                     [controlName]="'instdRmbrsmntAgtAdrCtry'"
+                    [maxLength]="2"
+                    [minLength]="2"
+                    [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
                   />
                 </div>
                 }
@@ -630,7 +724,7 @@
             }
           </div>
 
-          <div class="sub-panel">
+          <div class="sub-panel hidden">
             <app-expansion-sub-panel-header
               [isOpenSignal]="instructedReimbursementAgentAccountPanel"
               [subPanelTitle]="'Instructed Reimbursement Agent Account'"
@@ -698,6 +792,7 @@
             [frmGroup]="frmGroup"
             [label]="'Instruction ID'"
             [controlName]="'instrId'"
+            [maxLength]="16"
           />
 
           <app-text-base-input
@@ -729,30 +824,30 @@
       <!-- Payment Type Information -->
       <div class="sub-panel">
         <app-expansion-sub-panel-header
-          [isOpenSignal]="paymentTypePanel"
+        [isOpenSignal]="paymentTypePanel"
           [subPanelTitle]="'Payment Type Information'"
+      />
+      @if (paymentTypePanel()) {
+      <div class="form-grid-col-1">
+        <app-select-option-field
+          [frmGroup]="frmGroup"
+          [options]="priorityOptions"
+          [label]="'Instruction Priority'"
+          [controlName]="'instrPrty'"
         />
-        @if (paymentTypePanel()) {
-        <div class="form-grid-col-1">
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="priorityOptions"
-            [label]="'Instruction Priority'"
-            [controlName]="'instrPrty'"
-          />
 
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="clearingChannelOptions"
-            [label]="'Clearing Channel'"
-            [controlName]="'clrChanl'"
-          />
+        <app-select-option-field
+          [frmGroup]="frmGroup"
+          [options]="clearingChannelOptions"
+          [label]="'Clearing Channel'"
+          [controlName]="'clrChanl'"
+        />
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Local Instrument Code'"
-            [controlName]="'lclInstrmCD'"
-          />
+        <app-text-base-input
+          [frmGroup]="frmGroup"
+          [label]="'Local Instrument Code'"
+          [controlName]="'lclInstrmCD'"
+        />
 
           <!-- <app-text-base-input
           [frmGroup]="frmGroup"
@@ -760,11 +855,11 @@
           [controlName]="'lclInstrmPrtry'"
         /> -->
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Category Purpose Code'"
-            [controlName]="'ctgyPurpCd'"
-          />
+        <app-text-base-input
+          [frmGroup]="frmGroup"
+          [label]="'Category Purpose Code'"
+          [controlName]="'ctgyPurpCd'"
+        />
 
           <!-- <app-text-base-input
           [frmGroup]="frmGroup"
@@ -772,47 +867,47 @@
           [controlName]="'ctgyPurpPrtry'"
         /> -->
 
-          <!-- Service Level Sub-Panel -->
-          <div class="sub-panel">
-            <app-expansion-sub-panel-header
-              [isOpenSignal]="serviceLevelPanel"
-              [subPanelTitle]="'Service Level'"
-              [isButton]="true"
-              [buttonText]="'Add'"
-              [buttonIcon]="'add'"
-              (addAction)="addServiceRow()"
+      <!-- Service Level Sub-Panel -->
+      <div class="sub-panel">
+        <app-expansion-sub-panel-header
+          [isOpenSignal]="serviceLevelPanel"
+          [subPanelTitle]="'Service Level'"
+          [isButton]="true"
+          [buttonText]="'Add'"
+          [buttonIcon]="'add'"
+          (addAction)="addServiceRow()"
+        />
+
+        @if (serviceLevelPanel()) { @if (frmGroup) {
+        <ng-container formArrayName="serviceLevels">
+          @for (group of serviceLevels.controls; track $index) {
+          <div [formGroupName]="$index" class="form-grid-col-1 mb-3">
+            <app-select-option-field
+              [frmGroup]="getServiceLevelGroup($index)"
+              [options]="serviceLevelCodeOptions"
+              [label]="'Service Code'"
+              [controlName]="'serviceCode'"
             />
 
-            @if (serviceLevelPanel()) { @if (frmGroup) {
-            <ng-container formArrayName="serviceLevels">
-              @for (group of serviceLevels.controls; track $index) {
-              <div [formGroupName]="$index" class="form-grid-col-1 mb-3">
-                <app-select-option-field
-                  [frmGroup]="getServiceLevelGroup($index)"
-                  [options]="serviceLevelCodeOptions"
-                  [label]="'Service Code'"
-                  [controlName]="'serviceCode'"
-                />
-
-                <app-select-option-field
-                  [frmGroup]="getServiceLevelGroup($index)"
-                  [options]="priorityOptions"
-                  [label]="'Service Priority'"
-                  [controlName]="'servicePriority'"
-                />
-                @if (serviceLevels.controls.length > 1) {
-                <button
-                  (click)="removeServiceRow($index)"
-                  class="remove-row-btn mt-8"
-                >
-                  Remove
-                </button>
-                }
-              </div>
-              }
-            </ng-container>
-            } }
+            <app-select-option-field
+              [frmGroup]="getServiceLevelGroup($index)"
+              [options]="priorityOptions"
+              [label]="'Service Priority'"
+              [controlName]="'servicePriority'"
+            />
+            @if (serviceLevels.controls.length > 1) {
+            <button
+              (click)="removeServiceRow($index)"
+              class="remove-row-btn mt-8"
+            >
+              Remove
+            </button>
+            }
           </div>
+          }
+        </ng-container>
+        } }
+      </div>
         </div>
 
         }
@@ -944,12 +1039,15 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt1Bicfi'"
+            [maxLength]="11"
+            [minLength]="8"
             (onDoubleClick)="
               openBicSelectionModal('prvsInstgAgt1Bicfi', 'prvsInstgAgt1Nm')
             "
           />
-          <app-text-base-input
+                        <app-select-option-field
             [frmGroup]="frmGroup"
+                [options]="clearingSystemIdOptions"
             [label]="'Clearing System ID Code'"
             [controlName]="'prvsInstgAgt1ClrSysIdCd'"
           />
@@ -962,6 +1060,9 @@
             [frmGroup]="frmGroup"
             [label]="'LEI'"
             [controlName]="'prvsInstgAgt1Lei'"
+            [maxLength]="20"
+            [minLength]="20"
+            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -975,90 +1076,93 @@
             />
             @if (prevAgent1AddressPanel()) {
             <div class="form-grid-col-1">
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 1'"
-                [controlName]="'prvsInstgAgt1AdrLine1'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 2'"
-                [controlName]="'prvsInstgAgt1AdrLine2'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 3'"
-                [controlName]="'prvsInstgAgt1AdrLine3'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Department'"
-                [controlName]="'prvsInstgAgt1AdrDept'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Sub Department'"
-                [controlName]="'prvsInstgAgt1AdrSubDept'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Street Name'"
-                [controlName]="'prvsInstgAgt1AdrStrtNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Building Number'"
-                [controlName]="'prvsInstgAgt1AdrBldgNb'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Building Name'"
-                [controlName]="'prvsInstgAgt1AdrBldgNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Floor'"
-                [controlName]="'prvsInstgAgt1AdrFlr'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Post Box'"
-                [controlName]="'prvsInstgAgt1AdrPstBx'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Room'"
-                [controlName]="'prvsInstgAgt1AdrRoom'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Post Code'"
-                [controlName]="'prvsInstgAgt1AdrPstCd'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Town Name'"
-                [controlName]="'prvsInstgAgt1AdrTwnNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Town Location Name'"
-                [controlName]="'prvsInstgAgt1AdrTwnLctnNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'District Name'"
-                [controlName]="'prvsInstgAgt1AdrDstrctNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Country Sub Division'"
-                [controlName]="'prvsInstgAgt1AdrCtrySubDvsn'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Country'"
-                [controlName]="'prvsInstgAgt1AdrCtry'"
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Address Line 1'"
+            [controlName]="'prvsInstgAgt1AdrLine1'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Address Line 2'"
+            [controlName]="'prvsInstgAgt1AdrLine2'"
+          />
+              <!-- <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Address Line 3'"
+            [controlName]="'prvsInstgAgt1AdrLine3'"
+              /> -->
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Department'"
+            [controlName]="'prvsInstgAgt1AdrDept'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Sub Department'"
+            [controlName]="'prvsInstgAgt1AdrSubDept'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Street Name'"
+            [controlName]="'prvsInstgAgt1AdrStrtNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Building Number'"
+            [controlName]="'prvsInstgAgt1AdrBldgNb'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Building Name'"
+            [controlName]="'prvsInstgAgt1AdrBldgNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Floor'"
+            [controlName]="'prvsInstgAgt1AdrFlr'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Post Box'"
+            [controlName]="'prvsInstgAgt1AdrPstBx'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Room'"
+            [controlName]="'prvsInstgAgt1AdrRoom'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Post Code'"
+            [controlName]="'prvsInstgAgt1AdrPstCd'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Town Name'"
+            [controlName]="'prvsInstgAgt1AdrTwnNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Town Location Name'"
+            [controlName]="'prvsInstgAgt1AdrTwnLctnNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'District Name'"
+            [controlName]="'prvsInstgAgt1AdrDstrctNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Country Sub Division'"
+            [controlName]="'prvsInstgAgt1AdrCtrySubDvsn'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Country'"
+            [controlName]="'prvsInstgAgt1AdrCtry'"
+                [maxLength]="2"
+                [minLength]="2"
+                [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
               />
             </div>
             }
@@ -1123,12 +1227,15 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt2Bicfi'"
+            [maxLength]="11"
+            [minLength]="8"
             (onDoubleClick)="
               openBicSelectionModal('prvsInstgAgt2Bicfi', 'prvsInstgAgt2Nm')
             "
           />
-          <app-text-base-input
+          <app-select-option-field
             [frmGroup]="frmGroup"
+            [options]="clearingSystemIdOptions"
             [label]="'Clearing System ID Code'"
             [controlName]="'prvsInstgAgt2ClrSysIdCd'"
           />
@@ -1141,6 +1248,9 @@
             [frmGroup]="frmGroup"
             [label]="'LEI'"
             [controlName]="'prvsInstgAgt2Lei'"
+            [maxLength]="20"
+            [minLength]="20"
+            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1154,90 +1264,93 @@
             />
             @if (prevAgent2AddressPanel()) {
             <div class="form-grid-col-1">
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 1'"
-                [controlName]="'prvsInstgAgt2AdrLine1'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 2'"
-                [controlName]="'prvsInstgAgt2AdrLine2'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 3'"
-                [controlName]="'prvsInstgAgt2AdrLine3'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Department'"
-                [controlName]="'prvsInstgAgt2AdrDept'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Sub Department'"
-                [controlName]="'prvsInstgAgt2AdrSubDept'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Street Name'"
-                [controlName]="'prvsInstgAgt2AdrStrtNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Building Number'"
-                [controlName]="'prvsInstgAgt2AdrBldgNb'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Building Name'"
-                [controlName]="'prvsInstgAgt2AdrBldgNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Floor'"
-                [controlName]="'prvsInstgAgt2AdrFlr'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Post Box'"
-                [controlName]="'prvsInstgAgt2AdrPstBx'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Room'"
-                [controlName]="'prvsInstgAgt2AdrRoom'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Post Code'"
-                [controlName]="'prvsInstgAgt2AdrPstCd'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Town Name'"
-                [controlName]="'prvsInstgAgt2AdrTwnNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Town Location Name'"
-                [controlName]="'prvsInstgAgt2AdrTwnLctnNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'District Name'"
-                [controlName]="'prvsInstgAgt2AdrDstrctNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Country Sub Division'"
-                [controlName]="'prvsInstgAgt2AdrCtrySubDvsn'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Country'"
-                [controlName]="'prvsInstgAgt2AdrCtry'"
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Address Line 1'"
+            [controlName]="'prvsInstgAgt2AdrLine1'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Address Line 2'"
+            [controlName]="'prvsInstgAgt2AdrLine2'"
+          />
+              <!-- <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Address Line 3'"
+            [controlName]="'prvsInstgAgt2AdrLine3'"
+              /> -->
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Department'"
+            [controlName]="'prvsInstgAgt2AdrDept'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Sub Department'"
+            [controlName]="'prvsInstgAgt2AdrSubDept'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Street Name'"
+            [controlName]="'prvsInstgAgt2AdrStrtNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Building Number'"
+            [controlName]="'prvsInstgAgt2AdrBldgNb'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Building Name'"
+            [controlName]="'prvsInstgAgt2AdrBldgNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Floor'"
+            [controlName]="'prvsInstgAgt2AdrFlr'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Post Box'"
+            [controlName]="'prvsInstgAgt2AdrPstBx'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Room'"
+            [controlName]="'prvsInstgAgt2AdrRoom'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Post Code'"
+            [controlName]="'prvsInstgAgt2AdrPstCd'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Town Name'"
+            [controlName]="'prvsInstgAgt2AdrTwnNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Town Location Name'"
+            [controlName]="'prvsInstgAgt2AdrTwnLctnNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'District Name'"
+            [controlName]="'prvsInstgAgt2AdrDstrctNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Country Sub Division'"
+            [controlName]="'prvsInstgAgt2AdrCtrySubDvsn'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Country'"
+            [controlName]="'prvsInstgAgt2AdrCtry'"
+                [maxLength]="2"
+                [minLength]="2"
+                [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
               />
             </div>
             }
@@ -1302,12 +1415,15 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'prvsInstgAgt3Bicfi'"
+            [maxLength]="11"
+            [minLength]="8"
             (onDoubleClick)="
               openBicSelectionModal('prvsInstgAgt3Bicfi', 'prvsInstgAgt3Nm')
             "
           />
-          <app-text-base-input
+          <app-select-option-field
             [frmGroup]="frmGroup"
+            [options]="clearingSystemIdOptions"
             [label]="'Clearing System ID Code'"
             [controlName]="'prvsInstgAgt3ClrSysIdCd'"
           />
@@ -1320,6 +1436,9 @@
             [frmGroup]="frmGroup"
             [label]="'LEI'"
             [controlName]="'prvsInstgAgt3Lei'"
+            [maxLength]="20"
+            [minLength]="20"
+            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1333,90 +1452,94 @@
             />
             @if (prevAgent3AddressPanel()) {
             <div class="form-grid-col-1">
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 1'"
-                [controlName]="'prvsInstgAgt3AdrLine1'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 2'"
-                [controlName]="'prvsInstgAgt3AdrLine2'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 3'"
-                [controlName]="'prvsInstgAgt3AdrLine3'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Department'"
-                [controlName]="'prvsInstgAgt3AdrDept'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Sub Department'"
-                [controlName]="'prvsInstgAgt3AdrSubDept'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Street Name'"
-                [controlName]="'prvsInstgAgt3AdrStrtNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Building Number'"
-                [controlName]="'prvsInstgAgt3AdrBldgNb'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Building Name'"
-                [controlName]="'prvsInstgAgt3AdrBldgNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Floor'"
-                [controlName]="'prvsInstgAgt3AdrFlr'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Post Box'"
-                [controlName]="'prvsInstgAgt3AdrPstBx'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Room'"
-                [controlName]="'prvsInstgAgt3AdrRoom'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Post Code'"
-                [controlName]="'prvsInstgAgt3AdrPstCd'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Town Name'"
-                [controlName]="'prvsInstgAgt3AdrTwnNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Town Location Name'"
-                [controlName]="'prvsInstgAgt3AdrTwnLctnNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'District Name'"
-                [controlName]="'prvsInstgAgt3AdrDstrctNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Country Sub Division'"
-                [controlName]="'prvsInstgAgt3AdrCtrySubDvsn'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Country'"
-                [controlName]="'prvsInstgAgt3AdrCtry'"
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Address Line 1'"
+            [controlName]="'prvsInstgAgt3AdrLine1'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Address Line 2'"
+            [controlName]="'prvsInstgAgt3AdrLine2'"
+          />
+              <!-- <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Address Line 3'"
+            [controlName]="'prvsInstgAgt3AdrLine3'"
+              /> -->
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Department'"
+            [controlName]="'prvsInstgAgt3AdrDept'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Sub Department'"
+            [controlName]="'prvsInstgAgt3AdrSubDept'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Street Name'"
+            [controlName]="'prvsInstgAgt3AdrStrtNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Building Number'"
+            [controlName]="'prvsInstgAgt3AdrBldgNb'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Building Name'"
+            [controlName]="'prvsInstgAgt3AdrBldgNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Floor'"
+            [controlName]="'prvsInstgAgt3AdrFlr'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Post Box'"
+            [controlName]="'prvsInstgAgt3AdrPstBx'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Room'"
+            [controlName]="'prvsInstgAgt3AdrRoom'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Post Code'"
+            [controlName]="'prvsInstgAgt3AdrPstCd'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Town Name'"
+            [controlName]="'prvsInstgAgt3AdrTwnNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Town Location Name'"
+            [controlName]="'prvsInstgAgt3AdrTwnLctnNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'District Name'"
+            [controlName]="'prvsInstgAgt3AdrDstrctNm'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Country Sub Division'"
+            [controlName]="'prvsInstgAgt3AdrCtrySubDvsn'"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Country'"
+            [controlName]="'prvsInstgAgt3AdrCtry'"
+                [maxLength]="2"
+                [minLength]="2"
+                [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
+
               />
             </div>
             }
@@ -1490,12 +1613,15 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'instgAgtBicfi'"
+            [maxLength]="11"
+            [minLength]="8"
             (onDoubleClick)="
               openBicSelectionModal('instgAgtBicfi', 'instgAgtNm')
             "
           />
-          <app-text-base-input
+          <app-select-option-field
             [frmGroup]="frmGroup"
+            [options]="clearingSystemIdOptions"
             [label]="'Clearing System ID Code'"
             [controlName]="'instgAgtClrSysIdCd'"
           />
@@ -1508,6 +1634,9 @@
             [frmGroup]="frmGroup"
             [label]="'LEI'"
             [controlName]="'instgAgtLei'"
+            [maxLength]="20"
+            [minLength]="20"
+            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
           />
         </div>
         }
@@ -1525,12 +1654,15 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'instdAgtBicfi'"
+            [maxLength]="11"
+            [minLength]="8"
             (onDoubleClick)="
               openBicSelectionModal('instdAgtBicfi', 'instdAgtNm')
             "
           />
-          <app-text-base-input
+          <app-select-option-field
             [frmGroup]="frmGroup"
+            [options]="clearingSystemIdOptions"
             [label]="'Clearing System ID Code'"
             [controlName]="'instdAgtClrSysIdCd'"
           />
@@ -1543,6 +1675,9 @@
             [frmGroup]="frmGroup"
             [label]="'LEI'"
             [controlName]="'instdAgtLei'"
+            [maxLength]="20"
+            [minLength]="20"
+            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
           />
         </div>
         }
@@ -1558,8 +1693,8 @@
       />
       @if (intermediaryAgentsPanel()) {
       <!-- Intermediary Agent 1 -->
-      <div class="sub-panel">
-        <app-expansion-sub-panel-header
+        <div class="sub-panel">
+          <app-expansion-sub-panel-header
           [isOpenSignal]="intermediary1Panel"
           [subPanelTitle]="'Intermediary Agent 1'"
         />
@@ -1569,12 +1704,15 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt1Bicfi'"
+            [maxLength]="11"
+            [minLength]="8"
             (onDoubleClick)="
               openBicSelectionModal('intrmyAgt1Bicfi', 'intrmyAgt1Nm')
             "
           />
-          <app-text-base-input
+          <app-select-option-field
             [frmGroup]="frmGroup"
+            [options]="clearingSystemIdOptions"
             [label]="'Clearing System ID Code'"
             [controlName]="'intrmyAgt1ClrSysIdCd'"
           />
@@ -1587,6 +1725,9 @@
             [frmGroup]="frmGroup"
             [label]="'LEI'"
             [controlName]="'intrmyAgt1Lei'"
+            [maxLength]="20"
+            [minLength]="20"
+            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1596,97 +1737,100 @@
           <div class="sub-panel">
             <app-expansion-sub-panel-header
               [isOpenSignal]="intermediary1AddressPanel"
-              [subPanelTitle]="'Postal Address'"
-            />
+            [subPanelTitle]="'Postal Address'"
+          />
             @if (intermediary1AddressPanel()) {
-            <div class="form-grid-col-1">
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 1'"
+          <div class="form-grid-col-1">
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Address Line 1'"
                 [controlName]="'intrmyAgt1AdrLine1'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 2'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Address Line 2'"
                 [controlName]="'intrmyAgt1AdrLine2'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 3'"
+            />
+              <!-- <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Address Line 3'"
                 [controlName]="'intrmyAgt1AdrLine3'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Department'"
+              /> -->
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Department'"
                 [controlName]="'intrmyAgt1AdrDept'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Sub Department'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Sub Department'"
                 [controlName]="'intrmyAgt1AdrSubDept'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Street Name'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Street Name'"
                 [controlName]="'intrmyAgt1AdrStrtNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Building Number'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Building Number'"
                 [controlName]="'intrmyAgt1AdrBldgNb'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Building Name'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Building Name'"
                 [controlName]="'intrmyAgt1AdrBldgNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Floor'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Floor'"
                 [controlName]="'intrmyAgt1AdrFlr'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Post Box'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Post Box'"
                 [controlName]="'intrmyAgt1AdrPstBx'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Room'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Room'"
                 [controlName]="'intrmyAgt1AdrRoom'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Post Code'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Post Code'"
                 [controlName]="'intrmyAgt1AdrPstCd'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Town Name'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Town Name'"
                 [controlName]="'intrmyAgt1AdrTwnNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Town Location Name'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Town Location Name'"
                 [controlName]="'intrmyAgt1AdrTwnLctnNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'District Name'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'District Name'"
                 [controlName]="'intrmyAgt1AdrDstrctNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Country Sub Division'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Country Sub Division'"
                 [controlName]="'intrmyAgt1AdrCtrySubDvsn'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Country'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Country'"
                 [controlName]="'intrmyAgt1AdrCtry'"
-              />
-            </div>
-            }
+                [maxLength]="2"
+                [minLength]="2"
+                [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
+            />
+          </div>
+          }
           </div>
         </div>
         }
@@ -1748,12 +1892,15 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt2Bicfi'"
+            [maxLength]="11"
+            [minLength]="8"
             (onDoubleClick)="
               openBicSelectionModal('intrmyAgt2Bicfi', 'intrmyAgt2Nm')
             "
           />
-          <app-text-base-input
+          <app-select-option-field
             [frmGroup]="frmGroup"
+            [options]="clearingSystemIdOptions"
             [label]="'Clearing System ID Code'"
             [controlName]="'intrmyAgt2ClrSysIdCd'"
           />
@@ -1766,110 +1913,116 @@
             [frmGroup]="frmGroup"
             [label]="'LEI'"
             [controlName]="'intrmyAgt2Lei'"
+            [maxLength]="20"
+            [minLength]="20"
+            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Name'"
             [controlName]="'intrmyAgt2Nm'"
           />
-          <div class="sub-panel">
-            <app-expansion-sub-panel-header
+        <div class="sub-panel">
+          <app-expansion-sub-panel-header
               [isOpenSignal]="intermediary2AddressPanel"
-              [subPanelTitle]="'Postal Address'"
-            />
+            [subPanelTitle]="'Postal Address'"
+          />
             @if (intermediary2AddressPanel()) {
-            <div class="form-grid-col-1">
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 1'"
+          <div class="form-grid-col-1">
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Address Line 1'"
                 [controlName]="'intrmyAgt2AdrLine1'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 2'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Address Line 2'"
                 [controlName]="'intrmyAgt2AdrLine2'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Address Line 3'"
+            />
+              <!-- <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Address Line 3'"
                 [controlName]="'intrmyAgt2AdrLine3'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Department'"
+              /> -->
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Department'"
                 [controlName]="'intrmyAgt2AdrDept'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Sub Department'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Sub Department'"
                 [controlName]="'intrmyAgt2AdrSubDept'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Street Name'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Street Name'"
                 [controlName]="'intrmyAgt2AdrStrtNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Building Number'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Building Number'"
                 [controlName]="'intrmyAgt2AdrBldgNb'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Building Name'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Building Name'"
                 [controlName]="'intrmyAgt2AdrBldgNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Floor'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Floor'"
                 [controlName]="'intrmyAgt2AdrFlr'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Post Box'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Post Box'"
                 [controlName]="'intrmyAgt2AdrPstBx'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Room'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Room'"
                 [controlName]="'intrmyAgt2AdrRoom'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Post Code'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Post Code'"
                 [controlName]="'intrmyAgt2AdrPstCd'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Town Name'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Town Name'"
                 [controlName]="'intrmyAgt2AdrTwnNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Town Location Name'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Town Location Name'"
                 [controlName]="'intrmyAgt2AdrTwnLctnNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'District Name'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'District Name'"
                 [controlName]="'intrmyAgt2AdrDstrctNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Country Sub Division'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Country Sub Division'"
                 [controlName]="'intrmyAgt2AdrCtrySubDvsn'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Country'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Country'"
                 [controlName]="'intrmyAgt2AdrCtry'"
-              />
-            </div>
-            }
+                [maxLength]="2"
+                [minLength]="2"
+                [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
+            />
           </div>
+          }
         </div>
-        }
       </div>
+      }
+    </div>
 
       <!-- Intermediary Agent 2 Account-->
       <div class="sub-panel">
@@ -1927,12 +2080,15 @@
             [frmGroup]="frmGroup"
             [label]="'BIC'"
             [controlName]="'intrmyAgt3Bicfi'"
+            [maxLength]="11"
+            [minLength]="8"
             (onDoubleClick)="
               openBicSelectionModal('intrmyAgt3Bicfi', 'intrmyAgt3Nm')
             "
           />
-          <app-text-base-input
+          <app-select-option-field
             [frmGroup]="frmGroup"
+            [options]="clearingSystemIdOptions"
             [label]="'Clearing System ID Code'"
             [controlName]="'intrmyAgt3ClrSysIdCd'"
           />
@@ -1945,103 +2101,109 @@
             [frmGroup]="frmGroup"
             [label]="'LEI'"
             [controlName]="'intrmyAgt3Lei'"
+            [maxLength]="20"
+            [minLength]="20"
+            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Name'"
             [controlName]="'intrmyAgt3Nm'"
           />
-          <div class="sub-panel">
-            <app-expansion-sub-panel-header
+      <div class="sub-panel">
+        <app-expansion-sub-panel-header
               [isOpenSignal]="intermediary3AddressPanel"
               [subPanelTitle]="'Postal Address'"
-            />
+        />
             @if (intermediary3AddressPanel()) {
-            <div class="form-grid-col-1">
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+        <div class="form-grid-col-1">
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Address Line 1'"
                 [controlName]="'intrmyAgt3AdrLine1'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Address Line 2'"
                 [controlName]="'intrmyAgt3AdrLine2'"
-              />
-              <app-text-base-input
+          />
+              <!-- <app-text-base-input
                 [frmGroup]="frmGroup"
                 [label]="'Address Line 3'"
                 [controlName]="'intrmyAgt3AdrLine3'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+              /> -->
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Department'"
                 [controlName]="'intrmyAgt3AdrDept'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Sub Department'"
                 [controlName]="'intrmyAgt3AdrSubDept'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Street Name'"
                 [controlName]="'intrmyAgt3AdrStrtNm'"
-              />
+          />
               <app-text-base-input
-                [frmGroup]="frmGroup"
+            [frmGroup]="frmGroup"
                 [label]="'Building Number'"
                 [controlName]="'intrmyAgt3AdrBldgNb'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Building Name'"
                 [controlName]="'intrmyAgt3AdrBldgNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Floor'"
                 [controlName]="'intrmyAgt3AdrFlr'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Post Box'"
                 [controlName]="'intrmyAgt3AdrPstBx'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Room'"
                 [controlName]="'intrmyAgt3AdrRoom'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Post Code'"
                 [controlName]="'intrmyAgt3AdrPstCd'"
               />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Town Name'"
                 [controlName]="'intrmyAgt3AdrTwnNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Town Location Name'"
                 [controlName]="'intrmyAgt3AdrTwnLctnNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'District Name'"
                 [controlName]="'intrmyAgt3AdrDstrctNm'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Country Sub Division'"
                 [controlName]="'intrmyAgt3AdrCtrySubDvsn'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
+          />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
                 [label]="'Country'"
                 [controlName]="'intrmyAgt3AdrCtry'"
+                [maxLength]="2"
+                [minLength]="2"
+                [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
               />
             </div>
             }
@@ -2106,28 +2268,34 @@
       <div class="form-grid-col-1">
         <app-text-base-input
           [frmGroup]="frmGroup"
-          [label]="'Debtor BIC'"
+          [label]="'BIC'"
           [controlName]="'dbtrBicfi'"
+          [maxLength]="11"
+          [minLength]="8"
           (onDoubleClick)="openBicSelectionModal('dbtrBicfi', 'dbtrNm')"
         />
-        <app-text-base-input
+        <app-select-option-field
           [frmGroup]="frmGroup"
-          [label]="'Debtor Clearing System ID Code'"
+          [options]="clearingSystemIdOptions"
+          [label]="'Clearing System ID Code'"
           [controlName]="'dbtrClrSysIdCd'"
         />
         <app-text-base-input
           [frmGroup]="frmGroup"
-          [label]="'Debtor Member ID'"
+          [label]="'Member ID'"
           [controlName]="'dbtrMmbId'"
         />
         <app-text-base-input
           [frmGroup]="frmGroup"
-          [label]="'Debtor LEI'"
+          [label]="'LEI'"
           [controlName]="'dbtrLei'"
+          [maxLength]="20"
+          [minLength]="20"
+          [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
         />
         <app-text-base-input
           [frmGroup]="frmGroup"
-          [label]="'Debtor Name'"
+          [label]="'Name'"
           [controlName]="'dbtrNm'"
         />
       </div>
@@ -2209,6 +2377,9 @@
             [frmGroup]="frmGroup"
             [label]="'Country'"
             [controlName]="'dbtrAdrCtry'"
+            [maxLength]="2"
+            [minLength]="2"
+            [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -2220,11 +2391,11 @@
             [label]="'Address Line 2'"
             [controlName]="'dbtrAdrLine2'"
           />
-          <app-text-base-input
+          <!-- <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Address Line 3'"
             [controlName]="'dbtrAdrLine3'"
-          />
+          /> -->
         </div>
         }
       </div>
@@ -2285,28 +2456,34 @@
         <div class="form-grid-col-1">
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Agent BIC'"
+            [label]="'BIC'"
             [controlName]="'dbtrAgtBicfi'"
+            [maxLength]="11"
+            [minLength]="8"
             (onDoubleClick)="openBicSelectionModal('dbtrAgtBicfi', 'dbtrAgtNm')"
           />
-          <app-text-base-input
+                      <app-select-option-field
             [frmGroup]="frmGroup"
-            [label]="'Agent Clearing System ID Code'"
+              [options]="clearingSystemIdOptions"
+              [label]="'Clearing System ID Code'"
             [controlName]="'dbtrAgtClrSysIdCd'"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Agent Member ID'"
+            [label]="'Member ID'"
             [controlName]="'dbtrAgtMmbId'"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Agent LEI'"
+            [label]="'LEI'"
             [controlName]="'dbtrAgtLei'"
+            [maxLength]="20"
+            [minLength]="20"
+            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Agent Name'"
+            [label]="'Name'"
             [controlName]="'dbtrAgtNm'"
           />
         </div>
@@ -2329,11 +2506,11 @@
               [label]="'Address Line 2'"
               [controlName]="'dbtrAgtAdrLine2'"
             />
-            <app-text-base-input
+            <!-- <app-text-base-input
               [frmGroup]="frmGroup"
               [label]="'Address Line 3'"
               [controlName]="'dbtrAgtAdrLine3'"
-            />
+            /> -->
             <app-text-base-input
               [frmGroup]="frmGroup"
               [label]="'Department'"
@@ -2403,6 +2580,9 @@
               [frmGroup]="frmGroup"
               [label]="'Country'"
               [controlName]="'dbtrAgtAdrCtry'"
+              [maxLength]="2"
+              [minLength]="2"
+              [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
             />
           </div>
           }
@@ -2467,28 +2647,34 @@
       <div class="form-grid-col-1">
         <app-text-base-input
           [frmGroup]="frmGroup"
-          [label]="'Creditor BIC'"
+          [label]="'BIC'"
           [controlName]="'cdtrBicfi'"
+          [maxLength]="11"
+          [minLength]="8"
           (onDoubleClick)="openBicSelectionModal('cdtrBicfi', 'cdtrNm')"
         />
-        <app-text-base-input
+                  <app-select-option-field
           [frmGroup]="frmGroup"
-          [label]="'Creditor Clearing System ID Code'"
+            [options]="clearingSystemIdOptions"
+            [label]="'Clearing System ID Code'"
           [controlName]="'cdtrClrSysIdCd'"
         />
         <app-text-base-input
           [frmGroup]="frmGroup"
-          [label]="'Creditor Member ID'"
+          [label]="'Member ID'"
           [controlName]="'cdtrMmbId'"
         />
         <app-text-base-input
           [frmGroup]="frmGroup"
-          [label]="'Creditor LEI'"
+          [label]="'LEI'"
           [controlName]="'cdtrLei'"
+          [maxLength]="20"
+          [minLength]="20"
+          [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
         />
         <app-text-base-input
           [frmGroup]="frmGroup"
-          [label]="'Creditor Name'"
+          [label]="'Name'"
           [controlName]="'cdtrNm'"
         />
       </div>
@@ -2570,6 +2756,9 @@
             [frmGroup]="frmGroup"
             [label]="'Country'"
             [controlName]="'cdtrAdrCtry'"
+            [maxLength]="2"
+            [minLength]="2"
+            [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -2581,11 +2770,11 @@
             [label]="'Address Line 2'"
             [controlName]="'cdtrAdrLine2'"
           />
-          <app-text-base-input
+          <!-- <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Address Line 3'"
             [controlName]="'cdtrAdrLine3'"
-          />
+          /> -->
         </div>
         }
       </div>
@@ -2646,28 +2835,34 @@
         <div class="form-grid-col-1">
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Agent BIC'"
+            [label]="'BIC'"
             [controlName]="'cdtrAgtBicfi'"
+            [maxLength]="11"
+            [minLength]="8"
             (onDoubleClick)="openBicSelectionModal('cdtrAgtBicfi', 'cdtrAgtNm')"
           />
-          <app-text-base-input
+                      <app-select-option-field
             [frmGroup]="frmGroup"
-            [label]="'Agent Clearing System ID Code'"
+              [options]="clearingSystemIdOptions"
+              [label]="'Clearing System ID Code'"
             [controlName]="'cdtrAgtClrSysIdCd'"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Agent Member ID'"
+            [label]="'Member ID'"
             [controlName]="'cdtrAgtMmbId'"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Agent LEI'"
+            [label]="'LEI'"
             [controlName]="'cdtrAgtLei'"
+            [maxLength]="20"
+            [minLength]="20"
+            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Agent Name'"
+            [label]="'Name'"
             [controlName]="'cdtrAgtNm'"
           />
         </div>
@@ -2690,11 +2885,11 @@
               [label]="'Address Line 2'"
               [controlName]="'cdtrAgtAdrLine2'"
             />
-            <app-text-base-input
+            <!-- <app-text-base-input
               [frmGroup]="frmGroup"
               [label]="'Address Line 3'"
               [controlName]="'cdtrAgtAdrLine3'"
-            />
+            /> -->
             <app-text-base-input
               [frmGroup]="frmGroup"
               [label]="'Department'"
@@ -2764,6 +2959,9 @@
               [frmGroup]="frmGroup"
               [label]="'Country'"
               [controlName]="'cdtrAgtAdrCtry'"
+              [maxLength]="2"
+              [minLength]="2"
+              [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
             />
           </div>
           }
@@ -2841,11 +3039,11 @@
         <ng-container formArrayName="instructionForCreditorAgent">
           @for (group of instructionForCreditorAgent.controls; track $index) {
           <div [formGroupName]="$index" class="form-grid-col-1 mb-3">
-            <app-text-base-input
+            <app-select-option-field
               [frmGroup]="getInstructionForCreditorAgentGroup($index)"
+              [options]="instructionCodeOptions"
               [label]="'Code'"
               [controlName]="'code'"
-              [placeholder]="'e.g., TELB, PHOB'"
             />
 
             <app-text-base-input
@@ -2889,12 +3087,13 @@
               [label]="'Instruction'"
               [controlName]="'instruction'"
               [placeholder]="'Instruction for next agent'"
+              [maxLength]="35"
             />
 
             @if (instructionForNextAgent.controls.length > 1) {
             <button
               (click)="removeInstructionForNextAgentRow($index)"
-              class="remove-row-btn mt-8"
+              class="remove-row-btn mt-8 btn-small"
             >
               Remove
             </button>
@@ -2916,8 +3115,9 @@
       />
       @if (purposePanel()) {
       <div class="form-grid-col-1">
-        <app-text-base-input
+        <app-select-option-field
           [frmGroup]="frmGroup"
+          [options]="purposeCodeOptions"
           [label]="'Purpose Code'"
           [controlName]="'purpCD'"
         />
