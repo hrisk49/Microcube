@@ -498,7 +498,7 @@ export class Pacs009 implements OnInit, OnDestroy {
     );
 
     this.frmGroup.patchValue({
-      bizMsgIdr: data.relatedRef21,
+      bizMsgIdr: data.trnRefNo20,
       instrId: data.trnRefNo20,
       endToEndId: data.relatedRef21,
       intrBkSttlmAmt: data.valAmt32a,
