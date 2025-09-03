@@ -34,7 +34,6 @@ export class IdBoxComponent {
   readonly valueChange = output<any>();
   readonly placeholder = input<any>();
   readonly tooltip = input<string>();
-  readonly tooltip = input<string>();
   readonly labelText = input<string>('');
   readonly leadingZero = input<string>('');
   readonly visible = input<boolean>(true);

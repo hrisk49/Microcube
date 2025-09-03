@@ -1,18 +1,7 @@
 import {Component, input, output, effect} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {MatInput} from "@angular/material/input";
-import {Component, input, output, effect} from '@angular/core';
-import {FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {MatInput} from "@angular/material/input";
 import {MatTooltipModule} from "@angular/material/tooltip";
-import {NgClass} from '@angular/common';
-
-@Component({
-  selector: 'app-text-base-input',
-  imports: [
-    FormsModule,
-    MatInput,
-    ReactiveFormsModule,
 import {NgClass} from '@angular/common';
 
 @Component({
@@ -82,12 +71,10 @@ export class TextBaseInput {
       validators.push(Validators.required);
     }
 
-
     // Add min length validator if specified
     if (this.minLength() !== undefined && this.minLength()! > 0) {
       validators.push(Validators.minLength(this.minLength()!));
     }
-
 
     // Add max length validator if specified
     if (this.maxLength() !== undefined && this.maxLength()! > 0) {
