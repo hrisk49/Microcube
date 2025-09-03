@@ -6,7 +6,11 @@ import {AddressModel} from './address.model';
 
 export interface Mx008Model {
   fromBicfi: string; //[A-Z0-9]{4,4}[A-Z]{2,2}[A-Z0-9]{2,2}([A-Z0-9]{3,3}){0,1}
+  fromMembId:string;
+  fromLei:string;
   toBicfi: string; //[A-Z0-9]{4,4}[A-Z]{2,2}[A-Z0-9]{2,2}([A-Z0-9]{3,3}){0,1}
+  toMembId:string;
+  toLei:string;
   bizMsgIdr: string; //BusinessMessageIdentifier max 35
   msgDefIdr: string; //MessageDefinitionIdentifier example - camt.001.001.03
   bizSvc: string; //BusinessService The value "swift.cbprplus.02" must be used.
@@ -71,14 +75,7 @@ export interface Mx008Model {
   instdAmtValue: number;
   chrgBr:string;
   xchgRate:number;
-
-/*  chrgInfoAmt:string;
-  chrgInfAgtBicfi:string;
-  chrgInfAgtClrSysIdCd:string;
-  chrgInfoAgtMmbId:string;
-  chrgInfoAgtLei:string;
-  chrgInfoAgtNm:string;
-  chrgInfoAgtAdd: string[];*/
+  chrgsInfAgnt: AgentModel;
 
   prvsInstgAgt1: AgentModel; //PreviousInstructing <>: AgentModel
   prvsInstgAgt1Acct: AccountModel; //PreviousInstructing<>:: AgentModel AccountModel
@@ -87,7 +84,13 @@ export interface Mx008Model {
   prvsInstgAgt2Acct: AccountModel; //PreviousInstructing<>:: AgentModel AccountModel
   prvsInstgAgt3Acct: AccountModel; //PreviousInstructing<>:: AgentModel AccountModel
   instgAgtBic: string; //Instructing<>: AgentModel
+  instgAgtClrSysIdCd: string;
+  instgAgtMembId: string;
+  instgAgtLei: string;
   instdAgtBic: string; //Instructed<>: AgentModel
+  instdAgtClrSysIdCd: string;
+  instdAgtMembId: string;
+  instdAgtLei: string;
   instgAgt: AgentModel; //Instructing<>: AgentModel
   instdAgt: AgentModel; //Instructed<>: AgentModel
   intrmyAgt1: AgentModel; //Intermediary <>: AgentModel
@@ -101,6 +104,7 @@ export interface Mx008Model {
   dbtrAgt: AgentModel; //Debtor<>: AgentModel
   dbtrAgtAcct: AccountModel; //Debtor>:: AgentModel AccountModel
   ultmtDbtr: PartyModel;//UltimateDebtor
+  initgPty: PartyModel;//Initiating party
   cdtrAgt: AgentModel; //Creditor<>: AgentModel
   cdtrAgtAcct: AccountModel; //Creditor>:: AgentModel AccountModel
   cdtr: PartyModel; //Creditor <>

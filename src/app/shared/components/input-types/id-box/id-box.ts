@@ -9,6 +9,7 @@ import { MatRippleModule } from '@angular/material/core';
   selector: 'lds-id-box',
   imports: [
     FormsModule,
+    FormsModule,
     MatInput,
     MatTooltipModule,
     MatRippleModule,
@@ -32,6 +33,7 @@ export class IdBoxComponent {
   readonly label = input.required<string>();
   readonly valueChange = output<any>();
   readonly placeholder = input<any>();
+  readonly tooltip = input<string>();
   readonly tooltip = input<string>();
   readonly labelText = input<string>('');
   readonly leadingZero = input<string>('');

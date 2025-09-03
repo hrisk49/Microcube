@@ -30,7 +30,7 @@ export class Navbar {
 
   constructor() {
     effect(() => {
-      console.log('Navbar actions:', this.buttons());
+      //console.log('Navbar actions:', this.buttons());
     });
   }
 }

@@ -14,13 +14,13 @@ export class ExpansionSubPanelHeader {
   // htmlElement = input.required<any>();
   readonly subPanelTitle = input<string>();
   isOpenSignal = input.required<WritableSignal<boolean>>();
-  
+
   // Optional action button properties
   readonly isButton = input<boolean>(false);
   readonly buttonText = input<string>('Action');
   readonly buttonIcon = input<string>('add');
   readonly buttonClass = input<string>('inline-flex items-center px-2 py-1 text-xs font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200');
-  
+
   // Event emitter for action button click
   readonly addAction = output<void>();
 

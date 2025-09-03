@@ -32,7 +32,7 @@ export class Login implements OnInit {
 
   doLogin() {
     this.loginError = false;
-    this.router.navigateByUrl('/dashboard');
+    // this.router.navigateByUrl('/dashboard');
     this.http.post(this.coreBaseUrl + 'auth/login', this.frmGroup.value).subscribe((response: any) => {
       if (response.status) {
         this.router.navigateByUrl('/dashboard');
