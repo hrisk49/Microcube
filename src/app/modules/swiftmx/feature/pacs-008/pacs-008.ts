@@ -1,13 +1,21 @@
-import {Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {ChangeDetectorRef, Component, effect, inject, OnInit, signal, WritableSignal} from '@angular/core';
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
 import {TextBaseInput} from "../../../../shared/components/input-types/text-base-input/text-base-input";
 import {SelectOptionsModel} from '../../../../shared/models/select-options-model';
 import {
-    BUTTON_VISIBILITY,
-    FormGroupSignal,
-    ONCLICK_RESET,
-    ONCLICK_SAVE
+  BUTTON_VISIBILITY,
+  FormGroupSignal,
+  ONCLICK_RESET,
+  ONCLICK_SAVE
 } from '../../../../shared/constant/button-signals.constant';
 import {DateInput} from '../../../../shared/components/input-types/date-input/date-input';
 import {ToastrService} from 'ngx-toastr';
@@ -27,25 +35,22 @@ import {ExternalCodeService} from '../../../../shared/services/external-code.ser
 import {Subject, takeUntil} from 'rxjs';
 
 @Component({
-    selector: 'app-pacs-008',
+  selector: 'app-pacs-008',
   imports: [
     ReactiveFormsModule,
     TextBaseInput,
-    SubPanelHeader,
     SelectOptionField,
     DateInput,
     AmountToWordInput,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
-    DataSelectionModal,
-    BusinessApplicationHeader,
   ],
-    templateUrl: './pacs-008.html',
-    standalone: true,
-    styleUrl: './pacs-008.scss'
+  templateUrl: './pacs-008.html',
+  standalone: true,
+  styleUrl: './pacs-008.scss'
 })
 export class Pacs008 implements OnInit {
-dialogUtils = inject(DialogUtils);
+  dialogUtils = inject(DialogUtils);
   formBuilder = inject(FormBuilder);
   toastr = inject(ToastrService);
   externalCodeService = inject(ExternalCodeService);
@@ -149,7 +154,48 @@ dialogUtils = inject(DialogUtils);
     { key: 'TELB', value: 'TELB' },
   ];
 
+  MthdOptions: SelectOptionsModel[] = [
+    { key: 'EDIC', value: 'Electronic Data Interchange' },
+    { key: 'EMAL', value: 'EMail' },
+    { key: 'FAX', value: 'Fax' },
+    { key: 'POST', value: 'Post' },
+    { key: 'SMSM', value: 'Sms' },
+    { key: 'URID', value: 'UniformResourceIdentifier' },
+  ];
+
+  RptgTpOptions: SelectOptionsModel[] = [
+    { key: 'BOTH', value: 'Both' },
+    { key: 'CRED', value: 'Credit' },
+    { key: 'DEBIT', value: 'Debit' },
+  ];
+
   serviceLevelCodeOptions: SelectOptionsModel[] = [];
+  prxyCdOptions: SelectOptionsModel[] = [];
+
+  private loadProxyCodeOptions(): void {
+    this.externalCodeService.getSwiftExternalCodes('ExternalProxyAccountType1Code').pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (response: any) => {
+        if (response.payload && response.payload.length > 0) {
+          this.prxyCdOptions = response.payload.map((item: any) => ({
+            key: item.codeValue,
+            value: item.codeName ? `${item.codeValue} - ${item.codeName}` : item.codeValue,
+          }));
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load reimbursement agent proxy code options', err);
+        this.toastr.error('Failed to load reimbursement agent proxy code options', 'Error');
+        // Fallback to default options if API fails
+        this.prxyCdOptions = [
+          { key: 'BANK', value: 'Bank' },
+          { key: 'CUST', value: 'Customer' },
+          { key: 'EMPL', value: 'Employee' },
+        ];
+      }
+    });
+  }
 
   // Panel visibility signals
   timeDatePanel: WritableSignal<boolean> = signal(true);
@@ -170,22 +216,29 @@ dialogUtils = inject(DialogUtils);
   sttlmTmIndctnPanel: WritableSignal<boolean> = signal(false);
   sttmlTmRqstPanel: WritableSignal<boolean> = signal(false);
   chargesInformationPanel: WritableSignal<boolean> = signal(true);
+  chrgInfAgtPanel: WritableSignal<boolean> = signal(false);
+  chrgInfAgtAddPanel: WritableSignal<boolean> = signal(false);
   previousAgentsPanel: WritableSignal<boolean> = signal(true);
   prevAgent1Panel: WritableSignal<boolean> = signal(false);
   prevAgent1AddressPanel:  WritableSignal<boolean> = signal(false);
+  prevAgent1AccPanel:  WritableSignal<boolean> = signal(false);
   prevAgent2Panel: WritableSignal<boolean> = signal(false);
   prevAgent2AddressPanel:  WritableSignal<boolean> = signal(false);
+  prevAgent2AccPanel:  WritableSignal<boolean> = signal(false);
   prevAgent3Panel: WritableSignal<boolean> = signal(false);
   prevAgent3AddressPanel:  WritableSignal<boolean> = signal(false);
+  prevAgent3AccPanel:  WritableSignal<boolean> = signal(false);
   agentsPanel: WritableSignal<boolean> = signal(true);
   instructingAgentPanel: WritableSignal<boolean> = signal(true);
   instructedAgentPanel: WritableSignal<boolean> = signal(true);
-  instructedAgentAddressPanel: WritableSignal<boolean> = signal(false);
   intermediaryAgentsPanel: WritableSignal<boolean> = signal(true);
   intermediary1Panel: WritableSignal<boolean> = signal(false);
   intrmyAgt1AddrPanel: WritableSignal<boolean> = signal(false);
+  intrmyAgt1AccPanel: WritableSignal<boolean> = signal(false);
   intrmyAgt2AddrPanel: WritableSignal<boolean> = signal(false);
+  intrmyAgt2AccPanel: WritableSignal<boolean> = signal(false);
   intrmyAgt3AddrPanel: WritableSignal<boolean> = signal(false);
+  intrmyAgt3AccPanel: WritableSignal<boolean> = signal(false);
   intermediary2Panel: WritableSignal<boolean> = signal(false);
   intermediary3Panel: WritableSignal<boolean> = signal(false);
   detorInfoPanel: WritableSignal<boolean> = signal(true);
@@ -253,13 +306,24 @@ dialogUtils = inject(DialogUtils);
   ultcrdtrdateNPlaceOfBirth : WritableSignal<boolean> = signal(false);
   ultcrdtrprivateIdenOthr : WritableSignal<boolean> = signal(true);
 
-  instructionsPanel: WritableSignal<boolean> = signal(true);
-  purposePanel: WritableSignal<boolean> = signal(true);
+  instructionsPanel: WritableSignal<boolean> = signal(false);
+  instForCrdtrAgtPanel: WritableSignal<boolean> = signal(false);
+  instForNxtAgtPanel: WritableSignal<boolean> = signal(false);
+  purposePanel: WritableSignal<boolean> = signal(false);
   authorizationPanel: WritableSignal<boolean> = signal(true);
   otherInfoPanel: WritableSignal<boolean> = signal(true);
   relatedInfoPanel: WritableSignal<boolean> = signal(false);
+  rltdRemInfoPanel: WritableSignal<boolean> = signal(true);
+  rltdRemDtlsPanel: WritableSignal<boolean> = signal(true);
+  rltdRemPostAddPanel: WritableSignal<boolean> = signal(false);
+  rltdRemAddPanel: WritableSignal<boolean> = signal(false);
   rltdFrmBicPanel: WritableSignal<boolean> = signal(false);
   rltdToBicPanel: WritableSignal<boolean> = signal(false);
+  rgltryRptgPanel: WritableSignal<boolean> = signal(false);
+  dbtCdtRptgIndPanel: WritableSignal<boolean> = signal(false);
+  dtlsPanel: WritableSignal<boolean> = signal(false);
+  infoPanel: WritableSignal<boolean> = signal(false);
+  authrtyPanel: WritableSignal<boolean> = signal(false);
   swiftCodesFrom: any;
   swiftCodesTo: any;
 
@@ -270,7 +334,7 @@ dialogUtils = inject(DialogUtils);
     ['address', 'Address']
   ]);
   private destroy$ = new Subject<void>();
-  constructor(private branchInfoService: BranchInfoService,private bicSelectionService: BicSelectionService) {
+  constructor(private cdRef: ChangeDetectorRef,private branchInfoService: BranchInfoService,private bicSelectionService: BicSelectionService) {
     BUTTON_VISIBILITY.set({
       save: true,
       update: false,
@@ -290,11 +354,44 @@ dialogUtils = inject(DialogUtils);
       }
     });
   }
+  isRequired: boolean = false;
+  handleCategorySelection(event: { selectedOption: any; selectedKey: string; selectedValue: string }): void {
+    const selectedChargeBearer = event.selectedValue;
+    this.isRequired = selectedChargeBearer === 'Creditor' || selectedChargeBearer === 'Shared';
+    console.log(selectedChargeBearer);
+    console.log(this.isRequired);
+    this.cdRef.detectChanges();
+    this.chrgInfoForm.controls.forEach((control: AbstractControl) => {
+      const group = control as FormGroup;
+
+      const ccyControl = group.get('chrgInfoCcy');
+      const amtControl = group.get('chrgInfoAmt');
+
+      if (this.isRequired) {
+        ccyControl?.setValidators([Validators.required]);
+        amtControl?.setValidators([Validators.required]);
+        this.addChrgInfoRow();
+      } else {
+        ccyControl?.clearValidators();
+        amtControl?.clearValidators();
+      }
+
+      ccyControl?.updateValueAndValidity();
+      amtControl?.updateValueAndValidity();
+
+      // Optional: mark as touched to trigger UI error display
+      ccyControl?.markAsTouched();
+      amtControl?.markAsTouched();
+    });
+  }
+
+
 
   ngOnInit(): void {
     try {
       this.initForm();
       this.loadServiceLevelCodes();
+      this.loadProxyCodeOptions();
       if (!this.frmGroup) {
         console.error('Form initialization failed');
         this.toastr.error('Form initialization failed', 'Error');
@@ -312,11 +409,11 @@ dialogUtils = inject(DialogUtils);
       fromBicfi: ['', Validators.required],
       fromMembId: [''],
       fromClrSysIdCd: [''],
-      fromLei: [''],
+      fromLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       toBicfi: ['', Validators.required],
       toMembId: [''],
       toClrSysIdCd: [''],
-      toLei: [''],
+      toLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
 
       bizMsgIdr: ['PACS008_' + new Date().getTime(), Validators.required],
       msgDefIdr: ['pacs.008.001.08', Validators.required],
@@ -332,11 +429,11 @@ dialogUtils = inject(DialogUtils);
       rltdFrBicfi: [''],
       rltdFrmClrSysIdCd: [''],
       rltdFrmMembId: ['', [Validators.minLength(1), Validators.maxLength(28)]],
-      rltdFrmLei: [''],
+      rltdFrmLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       rltdToBicfi: [''],
       rltdToClrSysIdCd: [''],
       rltdToMembId: ['', [Validators.minLength(1), Validators.maxLength(28)]],
-      rltdToLei: [''],
+      rltdToLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       rltdBizMsgIdr: [''],
       rltdMsgDefIdr: [''],
       rltdBizSvc: [''],
@@ -344,7 +441,7 @@ dialogUtils = inject(DialogUtils);
       rltdCpyDplct: [null],
       rltdPriority: [null],
 
-      msgId: 'MSG_' + new Date().getTime(),
+      msgId: 'MSG' + new Date().getTime(),
       creDtTm: [new Date().toISOString(), Validators.required],
       nbOfTxs: ['1', Validators.required],
 
@@ -361,9 +458,9 @@ dialogUtils = inject(DialogUtils);
       sttlmAcctIssr: [''],
 
       // Payment Identification
-      instrId: ['PACS008_' + new Date().getTime().toString().slice(-8), Validators.required],
+      instrId: ['PACS008-' + new Date().getTime().toString().slice(-8), Validators.required],
       endToEndId: ['', Validators.required],
-      txId: ['TX_' + new Date().getTime()],
+      txId: ['TX-' + new Date().getTime()],
       uetr: [''],
       clrSysRef: [''],
 
@@ -402,7 +499,7 @@ dialogUtils = inject(DialogUtils);
       prvsInstgAgt1Bicfi: [''],
       prvsInstgAgt1ClrSysIdCd: [''],
       prvsInstgAgt1MmbId: [''],
-      prvsInstgAgt1Lei: [''],
+      prvsInstgAgt1Lei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       prvsInstgAgt1Nm: [''],
       prvsInstgAgt1AdrLine1: [''],
       prvsInstgAgt1AdrLine2: [''],
@@ -437,7 +534,7 @@ dialogUtils = inject(DialogUtils);
       prvsInstgAgt2Bicfi: [''],
       prvsInstgAgt2ClrSysIdCd: [''],
       prvsInstgAgt2MmbId: [''],
-      prvsInstgAgt2Lei: [''],
+      prvsInstgAgt2Lei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       prvsInstgAgt2Nm: [''],
       prvsInstgAgt2AdrLine1: [''],
       prvsInstgAgt2AdrLine2: [''],
@@ -472,7 +569,7 @@ dialogUtils = inject(DialogUtils);
       prvsInstgAgt3Bicfi: [''],
       prvsInstgAgt3ClrSysIdCd: [''],
       prvsInstgAgt3MmbId: [''],
-      prvsInstgAgt3Lei: [''],
+      prvsInstgAgt3Lei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       prvsInstgAgt3Nm: [''],
       prvsInstgAgt3AdrLine1: [''],
       prvsInstgAgt3AdrLine2: [''],
@@ -507,13 +604,13 @@ dialogUtils = inject(DialogUtils);
       instgAgtBicfi: [''],
       instgAgtClrSysIdCd: [''],
       instgAgtMmbId: [''],
-      instgAgtLei: [''],
+      instgAgtLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
 
 
       instdAgtBicfi: [''],
       instdAgtClrSysIdCd: [''],
       instdAgtMmbId: [''],
-      instdAgtLei: [''],
+      instdAgtLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       instdAgtNm: [''],
       instdAgtAdrLine1: [''],
       instdAgtAdrLine2: [''],
@@ -537,7 +634,7 @@ dialogUtils = inject(DialogUtils);
       intrmyAgt1Bicfi: [''],
       intrmyAgt1ClrSysIdCd: [''],
       intrmyAgt1MmbId: [''],
-      intrmyAgt1Lei: [''],
+      intrmyAgt1Lei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       intrmyAgt1Nm: [''],
       intrmyAgt1AdrDept: [''],
       intrmyAgt1AdrSubDept: [''],
@@ -571,7 +668,7 @@ dialogUtils = inject(DialogUtils);
       intrmyAgt2Bicfi: [''],
       intrmyAgt2ClrSysIdCd: [''],
       intrmyAgt2MmbId: [''],
-      intrmyAgt2Lei: [''],
+      intrmyAgt2Lei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       intrmyAgt2Nm: [''],
       intrmyAgt2AdrDept: [''],
       intrmyAgt2AdrSubDept: [''],
@@ -605,7 +702,7 @@ dialogUtils = inject(DialogUtils);
       intrmyAgt3Bicfi: [''],
       intrmyAgt3ClrSysIdCd: [''],
       intrmyAgt3MmbId: [''],
-      intrmyAgt3Lei: [''],
+      intrmyAgt3Lei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       intrmyAgt3Nm: [''],
       intrmyAgt3AdrDept: [''],
       intrmyAgt3AdrSubDept: [''],
@@ -664,7 +761,7 @@ dialogUtils = inject(DialogUtils);
 
       //Organisation Identification starts
       anyBIC: [''],
-      LEI: [''],
+      LEI: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       //Other
       orgIdOthr: this.formBuilder.array([]),
       //Organisation Identification ends
@@ -701,7 +798,7 @@ dialogUtils = inject(DialogUtils);
       dbtrAgtBicfi: ['',Validators.required],
       dbtrAgtClrSysIdCd: [''],
       dbtrAgtMmbId: [''],
-      dbtrAgtLei: [''],
+      dbtrAgtLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       dbtrAgtNm: [''],
       dbtrAgtAdrDept: [''],
       dbtrAgtAdrSubDept: [''],
@@ -758,7 +855,7 @@ dialogUtils = inject(DialogUtils);
       //Identification starts
       //Organisation Identification starts
       ultanyBIC: [''],
-      ultLEI: [''],
+      ultLEI: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
 
       ultorgIdOthr: this.formBuilder.array([]),
 
@@ -798,7 +895,7 @@ dialogUtils = inject(DialogUtils);
 // Identification starts
 // Organisation Identification starts
       initiatingPrtyanyBIC: [''],
-      initiatingPrtyLEI: [''],
+      initiatingPrtyLEI: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
 
       iniPrtyOrgIden: this.formBuilder.array([]),
 
@@ -842,7 +939,7 @@ dialogUtils = inject(DialogUtils);
 
       //Organisation Identification starts
       crdtranyBIC: [''],
-      crdtrLEI: [''],
+      crdtrLEI: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       //Other
       crdtrorgIdOthr: this.formBuilder.array([]),
       //Organisation Identification ends
@@ -877,7 +974,7 @@ dialogUtils = inject(DialogUtils);
 
       // Creditor Agent (flat)
       crdtrAgtBicfi: ['',Validators.required],
-      crdtrAgtLei: [''],
+      crdtrAgtLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       crdtrAgtNm: [''],
       cdtrAgtNm: [''],
       crdtrAgtClrSysIdCd: [''],
@@ -937,7 +1034,7 @@ dialogUtils = inject(DialogUtils);
       //Identification starts
       //Organisation Identification starts
       ultcrdtranyBIC: [''],
-      ultcrdtrLEI: [''],
+      ultcrdtrLEI: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
 
       ultcrdtrorgIdOthr: this.formBuilder.array([]),
 
@@ -954,6 +1051,9 @@ dialogUtils = inject(DialogUtils);
 
 
       // Instructions
+      // Instructions
+      instructionForCreditorAgent: this.formBuilder.array([]),
+      instructionForNextAgent: this.formBuilder.array([]),
       instrForCdtrAgtCD1: [null],
       instrForCdtrAgtInf1: [''],
       instrForCdtrAgtCD2: [null],
@@ -971,6 +1071,9 @@ dialogUtils = inject(DialogUtils);
 
       // Remittance
       rmtInf: [''],
+      rltdRemInfoForm: this.formBuilder.array([]),
+      //Regulatory Reporting
+      rgltryRptg: this.formBuilder.array([this.createRgltryRptgGroup()]),
 
       // Authorization
       // auth1stBy: [''],
@@ -1053,8 +1156,8 @@ dialogUtils = inject(DialogUtils);
       payload.instdAgtMembId = frm.instdAgtMmbId,
       payload.instdAgtLei = frm.instdAgtLei,
 
-    // 4. Payment Identifiers
-    payload.instrId = frm.instrId ;
+      // 4. Payment Identifiers
+      payload.instrId = frm.instrId ;
     payload.endToEndId = frm.endToEndId ;
     payload.txId = frm.txId ;
     payload.uetr = frm.uetr ;
@@ -1103,31 +1206,35 @@ dialogUtils = inject(DialogUtils);
     payload.xchgRate = frm.xchgRate ;
 
     payload.chrgsInfAgnt = frm.chrgInfoForm.map((row: any) => ({
-      bicfi: row.chrgInfAgtBicfi,
-      clrSysIdCd: row.chrgInfAgtClrSysIdCd,
-      mmbId: row.chrgInfoAgtMmbId,
-      lei: row.chrgInfoAgtLei,
-      nm: row.chrgInfoAgtNm,
-      adr: {
-        dept: row.chrgInfoAgtDept,
-        subDept: row.chrgInfoAgtSubDept,
-        strtNm: row.chrgInfoAgtStrtNm,
-        bldgNb: row.chrgInfoAgtBldgNb,
-        bldgNm: row.chrgInfoAgtBldgNm,
-        flr: row.chrgInfoAgtFlr,
-        pstBx: row.chrgInfoAgtPstBx,
-        room: row.chrgInfoAgtRoom,
-        pstCd: row.chrgInfoAgtPstCd,
-        twnNm: row.chrgInfoAgtTwnNm,
-        twnLctnNm: row.chrgInfoAgtTwnLctnNm,
-        dstrctNm: row.chrgInfoAgtDstrctNm,
-        ctrySubDvsn: row.chrgInfoAgtCtrySubDvsn,
-        ctry: row.chrgInfoAgtCtry,
-        adrLine: [
-          row.chrgInfoAgtAdrLine1,
-          row.chrgInfoAgtAdrLine2,
-          row.chrgInfoAgtAdrLine3,
-        ].filter(Boolean),
+      chgCcy:row.chrgInfoCcy,
+      chgAmt:row.chrgInfoAmt,
+      chrgsInfAgnt:{
+        bicfi: row.chrgInfAgtBicfi,
+        clrSysIdCd: row.chrgInfAgtClrSysIdCd,
+        mmbId: row.chrgInfoAgtMmbId,
+        lei: row.chrgInfoAgtLei,
+        nm: row.chrgInfoAgtNm,
+        adr: {
+          dept: row.chrgInfoAgtDept,
+          subDept: row.chrgInfoAgtSubDept,
+          strtNm: row.chrgInfoAgtStrtNm,
+          bldgNb: row.chrgInfoAgtBldgNb,
+          bldgNm: row.chrgInfoAgtBldgNm,
+          flr: row.chrgInfoAgtFlr,
+          pstBx: row.chrgInfoAgtPstBx,
+          room: row.chrgInfoAgtRoom,
+          pstCd: row.chrgInfoAgtPstCd,
+          twnNm: row.chrgInfoAgtTwnNm,
+          twnLctnNm: row.chrgInfoAgtTwnLctnNm,
+          dstrctNm: row.chrgInfoAgtDstrctNm,
+          ctrySubDvsn: row.chrgInfoAgtCtrySubDvsn,
+          ctry: row.chrgInfoAgtCtry,
+          adrLine: [
+            row.chrgInfoAgtAdrLine1,
+            row.chrgInfoAgtAdrLine2,
+            row.chrgInfoAgtAdrLine3,
+          ].filter(Boolean),
+        }
       }
     }));
 
@@ -1503,808 +1610,73 @@ dialogUtils = inject(DialogUtils);
     };
 
     // 11. Instruction and Purpose
-    payload.instrForCdtrAgtCD1 = frm.instrForCdtrAgtCD1;
-    payload.instrForCdtrAgtInf1 = frm.instrForCdtrAgtInf;
-    payload.instrForCdtrAgtCD2 = frm.instrForCdtrAgtCD2;
-    payload.instrForCdtrAgtInf2 = frm.instrForCdtrAgtInf2;
-    payload.instrForNxtAgt1 = frm.instrForNxtAgt1;
-    payload.instrForNxtAgt2 = frm.instrForNxtAgt2;
-    payload.instrForNxtAgt3 = frm.instrForNxtAgt3;
-    payload.instrForNxtAgt4 = frm.instrForNxtAgt4;
-    payload.instrForNxtAgt5 = frm.instrForNxtAgt5;
-    payload.instrForNxtAgt6 = frm.instrForNxtAgt6;
+    const creditorAgentInstructions = frm.instructionForCreditorAgent || [];
+    payload.instrForCdtrAgtCD1 = creditorAgentInstructions[0]?.code || '';
+    payload.instrForCdtrAgtInf1 = creditorAgentInstructions[0]?.info || '';
+    payload.instrForCdtrAgtCD2 = creditorAgentInstructions[0]?.code || '';
+    payload.instrForCdtrAgtInf2 = creditorAgentInstructions[0]?.info || '';
+
+    // Map instruction for next agent FormArray to individual fields as per DTO
+    const nextAgentInstructions = frm.instructionForNextAgent || [];
+    payload.instrForNxtAgt1 = nextAgentInstructions[0]?.instruction || '';
+    payload.instrForNxtAgt2 = nextAgentInstructions[1]?.instruction || '';
+    payload.instrForNxtAgt3 = nextAgentInstructions[2]?.instruction || '';
+    payload.instrForNxtAgt4 = nextAgentInstructions[3]?.instruction || '';
+    payload.instrForNxtAgt5 = nextAgentInstructions[4]?.instruction || '';
+    payload.instrForNxtAgt6 = nextAgentInstructions[5]?.instruction || '';
 
     payload.purpCd = frm.purpCd ;
     payload.purpPrtry = frm.purpPrtry ;
     payload.rmtInf = frm.rmtInf ;
 
-    // 12. Remittance Info
-    payload.rmtInfUstrd = (frm.rmtInfUstrd || []).filter((e: string) => e?.trim());
-    payload.rmtInfStrd = (frm.rmtInfStrd || []).map((e: any) => ({
-      cdtrRefInfTpCd: e.cdtrRefInfTpCd,
-      cdtrRefInfTpPrtry: e.cdtrRefInfTpPrtry,
-      cdtrRefInfIssr: e.cdtrRefInfIssr,
-      cdtrRef: e.cdtrRef,
-    }));
 
-    // 13. Authorization
-
-
-    // 14. Related Parties (nested rltd)
-    payload.rltd = {
-      rltdRmtInf: (frm.rltdRmtInf || []).map((info: any) => ({
-        ustrd: info.ustrd ,
-        strd: (info.strd || []).map((s: any) => ({
-          cdtrRefInfTpCd: s.cdtrRefInfTpCd,
-          cdtrRefInfTpPrtry: s.cdtrRefInfTpPrtry,
-          cdtrRefInfIssr: s.cdtrRefInfIssr,
-          cdtrRef: s.cdtrRef,
-        }))
+      //Related Remitance Info
+    payload.rltdRmtInf = (frm.rltdRemInfoForm || []).map((info: any) => ({
+      rmtId: info.rmtId,
+      rmtLctnDtls: (info.rltdRemDtlsForm || []).map((s: any) => ({
+        mhtd: s.mhtd,
+        elctrncAdr: s.elctrncAdr,
+        nm: s.nm,
+        address: {
+          dept: s.dept,
+          subDept: s.subDept,
+          strtNm: s.strtNm,
+          bldgNb: s.bldgNb,
+          bldgNm: s.bldgNm,
+          flr: s.flr,
+          pstBx: s.pstBx,
+          room: s.room,
+          pstCd: s.pstCd,
+          twnNm: s.twnNm,
+          twnLctnNm: s.twnLctnNm,
+          dstrctNm: s.dstrctNm,
+          ctrySubDvsn: s.ctrySubDvsn,
+          ctry: s.ctry,
+          adrLine: [
+            s.adrLine1,
+            s.adrLine2,
+            s.adrLine3,
+          ].filter(Boolean),
+        },
       })),
-      /*rltdDates: {
-        accptncDtTm: frm.rltdAccptncDtTm ,
-        tradgDt: frm.rltdTradgDt ,
-        intrBkSttlmDt: frm.rltdIntrBkSttlmDt ,
-      }*/
-    };
-
+    }));
+    //Regulatory Reporting
+    payload.rgltryRptg = (frm.rgltryRptg || []).map((info: any) => ({
+      dbtCdtRptgInd: info.dbtCdtRptgInd,
+      authrtyNm: info.authrtyNm,
+      authrtyCtry: info.authrtyCtry,
+      dtls: (info.dtlsForm || []).map((s: any) => ({
+        dtlsTp: s.dtlsTp,
+        dtlsDt: s.dtlsDt,
+        dtlsCtry: s.dtlsCtry,
+        dtlsCd: s.dtlsCd,
+        dtlsCcy: s.dtlsCcy,
+        dtlsAmt: s.dtlsAmt,
+        inf: (s.dtls?.inf || []).filter((i: string) => !!i),
+      }))
+    }));
     return payload as Mx008Model;
   }
-
-
-
-  /*generatePayload(): Mx008Model {
-    let payload: any = {};
-    let frmValue = this.frmGroup.value;
-
-    // Time and Value Information
-    payload.timeIndi13C = frmValue.timeIndi13C;
-    payload.timeSign13C = frmValue.timeSign13C;
-    payload.timeOffset13C = frmValue.timeOffset13C;
-    payload.valDate32A = frmValue.valDate32A
-      ? new Date(frmValue.valDate32A)
-      : null;
-    payload.valCurr32A = frmValue.valCurr32A;
-    payload.valAmt32A = frmValue.valAmt32A ? Number(frmValue.valAmt32A) : null;
-
-    // Business Message Header
-    payload.bizMsgIdr = frmValue.bizMsgIdr;
-    payload.msgDefIdr = frmValue.msgDefIdr;
-    payload.bizSvc = frmValue.bizSvc;
-    payload.creDt = frmValue.creDt;
-    payload.cpyDplct = frmValue.cpyDplct;
-    payload.psblDplct = frmValue.psblDplct;
-    payload.priority = frmValue.priority;
-    payload.msgId = frmValue.msgId;
-    payload.creDtTm = frmValue.creDtTm;
-    payload.nbOfTxs = frmValue.nbOfTxs;
-
-    // Settlement Information
-    payload.sttlmMtd = frmValue.sttlmMtd;
-
-    // Map flat settlement account to nested structure
-    payload.sttlmAcct = {
-      id: frmValue.sttlmAcctId,
-      ccy: frmValue.sttlmAcctCcy,
-      tp: frmValue.sttlmAcctTp,
-      nm: frmValue.sttlmAcctNm,
-      schmeNm: frmValue.sttlmAcctSchmeNm,
-      issr: frmValue.sttlmAcctIssr,
-    }
-
-    payload.chrgBr = frmValue.chrgBr;
-
-    // Payment Identification
-    payload.instrId = frmValue.instrId;
-    payload.endToEndId = frmValue.endToEndId;
-    payload.txId = frmValue.txId;
-    payload.uetr = frmValue.uetr;
-    payload.clrSysRef = frmValue.clrSysRef;
-
-    // Payment Type Information
-    payload.instrPrty = frmValue.instrPrty;
-    payload.clrChanl = frmValue.clrChanl;
-    // Convert service level FormArray to fixed arrays of 3 elements as per model
-    const serviceLevels = frmValue.serviceLevels || [];
-    const serviceCodes = serviceLevels
-      .map((level: any) => level.serviceCode)
-      .filter((code: string) => code);
-    const servicePriorities = serviceLevels
-      .map((level: any) => level.servicePriority)
-      .filter((priority: string) => priority);
-
-
-    // Ensure arrays have exactly 3 elements as per model specification
-    payload.svcLvlCD = [
-      serviceCodes[0] || '',
-      serviceCodes[1] || '',
-      serviceCodes[2] || '',
-    ];
-    payload.svcLvlPrtry = [
-      servicePriorities[0] || '',
-      servicePriorities[1] || '',
-      servicePriorities[2] || '',
-    ];
-
-    payload.lclInstrmCD = frmValue.lclInstrmCD;
-    payload.lclInstrmPrtry = frmValue.lclInstrmPrtry;
-    payload.ctgyPurpCd = frmValue.ctgyPurpCd;
-    payload.ctgyPurpPrtry = frmValue.ctgyPurpPrtry;
-
-    // Interbank Settlement
-    payload.intrBkSttlmAmtCcy = frmValue.intrBkSttlmAmtCcy;
-    payload.intrBkSttlmAmt = frmValue.intrBkSttlmAmt
-      ? Number(frmValue.intrBkSttlmAmt)
-      : null;
-    payload.intrBkSttlmDt = frmValue.intrBkSttlmDt;
-    payload.sttlmPrty = frmValue.sttlmPrty;
-
-    // Map flat previous instructing agent 1 to nested structure
-    payload.prvsInstgAgt1 = {
-      bIcfi: frmValue.prvsInstgAgt1Bicfi,
-      clrSysIdCd: frmValue.prvsInstgAgt1ClrSysIdCd,
-      mmbId: frmValue.prvsInstgAgt1MmbId,
-      lei: frmValue.prvsInstgAgt1Lei,
-      nm: frmValue.prvsInstgAgt1Nm,
-      adrLine1: frmValue.prvsInstgAgt1AdrLine1,
-      adrLine2: frmValue.prvsInstgAgt1AdrLine2,
-      adrLine3: frmValue.prvsInstgAgt1AdrLine3,
-      adr: {
-        dept: frmValue.prvsInstgAgt1AdrDept,
-        subDept: frmValue.prvsInstgAgt1AdrSubDept,
-        strtNm: frmValue.prvsInstgAgt1AdrStrtNm,
-        bldgNb: frmValue.prvsInstgAgt1AdrBldgNb,
-        bldgNm: frmValue.prvsInstgAgt1AdrBldgNm,
-        flr: frmValue.prvsInstgAgt1AdrFlr,
-        pstBx: frmValue.prvsInstgAgt1AdrPstBx,
-        room: frmValue.prvsInstgAgt1AdrRoom,
-        pstCd: frmValue.prvsInstgAgt1AdrPstCd,
-        twnNm: frmValue.prvsInstgAgt1AdrTwnNm,
-        twnLctnNm: frmValue.prvsInstgAgt1AdrTwnLctnNm,
-        dstrctNm: frmValue.prvsInstgAgt1AdrDstrctNm,
-        ctrySubDvsn: frmValue.prvsInstgAgt1AdrCtrySubDvsn,
-        ctry: frmValue.prvsInstgAgt1AdrCtry,
-        adrLine: (frmValue.prvsInstgAgt1AdrLine || []).filter(
-          (line: string) => line && line.trim() !== ''
-        ),
-      },
-    };
-
-    payload.prvsInstgAgt1Acct = {
-      id: frmValue.prvsInstgAgt1AcctId,
-      ccy: frmValue.prvsInstgAgt1AcctCcy,
-      tp: frmValue.prvsInstgAgt1AcctTp,
-      nm: frmValue.prvsInstgAgt1AcctNm,
-      schmeNm: frmValue.prvsInstgAgt1AcctSchmeNm,
-      issr: frmValue.prvsInstgAgt1AcctIssr,
-    };
-
-    // Map flat previous instructing agent 2 to nested structure
-    payload.prvsInstgAgt2 = {
-      bIcfi: frmValue.prvsInstgAgt2Bicfi,
-      clrSysIdCd: frmValue.prvsInstgAgt2ClrSysIdCd,
-      mmbId: frmValue.prvsInstgAgt2MmbId,
-      lei: frmValue.prvsInstgAgt2Lei,
-      nm: frmValue.prvsInstgAgt2Nm,
-      adrLine1: frmValue.prvsInstgAgt2AdrLine1,
-      adrLine2: frmValue.prvsInstgAgt2AdrLine2,
-      adrLine3: frmValue.prvsInstgAgt2AdrLine3,
-      adr: {
-        dept: frmValue.prvsInstgAgt2AdrDept,
-        subDept: frmValue.prvsInstgAgt2AdrSubDept,
-        strtNm: frmValue.prvsInstgAgt2AdrStrtNm,
-        bldgNb: frmValue.prvsInstgAgt2AdrBldgNb,
-        bldgNm: frmValue.prvsInstgAgt2AdrBldgNm,
-        flr: frmValue.prvsInstgAgt2AdrFlr,
-        pstBx: frmValue.prvsInstgAgt2AdrPstBx,
-        room: frmValue.prvsInstgAgt2AdrRoom,
-        pstCd: frmValue.prvsInstgAgt2AdrPstCd,
-        twnNm: frmValue.prvsInstgAgt2AdrTwnNm,
-        twnLctnNm: frmValue.prvsInstgAgt2AdrTwnLctnNm,
-        dstrctNm: frmValue.prvsInstgAgt2AdrDstrctNm,
-        ctrySubDvsn: frmValue.prvsInstgAgt2AdrCtrySubDvsn,
-        ctry: frmValue.prvsInstgAgt2AdrCtry,
-        adrLine: (frmValue.prvsInstgAgt2AdrLine || []).filter(
-          (line: string) => line && line.trim() !== ''
-        ),
-      },
-    };
-
-    payload.prvsInstgAgt2Acct = {
-      id: frmValue.prvsInstgAgt2AcctId,
-      ccy: frmValue.prvsInstgAgt2AcctCcy,
-      tp: frmValue.prvsInstgAgt2AcctTp,
-      nm: frmValue.prvsInstgAgt2AcctNm,
-      schmeNm: frmValue.prvsInstgAgt2AcctSchmeNm,
-      issr: frmValue.prvsInstgAgt2AcctIssr,
-    };
-
-    // Map flat previous instructing agent 3 to nested structure
-    payload.prvsInstgAgt3 = {
-      bIcfi: frmValue.prvsInstgAgt3Bicfi,
-      clrSysIdCd: frmValue.prvsInstgAgt3ClrSysIdCd,
-      mmbId: frmValue.prvsInstgAgt3MmbId,
-      lei: frmValue.prvsInstgAgt3Lei,
-      nm: frmValue.prvsInstgAgt3Nm,
-      adrLine1: frmValue.prvsInstgAgt3AdrLine1,
-      adrLine2: frmValue.prvsInstgAgt3AdrLine2,
-      adrLine3: frmValue.prvsInstgAgt3AdrLine3,
-      adr: {
-        dept: frmValue.prvsInstgAgt3AdrDept,
-        subDept: frmValue.prvsInstgAgt3AdrSubDept,
-        strtNm: frmValue.prvsInstgAgt3AdrStrtNm,
-        bldgNb: frmValue.prvsInstgAgt3AdrBldgNb,
-        bldgNm: frmValue.prvsInstgAgt3AdrBldgNm,
-        flr: frmValue.prvsInstgAgt3AdrFlr,
-        pstBx: frmValue.prvsInstgAgt3AdrPstBx,
-        room: frmValue.prvsInstgAgt3AdrRoom,
-        pstCd: frmValue.prvsInstgAgt3AdrPstCd,
-        twnNm: frmValue.prvsInstgAgt3AdrTwnNm,
-        twnLctnNm: frmValue.prvsInstgAgt3AdrTwnLctnNm,
-        dstrctNm: frmValue.prvsInstgAgt3AdrDstrctNm,
-        ctrySubDvsn: frmValue.prvsInstgAgt3AdrCtrySubDvsn,
-        ctry: frmValue.prvsInstgAgt3AdrCtry,
-        adrLine: (frmValue.prvsInstgAgt3AdrLine || []).filter(
-          (line: string) => line && line.trim() !== ''
-        ),
-      },
-    };
-
-    payload.prvsInstgAgt3Acct = {
-      id: frmValue.prvsInstgAgt3AcctId,
-      ccy: frmValue.prvsInstgAgt3AcctCcy,
-      tp: frmValue.prvsInstgAgt3AcctTp,
-      nm: frmValue.prvsInstgAgt3AcctNm,
-      schmeNm: frmValue.prvsInstgAgt3AcctSchmeNm,
-      issr: frmValue.prvsInstgAgt3AcctIssr,
-    };
-
-    payload.instgAgtBic = frmValue.instgAgtBicfi,
-    payload.instdAgtBic = frmValue.instdAgtBicfi,
-
-    // Map flat agents to nested structure
-    payload.instgAgt = {
-      bIcfi: frmValue.instgAgtBicfi,
-      clrSysIdCd: frmValue.instgAgtClrSysIdCd,
-      mmbId: frmValue.instgAgtMmbId,
-      lei: frmValue.instgAgtLei,
-      nm: frmValue.instgAgtNm,
-      adrLine1: frmValue.instgAgtAdrLine1,
-      adrLine2: frmValue.instgAgtAdrLine2,
-      adrLine3: frmValue.instgAgtAdrLine3,
-      adr: {
-        dept: frmValue.instgAgtAdrDept,
-        subDept: frmValue.instgAgtAdrSubDept,
-        strtNm: frmValue.instgAgtAdrStrtNm,
-        bldgNb: frmValue.instgAgtAdrBldgNb,
-        bldgNm: frmValue.instgAgtAdrBldgNm,
-        flr: frmValue.instgAgtAdrFlr,
-        pstBx: frmValue.instgAgtAdrPstBx,
-        room: frmValue.instgAgtAdrRoom,
-        pstCd: frmValue.instgAgtAdrPstCd,
-        twnNm: frmValue.instgAgtAdrTwnNm,
-        twnLctnNm: frmValue.instgAgtAdrTwnLctnNm,
-        dstrctNm: frmValue.instgAgtAdrDstrctNm,
-        ctrySubDvsn: frmValue.instgAgtAdrCtrySubDvsn,
-        ctry: frmValue.instgAgtAdrCtry,
-        adrLine: (frmValue.instgAgtAdrLine || []).filter(
-          (line: string) => line && line.trim() !== ''
-        ),
-      },
-    };
-
-    payload.instdAgt = {
-      bicfi: frmValue.instdAgtBicfi,
-      clrSysIdCd: frmValue.instdAgtClrSysIdCd,
-      mmbId: frmValue.instdAgtMmbId,
-      lei: frmValue.instdAgtLei,
-      nm: frmValue.instdAgtNm,
-      adrLine1: frmValue.instdAgtAdrLine1,
-      adrLine2: frmValue.instdAgtAdrLine2,
-      adrLine3: frmValue.instdAgtAdrLine3,
-      adr: {
-        dept: frmValue.instdAgtAdrDept,
-        subDept: frmValue.instdAgtAdrSubDept,
-        strtNm: frmValue.instdAgtAdrStrtNm,
-        bldgNb: frmValue.instdAgtAdrBldgNb,
-        bldgNm: frmValue.instdAgtAdrBldgNm,
-        flr: frmValue.instdAgtAdrFlr,
-        pstBx: frmValue.instdAgtAdrPstBx,
-        room: frmValue.instdAgtAdrRoom,
-        pstCd: frmValue.instdAgtAdrPstCd,
-        twnNm: frmValue.instdAgtAdrTwnNm,
-        twnLctnNm: frmValue.instdAgtAdrTwnLctnNm,
-        dstrctNm: frmValue.instdAgtAdrDstrctNm,
-        ctrySubDvsn: frmValue.instdAgtAdrCtrySubDvsn,
-        ctry: frmValue.instdAgtAdrCtry,
-        adrLine: (frmValue.instdAgtAdrLine || []).filter(
-          (line: string) => line && line.trim() !== ''
-        ),
-      },
-    };
-
-    // Map flat intermediary agents to nested structure
-    payload.intrmyAgt1 = {
-      bIcfi: frmValue.intrmyAgt1Bicfi,
-      clrSysIdCd: frmValue.intrmyAgt1ClrSysIdCd,
-      mmbId: frmValue.intrmyAgt1MmbId,
-      lei: frmValue.intrmyAgt1Lei,
-      nm: frmValue.intrmyAgt1Nm,
-      adrLine1: frmValue.intrmyAgt1AdrLine1,
-      adrLine2: frmValue.intrmyAgt1AdrLine2,
-      adrLine3: frmValue.intrmyAgt1AdrLine3,
-      adr: {
-        dept: frmValue.intrmyAgt1AdrDept,
-        subDept: frmValue.intrmyAgt1AdrSubDept,
-        strtNm: frmValue.intrmyAgt1AdrStrtNm,
-        bldgNb: frmValue.intrmyAgt1AdrBldgNb,
-        bldgNm: frmValue.intrmyAgt1AdrBldgNm,
-        flr: frmValue.intrmyAgt1AdrFlr,
-        pstBx: frmValue.intrmyAgt1AdrPstBx,
-        room: frmValue.intrmyAgt1AdrRoom,
-        pstCd: frmValue.intrmyAgt1AdrPstCd,
-        twnNm: frmValue.intrmyAgt1AdrTwnNm,
-        twnLctnNm: frmValue.intrmyAgt1AdrTwnLctnNm,
-        dstrctNm: frmValue.intrmyAgt1AdrDstrctNm,
-        ctrySubDvsn: frmValue.intrmyAgt1AdrCtrySubDvsn,
-        ctry: frmValue.intrmyAgt1AdrCtry,
-        adrLine: (frmValue.intrmyAgt1AdrLine || []).filter(
-          (line: string) => line && line.trim() !== ''
-        ),
-      },
-    };
-
-    payload.intrmyAgt1Acct = {
-      id: frmValue.intrmyAgt1AcctId,
-      ccy: frmValue.intrmyAgt1AcctCcy,
-      tp: frmValue.intrmyAgt1AcctTp,
-      nm: frmValue.intrmyAgt1AcctNm,
-      schmeNm: frmValue.intrmyAgt1AcctSchmeNm,
-      issr: frmValue.intrmyAgt1AcctIssr,
-    };
-
-    payload.intrmyAgt2 = {
-      bIcfi: frmValue.intrmyAgt2Bicfi,
-      clrSysIdCd: frmValue.intrmyAgt2ClrSysIdCd,
-      mmbId: frmValue.intrmyAgt2MmbId,
-      lei: frmValue.intrmyAgt2Lei,
-      nm: frmValue.intrmyAgt2Nm,
-      adrLine1: frmValue.intrmyAgt2AdrLine1,
-      adrLine2: frmValue.intrmyAgt2AdrLine2,
-      adrLine3: frmValue.intrmyAgt2AdrLine3,
-      adr: {
-        dept: frmValue.intrmyAgt2AdrDept,
-        subDept: frmValue.intrmyAgt2AdrSubDept,
-        strtNm: frmValue.intrmyAgt2AdrStrtNm,
-        bldgNb: frmValue.intrmyAgt2AdrBldgNb,
-        bldgNm: frmValue.intrmyAgt2AdrBldgNm,
-        flr: frmValue.intrmyAgt2AdrFlr,
-        pstBx: frmValue.intrmyAgt2AdrPstBx,
-        room: frmValue.intrmyAgt2AdrRoom,
-        pstCd: frmValue.intrmyAgt2AdrPstCd,
-        twnNm: frmValue.intrmyAgt2AdrTwnNm,
-        twnLctnNm: frmValue.intrmyAgt2AdrTwnLctnNm,
-        dstrctNm: frmValue.intrmyAgt2AdrDstrctNm,
-        ctrySubDvsn: frmValue.intrmyAgt2AdrCtrySubDvsn,
-        ctry: frmValue.intrmyAgt2AdrCtry,
-        adrLine: (frmValue.intrmyAgt2AdrLine || []).filter(
-          (line: string) => line && line.trim() !== ''
-        ),
-      },
-    };
-
-    payload.intrmyAgt2Acct = {
-      id: frmValue.intrmyAgt2AcctId,
-      ccy: frmValue.intrmyAgt2AcctCcy,
-      tp: frmValue.intrmyAgt2AcctTp,
-      nm: frmValue.intrmyAgt2AcctNm,
-      schmeNm: frmValue.intrmyAgt2AcctSchmeNm,
-      issr: frmValue.intrmyAgt2AcctIssr,
-    };
-
-    payload.intrmyAgt3 = {
-      bIcfi: frmValue.intrmyAgt3Bicfi,
-      clrSysIdCd: frmValue.intrmyAgt3ClrSysIdCd,
-      mmbId: frmValue.intrmyAgt3MmbId,
-      lei: frmValue.intrmyAgt3Lei,
-      nm: frmValue.intrmyAgt3Nm,
-      adrLine1: frmValue.intrmyAgt3AdrLine1,
-      adrLine2: frmValue.intrmyAgt3AdrLine2,
-      adrLine3: frmValue.intrmyAgt3AdrLine3,
-      adr: {
-        dept: frmValue.intrmyAgt3AdrDept,
-        subDept: frmValue.intrmyAgt3AdrSubDept,
-        strtNm: frmValue.intrmyAgt3AdrStrtNm,
-        bldgNb: frmValue.intrmyAgt3AdrBldgNb,
-        bldgNm: frmValue.intrmyAgt3AdrBldgNm,
-        flr: frmValue.intrmyAgt3AdrFlr,
-        pstBx: frmValue.intrmyAgt3AdrPstBx,
-        room: frmValue.intrmyAgt3AdrRoom,
-        pstCd: frmValue.intrmyAgt3AdrPstCd,
-        twnNm: frmValue.intrmyAgt3AdrTwnNm,
-        twnLctnNm: frmValue.intrmyAgt3AdrTwnLctnNm,
-        dstrctNm: frmValue.intrmyAgt3AdrDstrctNm,
-        ctrySubDvsn: frmValue.intrmyAgt3AdrCtrySubDvsn,
-        ctry: frmValue.intrmyAgt3AdrCtry,
-        adrLine: (frmValue.intrmyAgt3AdrLine || []).filter(
-          (line: string) => line && line.trim() !== ''
-        ),
-      },
-    };
-
-    payload.intrmyAgt3Acct = {
-      id: frmValue.intrmyAgt3AcctId,
-      ccy: frmValue.intrmyAgt3AcctCcy,
-      tp: frmValue.intrmyAgt3AcctTp,
-      nm: frmValue.intrmyAgt3AcctNm,
-      schmeNm: frmValue.intrmyAgt3AcctSchmeNm,
-      issr: frmValue.intrmyAgt3AcctIssr,
-    };
-
-    // Debtor
-    payload.dbtr = {
-      nm: frmValue.dbtrNm,
-      ctryOfRes: frmValue.dbtrCtryOfRes,
-      address: {
-        dept: frmValue.dept,
-        subDept: frmValue.subDept,
-        strtNm: frmValue.strtNm,
-        bldgNb: frmValue.bldgNb,
-        bldgNm: frmValue.bldgNm,
-        flr: frmValue.flr,
-        pstBx: frmValue.pstBx,
-        room: frmValue.room,
-        pstCd: frmValue.pstCd,
-        twnNm: frmValue.twnNm,
-        twnLctnNm: frmValue.twnLctnNm,
-        dstrctNm: frmValue.dstrctNm,
-        ctrySubDvsn: frmValue.ctrySubDvsn,
-        ctry: frmValue.ctry,
-        adrLine: [frmValue.adrLine1, frmValue.adrLine2, frmValue.adrLine3].filter(Boolean),
-      },
-      orgIdBic: frmValue.anyBIC,
-      orgIdLei:frmValue.LEI,
-      orgIdOthrId: frmValue.orgIdOthr?.[0]?.orgIdOthrId || '',
-      orgIdOthrScNmCd: frmValue.orgIdOthr?.[0]?.orgIdOthrScmNm || '',
-      orgIdOthrIssr: frmValue.orgIdOthr?.[0]?.orgIdOthrIssr || '',
-      birthDt: frmValue.birthDt,
-      prvcOfBirth: frmValue.prvcOfBirth,
-      cityOfBirth: frmValue.cityOfBirth,
-      ctryOfBirth: frmValue.ctryOfBirth,
-      prvtOthId1: frmValue.PrivtIdenOthr.privtIdOthrId,
-      prvtOthIdSchNmCd1: frmValue.PrivtIdenOthr.privtIdOthrScmNm,
-      prvtOthIdIssr1: frmValue.PrivtIdenOthr.privtIdOthrIssr,
-    };
-
-    // Debtor Account
-    payload.dbtrAcct = {
-      //no iban
-      id: frmValue.dbAccOthrId,
-      tp: frmValue.dbtrAcctTp,
-      ccy: frmValue.dbtrAcctCcy,
-      nm: frmValue.dbtrAcctNm,
-      schmeNm: frmValue.dbAccOthrScmNm, //check
-      issr: frmValue.dbOthrIssr,
-    };
-
-    // Debtor Agent
-    payload.dbtrAgt = {
-      bicfi: frmValue.dbtrAgtBicfi,
-      clrSysIdCd: frmValue.dbtrAgtClrSysIdCd,
-      mmbId: frmValue.dbtrAgtMmbId,
-      lei: frmValue.dbtrAgtLei,
-      nm: frmValue.dbtrAgtNm,
-      adr: {
-        dept: frmValue.dbtrAgtAdrDept,
-        subDept: frmValue.dbtrAgtAdrSubDept,
-        strtNm: frmValue.dbtrAgtAdrStrtNm,
-        bldgNb: frmValue.dbtrAgtAdrBldgNb,
-        bldgNm: frmValue.dbtrAgtAdrBldgNm,
-        flr: frmValue.dbtrAgtAdrFlr,
-        pstBx: frmValue.dbtrAgtAdrPstBx,
-        room: frmValue.dbtrAgtAdrRoom,
-        pstCd: frmValue.dbtrAgtAdrPstCd,
-        twnNm: frmValue.dbtrAgtAdrTwnNm,
-        twnLctnNm: frmValue.dbtrAgtAdrTwnLctnNm,
-        dstrctNm: frmValue.dbtrAgtAdrDstrctNm,
-        ctrySubDvsn: frmValue.dbtrAgtAdrCtrySubDvsn,
-        ctry: frmValue.dbtrAgtAdrCtry,
-        adrLine: [frmValue.dbtrAgtAdrLine1, frmValue.dbtrAgtAdrLine2, frmValue.dbtrAgtAdrLine3].filter(Boolean),
-      }
-    };
-
-    // Debtor Agent Account
-    payload.dbtrAgtAcct = {
-      id: frmValue.dbtrAgtAcctId,
-      tp: frmValue.dbtrAgtAcctTp,
-      ccy: frmValue.dbtrAgtAcctCcy,
-      nm: frmValue.dbtrAgtAcctNm,
-      schmeNm: frmValue.dbtrAgtAcctSchmeNm, //check
-      issr: frmValue.dbtrAgtAcctIssr,
-    };
-
-    // Ultimate Debtor
-    payload.ultmtDbtr = {
-      nm: frmValue.ultdbtrNm,
-      ctryOfRes: frmValue.ultdbtrCtryOfRes,
-      address: {
-        dept: frmValue.dbtrAdrDept,
-        subDept: frmValue.dbtrAdrSubDept,
-        strtNm: frmValue.dbtrAdrStrtNm,
-        bldgNb: frmValue.dbtrAdrBldgNb,
-        bldgNm: frmValue.dbtrAdrBldgNm,
-        flr: frmValue.dbtrAdrFlr,
-        pstBx: frmValue.dbtrAdrPstBx,
-        room: frmValue.dbtrAdrRoom,
-        pstCd: frmValue.dbtrAdrPstCd,
-        twnNm: frmValue.dbtrAdrTwnNm,
-        twnLctnNm: frmValue.dbtrAdrTwnLctnNm,
-        dstrctNm: frmValue.dbtrAdrDstrctNm,
-        ctrySubDvsn: frmValue.dbtrAdrCtrySubDvsn,
-        ctry: frmValue.dbtrAdrCtry,
-        adrLine: [frmValue.dbtrAdrLine1, frmValue.dbtrAdrLine2, frmValue.dbtrAdrLine3].filter(Boolean),
-      },
-      orgIdBic: frmValue.ultanyBIC,
-      orgIdLEI:frmValue.ultLEI,
-      orgIdOthrID: frmValue.ultorgIdOthr.ultorgIdOthrId,
-      orgIdOthrScNmCD: frmValue.ultorgIdOthr.ultorgIdOthrScmNm,
-      orgIdOthrIssr: frmValue.ultorgIdOthr.ultorgIdOthrIssr,
-      birthDt: frmValue.ultbirthDt,
-      prvcOfBirth: frmValue.ultprvcOfBirth,
-      cityOfBirth: frmValue.ultcityOfBirth,
-      ctryOfBirth: frmValue.ultctryOfBirth,
-      prvtOthId1: frmValue.ultPrivtIdenOthr.ultprivateIdOthrId,
-      prvtOthIdSchNmCD1: frmValue.ultPrivtIdenOthr.ultprivateIdOthrScmNm,
-      prvtOthIdIssr1: frmValue.ultPrivtIdenOthr.ultprivateIdOthrIssr,
-
-    };
-
-    // Creditor
-    payload.cdtr = {
-      nm: frmValue.crdtrNm,
-      ctryOfRes: frmValue.crdtrCtryOfRes,
-      address: {
-        dept: frmValue.cdtrAdrDept,
-        subDept: frmValue.cdtrAdrSubDept,
-        strtNm: frmValue.cdtrAdrStrtNm,
-        bldgNb: frmValue.cdtrAdrBldgNb,
-        bldgNm: frmValue.cdtrAdrBldgNm,
-        flr: frmValue.cdtrAdrFlr,
-        pstBx: frmValue.cdtrAdrPstBx,
-        room: frmValue.cdtrAdrRoom,
-        pstCd: frmValue.cdtrAdrPstCd,
-        twnNm: frmValue.cdtrAdrTwnNm,
-        twnLctnNm: frmValue.cdtrAdrTwnLctnNm,
-        dstrctNm: frmValue.cdtrAdrDstrctNm,
-        ctrySubDvsn: frmValue.cdtrAdrCtrySubDvsn,
-        ctry: frmValue.crdtrctry,
-        adrLine: [
-          frmValue.cdtrAdrLine1,
-          frmValue.cdtrAdrLine2,
-          frmValue.cdtrAdrLine3
-        ].filter(Boolean),
-      },
-      orgIdBic: frmValue.crdtranyBIC,
-      orgIdLei:frmValue.crdtrLEI,
-      orgIdOthrId: frmValue.crdtrorgIdOthr?.[0]?.crdtrorgIdOthrId || '',
-      orgIdOthrScNmCd: frmValue.crdtrorgIdOthr?.[0]?.crdtrorgIdOthrScmNm || '',
-      orgIdOthrIssr: frmValue.crdtrorgIdOthr?.[0]?.crdtrorgIdOthrIssr || '',
-      birthDt: frmValue.crdtrbirthDt,
-      prvcOfBirth: frmValue.crdtrprvcOfBirth,
-      cityOfBirth: frmValue.crdtrcityOfBirth,
-      ctryOfBirth: frmValue.crdtrctryOfBirth,
-      prvtOthId1: frmValue.crdtrPrivtIdenOthr.crdtrprivateIdOthrId,
-      prvtOthIdSchNmCd1: frmValue.crdtrPrivtIdenOthr.crdtrprivateIdOthrScmNm,
-      prvtOthIdIssr1: frmValue.crdtrPrivtIdenOthr.crdtrprivateIdOthrIssr,
-    },
-
-    payload.cdtrAcct = {
-      //no iban
-      id: frmValue.crdtrAccOthrId,
-      tp: frmValue.crdtrAcctTp,
-      ccy: frmValue.crdtrAcctCcy,
-      nm: frmValue.crdtrAcctNm,
-      schmeNm: frmValue.crdtrAccOthrScmNm, //check
-      issr: frmValue.crdtrOthrIssr,
-    };
-
-    // Creditor Agent
-    payload.cdtrAgt = {
-      bicfi: frmValue.crdtrAgtBicfi,
-      clrSysIdCd: frmValue.crdtrAgtClrSysIdCd,
-      mmbId: frmValue.crdtrAgtMmbId,
-      lei: frmValue.crdtrAgtLei,
-      nm: frmValue.crdtrAgtNm,
-      adr: {
-        dept: frmValue.crdtrAgtAdrDept,
-        subDept: frmValue.crdtrAgtAdrSubDept,
-        strtNm: frmValue.crdtrAgtAdrStrtNm,
-        bldgNb: frmValue.crdtrAgtAdrBldgNb,
-        bldgNm: frmValue.crdtrAgtAdrBldgNm,
-        flr: frmValue.crdtrAgtAdrFlr,
-        pstBx: frmValue.crdtrAgtAdrPstBx,
-        room: frmValue.crdtrAgtAdrRoom,
-        pstCd: frmValue.crdtrAgtAdrPstCd,
-        twnNm: frmValue.crdtrAgtAdrTwnNm,
-        twnLctnNm: frmValue.crdtrAgtAdrTwnLctnNm,
-        dstrctNm: frmValue.crdtrAgtAdrDstrctNm,
-        ctrySubDvsn: frmValue.crdtrAgtAdrCtrySubDvsn,
-        ctry: frmValue.crdtrAgtAdrCtry,
-        adrLine: [frmValue.crdtrAgtAdrLine1, frmValue.crdtrAgtAdrLine2, frmValue.crdtrAgtAdrLine3].filter(Boolean),
-      }
-    };
-
-    payload.CdtrAgtAcct = {
-      ccy: frmValue.crdtAgtAcctCcy,
-      tp: frmValue.crdtAgtAcctTp,
-      nm: frmValue.crdtAgtAcctNm,
-      prxy: frmValue.crdtrAcctPrxy,
-      cdtrAgtAccIden:{
-        IBAN: frmValue.crdtAcctIBAN,
-        cdtrAgtAccOthr:{
-          acctOthrId: frmValue.crdtAgtAcctId,
-          acctOthrScmNm: frmValue.crdtAgtAcctSchmeNm,
-          acctOthrIssr: frmValue.crdtAgtAcctIssr,
-        },
-      },
-    };
-    payload.UltmtCdtr = {
-      nm: frmValue.ultCrdtNm,
-      ctryOfRes: frmValue.ultCrdtCtryOfRes,
-      adr: {
-        dept: frmValue.ultCrdtAdrDept,
-        subDept: frmValue.ultCrdtAdrSubDept,
-        strtNm: frmValue.ultCrdtAdrStrtNm,
-        bldgNb: frmValue.ultCrdtAdrBldgNb,
-        bldgNm: frmValue.ultCrdtAdrBldgNm,
-        flr: frmValue.ultCrdtAdrFlr,
-        pstBx: frmValue.ultCrdtAdrPstBx,
-        room: frmValue.ultCrdtAdrRoom,
-        pstCd: frmValue.ultCrdtAdrPstCd,
-        twnNm: frmValue.ultCrdtAdrTwnNm,
-        twnLctnNm: frmValue.ultCrdtAdrTwnLctnNm,
-        dstrctNm: frmValue.ultCrdtAdrDstrctNm,
-        ctrySubDvsn: frmValue.ultCrdtAdrCtrySubDvsn,
-        ctry: frmValue.ultCrdtAdrCtry,
-        adrLine: [
-          frmValue.ultCrdtAdrLine1,
-          frmValue.ultCrdtAdrLine2,
-          frmValue.ultCrdtAdrLine3
-        ].filter(Boolean),
-      },
-      identification:{
-        orgIden: {
-          anyBIC: frmValue.ultCrdtAnyBIC,
-          LEI:frmValue.ultCrdtLEI,
-          orgIdOthr: (frmValue.ultcrdtrorgIdOthr || []).map((entry: any) => ({
-            ultcrdtrorgIdOthrId: entry.ultcrdtrorgIdOthrId,
-            ultcrdtrorgIdOthrScmNm: entry.ultcrdtrorgIdOthrScmNm,
-            ultcrdtrorgIdOthrIssr: entry.ultcrdtrorgIdOthrIssr,
-          })),
-        },
-        privateIden: {
-          birthDt: frmValue.ultCrdtBirthDt,
-          prvcOfBirth: frmValue.ultCrdtPrvcOfBirth,
-          cityOfBirth: frmValue.ultCrdtCityOfBirth,
-          ctryOfBirth: frmValue.ultCrdtCtryOfBirth,
-          privtIdenOthr: (frmValue.ultCrdtPrivtIdenOthr || []).map((entry: any) => ({
-            ultcrdtrprivateIdOthrId: entry.ultcrdtrprivateIdOthrId,
-            ultcrdtrprivateIdOthrScmNm: entry.ultcrdtrprivateIdOthrScmNm,
-            ultcrdtrprivateIdOthrIssr: entry.ultcrdtrprivateIdOthrIssr,
-          }))
-        }
-      },
-    };
-
-
-    // Instructions
-    payload.instrForCdtrAgtCD = frmValue.instrForCdtrAgtCD;
-    payload.instrForCdtrAgtInf = frmValue.instrForCdtrAgtInf;
-    payload.instrForNxtAgt1 = frmValue.instrForNxtAgt1;
-    payload.instrForNxtAgt2 = frmValue.instrForNxtAgt2;
-    payload.instrForNxtAgt3 = frmValue.instrForNxtAgt3;
-    payload.instrForNxtAgt4 = frmValue.instrForNxtAgt4;
-    payload.instrForNxtAgt5 = frmValue.instrForNxtAgt5;
-    payload.instrForNxtAgt6 = frmValue.instrForNxtAgt6;
-
-    // Purpose
-    payload.purpCD = frmValue.purpCD;
-    payload.purpPrtry = frmValue.purpPrtry;
-
-    // Remittance
-    payload.rmtInf = frmValue.rmtInf;
-
-    // Authorization
-    payload.auth1stBy = frmValue.auth1stBy;
-    payload.makeDt = frmValue.makeDt ? new Date(frmValue.makeDt) : null;
-    payload.auth1stDt = frmValue.auth1stDt
-      ? new Date(frmValue.auth1stDt)
-      : null;
-    payload.auth2ndBy = frmValue.auth2ndBy;
-    payload.auth2ndDt = frmValue.auth2ndDt
-      ? new Date(frmValue.auth2ndDt)
-      : null;
-
-    // Other
-    payload.lastAction = frmValue.lastAction;
-    payload.branchId = frmValue.branchId;
-    payload.trnRefNo20 = frmValue.trnRefNo20;
-    payload.relatedRef21 = frmValue.relatedRef21;
-
-    // Map flat related to nested structure
-    payload.rltd = {
-      charSet: frmValue.rltdCharSet,
-      fr: {
-        bIcfi: frmValue.rltdFrBicfi,
-        clrSysIdCd: frmValue.rltdFrClrSysIdCd,
-        mmbId: frmValue.rltdFrMmbId,
-        lei: frmValue.rltdFrLei,
-        nm: frmValue.rltdFrNm,
-        adrLine1: frmValue.rltdFrAdrLine1,
-        adrLine2: frmValue.rltdFrAdrLine2,
-        adrLine3: frmValue.rltdFrAdrLine3,
-        adr: {
-          dept: frmValue.rltdFrAdrDept,
-          subDept: frmValue.rltdFrAdrSubDept,
-          strtNm: frmValue.rltdFrAdrStrtNm,
-          bldgNb: frmValue.rltdFrAdrBldgNb,
-          bldgNm: frmValue.rltdFrAdrBldgNm,
-          flr: frmValue.rltdFrAdrFlr,
-          pstBx: frmValue.rltdFrAdrPstBx,
-          room: frmValue.rltdFrAdrRoom,
-          pstCd: frmValue.rltdFrAdrPstCd,
-          twnNm: frmValue.rltdFrAdrTwnNm,
-          twnLctnNm: frmValue.rltdFrAdrTwnLctnNm,
-          dstrctNm: frmValue.rltdFrAdrDstrctNm,
-          ctrySubDvsn: frmValue.rltdFrAdrCtrySubDvsn,
-          ctry: frmValue.rltdFrAdrCtry,
-          adrLine: (frmValue.rltdFrAdrLine || []).filter(
-            (line: string) => line && line.trim() !== ''
-          ),
-        },
-      },
-      to: {
-        bIcfi: frmValue.rltdToBicfi,
-        clrSysIdCd: frmValue.rltdToClrSysIdCd,
-        mmbId: frmValue.rltdToMmbId,
-        lei: frmValue.rltdToLei,
-        nm: frmValue.rltdToNm,
-        adrLine1: frmValue.rltdToAdrLine1,
-        adrLine2: frmValue.rltdToAdrLine2,
-        adrLine3: frmValue.rltdToAdrLine3,
-        adr: {
-          dept: frmValue.rltdToAdrDept,
-          subDept: frmValue.rltdToAdrSubDept,
-          strtNm: frmValue.rltdToAdrStrtNm,
-          bldgNb: frmValue.rltdToAdrBldgNb,
-          bldgNm: frmValue.rltdToAdrBldgNm,
-          flr: frmValue.rltdToAdrFlr,
-          pstBx: frmValue.rltdToAdrPstBx,
-          room: frmValue.rltdToAdrRoom,
-          pstCd: frmValue.rltdToAdrPstCd,
-          twnNm: frmValue.rltdToAdrTwnNm,
-          twnLctnNm: frmValue.rltdToAdrTwnLctnNm,
-          dstrctNm: frmValue.rltdToAdrDstrctNm,
-          ctrySubDvsn: frmValue.rltdToAdrCtrySubDvsn,
-          ctry: frmValue.rltdToAdrCtry,
-          adrLine: (frmValue.rltdToAdrLine || []).filter(
-            (line: string) => line && line.trim() !== ''
-          ),
-        },
-      },
-      bizMsgIdr: frmValue.rltdBizMsgIdr,
-      msgDefIdr: frmValue.rltdMsgDefIdr,
-      bizSvc: frmValue.rltdBizSvc,
-      creDt: frmValue.rltdCreDt,
-      cpyDplct: frmValue.rltdCpyDplct,
-      prty:
-        frmValue.rltdPrty === 'HIGH' || frmValue.rltdPrty === 'NORM'
-          ? frmValue.rltdPrty
-          : 'NORM',
-    };
-
-    return payload as Mx008Model;
-  }*/
 
   openBicSelectionModal(ctrlNm :string, nameField:string|null = null) :void{
     const val = {
@@ -2320,6 +1692,9 @@ dialogUtils = inject(DialogUtils);
         this.frmGroup.patchValue({[ctrlNm]: swiftCode});
         if(nameField!=null){
           this.frmGroup.patchValue({[nameField]: branchName});
+        }
+        if(ctrlNm==='chrgInfAgtBicfi' ){
+          this.frmGroup.patchValue({'chrgInfAgtBicfi': swiftCode});
         }
         if(ctrlNm==='fromBicfi' ){
           this.frmGroup.patchValue({'instgAgtBicfi': swiftCode});
@@ -2475,8 +1850,12 @@ dialogUtils = inject(DialogUtils);
 
   // Add ChrgInfo row
   addChrgInfoRow() {
+    const selectedChargeBearer = this.frmGroup.get('chrgBr')?.value;
+    const isRequired = selectedChargeBearer === 'CRED' || selectedChargeBearer === 'SHAR';
+
     const serviceGroup = this.formBuilder.group({
-      chrgInfoAmt: '',
+      chrgInfoCcy: ['', isRequired ? Validators.required : []],
+      chrgInfoAmt: ['', isRequired ? Validators.required : []],
       chrgInfAgtBicfi: '',
       chrgInfAgtClrSysIdCd: '',
       chrgInfoAgtMmbId: '',
@@ -2768,6 +2147,226 @@ dialogUtils = inject(DialogUtils);
   removeultcrdtrPrivateIdenOthrRow(index: number) {
     this.ultcrdtrprivateIdenOthrGetter.removeAt(index);
   }
+
+  // Instruction for Creditor Agent FormArray getter
+  get instructionForCreditorAgent() {
+    return this.frmGroup.get('instructionForCreditorAgent') as FormArray;
+  }
+
+  // Instruction for Next Agent FormArray getter
+  get instructionForNextAgent() {
+    return this.frmGroup.get('instructionForNextAgent') as FormArray;
+  }
+
+  // Add instruction for creditor agent row
+  addInstructionForCreditorAgentRow() {
+    if (this.instructionForCreditorAgent.length < 2) { // Max 2 as per spec
+      const instructionGroup = this.formBuilder.group({
+        code: [''],
+        info: [''],
+      });
+      this.instructionForCreditorAgent.push(instructionGroup);
+    } else {
+      this.toastr.warning('Maximum 2 instructions for creditor agent allowed', 'Limit Reached');
+    }
+  }
+
+  // Remove instruction for creditor agent row
+  removeInstructionForCreditorAgentRow(index: number) {
+    this.instructionForCreditorAgent.removeAt(index);
+  }
+
+  // Add instruction for next agent row
+  addInstructionForNextAgentRow() {
+    if (this.instructionForNextAgent.length < 6) { // Max 6 as per spec
+      const instructionGroup = this.formBuilder.group({
+        instruction: [''],
+      });
+      this.instructionForNextAgent.push(instructionGroup);
+    } else {
+      this.toastr.warning('Maximum 6 instructions for next agent allowed', 'Limit Reached');
+    }
+  }
+
+  // Remove instruction for next agent row
+  removeInstructionForNextAgentRow(index: number) {
+    this.instructionForNextAgent.removeAt(index);
+  }
+
+  // Get instruction for creditor agent group at specific index
+  getInstructionForCreditorAgentGroup(index: number): FormGroup {
+    return this.instructionForCreditorAgent.at(index) as FormGroup;
+  }
+
+  // Get instruction for next agent group at specific index
+  getInstructionForNextAgentGroup(index: number): FormGroup {
+    return this.instructionForNextAgent.at(index) as FormGroup;
+  }
+
+  //Related Remitance Info
+  createRltdRemGroup(): FormGroup {
+    return this.formBuilder.group({
+      rmtId: [''],
+      rltdRemDtlsForm: this.formBuilder.array([
+        this.createRltdRemDtlsGroup()
+      ]),
+    });
+  }
+
+  get rltdRemFormGetter(): FormArray<FormGroup> {
+    return this.frmGroup.get('rltdRemInfoForm') as FormArray<FormGroup>;
+  }
+
+
+  addRltdRemRow() {
+    if (this.rltdRemFormGetter.length < 2) { // Max 6 as per spec
+      this.rltdRemFormGetter.push(this.createRltdRemGroup());
+    } else {
+      this.toastr.warning('Maximum 2 is allowed', 'Limit Reached');
+    }
+
+  }
+
+  removeRltdRemRow(index: number) {
+    this.rltdRemFormGetter.removeAt(index);
+  }
+
+  // details
+  createRltdRemDtlsGroup(): FormGroup {
+    return this.formBuilder.group({
+      mhtd: [''],
+      elctrncAdr: [''],
+      nm: [''],
+      dept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      subDept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      strtNm: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      bldgNb: ['', [Validators.maxLength(16)]],
+      bldgNm: ['', [Validators.maxLength(35)]],
+      flr: ['', Validators.maxLength(70)],
+      pstBx: ['', [Validators.maxLength(16)]],
+      room: ['', [Validators.maxLength(70)]],
+      pstCd: ['', [Validators.maxLength(16)]],
+      twnNm: ['', [Validators.maxLength(35)]],
+      twnLctnNm: ['', [Validators.maxLength(35)]],
+      dstrctNm: ['', [Validators.maxLength(35)]],
+      ctrySubDvsn: ['', [Validators.maxLength(35)]],
+      ctry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      adrLine1: ['', [Validators.maxLength(70)]],
+      adrLine2: ['', [Validators.maxLength(70)]],
+      adrLine3: ['', [Validators.maxLength(70)]],
+      ctryOfRes: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+    });
+  }
+
+  getRltdRemDtlsArray(statementIndex: number): FormArray<FormGroup> {
+    const array = this.rltdRemFormGetter.at(statementIndex)?.get('rltdRemDtlsForm');
+    if (array instanceof FormArray) {
+      return array as FormArray<FormGroup>;
+    }
+    return this.formBuilder.array([]) as unknown as FormArray<FormGroup>; // fallback
+  }
+
+  addRltdRemDtlsRow(statementIndex: number): void {
+    const dtlsArray = this.getRltdRemDtlsArray(statementIndex);
+    if (dtlsArray.length > 3) {
+      this.toastr.warning('Maximum 2 is allowed', 'Limit Reached');
+      return;
+    }
+    dtlsArray.push(this.createRltdRemDtlsGroup());
+  }
+
+  removeRltdRemDtlsRow(statementIndex: number, dtlsIndex: number): void {
+    const array = this.getRltdRemDtlsArray(statementIndex);
+    if (array.length > 1) {
+      array.removeAt(dtlsIndex);
+    } else {
+      this.toastr.warning("At least one interest record is required!", 'WARN');
+    }
+  }
+
+  //Regulatory Reporting
+  createRgltryRptgGroup(): FormGroup {
+    return this.formBuilder.group({
+      dbtCdtRptgInd: [''],
+      authrtyNm: [''],
+      authrtyCtry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      dtlsForm: this.formBuilder.array([this.createDbtCdtRptgIndGroup()])
+    });
+  }
+
+  // Create Debit/Credit Reporting Indicator group
+  createDbtCdtRptgIndGroup(): FormGroup {
+    return this.formBuilder.group({
+      dtlsTp: ['', [Validators.minLength(1), Validators.maxLength(35), Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+\s]+$/)]],
+      dtlsDt: [''],
+      dtlsCtry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      dtlsCd: ['', [Validators.minLength(1), Validators.maxLength(10), Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+\s]+$/)]],
+      dtlsCcy: [null],
+      dtlsAmt: [''],
+      inf: this.formBuilder.array([this.formBuilder.group({ value: [''] })])
+    });
+  }
+
+
+
+
+  // Getters for FormArrays/FormGroups
+  getRgltryRptgArray(): FormArray {
+    return this.frmGroup.get('rgltryRptg') as FormArray;
+  }
+
+  getDbtCdtRptgInd(i: number): FormArray {
+    return this.getRgltryRptgArray().at(i).get('dtlsForm') as FormArray;
+  }
+
+  getInnerGroup(i: number, j: number): FormGroup {
+    return this.getDbtCdtRptgInd(i).at(j) as FormGroup;
+  }
+
+  getDtlsGroup(innerGroup: FormGroup): FormGroup {
+    return innerGroup.get('dtls') as FormGroup;
+  }
+
+  getInfoArray(i: number, j: number): FormArray {
+    const dtlsGroup = this.getDbtCdtRptgInd(i).at(j) as FormGroup;
+    if (!dtlsGroup) return this.formBuilder.array([]);
+    const infArray = dtlsGroup.get('inf') as FormArray;
+    return infArray || this.formBuilder.array([]);
+  }
+
+
+
+  // Add/Remove rows
+  addRgltryRptgRow() {
+    this.getRgltryRptgArray().push(this.createRgltryRptgGroup());
+  }
+
+  removeRgltryRptgRow(i: number) {
+    this.getRgltryRptgArray().removeAt(i);
+  }
+
+  addDbtCdtRptgIndRow(i: number) {
+    this.getDbtCdtRptgInd(i).push(this.createDbtCdtRptgIndGroup());
+  }
+
+  removeDbtCdtRptgIndRow(i: number, j: number) {
+    this.getDbtCdtRptgInd(i).removeAt(j);
+  }
+
+  addInfo(i: number, j: number) {
+    this.getInfoArray(i, j).push(this.formBuilder.group({ value: [''] }));
+  }
+
+  removeInfo(i: number, j: number, k: number) {
+    this.getInfoArray(i, j).removeAt(k);
+  }
+
+  // Helper cast for template binding
+  castToFormGroup(ctrl: AbstractControl): FormGroup {
+    return ctrl as FormGroup;
+  }
+
+
 
   // Helper method to add address line to a specific address field
   addAddressLine(fieldName: string) {
