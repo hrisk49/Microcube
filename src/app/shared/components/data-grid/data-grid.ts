@@ -86,6 +86,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly dataSource = input<T[]>([]);
   readonly initPageSize = input<number>(5);
   readonly useInlineEdit = input<boolean>(true);
+  readonly searchEnabled = input<boolean>(false);
 // In DataGridComponent
   // Outputs
   readonly onSelectAllChange = output<boolean>();
