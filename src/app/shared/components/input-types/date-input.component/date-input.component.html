@@ -14,6 +14,10 @@
       [formControlName]="controlName()"
       [matDatepicker]="dobPicker"
       [placeholder]="dateFormat()"
+      [matTooltip]="tooltip()"
+      [matTooltipPosition]="tooltipPosition()"
+      [matTooltipClass]="tooltipClass()"
+      [matTooltipDisabled]="!tooltip()"
       (input)="onInputChange($event)"
       (blur)="onBlur()"
       (keydown)="onKeyDown($event)"
@@ -25,17 +29,22 @@
       [for]="dobPicker"
       class="absolute top-1/2 right-2 -translate-y-1/2"
     ></mat-datepicker-toggle>
-    <mat-datepicker #dobPicker></mat-datepicker>
+    <mat-datepicker #dobPicker (dateChange)="onDateSelected($event)"></mat-datepicker>
   </div>
   @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
     <div class="text-red-500 text-xs mt-1">
       @if (frmGroup().get(controlName())?.errors?.['required']) {
         {{ label() }} is required!
       } @else if (frmGroup().get(controlName())?.errors?.['invalidCharacters']) {
-        Only numbers and {{ getDateSeparator() }} are allowed
+        @if (dateFormat() === 'DD MMM, YYYY') {
+          Only numbers, letters, spaces and commas are allowed
+        } @else {
+          Only numbers and {{ getDateSeparator() }} are allowed
+        }
       } @else if (frmGroup().get(controlName())?.errors?.['invalidDateFormat']) {
         Please enter date in {{ dateFormat() }} format
-      } @else if (frmGroup().get(controlName())?.errors?.['invalidDate']) {
+      } 
+      @if (frmGroup().get(controlName())?.errors?.['invalidDate']) {
         Please enter a valid date
       }
     </div>

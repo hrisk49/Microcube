@@ -7,7 +7,7 @@
     {{ label() }}
   </label>
 
-  <div class="select-container w-90">
+  <div class="select-container">
     <div class="select-wrapper" [ngClass]="{'readonly-input': isReadonly()}">
       <!-- Search Input -->
       <input
@@ -18,11 +18,15 @@
         [readonly]="!searchable() || isReadonly()"
         [disabled]="isReadonly()"
         (input)="onSearchInput($event)"
+        [matTooltip]="tooltip()"
+        [matTooltipPosition]="tooltipPosition()"
+        [matTooltipClass]="tooltipClass()"
+        [matTooltipDisabled]="!tooltip()"
         (focus)="onInputFocus()"
         (blur)="onInputBlur()"
         (keydown)="onKeyDown($event)"
         (click)="onInputClick($event)"
-        class="search-input"
+        class="custom-select"
         role="combobox"
         [attr.aria-expanded]="isOpen()"
         [attr.aria-label]="label()"
@@ -118,10 +122,9 @@
         <span>No options available</span>
       </div>
     </div>
-  </div>
+
 
   <!-- Validation Error -->
   <div *ngIf="frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)" class="text-red-500 text-xs mt-1">
     {{ label() }} is required..!
   </div>
-</div>

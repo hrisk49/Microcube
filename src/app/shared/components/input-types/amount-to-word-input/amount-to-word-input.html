@@ -5,29 +5,42 @@
     @if (isRequired()) {
       <span class="text-red-500">*</span>
     }
+    <!-- Currency indicator -->
+    <span class="text-xs text-gray-500 ml-2">({{ getCurrencyConfig().code }})</span>
   </label>
- <div  class="flex flex-col">
-<!-- Input -->
-  <input
-    [formControlName]="controlName()"
-    [ngClass]="{ 'readonly-input': isReadonly() }"
-    type="number"
-    (input)="onChangeInput($event)"
-    (keypress)="onKeyPress($event)"
-    (paste)="onPaste($event)"
-    [readonly]="isReadonly()"
-    matInput
-    [placeholder]="placeholder() ?? 'Enter ' + label()"
-    class="custom-input"
-    [step]="getStepValue()"
-    [min]="allowNegative() ? null : 0"
-    [max]="maxAmt() || null"
-  />
-  <!-- Amount in words -->
-  <div class="text-sm mt-1 text-gray-600 amount-in-words w-80">
-    {{ amountToWord() }}
+  
+  <div class="flex flex-col">
+    <!-- Input with currency symbol -->
+    <div class="relative">
+      <!-- <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
+        {{ getCurrencyConfig().symbol }}
+      </span> -->
+      <input
+        [formControlName]="controlName()"
+        [ngClass]="{ 'readonly-input': isReadonly(), 'pl-8': true }"
+        type="number"
+        (input)="onChangeInput($event)"
+        (keypress)="onKeyPress($event)"
+        (paste)="onPaste($event)"
+        [readonly]="isReadonly()"
+        matInput
+        [matTooltip]="tooltip()"
+        [matTooltipPosition]="tooltipPosition()"
+        [matTooltipClass]="tooltipClass()"
+        [matTooltipDisabled]="!tooltip()"
+        [placeholder]="placeholder() ?? 'Enter ' + label()"
+        class="custom-input"
+        [step]="getStepValue()"
+        [min]="allowNegative() ? null : 0"
+        [max]="maxAmt() || null"
+      />
+    </div>
+    
+    <!-- Amount in words with currency -->
+    <div class="text-sm mt-1 text-gray-600 amount-in-words w-80">
+      {{ amountToWord() }}
+    </div>
   </div>
- </div>
   
   <!-- Error messages -->
   @if (isInvalid()) {
@@ -40,13 +53,13 @@
 
       @if (hasError('min')) {
         <ng-container>
-          Minimum amount required is {{ getErrorValue('min') }}
+          Minimum amount required is {{ getCurrencyConfig().symbol }}{{ getErrorValue('min') }}
         </ng-container>
       }
 
       @if (hasError('max')) {
         <ng-container>
-          Maximum amount allowed is {{ getErrorValue('max') }}
+          Maximum amount allowed is {{ getCurrencyConfig().symbol }}{{ getErrorValue('max') }}
         </ng-container>
       }
 
@@ -73,8 +86,13 @@
           Negative amounts are not allowed
         </ng-container>
       }
+
+
+     @if (hasCustomErrors()) {
+        @for (errorKey of getCustomErrorKeys(); track errorKey) {
+          <div>{{ getCustomErrorMessage(errorKey) }}</div>
+        }
+      }
     </div>
   }
-
-
 </div>

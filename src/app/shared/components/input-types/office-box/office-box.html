@@ -12,7 +12,13 @@
       [formControlName]="controlName()"
       [ngClass]="{'readonly-input': isReadonly() }"
       [readonly]="isReadonly()"
+      [maxlength]="maxLen() || null"
+      [minlength]="minLen() || null"
       matInput
+      [matTooltip]="tooltip()"
+      [matTooltipPosition]="tooltipPosition()"
+      [matTooltipClass]="tooltipClass()"
+      [matTooltipDisabled]="!tooltip()"
       [placeholder]="placeholder() ?? 'Enter ' + labelText()"
       class="custom-input office-box-input"
       (keydown)="preventSpecialChars($event)"
@@ -36,6 +42,12 @@
       }
       @if (frmGroup().get(controlName())?.hasError('maxlength')) {
         {{ labelText() }} cannot be more than {{ frmGroup().get(controlName())?.errors?.['maxlength']?.requiredLength }} characters.
+      }
+
+      @if (hasCustomErrors()) {
+        @for (errorKey of getCustomErrorKeys(); track errorKey) {
+          <div>{{ getCustomErrorMessage(errorKey) }}</div>
+        }
       }
     </div>
   }

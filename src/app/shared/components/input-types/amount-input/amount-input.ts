@@ -2,12 +2,14 @@ import {Component, computed, input, output, signal, effect} from '@angular/core'
 import {MatInput} from "@angular/material/input";
 import {FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors} from "@angular/forms";
 import {NgClass} from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'lds-amount',
   imports: [
     MatInput,
     ReactiveFormsModule,
+    MatTooltipModule,
     NgClass
   ],
   templateUrl: './amount-input.html',
@@ -28,11 +30,17 @@ export class AmountInput {
   readonly maxAmt = input<number>();
   readonly minAmt = input<number>();
   readonly labelText = input<string>('');
-  
+  readonly tooltip = input<string>();
+  readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
+  readonly tooltipDelay = input<number>(500);
+  readonly tooltipClass = input<string>('custom-tooltip');
   // New validation inputs
   readonly decimalPlaces = input<number>(2); // Default to 2 decimal places
   readonly allowNegative = input<boolean>(false);
   readonly allowLeadingZeros = input<boolean>(false);
+
+
+  readonly customErrorMessages = input<{ [key: string]: string }>({});
 
   // Outputs
   readonly valueChanged = output<string>();
@@ -115,7 +123,9 @@ export class AmountInput {
     const control = this.frmGroup().get(this.controlName());
     if (!control) return;
 
-    const validators = [];
+  const existingValidators = control.validator ? [control.validator] : [];
+
+  const validators = [...existingValidators];
     
     // Check if field was already required
     if (this.isRequired()) {
@@ -134,6 +144,7 @@ export class AmountInput {
     // Add max length validator for numbers
     if (this.maxLen() !== undefined && this.maxLen()! > 0) {
       validators.push(AmountInput.maxLengthNumberValidator(this.maxLen()!));
+      validators.push(Validators.maxLength(this.maxLen()!));
     }
     
     // Add custom amount validator
@@ -361,4 +372,27 @@ export class AmountInput {
     if (this.decimalPlaces() === 0) return '1';
     return '0.' + '0'.repeat(this.decimalPlaces() - 1) + '1';
   }
+
+  
+  // Get custom error message for a specific error key
+  getCustomErrorMessage(errorKey: string): string {
+    const customMessages = this.customErrorMessages();
+    return customMessages[errorKey] || `${this.label()} has validation error: ${errorKey}`;
+  }
+
+  // Get all error keys that are not handled by default error messages
+  getCustomErrorKeys(): string[] {
+    const control = this.frmGroup().get(this.controlName());
+    if (!control?.errors) return [];
+
+    const defaultErrorKeys = ['required', 'minlength', 'maxlength', 'specialCharacterNotAllowed'];
+    return Object.keys(control.errors).filter(key => !defaultErrorKeys.includes(key));
+  }
+
+  // Check if there are any custom errors to display
+  hasCustomErrors(): boolean {
+    return this.getCustomErrorKeys().length > 0;
+  }
+
+  
 }

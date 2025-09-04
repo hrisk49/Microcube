@@ -2,7 +2,7 @@ import { Injectable, Inject, Optional } from '@angular/core';
 import { NativeDateAdapter } from '@angular/material/core';
 
 export interface DateFormatConfig {
-  format: 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'YYYY/MM/DD' | 'DD-MM-YYYY' | 'MM-DD-YYYY' | 'YYYY-MM-DD';
+  format: 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'YYYY/MM/DD' | 'DD-MM-YYYY' | 'MM-DD-YYYY' | 'YYYY-MM-DD' | 'DD MMM, YYYY';
 }
 
 export const DATE_FORMAT_CONFIG = 'DATE_FORMAT_CONFIG';
@@ -22,6 +22,7 @@ export class CustomDateAdapter extends NativeDateAdapter {
 
   // Method to update format dynamically
   setFormat(format: DateFormatConfig['format']): void {
+    console.log(`Date format changed from ${this.currentFormat} to ${format}`);
     this.currentFormat = format;
   }
 
@@ -29,8 +30,20 @@ export class CustomDateAdapter extends NativeDateAdapter {
     if (!value) return null;
     
     const trimmedValue = value.trim();
+    
+    // Remove any placeholder characters that might remain from the mask
+    const cleanValue = trimmedValue.replace(/_/g, '');
+    
+    if (cleanValue.length < 8) return null; // Minimum length check for complete date
+    
+    // Handle the 'DD MMM, YYYY' display format
+    if (this.currentFormat === 'DD MMM, YYYY') {
+      return this.parseMonthAbbreviationFormat(cleanValue);
+    }
+    
+    // Handle other formats (DD/MM/YYYY, MM/DD/YYYY, etc.)
     const separator = this.getSeparator();
-    const parts = trimmedValue.split(separator);
+    const parts = cleanValue.split(separator);
     
     if (parts.length === 3) {
       let day: number, month: number, year: number;
@@ -73,30 +86,36 @@ export class CustomDateAdapter extends NativeDateAdapter {
   override format(date: Date): string {
     if (!date || isNaN(date.getTime())) return '';
     
+    // Always format in 'DD MMM, YYYY' format for display
     const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = monthNames[date.getMonth()];
     const year = date.getFullYear();
-    const separator = this.getSeparator();
     
-    switch (this.currentFormat) {
-      case 'DD/MM/YYYY':
-      case 'DD-MM-YYYY':
-        return `${day}${separator}${month}${separator}${year}`;
-        
-      case 'MM/DD/YYYY':
-      case 'MM-DD-YYYY':
-        return `${month}${separator}${day}${separator}${year}`;
-        
-      case 'YYYY/MM/DD':
-      case 'YYYY-MM-DD':
-        return `${year}${separator}${month}${separator}${day}`;
-        
-      default:
-        return `${day}${separator}${month}${separator}${year}`;
+    return `${day} ${month}, ${year}`;
+  }
+
+  // Override this to provide better validation for masked inputs
+  override isValid(obj: any): boolean {
+    if (!obj) return false;
+    
+    if (typeof obj === 'string') {
+      // Check if the string matches the expected format and is a valid date
+      const parsed = this.parse(obj);
+      return parsed !== null && !isNaN(parsed.getTime());
     }
+    
+    if (obj instanceof Date) {
+      return !isNaN(obj.getTime());
+    }
+    
+    return false;
   }
 
   private getSeparator(): string {
+    if (this.currentFormat === 'DD MMM, YYYY') {
+      return ' '; // Space separator for the new format
+    }
     return this.currentFormat.includes('/') ? '/' : '-';
   }
 
@@ -111,6 +130,33 @@ export class CustomDateAdapter extends NativeDateAdapter {
     return testDate.getFullYear() === year &&
            testDate.getMonth() === month &&
            testDate.getDate() === day;
+  }
+
+  private parseMonthAbbreviationFormat(value: string): Date | null {
+    // Expected format: "18 Aug, 2025" or "18 Aug 2025"
+    const match = value.match(/^(\d{1,2})\s+([A-Za-z]{3})\s*,?\s*(\d{4})$/);
+    
+    if (!match) return null;
+    
+    const day = parseInt(match[1]);
+    const monthAbbr = match[2].toLowerCase();
+    const year = parseInt(match[3]);
+    
+    // Month abbreviation mapping
+    const monthMap: { [key: string]: number } = {
+      'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5,
+      'jul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11
+    };
+    
+    const month = monthMap[monthAbbr];
+    if (month === undefined) return null;
+    
+    // Validate the parsed values
+    if (this.isValidDate(year, month, day)) {
+      return new Date(year, month, day);
+    }
+    
+    return null;
   }
 }
 

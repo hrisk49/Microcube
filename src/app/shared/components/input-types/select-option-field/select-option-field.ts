@@ -2,6 +2,7 @@
 import {Component, input, signal, effect, ElementRef, ViewChild, output, AfterViewInit, OnInit} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgClass} from '@angular/common';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {startWith} from 'rxjs';
 
 type Option = { key: any; value: string };
@@ -11,6 +12,7 @@ type Option = { key: any; value: string };
   imports: [
     FormsModule,
     ReactiveFormsModule,
+    MatTooltipModule,
     NgClass
   ],
   templateUrl: './select-option-field.html',
@@ -27,6 +29,10 @@ export class SelectOptionField implements OnInit {
   readonly options = input<Option[] | null>(null);
   readonly isVertical = input<boolean>(false);
   readonly searchable = input<boolean>(true); // NEW: Toggle searchability
+  readonly tooltip = input<string>();
+  readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
+  readonly tooltipDelay = input<number>(500);
+  readonly tooltipClass = input<string>('custom-tooltip');
 
   // Output event for when an option is selected
   readonly onSelect = output<{

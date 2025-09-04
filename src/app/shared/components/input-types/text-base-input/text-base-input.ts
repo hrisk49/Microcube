@@ -18,7 +18,6 @@ import {NgClass} from '@angular/common';
   styleUrl: './text-base-input.scss'
 })
 export class TextBaseInput {
-
   readonly frmGroup = input.required<FormGroup>();
   readonly controlName = input.required<string>();
   readonly label = input.required<string>();
@@ -29,15 +28,22 @@ export class TextBaseInput {
   readonly maxLength = input<number>();
   readonly onDoubleClick = output<void>();
   readonly isVertical = input<boolean>(false);
+
   // Tooltip support
+  readonly isAllowSpecialChars = input<boolean>(true);
   readonly tooltip = input<string>('');
   readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
   readonly tooltipDelay = input<number>(500);
   readonly tooltipClass = input<string>('custom-tooltip');
-  //output
+
+  // Custom error messages support
+  readonly customErrorMessages = input<{ [key: string]: string }>({});
+
+  // Output
   readonly valueChanged = output<string>();
   readonly onChanged = output<any>();
 
+  
   constructor() {
     // Effect to update validators when min/max length inputs change
     effect(() => {
@@ -45,13 +51,22 @@ export class TextBaseInput {
     });
   }
 
+  private specialCharacterValidator(control: any): { [key: string]: boolean } | null {
+    const specialCharRegex = /^[a-zA-Z0-9 ]*$/;
+    if (control.value && !specialCharRegex.test(control.value)) {
+      return { specialCharacterNotAllowed: true };
+    }
+    return null;
+  }
+
   private updateValidators(): void {
     const control = this.frmGroup().get(this.controlName());
     if (!control) return;
 
-    const validators = [];
+    const existingValidators = control.validator ? [control.validator] : [];
+    const validators = [...existingValidators];
 
-    // Check if field was already required
+    // Add required validator if detected from outside or input()
     if (this.isRequired()) {
       validators.push(Validators.required);
     }
@@ -66,7 +81,12 @@ export class TextBaseInput {
       validators.push(Validators.maxLength(this.maxLength()!));
     }
 
-    // Update the control's validators
+    // Add special character validator if not allowed
+    if (!this.isAllowSpecialChars()) {
+      validators.push(this.specialCharacterValidator);
+    }
+
+    // Merge validators without overwriting existing ones
     control.setValidators(validators);
     control.updateValueAndValidity();
   }
@@ -76,5 +96,38 @@ export class TextBaseInput {
     if (!control?.validator) return false;
     const validation = control.validator({} as any);
     return !!validation?.['required'];
+  }
+
+  preventSpecialChars(event: KeyboardEvent): void {
+    if (!this.isAllowSpecialChars()) {
+      const specialCharRegex = /^[a-zA-Z0-9 ]$/;
+      const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
+      
+      // Allow navigation and editing keys
+      if (!specialCharRegex.test(event.key) && !allowedKeys.includes(event.key)) {
+        event.preventDefault();
+      }
+    }
+  }
+
+  // Get custom error message for a specific error key
+  getCustomErrorMessage(errorKey: string): string {
+    const customMessages = this.customErrorMessages();
+    console.log('Custom Messages:', customMessages);
+    return customMessages[errorKey] || `${this.label()} has validation error: ${errorKey}`;
+  }
+
+  // Get all error keys that are not handled by default error messages
+  getCustomErrorKeys(): string[] {
+    const control = this.frmGroup().get(this.controlName());
+    if (!control?.errors) return [];
+
+    const defaultErrorKeys = ['required', 'minlength', 'maxlength', 'specialCharacterNotAllowed'];
+    return Object.keys(control.errors).filter(key => !defaultErrorKeys.includes(key));
+  }
+
+  // Check if there are any custom errors to display
+  hasCustomErrors(): boolean {
+    return this.getCustomErrorKeys().length > 0;
   }
 }
