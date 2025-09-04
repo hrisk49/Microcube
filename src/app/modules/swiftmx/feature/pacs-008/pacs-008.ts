@@ -5,7 +5,7 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
-  ReactiveFormsModule,
+  ReactiveFormsModule, ValidationErrors, ValidatorFn,
   Validators
 } from "@angular/forms";
 import {SelectOptionField} from "../../../../shared/components/input-types/select-option-field/select-option-field";
@@ -33,6 +33,7 @@ import {BicSelectionService} from '../../../../shared/services/bic-selection.ser
 import {Mx008Model} from '../../model/mx008.model';
 import {ExternalCodeService} from '../../../../shared/services/external-code.service';
 import {Subject, takeUntil} from 'rxjs';
+import {JsonPipe} from '@angular/common';
 
 @Component({
   selector: 'app-pacs-008',
@@ -44,6 +45,7 @@ import {Subject, takeUntil} from 'rxjs';
     AmountToWordInput,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
+    JsonPipe,
   ],
   templateUrl: './pacs-008.html',
   standalone: true,
@@ -59,21 +61,20 @@ export class Pacs008 implements OnInit {
   onClickReset = ONCLICK_RESET;
   onClickSave = ONCLICK_SAVE;
   priorityOptions: SelectOptionsModel[] = [
-    { key: 'HIGH', value: 'HIGH' },
-    { key: 'NORM', value: 'NORM' },
+    { key: 'HIGH', value: 'High' },
+    { key: 'NORM', value: 'Normal' },
   ];
 
   duplicateOptions: SelectOptionsModel[] = [
-    { key: 'CODU', value: 'CODU' },
-    { key: 'COPY', value: 'COPY' },
-    { key: 'DUPL', value: 'DUPL' },
+    { key: 'CODU', value: 'Copy Duplicate' },
+    { key: 'COPY', value: 'Copy' },
+    { key: 'DUPL', value: 'Duplicate' },
   ];
 
   settlementOptions: SelectOptionsModel[] = [
-    { key: 'CLRG', value: 'CLRG' },
-    { key: 'COVE', value: 'COVE' },
-    { key: 'INDA', value: 'INDA' },
-    { key: 'INGA', value: 'INGA' },
+    { key: 'COVE', value: 'Cover Method' },
+    { key: 'INDA', value: 'Instructed Agent' },
+    { key: 'INGA', value: 'Instructing Agent' },
   ];
 
   chargeBearerOptions: SelectOptionsModel[] = [
@@ -88,10 +89,10 @@ export class Pacs008 implements OnInit {
   ];
 
   clearingChannelOptions: SelectOptionsModel[] = [
-    { key: 'BOOK', value: 'Book' },
-    { key: 'MPNS', value: 'MPNS' },
-    { key: 'RTGS', value: 'RTGS' },
-    { key: 'RTNS', value: 'RTNS' },
+    { key: 'BOOK', value: 'Book Transfer' },
+    { key: 'MPNS', value: 'Mass Payment Net System' },
+    { key: 'RTGS', value: 'Real Time Gross Settlement System' },
+    { key: 'RTNS', value: 'Real Time Net Settlement System' },
   ];
 
   settlementPriorityOptions: SelectOptionsModel[] = [
@@ -142,16 +143,12 @@ export class Pacs008 implements OnInit {
     { key: 'TND', value: 'TND - Tunisian Dinar' },
   ];
 
-  TypeOptions: SelectOptionsModel[] =[
-    {key: 'Cd', value: 'Code'},
-    {key: 'Prtry', value: 'Proprietary'}
-  ];
 
   InstructionCdOptions: SelectOptionsModel[] = [
-    { key: 'CHQB', value: 'CHQB' },
-    { key: 'HOLD', value: 'HOLD' },
-    { key: 'PHOB', value: 'PHOB' },
-    { key: 'TELB', value: 'TELB' },
+    { key: 'CHQB', value: 'Pay Creditor By Cheque' },
+    { key: 'HOLD', value: 'Hold Cash For Creditor' },
+    { key: 'PHOB', value: 'Phone Beneficiary' },
+    { key: 'TELB', value: 'Telecom' },
   ];
 
   MthdOptions: SelectOptionsModel[] = [
@@ -207,6 +204,7 @@ export class Pacs008 implements OnInit {
   businessApplicationHeaderPanel: WritableSignal<boolean> = signal(true);
   groupHeaderPanel: WritableSignal<boolean> = signal(true);
   settlementPanel: WritableSignal<boolean> = signal(true);
+  settlementAccPanel: WritableSignal<boolean> = signal(false);
   financialInstitutionCreditTransferPanel: WritableSignal<boolean> =
     signal(true);
   paymentIdPanel: WritableSignal<boolean> = signal(true);
@@ -215,6 +213,12 @@ export class Pacs008 implements OnInit {
   interbankPanel: WritableSignal<boolean> = signal(true);
   sttlmTmIndctnPanel: WritableSignal<boolean> = signal(false);
   sttmlTmRqstPanel: WritableSignal<boolean> = signal(false);
+  InstgRmbrsmntAgtPanel: WritableSignal<boolean> = signal(false);
+  instgRmbrsmntgAgtAddPanel: WritableSignal<boolean> = signal(false);
+  instgRmbrsmntgAgtAccPanel: WritableSignal<boolean> = signal(false);
+  InstdRmbrsmntAgtPanel: WritableSignal<boolean> = signal(false);
+  instdRmbrsmntAgtAddPanel: WritableSignal<boolean> = signal(false);
+  instdRmbrsmntAgtAccPanel: WritableSignal<boolean> = signal(false);
   chargesInformationPanel: WritableSignal<boolean> = signal(true);
   chrgInfAgtPanel: WritableSignal<boolean> = signal(false);
   chrgInfAgtAddPanel: WritableSignal<boolean> = signal(false);
@@ -354,38 +358,6 @@ export class Pacs008 implements OnInit {
       }
     });
   }
-  isRequired: boolean = false;
-  handleCategorySelection(event: { selectedOption: any; selectedKey: string; selectedValue: string }): void {
-    const selectedChargeBearer = event.selectedValue;
-    this.isRequired = selectedChargeBearer === 'Creditor' || selectedChargeBearer === 'Shared';
-    console.log(selectedChargeBearer);
-    console.log(this.isRequired);
-    this.cdRef.detectChanges();
-    this.chrgInfoForm.controls.forEach((control: AbstractControl) => {
-      const group = control as FormGroup;
-
-      const ccyControl = group.get('chrgInfoCcy');
-      const amtControl = group.get('chrgInfoAmt');
-
-      if (this.isRequired) {
-        ccyControl?.setValidators([Validators.required]);
-        amtControl?.setValidators([Validators.required]);
-        this.addChrgInfoRow();
-      } else {
-        ccyControl?.clearValidators();
-        amtControl?.clearValidators();
-      }
-
-      ccyControl?.updateValueAndValidity();
-      amtControl?.updateValueAndValidity();
-
-      // Optional: mark as touched to trigger UI error display
-      ccyControl?.markAsTouched();
-      amtControl?.markAsTouched();
-    });
-  }
-
-
 
   ngOnInit(): void {
     try {
@@ -457,6 +429,42 @@ export class Pacs008 implements OnInit {
       sttlmAcctSchmeNm: [''],
       sttlmAcctIssr: [''],
 
+      // Instructing Reimbursement Agent
+      instgRmbrsmntgAgtBicfi: [''],
+      instgRmbrsmntgAgtClrSysIdCd: [''],
+      instgRmbrsmntgAgtMmbId: [''],
+      instgRmbrsmntgAgtLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
+      instgRmbrsmntgAgtNm: [''],
+      instgRmbrsmntgAgtAdr: this.getPostalAddressGroup('', this.postalAddressValidator()),
+
+      // Instructing Reimbursement Agent Account (flat)
+      instgRmbrsmntgAgtAcctId: [''],
+      instgRmbrsmntgAgtAcctCcy: [null],
+      instgRmbrsmntgAgtAcctTp: [''],
+      instgRmbrsmntgAgtAcctNm: [''],
+      instgRmbrsmntgAgtAcctSchmeNm: [''],
+      instgRmbrsmntgAgtAcctIssr: [''],
+      instgRmbrsmntgAgtProxyCd: [''],
+      instgRmbrsmntgAgtProxyId: [''],
+
+      // Instructed Reimbursement Agent
+      instdRmbrsmntgAgtBicfi: [''],
+      instdRmbrsmntgAgtClrSysIdCd: [''],
+      instdRmbrsmntgAgtMmbId: [''],
+      instdRmbrsmntgAgtLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
+      instdRmbrsmntgAgtNm: [''],
+      instdRmbrsmntgAgtAdr: this.getPostalAddressGroup('', this.postalAddressValidator()),
+
+      // Instructed Reimbursement Agent Account (flat)
+      instdRmbrsmntgAgtAcctId: [''],
+      instdRmbrsmntgAgtAcctCcy: [null],
+      instdRmbrsmntgAgtAcctTp: [''],
+      instdRmbrsmntgAgtAcctNm: [''],
+      instdRmbrsmntgAgtAcctSchmeNm: [''],
+      instdRmbrsmntgAgtAcctIssr: [''],
+      instdRmbrsmntgAgtProxyCd: [''],
+      instdRmbrsmntgAgtProxyId: [''],
+
       // Payment Identification
       instrId: ['PACS008-' + new Date().getTime().toString().slice(-8), Validators.required],
       endToEndId: ['', Validators.required],
@@ -501,24 +509,8 @@ export class Pacs008 implements OnInit {
       prvsInstgAgt1MmbId: [''],
       prvsInstgAgt1Lei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       prvsInstgAgt1Nm: [''],
-      prvsInstgAgt1AdrLine1: [''],
-      prvsInstgAgt1AdrLine2: [''],
-      prvsInstgAgt1AdrLine3: [''],
-      prvsInstgAgt1AdrDept: [''],
-      prvsInstgAgt1AdrSubDept: [''],
-      prvsInstgAgt1AdrStrtNm: [''],
-      prvsInstgAgt1AdrBldgNb: [''],
-      prvsInstgAgt1AdrBldgNm: [''],
-      prvsInstgAgt1AdrFlr: [''],
-      prvsInstgAgt1AdrPstBx: [''],
-      prvsInstgAgt1AdrRoom: [''],
-      prvsInstgAgt1AdrPstCd: [''],
-      prvsInstgAgt1AdrTwnNm: [''],
-      prvsInstgAgt1AdrTwnLctnNm: [''],
-      prvsInstgAgt1AdrDstrctNm: [''],
-      prvsInstgAgt1AdrCtrySubDvsn: [''],
-      prvsInstgAgt1AdrCtry: [''],
-      prvsInstgAgt1AdrLine: [''],
+      prvsInstgAgt1Adr: this.getPostalAddressGroup('', this.postalAddressValidator()),
+
       // Previous Instructing Agent 1 Account (flat)
       prvsInstgAgt1AcctId: [''],
       prvsInstgAgt1AcctCcy: [null],
@@ -536,24 +528,8 @@ export class Pacs008 implements OnInit {
       prvsInstgAgt2MmbId: [''],
       prvsInstgAgt2Lei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       prvsInstgAgt2Nm: [''],
-      prvsInstgAgt2AdrLine1: [''],
-      prvsInstgAgt2AdrLine2: [''],
-      prvsInstgAgt2AdrLine3: [''],
-      prvsInstgAgt2AdrDept: [''],
-      prvsInstgAgt2AdrSubDept: [''],
-      prvsInstgAgt2AdrStrtNm: [''],
-      prvsInstgAgt2AdrBldgNb: [''],
-      prvsInstgAgt2AdrBldgNm: [''],
-      prvsInstgAgt2AdrFlr: [''],
-      prvsInstgAgt2AdrPstBx: [''],
-      prvsInstgAgt2AdrRoom: [''],
-      prvsInstgAgt2AdrPstCd: [''],
-      prvsInstgAgt2AdrTwnNm: [''],
-      prvsInstgAgt2AdrTwnLctnNm: [''],
-      prvsInstgAgt2AdrDstrctNm: [''],
-      prvsInstgAgt2AdrCtrySubDvsn: [''],
-      prvsInstgAgt2AdrCtry: [''],
-      prvsInstgAgt2AdrLine: [''],
+      prvsInstgAgt2Adr: this.getPostalAddressGroup('', this.postalAddressValidator()),
+
       // Previous Instructing Agent 2 Account (flat)
       prvsInstgAgt2AcctId: [''],
       prvsInstgAgt2AcctCcy: [''],
@@ -571,24 +547,8 @@ export class Pacs008 implements OnInit {
       prvsInstgAgt3MmbId: [''],
       prvsInstgAgt3Lei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       prvsInstgAgt3Nm: [''],
-      prvsInstgAgt3AdrLine1: [''],
-      prvsInstgAgt3AdrLine2: [''],
-      prvsInstgAgt3AdrLine3: [''],
-      prvsInstgAgt3AdrDept: [''],
-      prvsInstgAgt3AdrSubDept: [''],
-      prvsInstgAgt3AdrStrtNm: [''],
-      prvsInstgAgt3AdrBldgNb: [''],
-      prvsInstgAgt3AdrBldgNm: [''],
-      prvsInstgAgt3AdrFlr: [''],
-      prvsInstgAgt3AdrPstBx: [''],
-      prvsInstgAgt3AdrRoom: [''],
-      prvsInstgAgt3AdrPstCd: [''],
-      prvsInstgAgt3AdrTwnNm: [''],
-      prvsInstgAgt3AdrTwnLctnNm: [''],
-      prvsInstgAgt3AdrDstrctNm: [''],
-      prvsInstgAgt3AdrCtrySubDvsn: [''],
-      prvsInstgAgt3AdrCtry: [''],
-      prvsInstgAgt3AdrLine: [''],
+      prvsInstgAgt3Adr: this.getPostalAddressGroup('', this.postalAddressValidator()),
+
       // Previous Instructing Agent 3 Account (flat)
       prvsInstgAgt3AcctId: [''],
       prvsInstgAgt3AcctCcy: [''],
@@ -611,24 +571,7 @@ export class Pacs008 implements OnInit {
       instdAgtClrSysIdCd: [''],
       instdAgtMmbId: [''],
       instdAgtLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
-      instdAgtNm: [''],
-      instdAgtAdrLine1: [''],
-      instdAgtAdrLine2: [''],
-      instdAgtAdrLine3: [''],
-      instdAgtAdrDept: [''],
-      instdAgtAdrSubDept: [''],
-      instdAgtAdrStrtNm: [''],
-      instdAgtAdrBldgNb: [''],
-      instdAgtAdrBldgNm: [''],
-      instdAgtAdrFlr: [''],
-      instdAgtAdrPstBx: [''],
-      instdAgtAdrRoom: [''],
-      instdAgtAdrPstCd: [''],
-      instdAgtAdrTwnNm: [''],
-      instdAgtAdrTwnLctnNm: [''],
-      instdAgtAdrDstrctNm: [''],
-      instdAgtAdrCtrySubDvsn: [''],
-      instdAgtAdrCtry: [''],
+
 
       // Intermediary Agent 1 (flat)
       intrmyAgt1Bicfi: [''],
@@ -636,23 +579,7 @@ export class Pacs008 implements OnInit {
       intrmyAgt1MmbId: [''],
       intrmyAgt1Lei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       intrmyAgt1Nm: [''],
-      intrmyAgt1AdrDept: [''],
-      intrmyAgt1AdrSubDept: [''],
-      intrmyAgt1AdrStrtNm: [''],
-      intrmyAgt1AdrBldgNb: [''],
-      intrmyAgt1AdrBldgNm: [''],
-      intrmyAgt1AdrFlr: [''],
-      intrmyAgt1AdrPstBx: [''],
-      intrmyAgt1AdrRoom: [''],
-      intrmyAgt1AdrPstCd: [''],
-      intrmyAgt1AdrTwnNm: [''],
-      intrmyAgt1AdrTwnLctnNm: [''],
-      intrmyAgt1AdrDstrctNm: [''],
-      intrmyAgt1AdrCtrySubDvsn: [''],
-      intrmyAgt1AdrCtry: [''],
-      intrmyAgt1AdrLine1: [''],
-      intrmyAgt1AdrLine2: [''],
-      intrmyAgt1AdrLine3: [''],
+      intrmyAgt1Adr: this.getPostalAddressGroup('', this.postalAddressValidator()),
       // Intermediary Agent 1 Account (flat)
       intrmyAgt1AcctId: [''],
       intrmyAgt1AcctCcy: [''],
@@ -670,23 +597,7 @@ export class Pacs008 implements OnInit {
       intrmyAgt2MmbId: [''],
       intrmyAgt2Lei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       intrmyAgt2Nm: [''],
-      intrmyAgt2AdrDept: [''],
-      intrmyAgt2AdrSubDept: [''],
-      intrmyAgt2AdrStrtNm: [''],
-      intrmyAgt2AdrBldgNb: [''],
-      intrmyAgt2AdrBldgNm: [''],
-      intrmyAgt2AdrFlr: [''],
-      intrmyAgt2AdrPstBx: [''],
-      intrmyAgt2AdrRoom: [''],
-      intrmyAgt2AdrPstCd: [''],
-      intrmyAgt2AdrTwnNm: [''],
-      intrmyAgt2AdrTwnLctnNm: [''],
-      intrmyAgt2AdrDstrctNm: [''],
-      intrmyAgt2AdrCtrySubDvsn: [''],
-      intrmyAgt2AdrCtry: [''],
-      intrmyAgt2AdrLine1: [''],
-      intrmyAgt2AdrLine2: [''],
-      intrmyAgt2AdrLine3: [''],
+      intrmyAgt2Adr: this.getPostalAddressGroup('', this.postalAddressValidator()),
       // Intermediary Agent 2 Account (flat)
       intrmyAgt2AcctId: [''],
       intrmyAgt2AcctCcy: [''],
@@ -704,23 +615,7 @@ export class Pacs008 implements OnInit {
       intrmyAgt3MmbId: [''],
       intrmyAgt3Lei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       intrmyAgt3Nm: [''],
-      intrmyAgt3AdrDept: [''],
-      intrmyAgt3AdrSubDept: [''],
-      intrmyAgt3AdrStrtNm: [''],
-      intrmyAgt3AdrBldgNb: [''],
-      intrmyAgt3AdrBldgNm: [''],
-      intrmyAgt3AdrFlr: [''],
-      intrmyAgt3AdrPstBx: [''],
-      intrmyAgt3AdrRoom: [''],
-      intrmyAgt3AdrPstCd: [''],
-      intrmyAgt3AdrTwnNm: [''],
-      intrmyAgt3AdrTwnLctnNm: [''],
-      intrmyAgt3AdrDstrctNm: [''],
-      intrmyAgt3AdrCtrySubDvsn: [''],
-      intrmyAgt3AdrCtry: [''],
-      intrmyAgt3AdrLine1: [''],
-      intrmyAgt3AdrLine2: [''],
-      intrmyAgt3AdrLine3: [''],
+      intrmyAgt3Adr: this.getPostalAddressGroup('', this.postalAddressValidator()),
       // Intermediary Agent 3 Account (flat)
       intrmyAgt3AcctId: [''],
       intrmyAgt3AcctCcy: [''],
@@ -1087,6 +982,19 @@ export class Pacs008 implements OnInit {
       branchId: [''],
       trnRefNo20: [''],
       relatedRef21: [''],
+    }, {
+      validators: Validators.compose([
+        this.remittanceMutualExclusionValidator(),
+        this.agentIdentificationValidator('prvsInstgAgt1', 'prvsInstgAgt1Adr'),
+        this.agentIdentificationValidator('prvsInstgAgt2', 'prvsInstgAgt2Adr'),
+        this.agentIdentificationValidator('prvsInstgAgt3', 'prvsInstgAgt3Adr'),
+        this.agentIdentificationValidator('intrmyAgt1', 'intrmyAgt1Adr'),
+        this.agentIdentificationValidator('intrmyAgt2', 'intrmyAgt2Adr'),
+        this.agentIdentificationValidator('intrmyAgt3', 'intrmyAgt3Adr'),
+        this.agentIdentificationValidator('instgRmbrsmntgAgt', 'instgRmbrsmntgAgtAdr'),
+        this.agentIdentificationValidator('instdRmbrsmntgAgt', 'instdRmbrsmntgAgtAdr'),
+        this.validateSettlementMethod(),
+      ])
     });
 
     // Ensure the form is properly initialized
@@ -1102,6 +1010,7 @@ export class Pacs008 implements OnInit {
     const payload: any = {};
 
     // 1. Business Header
+    payload.charSet = frm.charSet ;
     payload.fromBicfi = frm.fromBicfi ;
     payload.fromMembId = frm.fromMembId ;
     payload.fromLei = frm.fromLei ;
@@ -1239,34 +1148,38 @@ export class Pacs008 implements OnInit {
     }));
 
     // 7. Agents & Accounts (Generic Builder)
-    const buildParty = (pfx: string) => ({
-      bIcfi: frm[`${pfx}Bicfi`] ,
-      clrSysIdCd: frm[`${pfx}ClrSysIdCd`] ,
-      mmbId: frm[`${pfx}MmbId`] ,
-      lei: frm[`${pfx}Lei`] ,
-      nm: frm[`${pfx}Nm`] ,
-      adr: {
-        dept: frm[`${pfx}AdrDept`] ,
-        subDept: frm[`${pfx}AdrSubDept`] ,
-        strtNm: frm[`${pfx}AdrStrtNm`] ,
-        bldgNb: frm[`${pfx}AdrBldgNb`] ,
-        bldgNm: frm[`${pfx}AdrBldgNm`] ,
-        flr: frm[`${pfx}AdrFlr`] ,
-        pstBx: frm[`${pfx}AdrPstBx`] ,
-        room: frm[`${pfx}AdrRoom`] ,
-        pstCd: frm[`${pfx}AdrPstCd`] ,
-        twnNm: frm[`${pfx}AdrTwnNm`] ,
-        twnLctnNm: frm[`${pfx}AdrTwnLctnNm`] ,
-        dstrctNm: frm[`${pfx}AdrDstrctNm`] ,
-        ctrySubDvsn: frm[`${pfx}AdrCtrySubDvsn`] ,
-        ctry: frm[`${pfx}AdrCtry`] ,
-        adrLine: [
-          frm[`${pfx}AdrLine1`],
-          frm[`${pfx}AdrLine2`],
-          frm[`${pfx}AdrLine3`],
-        ].filter(Boolean),
-      }
-    });
+    const buildParty = (pfx: string) => {
+      const adrGroup = frm[`${pfx}Adr`] || {}; // This is just an object, not a FormGroup
+
+      return {
+        bicfi: frm[`${pfx}Bicfi`],
+        clrSysIdCd: frm[`${pfx}ClrSysIdCd`],
+        mmbId: frm[`${pfx}MmbId`],
+        lei: frm[`${pfx}Lei`],
+        nm: frm[`${pfx}Nm`],
+        adr: {
+          dept: adrGroup['Dept'],
+          subDept: adrGroup['SubDept'],
+          strtNm: adrGroup['StrtNm'],
+          bldgNb: adrGroup['BldgNb'],
+          bldgNm: adrGroup['BldgNm'],
+          flr: adrGroup['Flr'],
+          pstBx: adrGroup['PstBx'],
+          room: adrGroup['Room'],
+          pstCd: adrGroup['PstCd'],
+          twnNm: adrGroup['TwnNm'],
+          twnLctnNm: adrGroup['TwnLctnNm'],
+          dstrctNm: adrGroup['DstrctNm'],
+          ctrySubDvsn: adrGroup['CtrySubDvsn'],
+          ctry: adrGroup['Ctry'],
+          adrLine: [
+            adrGroup['AdrLine1'],
+            adrGroup['AdrLine2'],
+            adrGroup['AdrLine3'],
+          ].filter(Boolean),
+        },
+      };
+    };
 
     const buildAccount = (pfx: string) => ({
       id: frm[`${pfx}AcctId`] ,
@@ -1282,7 +1195,8 @@ export class Pacs008 implements OnInit {
 
     [
       "prvsInstgAgt1", "prvsInstgAgt2", "prvsInstgAgt3",
-      "intrmyAgt1", "intrmyAgt2", "intrmyAgt3"
+      "intrmyAgt1", "intrmyAgt2", "intrmyAgt3",
+      "instgRmbrsmntgAgt","instdRmbrsmntgAgt"
     ].forEach(pfx => {
       payload[pfx] = buildParty(pfx);
       payload[`${pfx}Acct`] = buildAccount(pfx);
@@ -1672,7 +1586,7 @@ export class Pacs008 implements OnInit {
         dtlsCd: s.dtlsCd,
         dtlsCcy: s.dtlsCcy,
         dtlsAmt: s.dtlsAmt,
-        inf: (s.dtls?.inf || []).filter((i: string) => !!i),
+        inf: (s.inf || []).map((i: any) => i.value).filter((val: string) => !!val),
       }))
     }));
     return payload as Mx008Model;
@@ -1683,7 +1597,6 @@ export class Pacs008 implements OnInit {
       bicField : ctrlNm,
       defaultValue : 'SCBLBDDX',
     };
-
     this.bicSelectionService.openBicSelectionModal(
       this.frmGroup,
       val).subscribe(selectedData => {
@@ -1694,7 +1607,10 @@ export class Pacs008 implements OnInit {
           this.frmGroup.patchValue({[nameField]: branchName});
         }
         if(ctrlNm==='chrgInfAgtBicfi' ){
-          this.frmGroup.patchValue({'chrgInfAgtBicfi': swiftCode});
+          const chrgInfoFormArray = this.frmGroup.get('chrgInfoForm') as FormArray;
+          const firstGroup = chrgInfoFormArray.at(0) as FormGroup;
+          console.log(firstGroup);
+          firstGroup.patchValue({ chrgInfAgtBicfi: swiftCode });
         }
         if(ctrlNm==='fromBicfi' ){
           this.frmGroup.patchValue({'instgAgtBicfi': swiftCode});
@@ -1709,6 +1625,14 @@ export class Pacs008 implements OnInit {
         }
         if(ctrlNm==='rltdToBicfi' ){
           this.frmGroup.patchValue({'rltdToBicfi': swiftCode});
+        }
+        if(ctrlNm==='instdRmbrsmntgAgtBicfi' ){
+          this.frmGroup.patchValue({'instdRmbrsmntgAgtBicfi': swiftCode});
+          this.frmGroup.patchValue({'instdRmbrsmntgAgtNm': branchName});
+        }
+        if(ctrlNm==='instgRmbrsmntgAgtBicfi' ){
+          this.frmGroup.patchValue({'instgRmbrsmntgAgtBicfi': swiftCode});
+          this.frmGroup.patchValue({'instgRmbrsmntgAgtNm': branchName});
         }
         if(ctrlNm==='prvsInstgAgt1Bicfi' ){
           this.frmGroup.patchValue({'prvsInstgAgt1Bicfi': swiftCode});
@@ -2426,6 +2350,242 @@ export class Pacs008 implements OnInit {
         this.toastr.error(errorMessage, 'Error');
       },
     });
+  }
+
+  getPostalAddressGroup(prefix: string = '', validator?: ValidatorFn): FormGroup {
+    const group = this.formBuilder.group({
+      [`${prefix}Dept`]: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      [`${prefix}SubDept`]: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      [`${prefix}StrtNm`]: ['', [Validators.minLength(1), Validators.maxLength(70)]],
+      [`${prefix}BldgNb`]: ['', [Validators.maxLength(16)]],
+      [`${prefix}BldgNm`]: ['', [Validators.maxLength(35)]],
+      [`${prefix}Flr`]: ['', [Validators.maxLength(70)]],
+      [`${prefix}PstBx`]: ['', [Validators.maxLength(16)]],
+      [`${prefix}Room`]: ['', [Validators.maxLength(70)]],
+      [`${prefix}PstCd`]: ['', [Validators.maxLength(16)]],
+      [`${prefix}TwnNm`]: ['', [Validators.maxLength(35)]],
+      [`${prefix}TwnLctnNm`]: ['', [Validators.maxLength(35)]],
+      [`${prefix}DstrctNm`]: ['', [Validators.maxLength(35)]],
+      [`${prefix}CtrySubDvsn`]: ['', [Validators.maxLength(35)]],
+      [`${prefix}Ctry`]: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      [`${prefix}AdrLine1`]: ['', [Validators.maxLength(70)]],
+      [`${prefix}AdrLine2`]: ['', [Validators.maxLength(70)]],
+      [`${prefix}AdrLine3`]: ['', [Validators.maxLength(70)]],
+    });
+
+    if (validator) {
+      group.setValidators(validator);
+    }
+    return group;
+  }
+
+  get instgRmbrsmntgAgtAdrGroup(): FormGroup {
+    return this.frmGroup.get('instgRmbrsmntgAgtAdr') as FormGroup;
+  }
+
+  get instdRmbrsmntAgtAdrGroup(): FormGroup {
+    return this.frmGroup.get('instdRmbrsmntgAgtAdr') as FormGroup;
+  }
+
+  get prvsInstgAgt1AdrGroup(): FormGroup {
+    return this.frmGroup.get('prvsInstgAgt1Adr') as FormGroup;
+  }
+
+  get prvsInstgAgt2AdrGroup(): FormGroup {
+    return this.frmGroup.get('prvsInstgAgt2Adr') as FormGroup;
+  }
+
+  get prvsInstgAgt3AdrGroup(): FormGroup {
+    return this.frmGroup.get('prvsInstgAgt3Adr') as FormGroup;
+  }
+
+  get intrmyAgt1AdrGroup(): FormGroup {
+    return this.frmGroup.get('intrmyAgt1Adr') as FormGroup;
+  }
+
+  get intrmyAgt2AdrGroup(): FormGroup {
+    return this.frmGroup.get('intrmyAgt2Adr') as FormGroup;
+  }
+
+  get intrmyAgt3AdrGroup(): FormGroup {
+    return this.frmGroup.get('intrmyAgt3Adr') as FormGroup;
+  }
+
+
+  //custom validation
+
+  remittanceMutualExclusionValidator(): ValidatorFn {
+    return (group: AbstractControl): { [key: string]: any } | null => {
+      const rmtInf = group.get('rmtInf')?.value?.trim();
+      const rltdRemInfoArray = group.get('rltdRemInfoForm') as any;
+
+      const rmtInfFilled = !!rmtInf;
+      const rltdRemFilled = rltdRemInfoArray?.length > 0 &&
+        rltdRemInfoArray.controls.some((ctrl: AbstractControl) =>
+          !!ctrl.get('rmtId')?.value?.trim()
+        );
+
+      // Allow if both are empty
+      if (!rmtInfFilled && !rltdRemFilled) return null;
+
+      // Allow if only one is filled
+      if (rmtInfFilled && !rltdRemFilled) return null;
+      if (!rmtInfFilled && rltdRemFilled) return null;
+
+      // Error if both are filled
+      return { bothRemittanceTypesFilled: true };
+    };
+  }
+
+  isExchangeRateReadonly(): boolean {
+    const group = this.frmGroup;
+
+    const instdAmtValue = group.get('instdAmtValue')?.value;
+    const instdAmtCcy = group.get('instdAmtCcy')?.value;
+    const intrBkSttlmAmtCcy = group.get('intrBkSttlmAmtCcy')?.value;
+
+    const isInstdAmtPresent = instdAmtValue !== null && instdAmtValue !== '' && Number(instdAmtValue) !== 0;
+    const isSameCurrency = instdAmtCcy && intrBkSttlmAmtCcy && instdAmtCcy === intrBkSttlmAmtCcy;
+
+    return isInstdAmtPresent && isSameCurrency;
+  }
+
+  agentIdentificationValidator(prefix: string, addressKey: string): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const g = group as FormGroup;
+      const get = (field: string) => g.get(`${prefix}${field}`)?.value?.trim();
+      const touched = (field: string) => g.get(`${prefix}${field}`)?.touched || g.get(`${prefix}${field}`)?.dirty;
+
+      const bicfi = get('Bicfi');
+      const name = get('Nm');
+
+      const addressGroup = g.get(addressKey) as FormGroup;
+      const postalProvided = ['AdrLine1', 'AdrLine2', 'AdrLine3', 'TwnNm', 'Ctry']
+        .some(f => addressGroup?.get(f)?.value?.trim());
+
+      const otherTouched = ['ClrSysIdCd', 'MmbId', 'Lei']
+        .some(f => touched(f));
+
+      const errors: ValidationErrors = {};
+
+      if (bicfi) {
+        if (name || postalProvided) {
+          errors['bicfiConflict'] = true;
+        }
+      } else {
+        const validNameAndPostal = !!name && postalProvided;
+        if (!validNameAndPostal && otherTouched) {
+          // Other fields touched, but missing Name + Postal
+          errors['missingNameOrPostalOrBicfi'] = true;
+        } else if (!validNameAndPostal && (name || postalProvided)) {
+          // Only one of Name or Postal provided
+          errors['missingNameOrPostalOrBicfi'] = true;
+        }
+      }
+
+      return Object.keys(errors).length ? errors : null;
+    };
+  }
+
+  postalAddressValidator(): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const g = group as FormGroup;
+
+      const get = (key: string) => g.get(key)?.value?.trim?.();
+
+      const adrLine1 = get('AdrLine1');
+      const adrLine2 = get('AdrLine2');
+      const adrLine3 = get('AdrLine3');
+      const townName = get('TwnNm');
+      const country = get('Ctry');
+
+      const otherFields = [
+        'Dept', 'SubDept', 'StrtNm', 'BldgNb', 'BldgNm', 'Flr',
+        'PstBx', 'Room', 'PstCd', 'TwnLctnNm', 'DstrctNm', 'CtrySubDvsn'
+      ].map(get).filter(Boolean);
+
+      const addressLines = [adrLine1, adrLine2, adrLine3].filter(Boolean);
+      const hasAddressLines = addressLines.length > 0;
+
+      const errors: ValidationErrors = {};
+
+      if (!hasAddressLines && otherFields.length > 0) {
+        if (!townName || !country) {
+          errors['missingTownOrCountry'] = true;
+        }
+      }
+
+      if (hasAddressLines && otherFields.length > 0) {
+        if (!townName || !country) {
+          errors['missingTownOrCountryWithAddressLine'] = true;
+        }
+      }
+
+      if (addressLines.length > 2) {
+        errors['tooManyAddressLines'] = true;
+      }
+
+      return Object.keys(errors).length ? errors : null;
+    };
+  }
+
+  isRequired: boolean = false;
+  handleCategorySelection(event: { selectedOption: any; selectedKey: string; selectedValue: string }): void {
+    const selectedChargeBearer = event.selectedValue;
+    this.isRequired = selectedChargeBearer === 'Creditor' || selectedChargeBearer === 'Shared';
+    this.cdRef.detectChanges();
+    this.chrgInfoForm.controls.forEach((control: AbstractControl) => {
+      const group = control as FormGroup;
+
+      const ccyControl = group.get('chrgInfoCcy');
+      const amtControl = group.get('chrgInfoAmt');
+
+      if (this.isRequired) {
+        ccyControl?.setValidators([Validators.required]);
+        amtControl?.setValidators([Validators.required]);
+        this.addChrgInfoRow();
+      } else {
+        ccyControl?.clearValidators();
+        amtControl?.clearValidators();
+      }
+
+      ccyControl?.updateValueAndValidity();
+      amtControl?.updateValueAndValidity();
+
+      // Optional: mark as touched to trigger UI error display
+      ccyControl?.markAsTouched();
+      amtControl?.markAsTouched();
+    });
+  }
+
+  validateSettlementMethod(): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const sttlmMtd = group.get('sttlmMtd')?.value;
+
+      const instgRmbrsmntgAgtBic = group.get('instgRmbrsmntgAgtBicfi')?.value;
+      const instdRmbrsmntgAgtBic = group.get('instdRmbrsmntgAgtBicfi')?.value;
+
+      const sttlmAcctId = group.get('sttlmAcctId')?.value;
+      const sttlmAcctCcy = group.get('sttlmAcctCcy')?.value;
+      const sttlmAcctClrSys = group.get('clrSysCd')?.value;
+
+      const errors: ValidationErrors = {};
+
+      // For COVE, any of the reimbursement agents must be present
+      if (sttlmMtd === 'COVE') {
+        const hasAgent = !!instgRmbrsmntgAgtBic || !!instdRmbrsmntgAgtBic;
+        if (!hasAgent) {
+          errors['missingReimbursementAgent'] = true;
+        }
+
+        //Settlement account and clearing system are NOT allowed for COVE
+        if (sttlmAcctId || sttlmAcctCcy || sttlmAcctClrSys) {
+          errors['settlementNotAllowedForCOVE'] = true;
+        }
+      }
+
+      return Object.keys(errors).length > 0 ? errors : null;
+    };
   }
 
 }

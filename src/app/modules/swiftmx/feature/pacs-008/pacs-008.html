@@ -302,6 +302,8 @@
               </div>
             }
           </div>
+
+            <!-- Settlement Information-->
           <div class="sub-panel">
             <app-expansion-sub-panel-header
               [isOpenSignal]="settlementPanel"
@@ -315,43 +317,512 @@
                   [label]="'Settlement Method'"
                   [controlName]="'sttlmMtd'"
                 />
+                @if (frmGroup.errors?.['missingReimbursementAgent'] && (frmGroup.touched || frmGroup.dirty)) {
+                  <div style="color: red;">
+                    For Cover Method, either Instructing or Instructed Reimbursement Agent must be present.
+                  </div>
+                }
 
-                <app-select-option-field
+                <!-- settlement acc-->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header
+                    [isOpenSignal]="settlementAccPanel"
+                    [subPanelTitle]="'Settlement Account'"
+                  />
+                  @if (settlementAccPanel()) {
+                    <div class="form-grid-col-1">
+                      <app-select-option-field
+                        [frmGroup]="frmGroup"
+                        [options]="currencyOptions"
+                        [label]="'Settlement Account Currency'"
+                        [controlName]="'sttlmAcctCcy'"
+                      />
+                      @if (frmGroup.errors?.['settlementNotAllowedForCOVE'] && (frmGroup.touched || frmGroup.dirty)) {
+                        <div style="color: red;">
+                          Settlement Account is not allowed when Settlement Method is Cover.
+                        </div>
+                      }
+
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Settlement Account ID'"
+                        [controlName]="'sttlmAcctId'"
+                      />
+
+                      <!-- <app-text-base-input
                   [frmGroup]="frmGroup"
-                  [options]="currencyOptions"
-                  [label]="'Settlement Account Currency'"
-                  [controlName]="'sttlmAcctCcy'"
+                                       [label]="'Settlement Account Type'"
+                  [controlName]="'sttlmAcctTp'"
                 />
 
                 <app-text-base-input
                   [frmGroup]="frmGroup"
-                  [label]="'Settlement Account ID'"
-                  [controlName]="'sttlmAcctId'"
+                                       [label]="'Settlement Account Name'"
+                  [controlName]="'sttlmAcctNm'"
                 />
 
-                <!-- <app-text-base-input
-            [frmGroup]="frmGroup"
-                                 [label]="'Settlement Account Type'"
-            [controlName]="'sttlmAcctTp'"
-          />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                                       [label]="'Settlement Account Scheme Name'"
+                  [controlName]="'sttlmAcctSchmeNm'"
+                />
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-                                 [label]="'Settlement Account Name'"
-            [controlName]="'sttlmAcctNm'"
-          />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                                       [label]="'Settlement Account Issuer'"
+                  [controlName]="'sttlmAcctIssr'"
+                /> -->
+                    </div>
+                  }
+                </div>
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-                                 [label]="'Settlement Account Scheme Name'"
-            [controlName]="'sttlmAcctSchmeNm'"
-          />
+                <!-- Instructing Reimbursement Agent -->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header
+                    [isOpenSignal]="InstgRmbrsmntAgtPanel"
+                    [subPanelTitle]="'Instructing Reimbursement Agent'"
+                  />
+                  @if (InstgRmbrsmntAgtPanel()) {
+                    <div class="form-grid-col-1">
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'BIC'"
+                        [controlName]="'instgRmbrsmntgAgtBicfi'"
+                        (onDoubleClick)="openBicSelectionModal('instgRmbrsmntgAgtBicfi')"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Clearing System ID Code'"
+                        [controlName]="'instgRmbrsmntgAgtClrSysIdCd'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Member ID'"
+                        [controlName]="'instgRmbrsmntgAgtMmbId'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'LEI'"
+                        [controlName]="'instgRmbrsmntgAgtLei'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Name'"
+                        [controlName]="'instgRmbrsmntgAgtNm'"
+                      />
+                      @if (frmGroup.errors?.['bicfiConflict'] && (frmGroup.touched || frmGroup.dirty)) {
+                        <div style="color: red;">
+                          BICFI is present — Name and Postal Address must not be provided.
+                        </div>
+                      }
 
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-                                 [label]="'Settlement Account Issuer'"
-            [controlName]="'sttlmAcctIssr'"
-          /> -->
+                      @if (frmGroup.errors?.['missingNameOrPostalOrBicfi'] && (frmGroup.touched || frmGroup.dirty)) {
+                        <div style="color: red;">
+                          Either provide BICFI, or Name + Postal Address.
+                        </div>
+                      }
+                      <div class="sub-panel">
+                        <app-expansion-sub-panel-header
+                          [isOpenSignal]="instgRmbrsmntgAgtAddPanel"
+                          [subPanelTitle]="'postal Address'"
+                        />
+                        @if (instgRmbrsmntgAgtAddPanel()) {
+                          <div class="form-grid-col-1">
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Address Line 1'"
+                              [controlName]="'AdrLine1'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Address Line 2'"
+                              [controlName]="'AdrLine2'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Address Line 3'"
+                              [controlName]="'AdrLine3'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Department'"
+                              [controlName]="'Dept'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Sub Department'"
+                              [controlName]="'SubDept'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Street Name'"
+                              [controlName]="'StrtNm'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Building Number'"
+                              [controlName]="'BldgNb'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Building Name'"
+                              [controlName]="'BldgNm'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Floor'"
+                              [controlName]="'Flr'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Post Box'"
+                              [controlName]="'PstBx'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Room'"
+                              [controlName]="'Room'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Post Code'"
+                              [controlName]="'PstCd'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Town Name'"
+                              [controlName]="'TwnNm'"
+                            ></app-text-base-input>
+                            @if (
+                              (instgRmbrsmntgAgtAdrGroup.errors?.['missingTownOrCountry'] || instgRmbrsmntgAgtAdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                              !instgRmbrsmntgAgtAdrGroup.get('TwnNm')?.touched
+                              ) {
+                              <div style="color: red;">
+                                Town is required.
+                              </div>
+                            }
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Town Location Name'"
+                              [controlName]="'TwnLctnNm'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'District Name'"
+                              [controlName]="'DstrctNm'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Country Sub Division'"
+                              [controlName]="'CtrySubDvsn'"
+                            ></app-text-base-input>
+
+                            <app-text-base-input
+                              [frmGroup]="instgRmbrsmntgAgtAdrGroup"
+                              [label]="'Country'"
+                              [controlName]="'Ctry'"
+                            ></app-text-base-input>
+                            @if (
+                              (instgRmbrsmntgAgtAdrGroup.errors?.['missingTownOrCountry'] || instgRmbrsmntgAgtAdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                              !instgRmbrsmntgAgtAdrGroup.get('Ctry')?.touched
+                              ) {
+                              <div style="color: red;">
+                                Country is required.
+                              </div>
+                            }
+                          </div>
+
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <!-- Instructing Reimbursement Agent Acc-->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header
+                    [isOpenSignal]="instgRmbrsmntgAgtAccPanel"
+                    [subPanelTitle]="'Instructing Reimbursement Agent Account'"
+                  />
+                  @if (instgRmbrsmntgAgtAccPanel()) {
+                    <div class="form-grid-col-1">
+                      <app-select-option-field
+                        [frmGroup]="frmGroup"
+                        [options]="currencyOptions"
+                        [label]="'Account Currency'"
+                        [controlName]="'instgRmbrsmntgAgtAcctCcy'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Account ID'"
+                        [controlName]="'instgRmbrsmntgAgtAcctId'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Account Type'"
+                        [controlName]="'instgRmbrsmntgAgtAcctTp'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Account Name'"
+                        [controlName]="'instgRmbrsmntgAgtAcctNm'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Account Scheme Name'"
+                        [controlName]="'instgRmbrsmntgAgtAcctSchmeNm'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Account Issuer'"
+                        [controlName]="'instgRmbrsmntgAgtAcctIssr'"
+                      />
+
+                      <app-select-option-field
+                        [frmGroup]="frmGroup"
+                        [options]="prxyCdOptions"
+                        [label]="'Proxy Code'"
+                        [controlName]="'instgRmbrsmntgAgtProxyCd'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Proxy ID'"
+                        [controlName]="'instgRmbrsmntgAgtProxyId'"
+                      />
+                    </div>
+                  }
+                </div>
+
+                <!-- Instructed Reimbursement Agent -->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header
+                    [isOpenSignal]="InstdRmbrsmntAgtPanel"
+                    [subPanelTitle]="'Instructed Reimbursement Agent'"
+                  />
+                  @if (InstdRmbrsmntAgtPanel()) {
+                    <div class="form-grid-col-1">
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'BIC'"
+                        [controlName]="'instdRmbrsmntgAgtBicfi'"
+                        (onDoubleClick)="openBicSelectionModal('instdRmbrsmntAgtBicfi')"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Clearing System ID Code'"
+                        [controlName]="'instdRmbrsmntgAgtClrSysIdCd'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Member ID'"
+                        [controlName]="'instdRmbrsmntgAgtMmbId'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'LEI'"
+                        [controlName]="'instdRmbrsmntgAgtLei'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Name'"
+                        [controlName]="'instdRmbrsmntgAgtNm'"
+                      />
+
+                      @if (frmGroup.errors?.['bicfiConflict'] && (frmGroup.touched || frmGroup.dirty)) {
+                        <div style="color: red;">
+                          BICFI is present — Name and Postal Address must not be provided.
+                        </div>
+                      }
+
+                      @if (frmGroup.errors?.['missingNameOrPostalOrBicfi'] && (frmGroup.touched || frmGroup.dirty)) {
+                        <div style="color: red;">
+                          Either provide BICFI, or Name + Postal Address.
+                        </div>
+                      }
+
+                      <div class="sub-panel">
+                        <app-expansion-sub-panel-header
+                          [isOpenSignal]="instdRmbrsmntAgtAddPanel"
+                          [subPanelTitle]="'postal Address'"
+                        />
+                        @if (instdRmbrsmntAgtAddPanel()) {
+                          <div class="form-grid-col-1">
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Address Line 1'"
+                              [controlName]="'AdrLine1'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Address Line 2'"
+                              [controlName]="'AdrLine2'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Address Line 3'"
+                              [controlName]="'AdrLine3'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Department'"
+                              [controlName]="'Dept'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Sub Department'"
+                              [controlName]="'SubDept'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Street Name'"
+                              [controlName]="'StrtNm'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Building Number'"
+                              [controlName]="'BldgNb'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Building Name'"
+                              [controlName]="'BldgNm'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Floor'"
+                              [controlName]="'Flr'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Post Box'"
+                              [controlName]="'PstBx'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Room'"
+                              [controlName]="'Room'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Post Code'"
+                              [controlName]="'PstCd'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Town Name'"
+                              [controlName]="'TwnNm'"
+                            />
+                            @if (
+                              (instdRmbrsmntAgtAdrGroup.errors?.['missingTownOrCountry'] || instdRmbrsmntAgtAdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                              !instdRmbrsmntAgtAdrGroup.get('TwnNm')?.touched
+                              ) {
+                              <div style="color: red;">
+                                Town is required.
+                              </div>
+                            }
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Town Location Name'"
+                              [controlName]="'TwnLctnNm'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'District Name'"
+                              [controlName]="'DstrctNm'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Country Sub Division'"
+                              [controlName]="'CtrySubDvsn'"
+                            />
+                            <app-text-base-input
+                              [frmGroup]="instdRmbrsmntAgtAdrGroup"
+                              [label]="'Country'"
+                              [controlName]="'Ctry'"
+                            />
+                            @if (
+                              (instdRmbrsmntAgtAdrGroup.errors?.['missingTownOrCountry'] || instdRmbrsmntAgtAdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                              !instdRmbrsmntAgtAdrGroup.get('Ctry')?.touched
+                              ) {
+                              <div style="color: red;">
+                                Country is required.
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <!-- Instructed Reimbursement Agent Account -->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header
+                    [isOpenSignal]="instdRmbrsmntAgtAccPanel"
+                    [subPanelTitle]="'Instructed Reimbursement Agent Account'"
+                  />
+                  @if (instdRmbrsmntAgtAccPanel()) {
+                    <div class="form-grid-col-1">
+                      <app-select-option-field
+                        [frmGroup]="frmGroup"
+                        [options]="currencyOptions"
+                        [label]="'Account Currency'"
+                        [controlName]="'instdRmbrsmntgAgtAcctCcy'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Account ID'"
+                        [controlName]="'instdRmbrsmntgAgtAcctId'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Account Type'"
+                        [controlName]="'instdRmbrsmntgAgtAcctTp'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Account Name'"
+                        [controlName]="'instdRmbrsmntgAgtAcctNm'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Account Scheme Name'"
+                        [controlName]="'instdRmbrsmntgAgtAcctSchmeNm'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Account Issuer'"
+                        [controlName]="'instdRmbrsmntgAgtAcctIssr'"
+                      />
+                      <app-select-option-field
+                        [frmGroup]="frmGroup"
+                        [options]="prxyCdOptions"
+                        [label]="'Proxy Code'"
+                        [controlName]="'instdRmbrsmntgAgtProxyCd'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Proxy ID'"
+                        [controlName]="'instdRmbrsmntgAgtProxyId'"
+                      />
+                    </div>
+                  }
+                </div>
+
               </div>
             }
           </div>
@@ -602,11 +1073,21 @@
               [controlName]="'instdAmtValue'"
             />
             <!-- ExchangeRate -->
-            <app-amount-to-word-input
-              [frmGroup]="frmGroup"
-              [label]="'ExchangeRate'"
-              [controlName]="'xchgRate'"
-            />
+            @if (isExchangeRateReadonly()) {
+              <app-amount-to-word-input
+                [frmGroup]="frmGroup"
+                [label]="'ExchangeRate'"
+                [controlName]="'xchgRate'"
+                [isReadonly]="true"
+              />
+            } @else {
+              <app-amount-to-word-input
+                [frmGroup]="frmGroup"
+                [label]="'ExchangeRate'"
+                [controlName]="'xchgRate'"
+                [isReadonly]="false"
+              />
+            }
             <!-- ChargeBearer -->
             <app-select-option-field
               [frmGroup]="frmGroup"
@@ -666,7 +1147,7 @@
                           />
 
                           <app-text-base-input
-                            [frmGroup]="getChrgInfoFormGroup($index)"
+                              [frmGroup]="getChrgInfoFormGroup($index)"
                             [label]="'Agent Clearing System ID Code'"
                             [controlName]="'chrgInfAgtClrSysIdCd'"
                           />
@@ -848,6 +1329,17 @@
                   [label]="'Name'"
                   [controlName]="'prvsInstgAgt1Nm'"
                 />
+                @if (frmGroup.errors?.['bicfiConflict'] && (frmGroup.touched || frmGroup.dirty)) {
+                  <div style="color: red;">
+                    BICFI is present — Name and Postal Address must not be provided.
+                  </div>
+                }
+
+                @if (frmGroup.errors?.['missingNameOrPostalOrBicfi'] && (frmGroup.touched || frmGroup.dirty)) {
+                  <div style="color: red;">
+                    Either provide BICFI, or Name + Postal Address.
+                  </div>
+                }
                 <div class="sub-panel">
                   <app-expansion-sub-panel-header
                     [isOpenSignal]="prevAgent1AddressPanel"
@@ -855,92 +1347,124 @@
                   />
                   @if (prevAgent1AddressPanel()) {
                     <div class="form-grid-col-1">
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Address Line 1'"
-                      [controlName]="'prvsInstgAgt1AdrLine1'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Address Line 2'"
-                      [controlName]="'prvsInstgAgt1AdrLine2'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Address Line 3'"
-                      [controlName]="'prvsInstgAgt1AdrLine3'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Department'"
-                      [controlName]="'prvsInstgAgt1AdrDept'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Sub Department'"
-                      [controlName]="'prvsInstgAgt1AdrSubDept'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Street Name'"
-                      [controlName]="'prvsInstgAgt1AdrStrtNm'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Building Number'"
-                      [controlName]="'prvsInstgAgt1AdrBldgNb'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Building Name'"
-                      [controlName]="'prvsInstgAgt1AdrBldgNm'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Floor'"
-                      [controlName]="'prvsInstgAgt1AdrFlr'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Post Box'"
-                      [controlName]="'prvsInstgAgt1AdrPstBx'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Room'"
-                      [controlName]="'prvsInstgAgt1AdrRoom'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Post Code'"
-                      [controlName]="'prvsInstgAgt1AdrPstCd'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Town Name'"
-                      [controlName]="'prvsInstgAgt1AdrTwnNm'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Town Location Name'"
-                      [controlName]="'prvsInstgAgt1AdrTwnLctnNm'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'District Name'"
-                      [controlName]="'prvsInstgAgt1AdrDstrctNm'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Country Sub Division'"
-                      [controlName]="'prvsInstgAgt1AdrCtrySubDvsn'"
-                    />
-                    <app-text-base-input
-                      [frmGroup]="frmGroup"
-                      [label]="'Country'"
-                      [controlName]="'prvsInstgAgt1AdrCtry'"
-                    />
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Address Line 1'"
+                        [controlName]="'AdrLine1'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Address Line 2'"
+                        [controlName]="'AdrLine2'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Address Line 3'"
+                        [controlName]="'AdrLine3'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Department'"
+                        [controlName]="'Dept'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Sub Department'"
+                        [controlName]="'SubDept'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Street Name'"
+                        [controlName]="'StrtNm'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Building Number'"
+                        [controlName]="'BldgNb'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Building Name'"
+                        [controlName]="'BldgNm'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Floor'"
+                        [controlName]="'Flr'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Post Box'"
+                        [controlName]="'PstBx'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Room'"
+                        [controlName]="'Room'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Post Code'"
+                        [controlName]="'PstCd'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Town Name'"
+                        [controlName]="'TwnNm'"
+                      ></app-text-base-input>
+                      @if (
+                        (prvsInstgAgt1AdrGroup.errors?.['missingTownOrCountry'] || prvsInstgAgt1AdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                        !prvsInstgAgt1AdrGroup.get('TwnNm')?.touched
+                        ) {
+                        <div style="color: red;">
+                          Town is required.
+                        </div>
+                      }
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Town Location Name'"
+                        [controlName]="'TwnLctnNm'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'District Name'"
+                        [controlName]="'DstrctNm'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Country Sub Division'"
+                        [controlName]="'CtrySubDvsn'"
+                      ></app-text-base-input>
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt1AdrGroup"
+                        [label]="'Country'"
+                        [controlName]="'Ctry'"
+                      ></app-text-base-input>
+                      @if (
+                        (prvsInstgAgt1AdrGroup.errors?.['missingTownOrCountry'] || prvsInstgAgt1AdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                        !prvsInstgAgt1AdrGroup.get('Ctry')?.touched
+                        ) {
+                        <div style="color: red;">
+                          Country is required.
+                        </div>
+                      }
                     </div>
+
                   }
                 </div>
               </div>
@@ -1036,6 +1560,17 @@
                   [label]="'Name'"
                   [controlName]="'prvsInstgAgt2Nm'"
                 />
+                @if (frmGroup.errors?.['bicfiConflict'] && (frmGroup.touched || frmGroup.dirty)) {
+                  <div style="color: red;">
+                    BICFI is present — Name and Postal Address must not be provided.
+                  </div>
+                }
+
+                @if (frmGroup.errors?.['missingNameOrPostalOrBicfi'] && (frmGroup.touched || frmGroup.dirty)) {
+                  <div style="color: red;">
+                    Either provide BICFI, or Name + Postal Address.
+                  </div>
+                }
                 <div class="sub-panel">
                   <app-expansion-sub-panel-header
                     [isOpenSignal]="prevAgent2AddressPanel"
@@ -1044,94 +1579,112 @@
                   @if (prevAgent2AddressPanel()) {
                     <div class="form-grid-col-1">
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
                         [label]="'Address Line 1'"
-                        [controlName]="'prvsInstgAgt2AdrLine1'"
+                        [controlName]="'AdrLine1'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
                         [label]="'Address Line 2'"
-                        [controlName]="'prvsInstgAgt2AdrLine2'"
+                        [controlName]="'AdrLine2'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
                         [label]="'Address Line 3'"
-                        [controlName]="'prvsInstgAgt2AdrLine3'"
+                        [controlName]="'AdrLine3'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
                         [label]="'Department'"
-                        [controlName]="'prvsInstgAgt2AdrDept'"
+                        [controlName]="'Dept'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
                         [label]="'Sub Department'"
-                        [controlName]="'prvsInstgAgt2AdrSubDept'"
+                        [controlName]="'SubDept'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
                         [label]="'Street Name'"
-                        [controlName]="'prvsInstgAgt2AdrStrtNm'"
+                        [controlName]="'StrtNm'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
                         [label]="'Building Number'"
-                        [controlName]="'prvsInstgAgt2AdrBldgNb'"
+                        [controlName]="'BldgNb'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
                         [label]="'Building Name'"
-                        [controlName]="'prvsInstgAgt2AdrBldgNm'"
+                        [controlName]="'BldgNm'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
                         [label]="'Floor'"
-                        [controlName]="'prvsInstgAgt2AdrFlr'"
+                        [controlName]="'Flr'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
                         [label]="'Post Box'"
-                        [controlName]="'prvsInstgAgt2AdrPstBx'"
+                        [controlName]="'PstBx'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
                         [label]="'Room'"
-                        [controlName]="'prvsInstgAgt2AdrRoom'"
+                        [controlName]="'Room'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
                         [label]="'Post Code'"
-                        [controlName]="'prvsInstgAgt2AdrPstCd'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Town Name'"
-                        [controlName]="'prvsInstgAgt2AdrTwnNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Town Location Name'"
-                        [controlName]="'prvsInstgAgt2AdrTwnLctnNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'District Name'"
-                        [controlName]="'prvsInstgAgt2AdrDstrctNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Country Sub Division'"
-                        [controlName]="'prvsInstgAgt2AdrCtrySubDvsn'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Country'"
-                        [controlName]="'prvsInstgAgt2AdrCtry'"
+                        [controlName]="'PstCd'"
                       />
 
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
+                        [label]="'Town Name'"
+                        [controlName]="'TwnNm'"
+                      />
+                      @if (
+                        (prvsInstgAgt2AdrGroup.errors?.['missingTownOrCountry'] || prvsInstgAgt2AdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                        !prvsInstgAgt2AdrGroup.get('TwnNm')?.value?.trim()
+                        ) {
+                        <div style="color: red;">
+                          Town is required.
+                        </div>
+                      }
+
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
+                        [label]="'Town Location Name'"
+                        [controlName]="'TwnLctnNm'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
+                        [label]="'District Name'"
+                        [controlName]="'DstrctNm'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
+                        [label]="'Country Sub Division'"
+                        [controlName]="'CtrySubDvsn'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="prvsInstgAgt2AdrGroup"
+                        [label]="'Country'"
+                        [controlName]="'Ctry'"
+                      />
+                      @if (
+                        (prvsInstgAgt2AdrGroup.errors?.['missingTownOrCountry'] || prvsInstgAgt2AdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                        !prvsInstgAgt2AdrGroup.get('Ctry')?.value?.trim()
+                        ) {
+                        <div style="color: red;">
+                          Country is required.
+                        </div>
+                      }
                     </div>
                   }
                 </div>
+
               </div>
             }
           </div>
@@ -1225,6 +1778,17 @@
                   [label]="'Name'"
                   [controlName]="'prvsInstgAgt3Nm'"
                 />
+                @if (frmGroup.errors?.['bicfiConflict'] && (frmGroup.touched || frmGroup.dirty)) {
+                  <div style="color: red;">
+                    BICFI is present — Name and Postal Address must not be provided.
+                  </div>
+                }
+
+                @if (frmGroup.errors?.['missingNameOrPostalOrBicfi'] && (frmGroup.touched || frmGroup.dirty)) {
+                  <div style="color: red;">
+                    Either provide BICFI, or Name + Postal Address.
+                  </div>
+                }
                 <div class="sub-panel">
                   <app-expansion-sub-panel-header
                     [isOpenSignal]="prevAgent3AddressPanel"
@@ -1233,90 +1797,108 @@
                   @if (prevAgent3AddressPanel()) {
                     <div class="form-grid-col-1">
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Address Line 1'"
-                        [controlName]="'prvsInstgAgt3AdrLine1'"
+                        [controlName]="'AdrLine1'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Address Line 2'"
-                        [controlName]="'prvsInstgAgt3AdrLine2'"
+                        [controlName]="'AdrLine2'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Address Line 3'"
-                        [controlName]="'prvsInstgAgt3AdrLine3'"
+                        [controlName]="'AdrLine3'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Department'"
-                        [controlName]="'prvsInstgAgt3AdrDept'"
+                        [controlName]="'Dept'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Sub Department'"
-                        [controlName]="'prvsInstgAgt3AdrSubDept'"
+                        [controlName]="'SubDept'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Street Name'"
-                        [controlName]="'prvsInstgAgt3AdrStrtNm'"
+                        [controlName]="'StrtNm'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Building Number'"
-                        [controlName]="'prvsInstgAgt3AdrBldgNb'"
+                        [controlName]="'BldgNb'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Building Name'"
-                        [controlName]="'prvsInstgAgt3AdrBldgNm'"
+                        [controlName]="'BldgNm'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Floor'"
-                        [controlName]="'prvsInstgAgt3AdrFlr'"
+                        [controlName]="'Flr'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Post Box'"
-                        [controlName]="'prvsInstgAgt3AdrPstBx'"
+                        [controlName]="'PstBx'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Room'"
-                        [controlName]="'prvsInstgAgt3AdrRoom'"
+                        [controlName]="'Room'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Post Code'"
-                        [controlName]="'prvsInstgAgt3AdrPstCd'"
+                        [controlName]="'PstCd'"
                       />
+
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Town Name'"
-                        [controlName]="'prvsInstgAgt3AdrTwnNm'"
+                        [controlName]="'TwnNm'"
                       />
+                      @if (
+                        (prvsInstgAgt3AdrGroup.errors?.['missingTownOrCountry'] || prvsInstgAgt3AdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                        !prvsInstgAgt3AdrGroup.get('TwnNm')?.value?.trim()
+                        ) {
+                        <div style="color: red;">
+                          Town is required.
+                        </div>
+                      }
+
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Town Location Name'"
-                        [controlName]="'prvsInstgAgt3AdrTwnLctnNm'"
+                        [controlName]="'TwnLctnNm'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'District Name'"
-                        [controlName]="'prvsInstgAgt3AdrDstrctNm'"
+                        [controlName]="'DstrctNm'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Country Sub Division'"
-                        [controlName]="'prvsInstgAgt3AdrCtrySubDvsn'"
+                        [controlName]="'CtrySubDvsn'"
                       />
                       <app-text-base-input
-                        [frmGroup]="frmGroup"
+                        [frmGroup]="prvsInstgAgt3AdrGroup"
                         [label]="'Country'"
-                        [controlName]="'prvsInstgAgt3AdrCtry'"
+                        [controlName]="'Ctry'"
                       />
+                      @if (
+                        (prvsInstgAgt3AdrGroup.errors?.['missingTownOrCountry'] || prvsInstgAgt3AdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                        !prvsInstgAgt3AdrGroup.get('Ctry')?.value?.trim()
+                        ) {
+                        <div style="color: red;">
+                          Country is required.
+                        </div>
+                      }
                     </div>
                   }
                 </div>
@@ -1467,142 +2049,169 @@
         />
         @if (intermediaryAgentsPanel()) {
           <div class="form-grid-col-1">
-          <!-- Intermediary Agent 1 -->
-          <div class="sub-panel">
-            <app-expansion-sub-panel-header
-              [isOpenSignal]="intermediary1Panel"
-              [subPanelTitle]="'Intermediary Agent 1'"
-            />
-            @if (intermediary1Panel()) {
-              <div class="form-grid-col-1">
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'BIC'"
-                  [controlName]="'intrmyAgt1Bicfi'"
-                  (onDoubleClick)="openBicSelectionModal('intrmyAgt1Bicfi')"
-                />
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'Clearing System ID Code'"
-                  [controlName]="'intrmyAgt1ClrSysIdCd'"
-                />
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'Member ID'"
-                  [controlName]="'intrmyAgt1MmbId'"
-                />
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'LEI'"
-                  [controlName]="'intrmyAgt1Lei'"
-                />
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'Name'"
-                  [controlName]="'intrmyAgt1Nm'"
-                />
-                <!--PostalAddress -->
-                <div class="sub-panel">
-                  <app-expansion-sub-panel-header
-                    [isOpenSignal]="intrmyAgt1AddrPanel"
-                    [subPanelTitle]="'Postal Address'"
-                  />
-                  @if (intrmyAgt1AddrPanel()) {
-                    <div class="form-grid-col-1">
 
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Department'"
-                        [controlName]="'intrmyAgt1AdrDept'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Sub Department'"
-                        [controlName]="'intrmyAgt1AdrSubDept'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Street Name'"
-                        [controlName]="'intrmyAgt1AdrStrtNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Building Number'"
-                        [controlName]="'intrmyAgt1AdrBldgNb'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Building Name'"
-                        [controlName]="'intrmyAgt1AdrBldgNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Floor'"
-                        [controlName]="'intrmyAgt1AdrFlr'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Post Box'"
-                        [controlName]="'intrmyAgt1AdrPstBx'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Room'"
-                        [controlName]="'intrmyAgt1AdrRoom'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Post Code'"
-                        [controlName]="'intrmyAgt1AdrPstCd'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Town Name'"
-                        [controlName]="'intrmyAgt1AdrTwnNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Town Location Name'"
-                        [controlName]="'intrmyAgt1AdrTwnLctnNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'District Name'"
-                        [controlName]="'intrmyAgt1AdrDstrctNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Country Sub Division'"
-                        [controlName]="'intrmyAgt1AdrCtrySubDvsn'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Country'"
-                        [controlName]="'intrmyAgt1AdrCtry'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Address Line 1'"
-                        [controlName]="'intrmyAgt1AdrLine1'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Address Line 2'"
-                        [controlName]="'intrmyAgt1AdrLine2'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Address Line 3'"
-                        [controlName]="'intrmyAgt1AdrLine3'"
-                      />
+          <!-- Intermediary Agent 1 -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="intermediary1Panel"
+                [subPanelTitle]="'Intermediary Agent 1'"
+              />
+              @if (intermediary1Panel()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'BIC'"
+                    [controlName]="'intrmyAgt1Bicfi'"
+                    (onDoubleClick)="openBicSelectionModal('intrmyAgt1Bicfi')"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Clearing System ID Code'"
+                    [controlName]="'intrmyAgt1ClrSysIdCd'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Member ID'"
+                    [controlName]="'intrmyAgt1MmbId'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'LEI'"
+                    [controlName]="'intrmyAgt1Lei'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Name'"
+                    [controlName]="'intrmyAgt1Nm'"
+                  />
+                  @if (frmGroup.errors?.['bicfiConflict'] && (frmGroup.touched || frmGroup.dirty)) {
+                    <div style="color: red;">
+                      BICFI is present — Name and Postal Address must not be provided.
                     </div>
                   }
-                </div>
-              </div>
-            }
-          </div>
 
-          <!-- Intermediary Instructing 1 Acc-->
+                  @if (frmGroup.errors?.['missingNameOrPostalOrBicfi'] && (frmGroup.touched || frmGroup.dirty)) {
+                    <div style="color: red;">
+                      Either provide BICFI, or Name + Postal Address.
+                    </div>
+                  }
+                  <!-- Postal Address -->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header
+                      [isOpenSignal]="intrmyAgt1AddrPanel"
+                      [subPanelTitle]="'Postal Address'"
+                    />
+                    @if (intrmyAgt1AddrPanel()) {
+                      <div class="form-grid-col-1">
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Address Line 1'"
+                          [controlName]="'AdrLine1'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Address Line 2'"
+                          [controlName]="'AdrLine2'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Address Line 3'"
+                          [controlName]="'AdrLine3'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Department'"
+                          [controlName]="'Dept'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Sub Department'"
+                          [controlName]="'SubDept'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Street Name'"
+                          [controlName]="'StrtNm'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Building Number'"
+                          [controlName]="'BldgNb'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Building Name'"
+                          [controlName]="'BldgNm'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Floor'"
+                          [controlName]="'Flr'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Post Box'"
+                          [controlName]="'PstBx'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Room'"
+                          [controlName]="'Room'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Post Code'"
+                          [controlName]="'PstCd'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Town Name'"
+                          [controlName]="'TwnNm'"
+                        />
+                        @if (
+                          (intrmyAgt1AdrGroup.errors?.['missingTownOrCountry'] || intrmyAgt1AdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                          !intrmyAgt1AdrGroup.get('TwnNm')?.touched
+                          ) {
+                          <div style="color: red;">
+                            Town is required.
+                          </div>
+                        }
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Town Location Name'"
+                          [controlName]="'TwnLctnNm'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'District Name'"
+                          [controlName]="'DstrctNm'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Country Sub Division'"
+                          [controlName]="'CtrySubDvsn'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt1AdrGroup"
+                          [label]="'Country'"
+                          [controlName]="'Ctry'"
+                        />
+                        @if (
+                          (intrmyAgt1AdrGroup.errors?.['missingTownOrCountry'] || intrmyAgt1AdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                          !intrmyAgt1AdrGroup.get('Ctry')?.touched
+                          ) {
+                          <div style="color: red;">
+                            Country is required.
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Intermediary Agent 1 Acc-->
           <div class="sub-panel">
             <app-expansion-sub-panel-header
               [isOpenSignal]="intrmyAgt1AccPanel"
@@ -1652,201 +2261,171 @@
                   [frmGroup]="frmGroup"
                   [label]="'Proxy ID'"
                   [controlName]="'intrmyAgt1ProxyId'"
-                /><!-- Previous Instructing Agent 3 Acc-->
-                <div class="sub-panel">
-                  <app-expansion-sub-panel-header
-                    [isOpenSignal]="prevAgent3AccPanel"
-                    [subPanelTitle]="'Previous Instructing Agent 1 Account'"
-                  />
-                  @if (prevAgent3AccPanel()) {
-                    <div class="form-grid-col-1">
-                      <app-select-option-field
-                        [frmGroup]="frmGroup"
-                        [options]="currencyOptions"
-                        [label]="'Account Currency'"
-                        [controlName]="'prvsInstgAgt3AcctCcy'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Account ID'"
-                        [controlName]="'prvsInstgAgt3AcctId'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Account Type'"
-                        [controlName]="'prvsInstgAgt3AcctTp'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Account Name'"
-                        [controlName]="'prvsInstgAgt3AcctNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Account Scheme Name'"
-                        [controlName]="'prvsInstgAgt3AcctSchmeNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Account Issuer'"
-                        [controlName]="'prvsInstgAgt3AcctIssr'"
-                      />
-                      <app-select-option-field
-                        [frmGroup]="frmGroup"
-                        [options]="prxyCdOptions"
-                        [label]="'Proxy Code'"
-                        [controlName]="'prvsInstgAgt3ProxyCd'"
-                      />
-
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Proxy ID'"
-                        [controlName]="'prvsInstgAgt3ProxyId'"
-                      />
-                    </div>
-                  }
-                </div>
+                />
               </div>
             }
           </div>
 
           <!-- Intermediary Agent 2 -->
-          <div class="sub-panel">
-            <app-expansion-sub-panel-header
-              [isOpenSignal]="intermediary2Panel"
-              [subPanelTitle]="'Intermediary Agent 2'"
-            />
-            @if (intermediary2Panel()) {
-              <div class="form-grid-col-1">
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'BIC'"
-                  [controlName]="'intrmyAgt2Bicfi'"
-                  (onDoubleClick)="openBicSelectionModal('intrmyAgt2Bicfi')"
-                />
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'Clearing System ID Code'"
-                  [controlName]="'intrmyAgt2ClrSysIdCd'"
-                />
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'Member ID'"
-                  [controlName]="'intrmyAgt2MmbId'"
-                />
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'LEI'"
-                  [controlName]="'intrmyAgt2Lei'"
-                />
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'Name'"
-                  [controlName]="'intrmyAgt2Nm'"
-                />
-
-                <!--PostalAddress -->
-                <div class="sub-panel">
-                  <app-expansion-sub-panel-header
-                    [isOpenSignal]="intrmyAgt2AddrPanel"
-                    [subPanelTitle]="'Postal Address'"
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="intermediary2Panel"
+                [subPanelTitle]="'Intermediary Agent 2'"
+              />
+              @if (intermediary2Panel()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'BIC'"
+                    [controlName]="'intrmyAgt2Bicfi'"
+                    (onDoubleClick)="openBicSelectionModal('intrmyAgt2Bicfi')"
                   />
-                  @if (intrmyAgt2AddrPanel()) {
-                    <div class="form-grid-col-1">
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Clearing System ID Code'"
+                    [controlName]="'intrmyAgt2ClrSysIdCd'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Member ID'"
+                    [controlName]="'intrmyAgt2MmbId'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'LEI'"
+                    [controlName]="'intrmyAgt2Lei'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Name'"
+                    [controlName]="'intrmyAgt2Nm'"
+                  />
 
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Department'"
-                        [controlName]="'intrmyAgt2AdrDept'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Sub Department'"
-                        [controlName]="'intrmyAgt2AdrSubDept'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Street Name'"
-                        [controlName]="'intrmyAgt2AdrStrtNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Building Number'"
-                        [controlName]="'intrmyAgt2AdrBldgNb'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Building Name'"
-                        [controlName]="'intrmyAgt2AdrBldgNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Floor'"
-                        [controlName]="'intrmyAgt2AdrFlr'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Post Box'"
-                        [controlName]="'intrmyAgt2AdrPstBx'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Room'"
-                        [controlName]="'intrmyAgt2AdrRoom'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Post Code'"
-                        [controlName]="'intrmyAgt2AdrPstCd'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Town Name'"
-                        [controlName]="'intrmyAgt2AdrTwnNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Town Location Name'"
-                        [controlName]="'intrmyAgt2AdrTwnLctnNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'District Name'"
-                        [controlName]="'intrmyAgt2AdrDstrctNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Country Sub Division'"
-                        [controlName]="'intrmyAgt2AdrCtrySubDvsn'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Country'"
-                        [controlName]="'intrmyAgt2AdrCtry'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Address Line 1'"
-                        [controlName]="'intrmyAgt2AdrLine1'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Address Line 2'"
-                        [controlName]="'intrmyAgt2AdrLine2'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Address Line 3'"
-                        [controlName]="'intrmyAgt2AdrLine3'"
-                      />
+                  @if (frmGroup.errors?.['bicfiConflict'] && (frmGroup.touched || frmGroup.dirty)) {
+                    <div style="color: red;">
+                      BICFI is present — Name and Postal Address must not be provided.
                     </div>
                   }
-                </div>
-              </div>
-            }
-          </div>
 
-          <!-- Intermediary Agent 2 Acc-->
+                  @if (frmGroup.errors?.['missingNameOrPostalOrBicfi'] && (frmGroup.touched || frmGroup.dirty)) {
+                    <div style="color: red;">
+                      Either provide BICFI, or Name + Postal Address.
+                    </div>
+                  }
+
+                  <!-- Postal Address -->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header
+                      [isOpenSignal]="intrmyAgt2AddrPanel"
+                      [subPanelTitle]="'Postal Address'"
+                    />
+                    @if (intrmyAgt2AddrPanel()) {
+                      <div class="form-grid-col-1">
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Address Line 1'"
+                          [controlName]="'AdrLine1'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Address Line 2'"
+                          [controlName]="'AdrLine2'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Address Line 3'"
+                          [controlName]="'AdrLine3'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Department'"
+                          [controlName]="'Dept'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Sub Department'"
+                          [controlName]="'SubDept'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Street Name'"
+                          [controlName]="'StrtNm'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Building Number'"
+                          [controlName]="'BldgNb'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Building Name'"
+                          [controlName]="'BldgNm'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Floor'"
+                          [controlName]="'Flr'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Post Box'"
+                          [controlName]="'PstBx'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Room'"
+                          [controlName]="'Room'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Post Code'"
+                          [controlName]="'PstCd'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Town Name'"
+                          [controlName]="'TwnNm'"
+                        />
+                        @if (
+                          (intrmyAgt2AdrGroup.errors?.['missingTownOrCountry'] || intrmyAgt2AdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                          !intrmyAgt2AdrGroup.get('TwnNm')?.touched
+                          ) {
+                          <div style="color: red;">Town is required.</div>
+                        }
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Town Location Name'"
+                          [controlName]="'TwnLctnNm'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'District Name'"
+                          [controlName]="'DstrctNm'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Country Sub Division'"
+                          [controlName]="'CtrySubDvsn'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt2AdrGroup"
+                          [label]="'Country'"
+                          [controlName]="'Ctry'"
+                        />
+                        @if (
+                          (intrmyAgt2AdrGroup.errors?.['missingTownOrCountry'] || intrmyAgt2AdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                          !intrmyAgt2AdrGroup.get('Ctry')?.touched
+                          ) {
+                          <div style="color: red;">Country is required.</div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Intermediary Agent 2 Acc-->
           <div class="sub-panel">
             <app-expansion-sub-panel-header
               [isOpenSignal]="intrmyAgt2AccPanel"
@@ -1902,142 +2481,165 @@
           </div>
 
           <!-- Intermediary Agent 3 -->
-          <div class="sub-panel">
-            <app-expansion-sub-panel-header
-              [isOpenSignal]="intermediary3Panel"
-              [subPanelTitle]="'Intermediary Agent 3'"
-            />
-            @if (intermediary3Panel()) {
-              <div class="form-grid-col-1">
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'BIC'"
-                  [controlName]="'intrmyAgt3Bicfi'"
-                  (onDoubleClick)="openBicSelectionModal('intrmyAgt3Bicfi')"
-                />
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'Clearing System ID Code'"
-                  [controlName]="'intrmyAgt3ClrSysIdCd'"
-                />
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'Member ID'"
-                  [controlName]="'intrmyAgt3MmbId'"
-                />
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'LEI'"
-                  [controlName]="'intrmyAgt3Lei'"
-                />
-                <app-text-base-input
-                  [frmGroup]="frmGroup"
-                  [label]="'Name'"
-                  [controlName]="'intrmyAgt3Nm'"
-                />
-
-                <!--PostalAddress -->
-                <div class="sub-panel">
-                  <app-expansion-sub-panel-header
-                    [isOpenSignal]="intrmyAgt3AddrPanel"
-                    [subPanelTitle]="'Postal Address'"
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="intermediary3Panel"
+                [subPanelTitle]="'Intermediary Agent 3'"
+              />
+              @if (intermediary3Panel()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'BIC'"
+                    [controlName]="'intrmyAgt3Bicfi'"
+                    (onDoubleClick)="openBicSelectionModal('intrmyAgt3Bicfi')"
                   />
-                  @if (intrmyAgt3AddrPanel()) {
-                    <div class="form-grid-col-1">
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Clearing System ID Code'"
+                    [controlName]="'intrmyAgt3ClrSysIdCd'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Member ID'"
+                    [controlName]="'intrmyAgt3MmbId'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'LEI'"
+                    [controlName]="'intrmyAgt3Lei'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Name'"
+                    [controlName]="'intrmyAgt3Nm'"
+                  />
 
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Department'"
-                        [controlName]="'intrmyAgt3AdrDept'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Sub Department'"
-                        [controlName]="'intrmyAgt3AdrSubDept'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Street Name'"
-                        [controlName]="'intrmyAgt3AdrStrtNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Building Number'"
-                        [controlName]="'intrmyAgt3AdrBldgNb'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Building Name'"
-                        [controlName]="'intrmyAgt3AdrBldgNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Floor'"
-                        [controlName]="'intrmyAgt3AdrFlr'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Post Box'"
-                        [controlName]="'intrmyAgt3AdrPstBx'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Room'"
-                        [controlName]="'intrmyAgt3AdrRoom'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Post Code'"
-                        [controlName]="'intrmyAgt3AdrPstCd'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Town Name'"
-                        [controlName]="'intrmyAgt3AdrTwnNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Town Location Name'"
-                        [controlName]="'intrmyAgt3AdrTwnLctnNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'District Name'"
-                        [controlName]="'intrmyAgt3AdrDstrctNm'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Country Sub Division'"
-                        [controlName]="'intrmyAgt3AdrCtrySubDvsn'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Country'"
-                        [controlName]="'intrmyAgt3AdrCtry'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Address Line 1'"
-                        [controlName]="'intrmyAgt3AdrLine1'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Address Line 2'"
-                        [controlName]="'intrmyAgt3AdrLine2'"
-                      />
-                      <app-text-base-input
-                        [frmGroup]="frmGroup"
-                        [label]="'Address Line 3'"
-                        [controlName]="'intrmyAgt3AdrLine3'"
-                      />
+                  @if (frmGroup.errors?.['bicfiConflict'] && (frmGroup.touched || frmGroup.dirty)) {
+                    <div style="color: red;">
+                      BICFI is present — Name and Postal Address must not be provided.
                     </div>
                   }
-                </div>
-              </div>
-            }
-          </div>
 
-          <!-- Intermediary Agent 3 Acc-->
+                  @if (frmGroup.errors?.['missingNameOrPostalOrBicfi'] && (frmGroup.touched || frmGroup.dirty)) {
+                    <div style="color: red;">
+                      Either provide BICFI, or Name + Postal Address.
+                    </div>
+                  }
+
+                  <!-- Postal Address -->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header
+                      [isOpenSignal]="intrmyAgt3AddrPanel"
+                      [subPanelTitle]="'Postal Address'"
+                    />
+                    @if (intrmyAgt3AddrPanel()) {
+                      <div class="form-grid-col-1">
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Address Line 1'"
+                          [controlName]="'AdrLine1'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Address Line 2'"
+                          [controlName]="'AdrLine2'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Address Line 3'"
+                          [controlName]="'AdrLine3'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Department'"
+                          [controlName]="'Dept'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Sub Department'"
+                          [controlName]="'SubDept'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Street Name'"
+                          [controlName]="'StrtNm'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Building Number'"
+                          [controlName]="'BldgNb'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Building Name'"
+                          [controlName]="'BldgNm'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Floor'"
+                          [controlName]="'Flr'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Post Box'"
+                          [controlName]="'PstBx'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Room'"
+                          [controlName]="'Room'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Post Code'"
+                          [controlName]="'PstCd'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Town Name'"
+                          [controlName]="'TwnNm'"
+                        />
+                        @if (
+                          (intrmyAgt3AdrGroup.errors?.['missingTownOrCountry'] || intrmyAgt3AdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                          !intrmyAgt3AdrGroup.get('TwnNm')?.touched
+                          ) {
+                          <div style="color: red;">Town is required.</div>
+                        }
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Town Location Name'"
+                          [controlName]="'TwnLctnNm'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'District Name'"
+                          [controlName]="'DstrctNm'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Country Sub Division'"
+                          [controlName]="'CtrySubDvsn'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="intrmyAgt3AdrGroup"
+                          [label]="'Country'"
+                          [controlName]="'Ctry'"
+                        />
+                        @if (
+                          (intrmyAgt3AdrGroup.errors?.['missingTownOrCountry'] || intrmyAgt3AdrGroup.errors?.['missingTownOrCountryWithAddressLine']) &&
+                          !intrmyAgt3AdrGroup.get('Ctry')?.touched
+                          ) {
+                          <div style="color: red;">Country is required.</div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- Intermediary Agent 3 Acc-->
           <div class="sub-panel">
             <app-expansion-sub-panel-header
               [isOpenSignal]="intrmyAgt3AccPanel"
@@ -2217,7 +2819,6 @@
                           <app-text-base-input [frmGroup]="frmGroup"
                                                [label]="'LEI'"
                                                [controlName]="'LEI'"/>
-
                           <!--                    Other-->
 
                           <div class="sub-panel">
@@ -2774,7 +3375,6 @@
                           <app-text-base-input [frmGroup]="frmGroup"
                                                [label]="'LEI'"
                                                [controlName]="'ultLEI'"/>
-
                           <!--                    Other-->
 
                           <div class="sub-panel">
@@ -3032,7 +3632,6 @@
                             [label]="'LEI'"
                             [controlName]="'initiatingPrtyLEI'"
                           />
-
                           <!-- Other -->
                           <div class="sub-panel">
                             <app-expansion-sub-panel-header
@@ -3303,7 +3902,6 @@
                           <app-text-base-input [frmGroup]="frmGroup"
                                                [label]="'LEI'"
                                                [controlName]="'crdtrLEI'"/>
-
                           <!--                    Other-->
 
                           <div class="sub-panel">
@@ -3869,7 +4467,6 @@
                           <app-text-base-input [frmGroup]="frmGroup"
                                                [label]="'LEI'"
                                                [controlName]="'ultcrdtrLEI'"/>
-
                           <!--                    Other-->
 
                           <div class="sub-panel">
@@ -3967,8 +4564,7 @@
                                                          [label]="'Identification'"
                                                          [controlName]="'ultcrdtrprivateIdOthrId'"/>
 
-                                    <app-select-option-field [frmGroup]="getultcrdtrPrivateIdenOthr($index)"
-                                                             [options]="TypeOptions"
+                                    <app-text-base-input [frmGroup]="getultcrdtrPrivateIdenOthr($index)"
                                                              [label]="'Scheme Name'"
                                                              [controlName]="'ultcrdtrprivateIdOthrScmNm'"/>
 
@@ -4115,6 +4711,12 @@
               [label]="'Remittance Information'"
               [controlName]="'rmtInf'"
             />
+            @if (frmGroup.errors?.['bothRemittanceTypesFilled'] && frmGroup.touched) {
+              <div style="color: red;">
+                Either "Remittance Information" or "Related Remittance Information" must be filled — not both.
+              </div>
+            }
+
 
             <!-- Related Remittance Information -->
             <div class="sub-panel">
