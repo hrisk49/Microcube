@@ -365,6 +365,13 @@
                 [label]="'Account ID'"
                 [controlName]="'sttlmAcctId'"
               />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'IBAN'"
+                [controlName]="'sttlmAcctIban'"
+                [placeholder]="'e.g., GB82WEST12345698765432'"
+                [tooltip]="'International Bank Account Number (ISO 13616 format)'"
+              />
           <app-select-option-field
             [frmGroup]="frmGroup"
             [options]="currencyOptions"
