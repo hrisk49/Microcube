@@ -1,7 +1,8 @@
 // select-option-field.component.ts
-import {Component, input, signal, effect, ElementRef, ViewChild, output} from '@angular/core';
+import {Component, input, signal, effect, ElementRef, ViewChild, output, AfterViewInit, OnInit} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgClass} from '@angular/common';
+import {startWith} from 'rxjs';
 
 type Option = { key: any; value: string };
 
@@ -16,7 +17,7 @@ type Option = { key: any; value: string };
   standalone: true,
   styleUrls: ['./select-option-field.scss']
 })
-export class SelectOptionField {
+export class SelectOptionField implements OnInit {
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
   readonly frmGroup = input.required<FormGroup>();
@@ -43,10 +44,16 @@ export class SelectOptionField {
   filteredOptions = signal<Option[]>([]);
   displayText = signal<string>(''); // NEW: For display in non-searchable mode
 
+  private _lastControlValue: any = '';
+  private _lastOptionsRef: Option[] | null = null;
+
   constructor() {
     // Update filtered options when search term or options change
     effect(() => {
       const opts = this.options() || [];
+      const optionsChanged = this._lastOptionsRef !== opts; // <-- NEW
+      this._lastOptionsRef = opts;
+
       if (!this.searchable()) {
         // Non-searchable mode: show all options
         this.filteredOptions.set(opts);
@@ -64,30 +71,64 @@ export class SelectOptionField {
         }
       }
       this.highlightedIndex.set(-1);
+
+      if (optionsChanged) {
+        this._syncDisplayFromValue(this._lastControlValue);
+      }
     });
 
     // Sync with form control value
-    effect(() => {
-      const control = this.frmGroup().get(this.controlName());
-      if (control) {
-        this.selectedValue.set(control.value || '');
-        // Update display based on mode
-        if (control.value) {
-          const selectedOption = this.options()?.find(opt => opt.key === control.value);
-          if (selectedOption) {
-            this.displayText.set(selectedOption.value);
-            if (this.searchable()) {
-              this.searchTerm.set(selectedOption.value);
-            }
-          }
-        } else {
-          this.displayText.set('');
-          if (this.searchable()) {
-            this.searchTerm.set('');
-          }
-        }
-      }
-    });
+    // effect(() => {
+    //   const control = this.frmGroup().get(this.controlName());
+    //   if (control) {
+    //     this.selectedValue.set(control.value || '');
+    //     // Update display based on mode
+    //     if (control.value) {
+    //       const selectedOption = this.options()?.find(opt => opt.key === control.value);
+    //       if (selectedOption) {
+    //         this.displayText.set(selectedOption.value);
+    //         if (this.searchable()) {
+    //           this.searchTerm.set(selectedOption.value);
+    //         }
+    //       }
+    //     } else {
+    //       this.displayText.set('');
+    //       if (this.searchable()) {
+    //         this.searchTerm.set('');
+    //       }
+    //     }
+    //   }
+    // });
+  }
+
+  ngOnInit(): void {
+    const control = this.frmGroup().get(this.controlName());
+    if (!control) return;
+
+    control.valueChanges
+      .pipe(startWith(control.value))
+      .subscribe(val => {
+        this._lastControlValue = val ?? '';
+        this.selectedValue.set(this._lastControlValue);
+        // display/searchTerm আপডেট
+        this._syncDisplayFromValue(this._lastControlValue);
+      });
+  }
+
+  private _syncDisplayFromValue(val: any) {
+    const opts = this.options() || [];
+    const selected = opts.find(o => o.key === val);
+    if (selected) {
+      this.displayText.set(selected.value);
+      if (this.searchable()) this.searchTerm.set(selected.value);
+    } else {
+      this.displayText.set('');
+      if (this.searchable()) this.searchTerm.set('');
+    }
+  }
+
+  compareFN(item1:any ,item2 :any):boolean{
+    return item1 && item2 ? item1.key === item2.key : item1 === item2;
   }
 
   isRequired(): boolean {

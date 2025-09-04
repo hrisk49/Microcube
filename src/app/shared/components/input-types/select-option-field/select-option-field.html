@@ -59,7 +59,7 @@
       </div>
 
       <!-- Hidden select for form control -->
-      <select
+      <select [compareWith]="compareFN"
         [formControlName]="controlName()"
         class="hidden-select"
         tabindex="-1"
