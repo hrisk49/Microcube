@@ -5,6 +5,7 @@ import {PartyModel} from './party.model';
 import {AddressModel} from './address.model';
 
 export interface Mx008Model {
+  charSet: string;
   fromBicfi: string; //[A-Z0-9]{4,4}[A-Z]{2,2}[A-Z0-9]{2,2}([A-Z0-9]{3,3}){0,1}
   fromMembId:string;
   fromLei:string;

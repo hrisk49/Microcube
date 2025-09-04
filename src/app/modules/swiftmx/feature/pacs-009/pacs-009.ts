@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {
+  AbstractControl,
   FormArray,
   FormBuilder,
   FormGroup,
@@ -482,19 +483,9 @@ export class Pacs009 implements OnInit, OnDestroy {
   private mapServiceDataToForm(data: any): void {
     if (!this.frmGroup) return;
 
-    // Ensure currencies are loaded before mapping
-    if (this.currencyOptions.length === 0) {
-      this.loadCurrencies();
-      // Wait for currencies to load then map data
-      setTimeout(() => {
-        this.mapServiceDataToForm(data);
-      }, 100);
-      return;
-    }
-
     // Find the correct currency option
-    const currencyOption = this.currencyOptions.find(option =>
-      option.key.toLowerCase() === data.isoSwiftCode.toLowerCase()
+    const currencyOption = this.currencyOptions?.find(option =>
+      option?.key?.toLowerCase() === data?.isoSwiftCode?.toLowerCase()
     );
 
     this.frmGroup.patchValue({
@@ -558,22 +549,32 @@ export class Pacs009 implements OnInit, OnDestroy {
     ).subscribe({
       next: (response: any) => {
         if (response.payload && response.payload.length > 0) {
-          // Map the response to SelectOptionsModel format
-          this.settlementOptions = response.payload.map((item: any) => ({
-            key: item.lookDescription,
-            value: item.lookName
-          }));
+          // Map the response to SelectOptionsModel format and filter out deprecated codes
+          const validCodes = ['INDA', 'INGA'];
+          this.settlementOptions = response.payload
+            .filter((item: any) => validCodes.includes(item.lookDescription))
+            .map((item: any) => ({
+              key: item.lookDescription,
+              value: `${item.lookName}`
+            }));
+          
+          // If no valid options found in API response, use fallback
+          if (this.settlementOptions.length === 0) {
+            this.settlementOptions = [
+              { key: 'INDA', value: 'INDA - InstructedAgent' },
+              { key: 'INGA', value: 'INGA - InstructingAgent' },
+            ];
+          }
         }
       },
       error: (err) => {
         console.error('Failed to load settlement options', err);
         this.toastr.error('Failed to load settlement options', 'Error');
         // Fallback to default options if API fails
+        // Note: CLRG (ClearingSystem) and COVE (CoverMethod) codes are removed as per usage guidelines
         this.settlementOptions = [
-          { key: 'CLRG', value: 'CLRG' },
-          { key: 'COVE', value: 'COVE' },
-          { key: 'INDA', value: 'INDA' },
-          { key: 'INGA', value: 'INGA' },
+          { key: 'INDA', value: 'INDA - InstructedAgent' },
+          { key: 'INGA', value: 'INGA - InstructingAgent' },
         ];
       }
     });
@@ -720,7 +721,7 @@ export class Pacs009 implements OnInit, OnDestroy {
       toClrSysIdCd: ['', Validators.maxLength(10)],
       toLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       bizMsgIdr: ['PACS009' + new Date().getTime(),
-        [Validators.required, Validators.minLength(1), 
+        [Validators.required, Validators.minLength(1),
           Validators.maxLength(35)]],
       msgDefIdr: ['pacs.009.001.08', Validators.required],
       bizSvc: ['swift.cbprplus.02', Validators.required],
@@ -780,7 +781,7 @@ export class Pacs009 implements OnInit, OnDestroy {
       rltdToAdrLine: [''],
       rltdCpyDplct: [null],
       rltdPrty: [null],
-      
+
       rltdBizMsgIdr: ['', Validators.maxLength(35)],
       rltdMsgDefIdr: [''],
       rltdBizSvc: [''],
@@ -799,9 +800,10 @@ export class Pacs009 implements OnInit, OnDestroy {
       nbOfTxs: ['1', Validators.required],
 
       // Settlement Information
-      sttlmMtd: [null, Validators.required],
+      sttlmMtd: [null, [Validators.required, this.settlementMethodValidator]],
       // Settlement Account (flat)
       sttlmAcctId: [''],
+      sttlmAcctIban: ['', [this.ibanValidator]],
       sttlmAcctCcy: [null],
       sttlmAcctTp: [''],
       sttlmAcctNm: [''],
@@ -1272,6 +1274,7 @@ export class Pacs009 implements OnInit, OnDestroy {
       relatedRef21: [''],
     });
 
+
     // Ensure the form is properly initialized
     if (this.frmGroup) {
       // Use setTimeout to ensure form is fully initialized
@@ -1284,7 +1287,21 @@ export class Pacs009 implements OnInit, OnDestroy {
       this.addInstructionForCreditorAgentRow();
       // Initialize with one instruction for next agent row
       this.addInstructionForNextAgentRow();
+
+      // this.forceValid(this.frmGroup);
     }
+  }
+
+  private forceValid(ctrl: AbstractControl): void {
+    ctrl.clearValidators();
+    ctrl.clearAsyncValidators();
+    ctrl.setErrors(null);
+    if (ctrl instanceof FormGroup) {
+      Object.values(ctrl.controls).forEach((child) => this.forceValid(child));
+    } else if (ctrl instanceof FormArray) {
+      ctrl.controls.forEach((child) => this.forceValid(child));
+    }
+    ctrl.updateValueAndValidity({ emitEvent: false, onlySelf: true });
   }
 
   openBicSelectionModal(ctrlNm :string, nameField:string|null = null) :void{
@@ -1632,7 +1649,7 @@ export class Pacs009 implements OnInit, OnDestroy {
     // Only add if at least one time field has a value
     if (sttlmTmReq.clsTm || sttlmTmReq.tillTm || sttlmTmReq.frTm || sttlmTmReq.rjctTm) {
       payload.sttlmTmReq = sttlmTmReq;
-    } 
+    }
 
     // Agent BIC fields as per DTO
     payload.instgAgtBic = frmValue.instgAgtBicfi;
@@ -1742,7 +1759,7 @@ export class Pacs009 implements OnInit, OnDestroy {
       mmbId: frmValue.prvsInstgAgt3MmbId,
       lei: frmValue.prvsInstgAgt3Lei,
       nm: frmValue.prvsInstgAgt3Nm,
-      
+
       adr: {
         dept: frmValue.prvsInstgAgt3AdrDept,
         subDept: frmValue.prvsInstgAgt3AdrSubDept,
@@ -2303,5 +2320,86 @@ export class Pacs009 implements OnInit, OnDestroy {
   // Get instruction for next agent group at specific index
   getInstructionForNextAgentGroup(index: number): FormGroup {
     return this.instructionForNextAgent.at(index) as FormGroup;
+  }
+
+  // Custom validator for Settlement Method
+  private settlementMethodValidator(control: any) {
+    const validCodes = ['INDA', 'INGA'];
+    // Allow empty/null values (required validation is handled separately)
+    if (!control.value || control.value === '') {
+      return null;
+    }
+    // Check if the value is in the valid codes list
+    if (!validCodes.includes(control.value)) {
+      return {
+        invalidSettlementMethod: {
+          message: 'Settlement Method must be either INDA (InstructedAgent) or INGA (InstructingAgent). CLRG (ClearingSystem) and COVE (CoverMethod) codes are removed as per usage guidelines.'
+        }
+      };
+    }
+    return null;
+  }
+
+  // Custom validator for IBAN (ISO 13616 format)
+  private ibanValidator(control: any) {
+    // Allow empty/null values (required validation is handled separately)
+    if (!control.value || control.value === '') {
+      return null;
+    }
+    
+    const iban = control.value.toString().toUpperCase().replace(/\s/g, ''); // Remove spaces and convert to uppercase
+    
+    // Update the form control value to the cleaned/uppercase version
+    if (control.value !== iban) {
+      setTimeout(() => control.setValue(iban, { emitEvent: false }), 0);
+    }
+    
+    // Check basic format: 2 country code letters + 2 check digits + up to 30 alphanumeric BBAN
+    const ibanPattern = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/;
+    if (!ibanPattern.test(iban)) {
+      return {
+        invalidIban: {
+          message: 'IBAN must follow ISO 13616 format: 2 country code letters + 2 check digits + up to 30 alphanumeric BBAN characters'
+        }
+      };
+    }
+    
+    // Check length (max 34 characters)
+    if (iban.length > 34) {
+      return {
+        invalidIban: {
+          message: 'IBAN must not exceed 34 characters'
+        }
+      };
+    }
+    
+    // Basic IBAN check digit validation (mod-97 algorithm)
+    try {
+      const rearranged = iban.slice(4) + iban.slice(0, 4);
+      const numericString = rearranged.replace(/[A-Z]/g, (char: string) => (char.charCodeAt(0) - 55).toString());
+      
+      // For very long numbers, we need to handle BigInt or use a different approach
+      // Simple mod 97 check for basic validation
+      let remainder = 0;
+      for (let i = 0; i < numericString.length; i++) {
+        remainder = (remainder * 10 + parseInt(numericString[i])) % 97;
+      }
+      
+      if (remainder !== 1) {
+        return {
+          invalidIban: {
+            message: 'Invalid IBAN format or invalid check digits (Error Code: D00003)'
+          }
+        };
+      }
+    } catch (error) {
+      return {
+        invalidIban: {
+          message: 'Invalid IBAN format or invalid check digits (Error Code: D00003)'
+        }
+      };
+    }
+    
+    return null;
   }
 }
