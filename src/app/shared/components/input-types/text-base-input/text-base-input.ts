@@ -113,7 +113,6 @@ export class TextBaseInput {
   // Get custom error message for a specific error key
   getCustomErrorMessage(errorKey: string): string {
     const customMessages = this.customErrorMessages();
-    console.log('Custom Messages:', customMessages);
     return customMessages[errorKey] || `${this.label()} has validation error: ${errorKey}`;
   }
 
