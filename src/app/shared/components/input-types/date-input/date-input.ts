@@ -20,76 +20,10 @@ export type DateFormat = 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'YYYY/MM/DD' | 'DD-MM-YYY
     MatInput,
     ReactiveFormsModule,
     MatSuffix,
-    MatTooltipModule,   
+    MatTooltipModule,
     NgClass
   ],
-  template: `
-    <div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'">
-      <label class="input-label">
-        {{ label() }}
-        @if (isRequired()) {
-          <span class="text-red-500">*</span>
-        }
-      </label>
-
-      <div class="relative">
-        <!-- Hidden input for MatDatepicker -->
-        <input
-          matInput
-          [matDatepicker]="dobPicker"
-          [formControlName]="controlName()"
-          style="position: absolute; left: -9999px; opacity: 0;"
-          readonly
-        />
-        
-        <!-- Visible masked input -->
-        <input
-          #dateInput
-          [ngClass]="{'readonly-input': isReadonly() }"
-          matInput
-          [readonly]="isReadonly()"
-          [value]="displayValue()"
-          (keypress)="onKeyPress($event)"
-          (keydown)="onKeyDown($event)"
-          (focus)="onFocus()"
-          (blur)="onBlur()"
-          class="custom-input"
-          maxlength="10"
-          style="letter-spacing: 1px;"
-        />
-        <mat-datepicker-toggle
-          [disabled]="isReadonly()"
-          matSuffix
-          [for]="dobPicker"
-          (click)="openDatePicker()"
-          class="absolute top-1/2 right-2 -translate-y-1/2"
-        ></mat-datepicker-toggle>
-        <mat-datepicker 
-          #dobPicker 
-          (closed)="onDatePickerClosed()"
-          (dateChange)="onDateSelected($event)"
-        ></mat-datepicker>
-      </div>
-      
-      @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
-        <div class="text-red-500 text-xs mt-1">
-          @if (hasValidationError('required')) {
-            {{ label() }} is required..!
-          }
-          @if (hasValidationError('invalidDate')) {
-            Please enter a valid date
-          }
-          @if (hasValidationError('invalidMonth')) {
-            Month must be between 01 and 12
-          }
-          @if (hasValidationError('invalidDay')) {
-            Day must be between 01 and 31
-          }
-        
-        </div>
-      }
-    </div>
-  `,
+  templateUrl: './date-input.html',
   standalone: true,
   styleUrl: './date-input.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
