@@ -1,11 +1,14 @@
-import {ChangeDetectionStrategy, Component, input, signal, effect, ElementRef, ViewChild, ChangeDetectorRef} from '@angular/core';
-import {FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
-import {MatInput, MatSuffix} from '@angular/material/input';
-import {NgClass} from '@angular/common';
-import {DateAdapter, MAT_DATE_FORMATS} from '@angular/material/core';
-import {CustomDateAdapter} from '../../../adapter/custom-date.adapter';
-import {AppDateFormatsConstant} from '../../../constant/app-date-formats.constant';
+import { ChangeDetectionStrategy, Component, input, effect, inject } from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule, AbstractControl } from '@angular/forms';
+import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle } from '@angular/material/datepicker';
+import { MatInput, MatSuffix } from '@angular/material/input';
+import { NgClass } from '@angular/common';
+import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
+import { CustomDateAdapter } from '../../../adapter/custom-date.adapter';
+import { AppDateFormatsConstant } from '../../../constant/app-date-formats.constant';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
+export type DateFormat = 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'YYYY/MM/DD' | 'DD-MM-YYYY' | 'MM-DD-YYYY' | 'YYYY-MM-DD' | 'DD MMM, YYYY';
 
 @Component({
   selector: 'app-date-input',
@@ -17,328 +20,49 @@ import {AppDateFormatsConstant} from '../../../constant/app-date-formats.constan
     MatInput,
     ReactiveFormsModule,
     MatSuffix,
+    MatTooltipModule,   
     NgClass
   ],
-  template: `
-    <div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'">
-      <label class="input-label">
-        {{ label() }}
-        @if (isRequired()) {
-          <span class="text-red-500">*</span>
-        }
-      </label>
-
-      <div class="relative">
-        <!-- Hidden input for MatDatepicker -->
-        <input
-          matInput
-          [matDatepicker]="dobPicker"
-          [formControlName]="controlName()"
-          style="position: absolute; left: -9999px; opacity: 0;"
-          readonly
-        />
-        
-        <!-- Visible masked input -->
-        <input
-          #dateInput
-          [ngClass]="{'readonly-input': isReadonly() }"
-          matInput
-          [readonly]="isReadonly()"
-          [value]="displayValue()"
-          (keypress)="onKeyPress($event)"
-          (keydown)="onKeyDown($event)"
-          (focus)="onFocus()"
-          (blur)="onBlur()"
-          class="custom-input"
-          maxlength="10"
-          style="letter-spacing: 1px;"
-        />
-        <mat-datepicker-toggle
-          [disabled]="isReadonly()"
-          matSuffix
-          [for]="dobPicker"
-          (click)="openDatePicker()"
-          class="absolute top-1/2 right-2 -translate-y-1/2"
-        ></mat-datepicker-toggle>
-        <mat-datepicker 
-          #dobPicker 
-          (closed)="onDatePickerClosed()"
-          (dateChange)="onDateSelected($event)"
-        ></mat-datepicker>
-      </div>
-      
-      @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
-        <div class="text-red-500 text-xs mt-1">
-          @if (hasValidationError('required')) {
-            {{ label() }} is required..!
-          }
-          @if (hasValidationError('invalidDate')) {
-            Please enter a valid date
-          }
-          @if (hasValidationError('invalidMonth')) {
-            Month must be between 01 and 12
-          }
-          @if (hasValidationError('invalidDay')) {
-            Day must be between 01 and 31
-          }
-        
-        </div>
-      }
-    </div>
-  `,
+  templateUrl: './date-input.html',
   standalone: true,
   styleUrl: './date-input.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
-    {provide: DateAdapter, useClass: CustomDateAdapter},
-    {provide: MAT_DATE_FORMATS, useValue: AppDateFormatsConstant}
+    { provide: DateAdapter, useClass: CustomDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: AppDateFormatsConstant }
   ],
 })
 export class DateInput {
-  @ViewChild('dateInput') dateInputRef!: ElementRef<HTMLInputElement>;
-
   readonly frmGroup = input.required<FormGroup>();
   readonly controlName = input.required<string>();
   readonly label = input.required<string>();
   readonly isReadonly = input<boolean>(false);
-  readonly placeholder = input<any>();
+  readonly dateFormat = input<DateFormat>('DD/MM/YYYY');
   readonly isVertical = input<boolean>(false);
 
-  // Signals for reactive state
-  private userInput = signal<string>('');
-  readonly displayValue = signal<string>('DD/MM/YYYY');
-
-  constructor(private cdr: ChangeDetectorRef) {
-    // Update display when user input changes
-    effect(() => {
-      this.updateDisplayValue();
-    });
-
-    // Listen to form control changes (including datepicker selection)
+  private dateAdapter = inject(DateAdapter) as CustomDateAdapter;
+  readonly tooltip = input<string>('Select a date');
+  readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
+  readonly tooltipDelay = input<number>(500);
+  readonly tooltipClass = input<string>('custom-tooltip');
+  constructor() {
+    // Add custom validator when component initializes
     effect(() => {
       const control = this.frmGroup().get(this.controlName());
-      if (control?.value) {
-        const date = new Date(control.value);
-        if (!isNaN(date.getTime())) {
-          const day = date.getDate().toString().padStart(2, '0');
-          const month = (date.getMonth() + 1).toString().padStart(2, '0');
-          const year = date.getFullYear().toString();
-          const newInput = day + month + year;
-          
-          // Only update if different to avoid infinite loops
-          if (this.userInput() !== newInput) {
-            this.userInput.set(newInput);
-          }
-        }
-      } else if (control?.value === null || control?.value === '') {
-        // Clear input when form control is cleared
-        if (this.userInput() !== '') {
-          this.userInput.set('');
-        }
+      if (control) {
+        const existingValidators = control.validator;
+        control.setValidators([
+          ...(existingValidators ? [existingValidators] : []),
+          this.dateFormatValidator.bind(this)
+        ]);
+        control.updateValueAndValidity();
       }
     });
-  }
 
-  onKeyPress(event: KeyboardEvent): void {
-    const key = event.key;
-    
-    // Allow numbers and dots
-    if (!/[0-9.]/.test(key)) {
-      event.preventDefault();
-      return;
-    }
-
-    event.preventDefault();
-    let input = this.userInput();
-
-    // Handle dot - move to next section
-    if (key === '.') {
-      if (input.length < 2) {
-        // Pad day to 2 digits
-        input = input.padStart(2, '0');
-      } else if (input.length < 4) {
-        // Pad month to 4 digits
-        input = input.padEnd(4, '0');
-      }
-      this.userInput.set(input);
-      return;
-    }
-
-    // Handle number input
-    if (input.length < 8) {
-      const newInput = input + key;
-      
-      // Validate as we type
-      if (this.isValidInput(newInput)) {
-        this.userInput.set(newInput);
-        this.updateFormControl();
-      }
-    }
-  }
-
-  onKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Backspace') {
-      event.preventDefault();
-      const input = this.userInput();
-      if (input.length > 0) {
-        this.userInput.set(input.slice(0, -1));
-        this.updateFormControl();
-      }
-    }
-  }
-
-  onFocus(): void {
-    // Set cursor position based on current input
-    setTimeout(() => {
-      const input = this.userInput();
-      let cursorPos = input.length;
-      
-      // Adjust cursor position for slashes
-      if (cursorPos >= 2) cursorPos++;
-      if (cursorPos >= 5) cursorPos++;
-      
-      cursorPos = Math.min(cursorPos, 10);
-      this.dateInputRef.nativeElement.setSelectionRange(cursorPos, cursorPos);
-    }, 0);
-  }
-
-  onBlur(): void {
-    const control = this.frmGroup().get(this.controlName());
-    control?.markAsTouched();
-  }
-
-  onDateSelected(event: any): void {
-    if (event.value) {
-      const date = new Date(event.value);
-      const day = date.getDate().toString().padStart(2, '0');
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const year = date.getFullYear().toString();
-      
-      // Update user input and display immediately
-      this.userInput.set(day + month + year);
-      
-      // Manually trigger display update to ensure it happens
-      setTimeout(() => {
-        this.updateDisplayValue();
-        this.cdr.markForCheck();
-      }, 0);
-      
-      // Clear any existing errors
-      const control = this.frmGroup().get(this.controlName());
-      control?.setErrors(null);
-    }
-  }
-
-  onDatePickerClosed(): void {
-    // Re-focus masked input after picker closes
-    setTimeout(() => {
-      this.dateInputRef?.nativeElement.focus();
-    }, 100);
-  }
-
-  openDatePicker(): void {
-    // Programmatically open the datepicker
-    const hiddenInput = this.dateInputRef.nativeElement.parentElement?.querySelector('input[matDatepicker]') as HTMLInputElement;
-    if (hiddenInput) {
-      hiddenInput.click();
-    }
-  }
-
-  private updateDisplayValue(): void {
-    const input = this.userInput();
-    const template = 'DD/MM/YYYY';
-    let result = '';
-    let inputIndex = 0;
-
-    for (let i = 0; i < template.length; i++) {
-      const char = template[i];
-      if (char === '/') {
-        result += char;
-      } else if (inputIndex < input.length) {
-        result += input[inputIndex];
-        inputIndex++;
-      } else {
-        result += char;
-      }
-    }
-
-    this.displayValue.set(result);
-  }
-
-  private updateFormControl(): void {
-    const input = this.userInput();
-    const control = this.frmGroup().get(this.controlName());
-    
-    if (input.length === 8) {
-      const day = input.substring(0, 2);
-      const month = input.substring(2, 4);
-      const year = input.substring(4, 8);
-      const dateString = `${day}/${month}/${year}`;
-      
-      // Validate the complete date
-      const date = this.parseDate(dateString);
-      if (date && this.isValidDate(date, parseInt(day), parseInt(month), parseInt(year))) {
-        control?.setValue(date);
-        control?.setErrors(null);
-      } else {
-        control?.setValue(null);
-        control?.setErrors({ invalidDate: true });
-      }
-    } else {
-      control?.setValue(null);
-      if (input.length > 0) {
-        control?.setErrors({ incompleteDate: true });
-      } else {
-        control?.setErrors(null);
-      }
-    }
-  }
-
-  private isValidInput(input: string): boolean {
-    // Validate day (first 2 digits)
-    if (input.length >= 1) {
-      const firstDigit = parseInt(input[0]);
-      if (firstDigit > 3) return false;
-    }
-    
-    if (input.length >= 2) {
-      const day = parseInt(input.substring(0, 2));
-      if (day > 31 || day < 1) return false;
-    }
-
-    // Validate month (digits 3-4)
-    if (input.length >= 3) {
-      const monthFirstDigit = parseInt(input[2]);
-      if (monthFirstDigit > 1) return false;
-    }
-    
-    if (input.length >= 4) {
-      const month = parseInt(input.substring(2, 4));
-      if (month > 12 || month < 1) return false;
-    }
-
-    return true;
-  }
-
-  private parseDate(dateStr: string): Date | null {
-    if (!dateStr || dateStr.length !== 10) return null;
-    const parts = dateStr.split('/');
-    if (parts.length !== 3) return null;
-    
-    const day = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10);
-    const year = parseInt(parts[2], 10);
-    
-    return new Date(year, month - 1, day);
-  }
-
-  private isValidDate(date: Date, day: number, month: number, year: number): boolean {
-    // Check if the date is valid and matches input
-    return date.getDate() === day && 
-           date.getMonth() === month - 1 && 
-           date.getFullYear() === year &&
-           year >= 1900 && 
-           year <= 2100;
+    // Update date adapter format when dateFormat input changes
+    effect(() => {
+      this.dateAdapter.setFormat(this.dateFormat());
+    });
   }
 
   isRequired(): boolean {
@@ -348,8 +72,726 @@ export class DateInput {
     return !!validation?.['required'];
   }
 
-  hasValidationError(errorType: string): boolean {
+  // Method to get display format (always 'DD MMM, YYYY')
+  getDisplayFormat(): string {
+    return 'DD MMM, YYYY';
+  }
+
+  // Method to get the actual date format for validation
+  getActualDateFormat(): DateFormat {
+    return this.dateFormat();
+  }
+
+  getDateSeparator(): string {
+    if (this.dateFormat() === 'DD MMM, YYYY') {
+      return ' '; 
+    }
+    return this.dateFormat().includes('/') ? '/' : '-';
+  }
+
+  // Handle date selection from calendar
+  onDateSelected(event: any): void {
+    if (event.value instanceof Date) {
+      const date = event.value as Date;
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const formattedDate = `${String(date.getDate()).padStart(2, '0')} ${monthNames[date.getMonth()]}, ${date.getFullYear()}`;
+      
+      // Update the form control with the formatted date string
+      const control = this.frmGroup().get(this.controlName());
+      if (control) {
+        control.setValue(formattedDate);
+      }
+    }
+  }
+
+  onKeyDown(event: KeyboardEvent): void {
+  const format = this.dateFormat();
+  const input = event.target as HTMLInputElement;
+  const currentValue = input.value;
+  const cursorPosition = input.selectionStart || 0;
+  const separator = this.getDateSeparator();
+
+  // Allowed keys
+  const allowedKeys = [
+    'Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'Home', 'End',
+    'ArrowLeft', 'ArrowRight', 'Clear', 'Copy', 'Paste'
+  ];
+
+  const isNumberKey = (event.key >= '0' && event.key <= '9');
+  const isSeparatorKey = event.key === separator;
+
+  if (!allowedKeys.includes(event.key) && !isNumberKey && !isSeparatorKey) {
+    event.preventDefault();
+    return;
+  }
+
+  if (isNumberKey) {
+    const newValue = currentValue.substring(0, cursorPosition) + event.key + currentValue.substring(cursorPosition);
+
+    // 🚨 Check validity of the partial input before allowing
+    if (!this.isPartialInputValid(newValue)) {
+      event.preventDefault();
+      return;
+    }
+
+    // If we should add a separator next, do it safely
+    if (this.shouldAddSeparator(newValue, cursorPosition + 1)) {
+      event.preventDefault();
+
+      const valueWithSeparator = newValue + separator;
+      input.value = valueWithSeparator;
+      input.setSelectionRange(valueWithSeparator.length, valueWithSeparator.length);
+
+      // Fire Angular change detection
+      const changeEvent = new Event('input', { bubbles: true });
+      input.dispatchEvent(changeEvent);
+    }
+  }
+}
+
+
+  // onKeyDown(event: KeyboardEvent): void {
+  //   const format = this.dateFormat();
+    
+  //   // Handle the 'DD MMM, YYYY' display format
+  //   if (format === 'DD MMM, YYYY') {
+  //     const allowedKeys = [
+  //       'Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'Home', 'End',
+  //       'ArrowLeft', 'ArrowRight', 'Clear', 'Copy', 'Paste', ' '
+  //     ];
+      
+  //     const isNumberKey = (event.key >= '0' && event.key <= '9');
+  //     const isLetterKey = (event.key >= 'a' && event.key <= 'z') || (event.key >= 'A' && event.key <= 'Z');
+  //     const isCommaKey = event.key === ',';
+      
+  //     if (!allowedKeys.includes(event.key) && !isNumberKey && !isLetterKey && !isCommaKey) {
+  //       event.preventDefault();
+  //       return;
+  //     }
+  //     return; // Don't apply auto-separator logic for this format
+  //   }
+    
+  //   // Original logic for other formats
+  //   const allowedKeys = [
+  //     'Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'Home', 'End',
+  //     'ArrowLeft', 'ArrowRight', 'Clear', 'Copy', 'Paste'
+  //   ];
+    
+  //   const isNumberKey = (event.key >= '0' && event.key <= '9');
+  //   const isSeparatorKey = event.key === this.getDateSeparator();
+    
+  //   if (!allowedKeys.includes(event.key) && !isNumberKey && !isSeparatorKey) {
+  //     event.preventDefault();
+  //     return;
+  //   }
+    
+  //   // Auto-add separators but be less aggressive
+  //   const input = event.target as HTMLInputElement;
+  //   const currentValue = input.value;
+  //   const cursorPosition = input.selectionStart || 0;
+    
+  //   if (isNumberKey) {
+  //     const newValue = currentValue.substring(0, cursorPosition) + event.key + currentValue.substring(cursorPosition);
+  //     console.log("New value:", newValue);
+  //     // Only auto-add separator if we're at the right position and not in the middle of editing
+  //     if (this.shouldAddSeparator(newValue, cursorPosition) && cursorPosition === currentValue.length) {
+  //       event.preventDefault();
+  //       const separator = this.getDateSeparator();
+  //       const valueWithSeparator = currentValue + event.key + separator;
+  //       input.value = valueWithSeparator;
+  //       input.setSelectionRange(valueWithSeparator.length, valueWithSeparator.length);
+        
+  //       // Trigger Angular change detection
+  //       const changeEvent = new Event('input', { bubbles: true });
+  //       input.dispatchEvent(changeEvent);
+  //     }
+  //   }
+  // }
+
+  onInputChange(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  let value = input.value;
+  
+  // Ensure we're working with a string
+  if (typeof value !== 'string') {
+    value = String(value || '');
+  }
+  
+  const format = this.dateFormat();
+  const control = this.frmGroup().get(this.controlName());
+  
+  // Handle the 'DD MMM, YYYY' display format
+  if (format === 'DD MMM, YYYY') {
+    // Allow letters, numbers, spaces, and commas for month abbreviation format
+    const cleanValue = value.replace(/[^0-9A-Za-z\s,]/g, '');
+    if (cleanValue !== value) {
+      input.value = cleanValue;
+      control?.setValue(cleanValue);
+      // Set invalid characters error
+      control?.setErrors({ ...control.errors, invalidCharacters: true });
+      return;
+    } else {
+      // Remove invalidCharacters error if input is clean
+      if (control?.errors?.['invalidCharacters']) {
+        const errors = { ...control.errors };
+        delete errors['invalidCharacters'];
+        control.setErrors(Object.keys(errors).length ? errors : null);
+      }
+    }
+  } else {
+    // Remove any characters that are not numbers or the expected separator
+    const separator = this.getDateSeparator();
+    const cleanValue = value.replace(new RegExp(`[^0-9\\${separator}]`, 'g'), '');
+    
+    if (cleanValue !== value) {
+      input.value = cleanValue;
+      control?.setValue(cleanValue);
+      // Set invalid characters error
+      control?.setErrors({ ...control.errors, invalidCharacters: true });
+      return;
+    } else {
+      // Remove invalidCharacters error if input is clean
+      if (control?.errors?.['invalidCharacters']) {
+        const errors = { ...control.errors };
+        delete errors['invalidCharacters'];
+        control.setErrors(Object.keys(errors).length ? errors : null);
+      }
+    }
+  }
+  
+  // Only validate if the input looks like it might be complete or nearly complete
+  if (value.length > 0) {
+    if (!this.isPartialInputValid(value)) {
+      this.clearField();
+    }
+  }
+}
+
+
+getDetailedErrorMessage(): string {
+  const control = this.frmGroup().get(this.controlName());
+  if (!control || !control.touched) return '';
+  
+  const errors = control.errors;
+  if (!errors) return '';
+  
+  // Check for required error first
+  if (errors['required']) {
+    return `${this.label()} is required!`;
+  }
+  
+  // Check for invalid characters
+  if (errors['invalidCharacters']) {
+    if (this.dateFormat() === 'DD MMM, YYYY') {
+      return 'Only numbers, letters, spaces and commas are allowed';
+    } else {
+      return `Only numbers and ${this.getDateSeparator()} are allowed`;
+    }
+  }
+  
+  // Check for format errors
+  if (errors['invalidDateFormat']) {
+    return `Please enter date in ${this.dateFormat()} format`;
+  }
+  
+  // Check for invalid date with detailed info
+  if (errors['invalidDate']) {
+    const details = errors['invalidDateDetails'];
+    if (details) {
+      return `${details.monthName} ${details.year} only has ${details.maxDays} days. You entered day ${details.enteredDay}`;
+    }
+    return 'Please enter a valid date';
+  }
+  
+  return 'Please enter a valid date';
+}
+
+  onBlur(): void {
     const control = this.frmGroup().get(this.controlName());
-    return !!(control?.errors?.[errorType] && (control?.touched || control?.dirty));
+    if (control && control.value) {
+      // Ensure we have a string value
+      const stringValue = typeof control.value === 'string' ? control.value : String(control.value);
+      
+      // Only validate complete dates on blur - don't clear partial input
+      if (this.isCompleteDateInput(stringValue)) {
+        const format = this.dateFormat();
+        let isValid = false;
+        
+        if (format === 'DD MMM, YYYY') {
+          isValid = this.isValidMonthAbbreviationFormat(stringValue);
+        } else {
+          isValid = this.isValidDateFormat(stringValue);
+        }
+        
+        if (!isValid) {
+          this.clearField();
+        }
+      }
+    }
+  }
+
+  private isCompleteDateInput(value: string): boolean {
+    if (!value) return false;
+    
+    const format = this.dateFormat();
+    
+    // Handle the 'DD MMM, YYYY' display format
+    if (format === 'DD MMM, YYYY') {
+      // Check if it matches the pattern "18 Aug, 2025" or "18 Aug 2025"
+      const match = value.match(/^(\d{1,2})\s+([A-Za-z]{3})\s*,?\s*(\d{4})$/);
+      return !!match;
+    }
+    
+    const separator = this.getDateSeparator();
+    const parts = value.split(separator);
+    
+    // Don't validate if it ends with separator (still typing)
+    if (value.endsWith(separator)) return false;
+    
+    // Check if we have 3 non-empty parts
+    if (parts.length !== 3) return false;
+    
+    // Check that all parts have content and reasonable lengths
+    if (format.startsWith('YYYY')) {
+      return parts[0].length === 4 && parts[1].length >= 1 && parts[1].length <= 2 && parts[2].length >= 1 && parts[2].length <= 2;
+    } else {
+      return parts[0].length >= 1 && parts[0].length <= 2 && parts[1].length >= 1 && parts[1].length <= 2 && parts[2].length === 4;
+    }
+  }
+
+  private clearField(): void {
+    const control = this.frmGroup().get(this.controlName());
+    if (control) {
+      control.disable;
+      control.setValue('');
+      control.markAsTouched();
+    }
+  }
+
+  private preventFurtherWriting(): void {
+  const control = this.frmGroup().get(this.controlName());
+  if (control && !this.isPartialInputValid(control.value)) {
+    const inputEl = document.querySelector(
+      `[formcontrolname="${this.controlName()}"]`
+    ) as HTMLInputElement;
+
+    if (inputEl) {
+      inputEl.readOnly = true; // 🚫 stops further writing
+    }
+  }
+}
+
+
+  private isPartialInputValid(value: string): boolean {
+    if (!value) return true;
+    
+    const format = this.dateFormat();
+    
+    // Handle the 'DD MMM, YYYY' display format
+    if (format === 'DD MMM, YYYY') {
+      return this.isPartialMonthAbbreviationInputValid(value);
+    }
+    
+    const separator = this.getDateSeparator();
+    const parts = value.split(separator);
+    
+    // Allow trailing separators during typing (e.g., "02/03/")
+    if (value.endsWith(separator)) {
+      return true;
+    }
+    
+    // Very lenient validation for partial input - only check obvious errors
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i].trim();
+      
+      // Allow completely empty parts during typing
+      if (part === '') continue;
+      
+      const num = parseInt(part);
+      if (isNaN(num)) return false;
+      
+      // Basic range checks based on position and format
+      if (format.startsWith('YYYY')) {
+        if (i === 0) { // Year position
+          if (part.length > 4) return false;
+          if (part.length === 4 && (num < 1900 || num > 2030)) return false;
+          if (part.length === 3 && num > 203) return false;
+          if (part.length === 2 && num > 29) return false;
+          if (part.length === 1 && num > 2) return false;
+        } else if (i === 1) { // Month position
+          if (part.length > 2) return false;
+          if (part.length === 2 && (num > 12 || num < 1)) return false;
+        } else if (i === 2) { // Day position  
+          if (part.length > 2) return false;
+          if (part.length === 2 && (num > 31 || num < 1)) return false;
+          if (part.length === 1 && num > 3) return false;
+        }
+      } else if (format.startsWith('DD')) {
+        console.log("DD format detected")
+        if (i === 0) { // Day position
+          if (part.length === 2 && (num > 31 || num < 1)) return false;
+          if (part.length > 2) return false;
+          if (part.length === 1 && num > 3) return false;
+        } else if (i === 1) { // Month position
+          if (part.length > 2) return false;
+          if (part.length == 2 && (num > 12 || num < 1)) return false;
+        } else if (i === 2) { // Year position
+          if (part.length > 4) return false;
+          if (part.length === 4 && (num < 1900 || num > 2030)) return false;
+          if (part.length === 3 && num > 299) return false;
+          if (part.length === 2 && num > 29) return false;
+          if (part.length === 1 && num > 2) return false;
+        }
+      } else if (format.startsWith('MM')) {
+        if (i === 0) { // Month position
+          if (part.length > 2) return false;
+          if (part.length === 2 && (num > 12 || num < 1)) return false;
+        } else if (i === 1) { // Day position
+          if (part.length > 2) return false;
+          if (part.length === 2 && (num > 31 || num < 1)) return false;
+          if (part.length === 1 && num > 3) return false;
+        } else if (i === 2) { // Year position
+          if (part.length > 4) return false;
+          if (part.length === 4 && (num < 1900 || num > 2030)) return false;
+          if (part.length === 3 && num > 299) return false;
+          if (part.length === 2 && num > 29) return false;
+          if (part.length === 1 && num > 2) return false;
+        }
+      }
+    }
+    
+    return true;
+  }
+
+
+
+  private shouldAddSeparator(value: string, cursorPosition: number): boolean {
+    const format = this.dateFormat();
+    const separator = this.getDateSeparator();
+    const parts = value.split(separator);
+    const isSecondMonth = this.dateFormat().split(this.getDateSeparator())[1] === 'MM';
+    const isFirstMonth = this.dateFormat().split(this.getDateSeparator())[0] === 'MM';
+    if (parts.length === 1) {
+      // First separator
+      if (format.startsWith('YYYY')) {
+        return parts[0].length === 4; // After year
+      } else {
+        if(isFirstMonth){
+          if(parts[0]>'1') return true;
+        }
+        return parts[0].length === 2; // After day/month
+      }
+    } else if (parts.length === 2) {
+      // Second separator
+      if (format.startsWith('YYYY')) {
+        return parts[1].length === 2; // After month
+      } else {
+        if(isSecondMonth){
+          if(parts[1]>'1') return true;
+        }
+        return parts[1].length === 2; // After month/day
+      }
+    }
+    
+    return false;
+  }
+
+// Fixed validation methods - replace the existing ones in your component
+
+private isValidDateFormat(value: any): boolean {
+  if (!value) return true; // Empty is valid (let required validator handle it)
+  
+  // Convert to string if it's not already
+  const stringValue = typeof value === 'string' ? value : String(value);
+  
+  const format = this.dateFormat();
+  const separator = format.includes('/') ? '/' : '-';
+  const parts = stringValue.split(separator);
+  
+  if (parts.length !== 3) return false;
+  
+  let day: number, month: number, year: number;
+  
+  switch (format) {
+    case 'DD/MM/YYYY':
+    case 'DD-MM-YYYY':
+      [day, month, year] = parts.map(p => parseInt(p));
+      break;
+    case 'MM/DD/YYYY':
+    case 'MM-DD-YYYY':
+      [month, day, year] = parts.map(p => parseInt(p));
+      break;
+    case 'YYYY/MM/DD':
+    case 'YYYY-MM-DD':
+      [year, month, day] = parts.map(p => parseInt(p));
+      break;
+    default:
+      return false;
+  }
+  
+  // Check for NaN values
+  if (isNaN(day) || isNaN(month) || isNaN(year)) return false;
+  
+  // Validate ranges
+  if (year < 1900 || year > 2030) return false;
+  if (month < 1 || month > 12) return false;
+  if (day < 1 || day > 31) return false;
+  
+  // FIXED: Proper date validation - this will catch invalid dates like June 31
+  const date = new Date(year, month - 1, day);
+  return date.getFullYear() === year && 
+         date.getMonth() === (month - 1) && 
+         date.getDate() === day;
+}
+
+private isValidMonthAbbreviationFormat(value: string): boolean {
+  // Expected format: "18 Aug, 2025" or "18 Aug 2025"
+  const match = value.match(/^(\d{1,2})\s+([A-Za-z]{3})\s*,?\s*(\d{4})$/);
+  
+  if (!match) return false;
+  
+  const day = parseInt(match[1]);
+  const monthAbbr = match[2].toLowerCase();
+  const year = parseInt(match[3]);
+  
+  // Check for NaN values
+  if (isNaN(day) || isNaN(year)) return false;
+  
+  // Month abbreviation mapping
+  const monthMap: { [key: string]: number } = {
+    'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+    'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12
+  };
+  
+  const month = monthMap[monthAbbr];
+  if (month === undefined) return false;
+  
+  // Validate ranges
+  if (year < 1900 || year > 2030) return false;
+  if (month < 1 || month > 12) return false;
+  if (day < 1 || day > 31) return false;
+  
+  // FIXED: Proper date validation - this will catch invalid dates like "31 Jun, 2025"
+  const date = new Date(year, month - 1, day);
+  return date.getFullYear() === year && 
+         date.getMonth() === (month - 1) && 
+         date.getDate() === day;
+}
+
+private isPartialMonthAbbreviationInputValid(value: string): boolean {
+  // Allow partial input during typing
+  if (!value.trim()) return true;
+  
+  // For partial input, be more lenient
+  // Check if it's a complete date first
+  const completeMatch = value.match(/^(\d{1,2})\s+([A-Za-z]{3})\s*,?\s*(\d{4})$/);
+  
+  if (completeMatch) {
+    // If it looks complete, validate it properly
+    return this.isValidMonthAbbreviationFormat(value);
+  }
+  
+  // For partial input, just check basic patterns
+  const partialPattern = /^(\d{0,2})(\s+([A-Za-z]{0,3})(\s*,?\s*(\d{0,4}))?)?$/;
+  const match = value.match(partialPattern);
+  
+  if (!match) return false;
+  
+  const dayPart = match[1];
+  const monthPart = match[3] || '';
+  const yearPart = match[5] || '';
+  
+  // Basic validation for partial input
+  if (dayPart) {
+    const day = parseInt(dayPart);
+    if (!isNaN(day) && (day < 1 || day > 31)) return false;
+  }
+  
+  if (monthPart && monthPart.length === 3) {
+    const monthMap: { [key: string]: number } = {
+      'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+      'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12
+    };
+    if (!monthMap[monthPart.toLowerCase()]) return false;
+  }
+  
+  if (yearPart && yearPart.length === 4) {
+    const year = parseInt(yearPart);
+    if (!isNaN(year) && (year < 1900 || year > 2030)) return false;
+  }
+  
+  return true;
+}
+
+private dateFormatValidator(control: AbstractControl): { [key: string]: any } | null {
+  if (!control.value) return null;
+
+  let value: string;
+
+  // Check if the value is a Date object
+  if (control.value instanceof Date) {
+    const date = control.value as Date;
+    const format = this.dateFormat();
+    
+    // Format the Date object based on the current dateFormat
+    if (format === 'DD MMM, YYYY') {
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      value = `${String(date.getDate()).padStart(2, '0')} ${monthNames[date.getMonth()]}, ${date.getFullYear()}`;
+    } else {
+      const separator = this.getDateSeparator();
+      value = format
+        .replace('YYYY', date.getFullYear().toString())
+        .replace('MM', String(date.getMonth() + 1).padStart(2, '0'))
+        .replace('DD', String(date.getDate()).padStart(2, '0'));
+    }
+  } else {
+    value = String(control.value || '');
+  }
+
+  // Validate based on the current format
+  const format = this.dateFormat();
+  
+  if (format === 'DD MMM, YYYY') {
+    return this.validateMonthAbbreviationFormat(value);
+  } else {
+    return this.validateStandardDateFormat(value);
+  }
+}
+
+private validateMonthAbbreviationFormat(value: string): { [key: string]: any } | null {
+  // Expected format: "18 Aug, 2025" or "18 Aug 2025"
+  const match = value.match(/^(\d{1,2})\s+([A-Za-z]{3})\s*,?\s*(\d{4})$/);
+  
+  if (!match) {
+    return { invalidDateFormat: true };
+  }
+  
+  const day = parseInt(match[1]);
+  const monthAbbr = match[2].toLowerCase();
+  const year = parseInt(match[3]);
+  
+  // Check for NaN values
+  if (isNaN(day) || isNaN(year)) {
+    return { invalidDateFormat: true };
+  }
+  
+  // Month abbreviation mapping
+  const monthMap: { [key: string]: number } = {
+    'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+    'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12
+  };
+  
+  const month = monthMap[monthAbbr];
+  if (month === undefined) {
+    return { invalidDateFormat: true };
+  }
+  
+  // Validate year range
+  if (year < 1900 || year > 2030) {
+    return { invalidDate: true };
+  }
+  
+  // Validate day range
+  if (day < 1 || day > 31) {
+    return { invalidDate: true };
+  }
+  
+  // IMPORTANT: Check if the date actually exists (catches cases like June 31)
+  const date = new Date(year, month - 1, day);
+  const isValidDate = date.getFullYear() === year && 
+                      date.getMonth() === (month - 1) && 
+                      date.getDate() === day;
+  
+  if (!isValidDate) {
+    // Store additional info for better error messages
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+    const daysInMonth = new Date(year, month, 0).getDate();
+    
+    return { 
+      invalidDate: true,
+      invalidDateDetails: {
+        monthName: monthNames[month - 1],
+        year: year,
+        maxDays: daysInMonth,
+        enteredDay: day
+      }
+    };
+  }
+  
+  return null;
+}
+private validateStandardDateFormat(value: string): { [key: string]: any } | null {
+  const format = this.dateFormat();
+  const separator = format.includes('/') ? '/' : '-';
+  const parts = value.split(separator);
+  
+  if (parts.length !== 3) {
+    return { invalidDateFormat: true };
+  }
+  
+  let day: number, month: number, year: number;
+  
+  switch (format) {
+    case 'DD/MM/YYYY':
+    case 'DD-MM-YYYY':
+      [day, month, year] = parts.map(p => parseInt(p));
+      break;
+    case 'MM/DD/YYYY':
+    case 'MM-DD-YYYY':
+      [month, day, year] = parts.map(p => parseInt(p));
+      break;
+    case 'YYYY/MM/DD':
+    case 'YYYY-MM-DD':
+      [year, month, day] = parts.map(p => parseInt(p));
+      break;
+    default:
+      return { invalidDateFormat: true };
+  }
+  
+  // Check for NaN values
+  if (isNaN(day) || isNaN(month) || isNaN(year)) {
+    return { invalidDateFormat: true };
+  }
+  
+  // Validate basic ranges
+  if (year < 1900 || year > 2030 || month < 1 || month > 12 || day < 1 || day > 31) {
+    return { invalidDate: true };
+  }
+  
+  // IMPORTANT: Check if the date actually exists (catches cases like June 31)
+  const date = new Date(year, month - 1, day);
+  const isValidDate = date.getFullYear() === year && 
+                      date.getMonth() === (month - 1) && 
+                      date.getDate() === day;
+  
+  if (!isValidDate) {
+    // Store additional info for better error messages
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+    const daysInMonth = new Date(year, month, 0).getDate();
+    
+    return { 
+      invalidDate: true,
+      invalidDateDetails: {
+        monthName: monthNames[month - 1],
+        year: year,
+        maxDays: daysInMonth,
+        enteredDay: day
+      }
+    };
+  }
+  
+  return null;
+}
+
+// Helper method to get days in a specific month (you can add this for additional validation if needed)
+private getDaysInMonth(year: number, month: number): number {
+  return new Date(year, month, 0).getDate();
+}
+
+  hasError(errorCode: string): boolean {
+    const control = this.frmGroup().get(this.controlName());
+    return !!control?.hasError(errorCode) && control.touched;
   }
 }
