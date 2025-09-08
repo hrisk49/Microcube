@@ -42,14 +42,18 @@ import { CurrencyModel } from '../../../../shared/models/currency.model';
 import { LookupService } from '../../../../shared/services/lookup.service';
 import { MessageTypeService } from '../../../../shared/services/message-type.service';
 import { LEI_PATTERN } from '../../../../shared/constant/value-patterns.constant';
+import { MatIcon } from '@angular/material/icon';
+import { DateInput } from '../../../../shared/components/input-types/date-input/date-input';
 
 
 @Component({
   selector: 'app-pacs-009',
   imports: [
+    MatIcon,
     ReactiveFormsModule,
     TextBaseInput,
     SelectOptionField,
+    DateInput,
     TimeInput,
     AmountToWordInput,
     ExpansionPanelHeader,
@@ -157,6 +161,8 @@ export class Pacs009 implements OnInit, OnDestroy {
   paymentIdPanel: WritableSignal<boolean> = signal(true);
   paymentTypePanel: WritableSignal<boolean> = signal(false);
   serviceLevelPanel: WritableSignal<boolean> = signal(true);
+  localInstrumentPanel: WritableSignal<boolean> = signal(false);
+  categoryPurposePanel: WritableSignal<boolean> = signal(false);
   interbankPanel: WritableSignal<boolean> = signal(true);
   interbankSettlementTimeIndicationPanel: WritableSignal<boolean> = signal(false);
   interbankSettlementTimeRequestPanel: WritableSignal<boolean> = signal(false);
@@ -350,6 +356,9 @@ export class Pacs009 implements OnInit, OnDestroy {
       this.loadLocalInstrumentCodes();
       this.loadCategoryPurposeCodes();
       FormGroupSignal.set(this.frmGroup);
+      // Sync priority fields bidirectionally
+      this.frmGroup.get('priority')?.valueChanges.subscribe(val => this.frmGroup.get('instrPrty')?.setValue(val));
+      this.frmGroup.get('instrPrty')?.valueChanges.subscribe(val => this.frmGroup.get('priority')?.setValue(val));
       this.setupPurposeMutualExclusivity();
       this.setupBicAgentSynchronization();
       this.setupConditionalValidation();
@@ -597,8 +606,8 @@ export class Pacs009 implements OnInit, OnDestroy {
       option?.key?.toLowerCase() === data?.isoSwiftCode?.toLowerCase()
     );
 
-    // Limit amount to max 5 decimal places without padding
-    const limitedAmount = this.limitToFiveDecimals(data?.valAmt32a);
+    // Limit amount to exactly 2 decimals by truncation (floor)
+    const limitedAmount = this.floorToTwoDecimals(data?.valAmt32a);
 
     this.frmGroup.patchValue({
       bizMsgIdr: data.trnRefNo20,
@@ -616,19 +625,23 @@ export class Pacs009 implements OnInit, OnDestroy {
     this.frmGroup.get('intrBkSttlmAmtCcy')?.disable({ emitEvent: false });
   }
 
-  private limitToFiveDecimals(value: any): any {
+  private floorToTwoDecimals(value: any): any {
     if (value === null || value === undefined) return value;
     const str = String(value);
+    if (str.trim() === '') return str;
+
     const parts = str.split('.');
-    if (parts.length !== 2) {
-      return str;
+    if (parts.length === 1) {
+      return `${parts[0]}.00`;
     }
     const integerPart = parts[0];
-    const fractionalPart = parts[1];
-    if (fractionalPart.length <= 5) {
-      return str;
+    let fractionalPart = parts[1] ?? '';
+    if (fractionalPart.length >= 2) {
+      fractionalPart = fractionalPart.slice(0, 2); // truncate, no rounding
+    } else {
+      fractionalPart = fractionalPart.padEnd(2, '0');
     }
-    return `${integerPart}.${fractionalPart.slice(0, 5)}`;
+    return `${integerPart}.${fractionalPart}`;
   }
 
   private loadServiceLevelCodes(): void {
@@ -1015,7 +1028,7 @@ export class Pacs009 implements OnInit, OnDestroy {
 
       cpyDplct: [null],
       pssblDplct: [null],
-      priority: ['NORM'],
+      priority: [null],
       msgId: ['MSG' + new Date().getTime(), [
         Validators.required,
         Validators.maxLength(35),
@@ -1694,7 +1707,7 @@ export class Pacs009 implements OnInit, OnDestroy {
         toBicfi: '',
         txId: '',
         intrBkSttlmAmtCcy: null,
-        intrBkSttlmAmt: '1000.00',
+        intrBkSttlmAmt: '0.00',
         intrBkSttlmDt: new Date(),
         intrBkSttlmDbtDtTm: '',
         intrBkSttlmCdtDtTm: '',
@@ -1829,9 +1842,12 @@ export class Pacs009 implements OnInit, OnDestroy {
   addServiceRow() {
     const serviceGroup = this.formBuilder.group({
       serviceCode: [null],
-      servicePriority: [null],
+      serviceProprietary: ['', [Validators.maxLength(35)]],
     });
     this.serviceLevels.push(serviceGroup);
+    
+    // Setup conditional clearing for this new row
+    this.setupServiceLevelCodePrtryPair(this.serviceLevels.length - 1);
   }
 
   // Remove service level row
@@ -1930,26 +1946,14 @@ export class Pacs009 implements OnInit, OnDestroy {
     payload.instrPrty = frmValue.instrPrty;
     payload.clrChanl = frmValue.clrChanl;
 
-    // Convert service level FormArray to fixed arrays of 3 elements as per model
+    // Convert service level FormArray to list of ServiceLevelRequest objects
     const serviceLevels = frmValue.serviceLevels || [];
-    const serviceCodes = serviceLevels
-      .map((level: any) => level.serviceCode)
-      .filter((code: string) => code);
-    const servicePriorities = serviceLevels
-      .map((level: any) => level.servicePriority)
-      .filter((priority: string) => priority);
-
-    // Ensure arrays have exactly 3 elements as per model specification
-    payload.svcLvlCD = [
-      serviceCodes[0] || '',
-      serviceCodes[1] || '',
-      serviceCodes[2] || '',
-    ];
-    payload.svcLvlPrtry = [
-      servicePriorities[0] || '',
-      servicePriorities[1] || '',
-      servicePriorities[2] || '',
-    ];
+    payload.svcLvl = serviceLevels
+      .map((level: any) => ({
+        cd: level.serviceCode || null,
+        prtry: level.serviceProprietary || null
+      }))
+      .filter((level: any) => level.cd || level.prtry); // Only include levels that have either code or proprietary
 
     payload.lclInstrmCD = frmValue.lclInstrmCD;
     payload.lclInstrmPrtry = frmValue.lclInstrmPrtry;
@@ -3130,6 +3134,37 @@ export class Pacs009 implements OnInit, OnDestroy {
         if (val !== null && String(val).trim() !== '') {
           this.isUpdatingSchemeFields = true;
           codeControl.patchValue(null);
+          this.isUpdatingSchemeFields = false;
+        }
+      });
+  }
+
+  private setupServiceLevelCodePrtryPair(index: number): void {
+    const serviceGroup = this.serviceLevels.at(index) as FormGroup;
+    if (!serviceGroup) return;
+
+    const codeControl = serviceGroup.get('serviceCode');
+    const prtryControl = serviceGroup.get('serviceProprietary');
+    if (!codeControl || !prtryControl) return;
+
+    codeControl.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((val: any) => {
+        if (this.isUpdatingSchemeFields) return;
+        if (val !== null && val !== '') {
+          this.isUpdatingSchemeFields = true;
+          prtryControl.patchValue('', { emitEvent: false });
+          this.isUpdatingSchemeFields = false;
+        }
+      });
+
+    prtryControl.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((val: any) => {
+        if (this.isUpdatingSchemeFields) return;
+        if (val !== null && String(val).trim() !== '') {
+          this.isUpdatingSchemeFields = true;
+          codeControl.patchValue(null, { emitEvent: false });
           this.isUpdatingSchemeFields = false;
         }
       });
