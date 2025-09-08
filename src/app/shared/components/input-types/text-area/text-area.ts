@@ -349,14 +349,90 @@ export class TextArea implements OnInit, OnChanges, AfterViewInit {
   }
 
   // Handle paste events with debounced auto-resize
-  onPaste(event: ClipboardEvent): void {
-    if (this.autoResize()) {
-      // Small delay to ensure pasted content is processed
-      setTimeout(() => {
-        this.performAutoResize();
-      }, 10);
+onPaste(event: ClipboardEvent): void {
+  event.preventDefault();
+
+  const textarea = event.target as HTMLTextAreaElement;
+  const pastedText = event.clipboardData?.getData('text') || '';
+  if (!pastedText) return;
+
+  const selectionStart = textarea.selectionStart;
+  const selectionEnd = textarea.selectionEnd;
+  const currentValue = textarea.value;
+
+  let beforeCursor = currentValue.substring(0, selectionStart);
+  let afterCursor = currentValue.substring(selectionEnd);
+
+  // Start with full pasted text
+  let allowedText = pastedText;
+
+  // Apply row limit
+  if (this.enforceRowLimits() && this.maxRows()) {
+    const currentLines = beforeCursor.split('\n').length + afterCursor.split('\n').length - 1;
+    const allowedRows = this.maxRows()! - currentLines;
+    const pastedLines = pastedText.split('\n').slice(0, allowedRows);
+    if (pastedLines.length < pastedText.split('\n').length) {
+      this.onRowLimitExceeded.emit({
+        currentRows: pastedText.split('\n').length + currentLines,
+        maxRows: this.maxRows()!
+      });
+    }
+    allowedText = pastedLines.join('\n');
+  }
+
+  // Apply column limit
+  if (this.maxCols()) {
+    const limitedLines = allowedText.split('\n').map((line, idx) => {
+      if (line.length > this.maxCols()!) {
+        this.onColLimitExceeded.emit({
+          line: idx + 1,
+          currentCols: line.length,
+          maxCols: this.maxCols()!
+        });
+        return line.substring(0, this.maxCols()!);
+      }
+      return line;
+    });
+    allowedText = limitedLines.join('\n');
+  }
+
+  // Apply character limit
+  if (this.maxLen() < 2147483647) {
+    const remaining = this.maxLen() - (beforeCursor.length + afterCursor.length);
+    if (remaining < allowedText.length) {
+      allowedText = allowedText.substring(0, remaining);
     }
   }
+
+  // Construct new value
+  const finalValue = beforeCursor + allowedText + afterCursor;
+  const cursorPosition = beforeCursor.length + allowedText.length;
+
+  textarea.value = finalValue;
+
+  // Update form control
+  const control = this.frmGroup().get(this.controlName());
+  if (control) {
+    control.setValue(finalValue);
+    control.markAsDirty();
+    control.markAsTouched();
+  }
+
+  // Restore cursor position
+  setTimeout(() => {
+    textarea.setSelectionRange(cursorPosition, cursorPosition);
+    textarea.focus();
+  }, 0);
+
+  this.analyzeText(finalValue);
+  this.validateInput();
+  this.valueChanged.emit(finalValue);
+
+  if (this.autoResize()) {
+    setTimeout(() => this.performAutoResize(), 10);
+  }
+}
+
 
   // Debounced auto-resize for better performance
   private autoResizeDebounced(event: Event): void {
@@ -481,69 +557,76 @@ export class TextArea implements OnInit, OnChanges, AfterViewInit {
     this.errorMessage.set(message);
   }
 
-  onInputChange(event: any) {
-    const value = event.target.value;
-    
-    // Enforce row limits by preventing input
-    if (this.enforceRowLimits() && this.maxRows()) {
-      const lines = value.split('\n');
-      if (lines.length > this.maxRows()!) {
-        // Prevent adding new lines beyond limit
-        const limitedValue = lines.slice(0, this.maxRows()).join('\n');
-        event.target.value = limitedValue;
-        
-        // Update the form control
-        const control = this.frmGroup().get(this.controlName());
-        if (control) {
-          control.setValue(limitedValue);
-        }
-        
-        // Trigger auto-resize after limiting
-        // if (this.autoResize()) {
-        //   setTimeout(() => this.performAutoResize(), 0);
-        // }
-        return;
-      }
-    }
-
-    // Enforce column limits by preventing input
-    if (this.maxCols()) {
-      const lines: string[] = value.split('\n');
-      let modified = false;
+onInputChange(event: any) {
+  const textarea = event.target as HTMLTextAreaElement;
+  let value = textarea.value;
+  let wasModified = false;
+  
+  // Store cursor position before modifications
+  const cursorPosition = textarea.selectionStart;
+  
+  // Enforce row limits by preventing input
+  if (this.enforceRowLimits() && this.maxRows()) {
+    const lines = value.split('\n');
+    if (lines.length > this.maxRows()!) {
+      // Prevent adding new lines beyond limit
+      const limitedValue = lines.slice(0, this.maxRows()).join('\n');
+      value = limitedValue;
+      wasModified = true;
       
-      const limitedLines = lines.map((line: string) => {
-        if (line.length > this.maxCols()!) {
-          modified = true;
-          return line.substring(0, this.maxCols()!);
-        }
-        return line;
+      this.onRowLimitExceeded.emit({
+        currentRows: lines.length,
+        maxRows: this.maxRows()!
       });
-
-      if (modified) {
-        const limitedValue = limitedLines.join('\n');
-        event.target.value = limitedValue;
-        
-        // Update the form control
-        const control = this.frmGroup().get(this.controlName());
-        if (control) {
-          control.setValue(limitedValue);
-        }
-        
-        // Trigger auto-resize after limiting
-        if (this.autoResize()) {
-          setTimeout(() => this.performAutoResize(), 0);
-        }
-        return;
-      }
     }
-
-    // Trigger auto-resize
-    if (this.autoResize()) {
-      this.autoResizeDebounced(event);
-    }
-
-    this.onChanged.emit(event);
   }
+
+  // Enforce column limits by preventing input
+  if (this.maxCols()) {
+    const lines: string[] = value.split('\n');
+    const limitedLines = lines.map((line: string) => {
+      if (line.length > this.maxCols()!) {
+        wasModified = true;
+        return line.substring(0, this.maxCols()!);
+      }
+      return line;
+    });
+
+    if (wasModified) {
+      value = limitedLines.join('\n');
+    }
+  }
+  
+  // Enforce character length limits
+  if (this.maxLen() < 2147483647 && value.length > this.maxLen()) {
+    value = value.substring(0, this.maxLen());
+    wasModified = true;
+  }
+
+  // If we modified the value, update the textarea and form control
+  if (wasModified) {
+    textarea.value = value;
+    
+    // Update the form control
+    const control = this.frmGroup().get(this.controlName());
+    if (control) {
+      control.setValue(value, { emitEvent: false }); // Prevent infinite loop
+    }
+    
+    // Restore cursor position (or as close as possible)
+    const newCursorPosition = Math.min(cursorPosition, value.length);
+    setTimeout(() => {
+      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+    }, 0);
+  }
+
+  // Trigger auto-resize
+  if (this.autoResize()) {
+    this.autoResizeDebounced(event);
+  }
+
+  this.onChanged.emit(event);
+}
 
   get isDisabled(): boolean {
     return !this.enable();
