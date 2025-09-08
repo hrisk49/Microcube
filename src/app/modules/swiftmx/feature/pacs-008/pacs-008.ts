@@ -406,7 +406,22 @@ export class Pacs008 implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('Initial form status:', this.frmGroup.status);
+    this.frmGroup.statusChanges.subscribe(status => {
+      console.log('Form status changed:', status);
+      this.logValidationErrors(this.frmGroup); // logs invalid fields
+    });
+  }
+  logValidationErrors(formGroup: FormGroup | FormArray) {
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
 
+      if (control instanceof FormGroup || control instanceof FormArray) {
+        this.logValidationErrors(control);
+      } else if (control && control.invalid) {
+        console.warn(`Control "${key}" is invalid.`, control.errors);
+      }
+    });
   }
 
   initForm(): void {
@@ -427,7 +442,7 @@ export class Pacs008 implements OnInit {
       bizSvc: ['swift.cbprplus.02',Validators.required],
       regy: ['',[Validators.maxLength(350),Validators.minLength(1)]],
       mktPrctcId: ['',[Validators.maxLength(2048),Validators.minLength(1)]],
-      creDt: [new Date().toISOString(), Validators.required],
+      creDt: [new Date(), Validators.required],
       cpyDplct: [null],
       psblDplct: [null],
       priority: ['HIGH'],
@@ -449,7 +464,7 @@ export class Pacs008 implements OnInit {
       rltdPriority: [null],
 
       msgId: 'MSG' + new Date().getTime(),
-      creDtTm: [new Date().toISOString(), Validators.required],
+      creDtTm: [new Date(), Validators.required],
       nbOfTxs: ['1', Validators.required],
 
 
@@ -509,7 +524,7 @@ export class Pacs008 implements OnInit {
       // Interbank Settlement
       intrBkSttlmAmtCcy: [null, Validators.required],
       intrBkSttlmAmt: ['', Validators.required],
-      intrBkSttlmDt: [new Date().toISOString().split('T')[0], Validators.required],
+      intrBkSttlmDt: [new Date(), Validators.required],
       sttlmPrty: [null],
 
       //Settlement Time Indication
