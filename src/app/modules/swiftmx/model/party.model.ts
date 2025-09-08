@@ -7,9 +7,10 @@ export  interface  PartyModel {
 
   // Organisation Identification
   orgIdBic: string;                   // BIC (max 12)
-  orgIdLei: string;                   // LEI (Legal Entity Identifier, max 20)
+  orgIdLEI: string;                   // LEI (Legal Entity Identifier, max 20)
   orgIdOthrId: string;                // Other ID (max 35)
   orgIdOthrScNmCd: string;           // Scheme Name Code (max 4)
+  orgIdOthrScNmPrty: string;           // Scheme Name Prty (max 4)
   orgIdOthrIssr: string;             // Other Issuer (max 35)
 
   // Private Identification
@@ -20,6 +21,7 @@ export  interface  PartyModel {
 
   prvtOthId1: string;                 // Other Private ID 1 (max 35)
   prvtOthIdSchNmCd1: string;          // Scheme Name Code for ID 1
+  prvtOthIdSchNmPrtry1: string;
   prvtOthIdIssr1: string;             // Issuer for ID 1 (max 35)
 
   prvtOthId2: string;                 // Other Private ID 2 (max 35)

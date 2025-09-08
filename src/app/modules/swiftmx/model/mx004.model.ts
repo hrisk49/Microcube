@@ -2,21 +2,44 @@ import {AgentModel} from './agent.model';
 import {RelatedModel} from './related.model';
 import {AccountModel} from './account.model';
 import {Party} from './mx003.model';
+import {PartyModel} from './party.model';
 
 
 export interface Mx004Model {
+  // region  BusinessApplicationHeaderV02 start
+     charSet :String;
+     // FROM
+     fromBicfi:String;
+     fromMembId:String;
+     fromLei:String;
+
+     // TO
+     toBicfi:String;
+     toMembId:String;
+     toLei:String;
+
      bizMsgIdr :String;//BusinessMessageIdentifier max 35
      msgDefIdr  :String;//MessageDefinitionIdentifier example - camt.001.001.03
      bizSvc  :String;//BusinessService The value "swift.cbprplus.02" must be used.
-     creDt :String;
-     reqdColltnDt :String;//RequestedCollectionDate Mandatory
-
-     cpyDplct :String; // values can be only - CODU,COPY,DUPL
-     psblDplct :String; //PossibleDuplicate Values Can only  be - YES/NO
-     priority :String;// Header block Priority values can only be - HIGH,NORM
+     creDt :String; //Creation Date
+     cpyDplct :String;//Copy Duplicate // values can be only - CODU,COPY,DUPL
+     priority :String;//Priority // Header block Priority values can only be - HIGH,NORM
      msgId :String; // MessageIdentification  //0-9 a-z A-Z / - ? : ( ) . , ' +
-     creDtTm :String;//CreationDateTime
      nbOfTxs :String;// Number of transactions
+
+    //Market Practice Start
+      mktPrctcRegy:String;
+      mktPrctcId:String;
+    //Market Practice End
+    //region Related Information Start
+     rltd: RelatedModel;
+    //endregion Related Information end
+
+  // endregion  BusinessApplicationHeaderV02 end
+
+    reqdColltnDt :String;//RequestedCollectionDate Mandatory
+     psblDplct :String; //PossibleDuplicate Values Can only  be - YES/NO
+     creDtTm :String;//CreationDateTime
      sttlmMtd :String;//SettlementMethod value - COVE,INDA,INGA
      sttlmAcct :AccountModel;//SettlementMethod
   /// PaymentIdentification Tag
@@ -54,9 +77,9 @@ export interface Mx004Model {
      PrvsInstgAgt3Acct: AccountModel;//PreviousInstructingAgent3Account <>
 
   //** Original Group Header Block
-     GrpHdrmsgId:String;//Add Habib
-     GrpHdrNbOfTxs:String;//Add Habib
-
+     grpHdrmsgId:String;//Add Habib
+     grpHdrNbOfTxs:String;//Add Habib
+     grpHdrcreDtTm:String;//Add Habib
   //** Original Group Header Block
 
 
@@ -86,34 +109,47 @@ export interface Mx004Model {
 
 
      //Payment Return V09 -> Transaction Information
-      OrgnlMsgId  :String;//OriginalMessageIdentification Mandatory 35 [0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+
-      OrgnlMsgNmId  :String;//OriginalMessageNameIdentification Mandatory for example, pacs.003.001.01 or MT103.[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+
-      OrgnlCreDtTm  :String;//OriginalCreationDateTime Mandatory
-      OrgnlInstrId  :String;//OriginalInstructionIdentification 16
-      OrgnlEndToEndId  :String;//OriginalEndToEndIdentification Mandatory
-      OrgnlTxId  :String;//OriginalTransactionIdentification 35
-      OrgnlUETR  :String;//OriginalUETR Mandatory 35  (UUID)
-      OrgnlClrSysRef:String;
-      OrgnlIntrBkSttlmAmt:String;
-      OrgnlIntrBkSttlmDt:String;
-      RtrdIntrBkSttlmAmt:String;
-      SttlmPrty  :String;//SettlementPriority valus HIGH/NORM/URGT
-      RtrdInstdAmt:String;
-      XchgRate:String;
-      ChrgBr  :String;//ChargeBearer Mandatory values CRED/DEBT/SHAR/SLEV
-      ClrSysRef  :String; //ClearingSystemReference max 35 pattern [0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+
+      rtrId:String;
+      TxInfRtrId:String;
+      orgnlMsgId  :String;//OriginalMessageIdentification Mandatory 35 [0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+
+      orgnlMsgNmId  :String;//OriginalMessageNameIdentification Mandatory for example, pacs.003.001.01 or MT103.[0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+
+      orgnlCreDtTm  :String;//OriginalCreationDateTime Mandatory
+      orgnlInstrId  :String;//OriginalInstructionIdentification 16
+      orgnlEndToEndId  :String;//OriginalEndToEndIdentification Mandatory
+      orgnlTxId  :String;//OriginalTransactionIdentification 35
+      orgnlUETR  :String;//OriginalUETR Mandatory 35  (UUID)
+      orgnlClrSysRef:String;
+      orgnlIntrBkSttlmCcy:String;
+      orgnlIntrBkSttlmAmt:String;
+      orgnlIntrBkSttlmDt:String;
+      otrdIntrBkSttlmAmt:String;
+      otrdIntrBkSttlmCcy:String;
+      sttlmPrty  :String;//SettlementPriority valus HIGH/NORM/URGT
+      rtrdInstdAmt:String;
+      rtrdInstdCcy:String;
+      xchgRate:String;
+      chrgBr  :String;//ChargeBearer Mandatory values CRED/DEBT/SHAR/SLEV
+      clrSysRef  :String; //ClearingSystemReference max 35 pattern [0-9a-zA-Z/\-\?:\(\)\.,'\+ ]+
 
       // Settlement Time Indication
-      DbtDtTm:String;
-      CdtDtTm:String;
+      dbtDtTm:String;
+      cdtDtTm:String;
 
       //Payment Return V09 -> Transaction Information->Original Group Information -> Charges Information
-      ChgAmt  :String;
+      //ChgAmt  :String;
+      chgAmt  :String;
       //Payment Return V09 -> Transaction Information->Original Group Information -> Charges Information -> Agent
-      ChrgsInfAgnt:AgentModel; //InstructedAgent
-      ChgCcy  :String;
+      chrgsInfAgnt:AgentModel; //InstructedAgent
+      chgCcy  :String;
      //Payment Return V09 -> Transaction Information->Charges Information -> Instructing Agent
-      InstgAgt:AgentModel;//InstructingAgent <>
+      instgAgt:AgentModel;//InstructingAgent <>
      //Payment Return V09 -> Transaction Information->Charges Information -> Instructed Agent
-      InstdAgt :AgentModel;//InstructedAgent <>
+      instdAgt :AgentModel;//InstructedAgent <>
+
+      //Payment Return V09 -> Transaction Information->ReturnChain
+      ultmtDbtr:PartyModel;
+      dbtr:PartyModel;
+      dbtrAgent:AgentModel;
+      initgPty:PartyModel;
+      dbtrAgt:AgentModel;
 }

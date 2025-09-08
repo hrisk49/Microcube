@@ -33,7 +33,8 @@ import { BicSelectionService } from '../../../../shared/services/bic-selection.s
 import {
   ExpansionSubPanelHeader
 } from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
-
+import { CurrencyService } from '../../../../shared/services/currency.service';
+import { CurrencyModel } from '../../../../shared/models/currency.model';
 import {Subject, takeUntil} from 'rxjs';
 
 // @ts-ignore
@@ -58,6 +59,7 @@ export class Pacs004 implements OnInit, OnDestroy {
   formBuilder = inject(FormBuilder);
   mx004Service = inject(Mx004Service);
   toastr = inject(ToastrService);
+  currencyService = inject(CurrencyService);
   frmGroup: FormGroup;
 
   onClickReset = ONCLICK_RESET;
@@ -136,7 +138,21 @@ export class Pacs004 implements OnInit, OnDestroy {
   TxInfRtrChainPrvsInstgAgt1FinInstnIdClrSysMmbId: WritableSignal<boolean> = signal(true);
   TxInfRtrChainPrvsInstgAgt1FinInstnIdClrSysMmbIdClrSysId: WritableSignal<boolean> = signal(true);
   TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdr: WritableSignal<boolean> = signal(true);
-
+  mktPrctcPanel: WritableSignal<boolean> = signal(true);
+  rltdToBicPanel: WritableSignal<boolean> = signal(true);
+  rltdFromBicPanel: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainInitgPty: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainInitgPtyPty: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainInitgPtyPtyPstlAdr: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainInitgPtyPtyId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainInitgPtyPtyIdOrgId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainInitgPtyPtyIdOthr: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainInitgPtyPtyIdOthrSchmeNm: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainInitgPtyPtyIdPrvtId: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainInitgPtyPtyIdPrvtIdDtAndPlcOfBirth: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainInitgPtyPtyIdPrvtIdOthr: WritableSignal<boolean> = signal(true);
+  TxInfRtrChainInitgPtyPtyIdPrvtIdOthrSchmeNm: WritableSignal<boolean> = signal(true);
+  currencies: CurrencyModel[] = [];
   onPickclick(): void {
     this.isPickTableDialogOpen.set(true);
     this.pickTableDataSource.set([]);
@@ -167,17 +183,16 @@ export class Pacs004 implements OnInit, OnDestroy {
   }
 
 
+
   priorityOptions: SelectOptionsModel[] = [
-    {key: 'high', value: 'High'},
-    {key: 'low', value: 'Low'},
-    {key: 'normal', value: 'Normal'},
-    {key: 'urgent', value: 'Urgent'}
+    { key: 'HIGH', value: 'High' },
+    { key: 'NORM', value: 'Normal' },
   ];
 
   duplicateOptions: SelectOptionsModel[] = [
-    {key: 'codu', value: 'CODU'},
-    {key: 'copy', value: 'COPY'},
-    {key: 'dupl', value: 'DUPL'}
+    {key: 'CODU', value: 'CODU'},
+    {key: 'COPY', value: 'COPY'},
+    {key: 'DUPL', value: 'DUPL'}
   ];
   TxInfChrgsInfAgtFinInstnIdPstlAdrStrtCtryOptions: SelectOptionsModel[] = [
     {key: '001', value: 'USA'},
@@ -255,6 +270,7 @@ export class Pacs004 implements OnInit, OnDestroy {
     {key: 'NORM', value: 'Normal'},
     {key: 'URGT', value: 'Urgent'}
   ];
+  currencyOptions: SelectOptionsModel[] = [];
   private destroy$ = new Subject<void>();
   constructor(
     private bicSelectionService: BicSelectionService
@@ -287,6 +303,7 @@ export class Pacs004 implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initForm();
+    this.loadCurrencies();
   }
 
   initForm(): void {
@@ -296,35 +313,48 @@ export class Pacs004 implements OnInit, OnDestroy {
       fromBicfi: ['', Validators.required],
       fromMembId: [''],
       fromClrSysIdCd: [''],
-      fromLei: [''],
+      fromLei: ['',[Validators.minLength(20), Validators.maxLength(20), Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       toMembId: [''],
       toBicfi: ['', Validators.required],
       toClrSysIdCd: [''],
-      toLei: [''],
+      toLei: ['',[Validators.minLength(20), Validators.maxLength(20), Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       bizMsgIdr: ['PACS009_' + new Date().getTime(), Validators.required],
       msgDefIdr: ['pacs.009.001.08', Validators.required],
       bizSvc: ['swift.cbprplus.02', Validators.required],
-      creDt: ['', Validators.required],
-      rltdToBicfi:[''],
-      rltdFrBicfi:[''],
-      rltdBizMsgIdr: [''],
-      rltdMsgDefIdr: [''],
-      rltdBizSvc: [''],
-      rltdCreDt: [''],
+      creDt: [new Date()],
+
 
       cpyDplct: [null],
       psblDplct: [null],
       priority: ['NORM'],
       msgId: ['MSG_' + new Date().getTime(), Validators.required],
       creDtTm: [new Date().toISOString(), Validators.required],
-      nbOfTxs: ['1', Validators.required],
+      //Market Practice Start
+      mktPrctcRegy: [],
+      mktPrctcId: [],
+      //Market Practice End
 
+      //Related Information Start
+      rltdCharSet: [],
+      rltdFromBicfi:['',Validators.required],
+      rltdFromMembId:[''],
+      rltdFromLei: ['',[Validators.minLength(20), Validators.maxLength(20), Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
+      rltdToBicfi: ['',Validators.required],
+      rltdToMembId: [''],
+      rltdToLei: ['',[Validators.minLength(20), Validators.maxLength(20), Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
+      rltdBizMsgIdr: ['',Validators.required],
+      rltdMsgDefIdr: ['',Validators.required],
+      rltdBizSvc: [''],
+      rltdCreDt: ['',Validators.required],
+      rltdCpyDplct: [''],
+      rltdPrty: [''],
+      //Related Information End
 
       //  Payment Return V09
       //  Payment Return V09 -> Group Header
       GrpHdrmsgId: ['', Validators.required], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
-      GrpHdrcreDtTm: ['', [Validators.required, Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
-      GrpHdrNbOfTxs: ['', [Validators.required, Validators.pattern(/^[0-9]{1,15}$/)]],
+      GrpHdrcreDtTm: [''],
+      GrpHdrNbOfTxs: [''],
       //  Payment Return V09 -> Group Header -> Settlement Information
       sttlmMtd: [null, [Validators.required]],
       // Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account
@@ -337,55 +367,36 @@ export class Pacs004 implements OnInit, OnDestroy {
 
 
       // Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account ->Proxy
-      SttlmAcctPrxyId: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(320), Validators.pattern(/^[0-9a-zA-Z/\-\?:\(\)\.,'\+ !#$%&\*=^_`\{\|\}~";<>@\[\\\]]+$/)]],
+      SttlmAcctPrxyId: [''],
 
 
       // Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account ->Identification -> Other
-      SttlmAcctIdOthrId: ['',
-        [Validators.required,
-          Validators.minLength(1),
-          Validators.maxLength(34),
-          Validators.pattern(/^([0-9a-zA-Z\-?:(),.'+ ]([0-9a-zA-Z\-?:(),.'+ ]*(\/[0-9a-zA-Z\-?:(),.'+ ])?)*)$/)]],
-      SttlmAcctIdOthrIssr: ['',
-        [
-          Validators.minLength(1),
-          Validators.maxLength(35),
-          Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
+      SttlmAcctIdOthrId: [''],
+      SttlmAcctIdOthrIssr: [''],
 
 
       // Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account ->Identification -> Other -> SchemeName
-      SttlmAcctIdOthrSchmeNmCd: ['',
-        [Validators.required,
-          Validators.minLength(1),
-          Validators.maxLength(35)]],
-      SttlmAcctIdOthrSchmeNmPrtry: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(1),
-          Validators.maxLength(34),
-          Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)
-        ]
-      ],
+      SttlmAcctIdOthrSchmeNmCd: [''],
+      SttlmAcctIdOthrSchmeNmPrtry: [''],
 
 
       // Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account ->Type
-      SttlmAcctTpCd: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(4)]],
-      SttlmAcctTpPrtry: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(4), Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
+      SttlmAcctTpCd: [''],
+      SttlmAcctTpPrtry: [''],
 
 
       // Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account -> Proxy ->Type
-      SttlmAcctPrxyTpCd: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(4)]],
-      SttlmAcctPrxyTpPrtry: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(35), Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
+      SttlmAcctPrxyTpCd: [''],
+      SttlmAcctPrxyTpPrtry: [''],
 
 
       // Payment Return V09 ->  Transaction Information
       TxInfRtrId: ['',],
       TxInfOrgnlInstrId: ['',],
-      TxInfOrgnlEndToEndId: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(35), Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
-      TxInfOrgnlTxId: ['', [Validators.minLength(1), Validators.maxLength(35), Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
-      TxInfOrgnlUETR: ['', [Validators.pattern(/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/)]],
-      TxInfOrgnlClrSysRef: ['', [Validators.minLength(1), Validators.maxLength(35), Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/)]],
+      TxInfOrgnlEndToEndId: [''],
+      TxInfOrgnlTxId: [''],
+      TxInfOrgnlUETR: [''],
+      TxInfOrgnlClrSysRef: [''],
       TxInfOrgnlIntrBkSttlmAmt: [],
       TxInfRtrdIntrBkSttlmAmt: [],
       TxInfOrgnlIntrBkSttlmDt: [],
@@ -395,9 +406,9 @@ export class Pacs004 implements OnInit, OnDestroy {
       TxInfChrgBr: ['CRED', Validators.required],
 
       // Payment Return V09 -> Transaction Information->Original Group Information
-      TxInforgnlMsgId: ['', [Validators.minLength(1), Validators.maxLength(35), Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
-      TxInforgnlMsgNmId: ['', [Validators.minLength(1), Validators.maxLength(35), Validators.pattern(/^[0-9a-zA-Z\/\-\?\:\(\)\.\,\'\+\s]+$/)]], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
-      TxInforgnlCreDtTm: ['', [Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
+      TxInforgnlMsgId: [''], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
+      TxInforgnlMsgNmId: [''], // MessageIdentification //0-9 a-z A-Z / - ? : ( ) . , ' +
+      TxInforgnlCreDtTm: [''],
       TxInfChrgsInfAgtFinInstnIdPstlAdrDept: [],
       TxInfChrgsInfAgtFinInstnIdPstlAdrSubDept: [],
       TxInfChrgsInfAgtFinInstnIdPstlAdrStrtNm: [],
@@ -469,7 +480,7 @@ export class Pacs004 implements OnInit, OnDestroy {
       TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirthCityOfBirth: [],
       TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirthCtryOfBirth: [null],
       TxInfRtrChainUltmtDbtrPtyIdPrvtIdOthrId: [],
-      TxInfRtrChainUltmtDbtrPtyIdPrvtIdOthrSchmeNmCd: [],
+
       TxInfRtrChainUltmtDbtrPtyIdPrvtIdOthrIssr: [],
       TxInfRtrChainUltmtDbtrPtyCtryOfRes: [null],
 
@@ -525,7 +536,7 @@ export class Pacs004 implements OnInit, OnDestroy {
       TxInfRtrChainDbtrAgtFinInstnIdPstlAdrCtrySubDvsn: [],
       TxInfRtrChainDbtrAgtFinInstnIdPstlAdrCtry: [null],
       TxInfRtrChainDbtrAgtFinInstnIdPstlAdrAdrLine: [],
-      TxInfRtrChainInitgPty: [],
+      // TxInfRtrChainInitgPty: [],
       TxInfRtrChainDbtrAgt1FinInstnIdBICFI: [],
       TxInfRtrChainDbtrAgt1FinInstnIdLEI: [],
       TxInfRtrChainDbtrAgt1FinInstnIdNm: [],
@@ -567,6 +578,48 @@ export class Pacs004 implements OnInit, OnDestroy {
       TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrCtry: [null],
       TxInfRtrChainPrvsInstgAgt1FinInstnIdPstlAdrAdrLine: [],
 
+      TxInfRtrChainUltmtDbtrPtyIdPrvtIdOthrSchmeNmPrtry: [],
+      TxInfRtrChainDbtrPtyPstlAdrStrtNm: [],
+      TxInfRtrChainUltmtDbtrPtyIdPrvtIdOthrSchmeNmCd: [],
+      TxInfOrgnlIntrBkSttlmAmtCcy:[null],
+      TxInfRtrdIntrBkSttlmAmtCcy:[null],
+      TxInfRtrdInstdAmtCcy:[null],
+      TxInfChrgsInfAmtCcy:[null],
+
+
+      TxInfRtrChainInitgPtyPtyNm: [],
+      TxInfRtrChainInitgPtyPtyPstlAdrDept: [],
+      TxInfRtrChainInitgPtyPtyPstlAdrSubDept: [],
+      TxInfRtrChainInitgPtyPtyPstlAdrStrtNm: [],
+      TxInfRtrChainInitgPtyPtyPstlAdrBldgNb: [],
+      TxInfRtrChainInitgPtyPtyPstlAdrBldgNm: [],
+      TxInfRtrChainInitgPtyPtyPstlAdrFlr: [],
+      TxInfRtrChainInitgPtyPtyPstlAdrPstBx: [],
+      TxInfRtrChainInitgPtyPtyPstlAdrRoom: [],
+      TxInfRtrChainInitgPtyPtyPstlAdrPstCd: [],
+      TxInfRtrChainInitgPtyPtyPstlAdrTwnNm: [],
+      TxInfRtrChainInitgPtyPtyPstlAdrTwnLctnNm: [],
+      TxInfRtrChainInitgPtyPtyPstlAdrDstrctNm: [],
+      TxInfRtrChainInitgPtyPtyPstlAdrCtrySubDvsn: [],
+      TxInfRtrChainInitgPtyPtyPstlAdrCtry: [null],
+      TxInfRtrChainInitgPtyPtyPstlAdrAdrLine: [],
+      TxInfRtrChainInitgPtyPtyIdOrgIdAnyBIC: [],
+      TxInfRtrChainInitgPtyPtyIdOrgIdLEI: [],
+      TxInfRtrChainInitgPtyPtyIdOthrId: [],
+      TxInfRtrChainInitgPtyPtyIdOthrSchmeNmCd: [],
+      TxInfRtrChainInitgPtyPtyIdOthrSchmeNmPrtry: [],
+      TxInfRtrChainInitgPtyPtyIdOthrIssr: [],
+      TxInfRtrChainInitgPtyPtyIdPrvtIdDtAndPlcOfBirthBirthDt: [],
+      TxInfRtrChainInitgPtyPtyIdPrvtIdDtAndPlcOfBirthPrvcOfBirth: [],
+      TxInfRtrChainInitgPtyPtyIdPrvtIdDtAndPlcOfBirthCityOfBirth: [],
+      TxInfRtrChainInitgPtyPtyIdPrvtIdDtAndPlcOfBirthCtryOfBirth: [null],
+      TxInfRtrChainInitgPtyPtyIdPrvtIdOthrId: [],
+      TxInfRtrChainInitgPtyPtyIdPrvtIdOthrSchmeNmCd: [],
+      TxInfRtrChainInitgPtyPtyIdPrvtIdOthrSchmeNmPrtry: [],
+      TxInfRtrChainInitgPtyPtyIdPrvtIdOthrIssr: [],
+      TxInfRtrChainInitgPtyPtyCtryOfRes: [null],
+
+
 
     });
 
@@ -599,10 +652,22 @@ export class Pacs004 implements OnInit, OnDestroy {
   }
 
   generatePayload(): Mx004Model {
+    debugger;
     let payload: any = {};
     let frmValue = this.frmGroup.value;
 
-    // Business Message Header - Only fields that exist in DTO
+    // Business Message Header - Only fields that exist in DTO Statrt
+    // FROM Start
+    payload.charSet = frmValue.payload;
+    payload.fromBicfi = frmValue.fromBicfi;
+    payload.fromMembId = frmValue.fromMembId;
+    payload.fromLei = frmValue.fromLei;
+    // FROM end
+    // TO Start
+    payload.toBicfi = frmValue.toBicfi;
+    payload.toMembId = frmValue.toMembId;
+    payload.toLei = frmValue.toLei;
+    // TO end
     payload.bizMsgIdr = frmValue.bizMsgIdr;
     payload.msgDefIdr = frmValue.msgDefIdr;
     payload.bizSvc = frmValue.bizSvc;
@@ -610,14 +675,46 @@ export class Pacs004 implements OnInit, OnDestroy {
     payload.cpyDplct = frmValue.cpyDplct;
     payload.pssblDplct = frmValue.pssblDplct;
     payload.priority = frmValue.priority;
-    payload.msgId = frmValue.msgId;
+    //payload.msgId = frmValue.msgId;
     payload.creDtTm = frmValue.creDtTm;
-    payload.nbOfTxs = frmValue.nbOfTxs;
+    //payload.nbOfTxs = frmValue.nbOfTxs;
+    payload.fromBicfi=frmValue.fromBicfi ;
+    payload.fromMembId=frmValue.fromMembId ;
+
+    //Market Practice Start
+    payload.mktPrctcRegy=frmValue.mktPrctcRegy ;
+    payload.mktPrctcId=frmValue.fromMembId ;
+    //Market Practice End
+
+    // Related Information Start
+    payload.rltd = {
+      charSet: frmValue.charSet,
+      fr:{
+        bicfi:frmValue.rltdFromBicfi,
+        clrSysIdCd:frmValue.fromClrSysIdCd,
+        mmbId:frmValue.rltdFromMembId,
+        lei:frmValue.rltdFromLei,
+      },
+      to:{
+        bicfi:frmValue.rltdToBicfi,
+        clrSysIdCd:frmValue.toClrSysIdCd,
+        mmbId:frmValue.rltdFromMembId,
+        lei:frmValue.rltdToLei,
+      },
+      bizMsgIdr: frmValue.rltdBizMsgIdr,
+      msgDefIdr: frmValue.rltdMsgDefIdr,
+      bizSvc: frmValue.rltdBizSvc,
+      creDt: frmValue.rltdCreDt,
+      cpyDplct: frmValue.rltdCpyDplct,
+      prty: frmValue.rltdPrty,
+
+    };
+    // Business Message Header - Only fields that exist in DTO END
 
     // Group Header  Information
-    payload.GrpHdrmsgId = frmValue.GrpHdrmsgId;
-    payload.GrpHdrNbOfTxs = frmValue.GrpHdrNbOfTxs;
-    payload.GrpHdrcreDtTm = frmValue.GrpHdrcreDtTm;
+    payload.grpHdrmsgId = frmValue.GrpHdrmsgId;
+    payload.grpHdrNbOfTxs = frmValue.GrpHdrNbOfTxs;
+    payload.grpHdrcreDtTm = frmValue.GrpHdrcreDtTm;
 
     // Settlement Information
     payload.sttlmMtd = frmValue.sttlmMtd;
@@ -639,31 +736,37 @@ export class Pacs004 implements OnInit, OnDestroy {
     };
     //
     // // Payment Return V09 -> Transaction Information
-    payload.OrgnlMsgId = frmValue.TxInforgnlMsgId;
-    payload.OrgnlMsgNmId = frmValue.TxInforgnlMsgNmId;
-    payload.OrgnlCreDtTm = frmValue.TxInforgnlCreDtTm;
-    payload.OrgnlInstrId = frmValue.TxInfOrgnlInstrId;
-    payload.OrgnlEndToEndId = frmValue.TxInfOrgnlEndToEndId;
-    payload.OrgnlTxId = frmValue.TxInfOrgnlTxId;
-    payload.OrgnlUETR = frmValue.TxInfOrgnlUETR;
-    payload.OrgnlClrSysRef = frmValue.TxInfOrgnlClrSysRef;
-    payload.OrgnlIntrBkSttlmAmt = frmValue.TxInfOrgnlIntrBkSttlmAmt;
-    payload.OrgnlIntrBkSttlmDt = frmValue.TxInfOrgnlIntrBkSttlmDt;
-    payload.RtrdIntrBkSttlmAmt = frmValue.TxInfRtrdIntrBkSttlmAmt;
-    payload.SttlmPrty = frmValue.TxInfSttlmPrty;
-    payload.RtrdInstdAmt = frmValue.TxInfRtrdInstdAmt;
-    payload.XchgRate = frmValue.TxInfXchgRate;
-    payload.ChrgBr = frmValue.TxInfChrgBr;
-    payload.ClrSysRef = frmValue.TxInfClrSysRef;
+
+    payload.rtrId = frmValue.TxInfRtrId;
+    payload.orgnlMsgId = frmValue.TxInforgnlMsgId;
+    payload.orgnlMsgNmId = frmValue.TxInforgnlMsgNmId;
+    payload.orgnlCreDtTm = frmValue.TxInforgnlCreDtTm;
+    payload.orgnlInstrId = frmValue.TxInfOrgnlInstrId;
+    payload.orgnlEndToEndId = frmValue.TxInfOrgnlEndToEndId;
+    payload.orgnlTxId = frmValue.TxInfOrgnlTxId;
+    payload.orgnlUETR = frmValue.TxInfOrgnlUETR;
+    payload.orgnlClrSysRef = frmValue.TxInfOrgnlClrSysRef;
+    payload.orgnlIntrBkSttlmCcy = frmValue.TxInfOrgnlIntrBkSttlmAmtCcy;
+    payload.orgnlIntrBkSttlmAmt = frmValue.TxInfOrgnlIntrBkSttlmAmt;
+    payload.orgnlIntrBkSttlmDt = frmValue.TxInfOrgnlIntrBkSttlmDt;
+    payload.rtrdIntrBkSttlmAmt = frmValue.TxInfRtrdIntrBkSttlmAmt;
+    payload.rtrdIntrBkSttlmCcy = frmValue.TxInfRtrdIntrBkSttlmAmtCcy;
+    payload.sttlmPrty = frmValue.TxInfSttlmPrty;
+    payload.rtrdInstdCcy = frmValue.TxInfRtrdInstdAmtCcy;
+    payload.rtrdInstdAmt = frmValue.TxInfRtrdInstdAmt;
+    payload.xchgRate = frmValue.TxInfXchgRate;
+    payload.chrgBr = frmValue.TxInfChrgBr;
+    payload.clrSysRef = frmValue.TxInfClrSysRef;
 
     //Payment Return V09 -> Transaction Information->Original Group Information -> Settlement Time Indication
-    payload.DbtDtTm = frmValue.TxInfSttlmTmIndctnDbtDtTm;
-    payload.CdtDtTm = frmValue.TxInfSttlmTmIndctnCdtDtTm;
+    payload.dbtDtTm = frmValue.TxInfSttlmTmIndctnDbtDtTm;
+    payload.cdtDtTm = frmValue.TxInfSttlmTmIndctnCdtDtTm;
 
     //Payment Return V09 -> Transaction Information->Original Group Information -> Charges Information
-    payload.ChgAmt = frmValue.TxInfChrgsInfAmt;
+    payload.chgCcy = frmValue.TxInfChrgsInfAmtCcy;
+    payload.chgAmt = frmValue.TxInfChrgsInfAmt;
     //Payment Return V09 -> Transaction Information->Original Group Information -> Charges Information -> Agent
-    payload.ChrgsInfAgnt = {
+    payload.chrgsInfAgnt = {
       bicfi: frmValue.TxInfChrgsInfAgtFinInstnIdBICFI,
       clrSysIdCd: frmValue.TxInfChrgsInfAgtFinInstnIdClrSysIdCd,
       mmbId: frmValue.TxInfChrgsInfAgtFinInstnIdClrSysMmbIdMmbId,
@@ -690,7 +793,7 @@ export class Pacs004 implements OnInit, OnDestroy {
         },
     };
     //Payment Return V09 -> Transaction Information->Charges Information -> Instructing Agent
-    payload.ChrgsInfAgnt = {
+    payload.instgAgt = {
       bicfi: frmValue.TxInfInstgAgtFinInstnIdBICFI,
       clrSysIdCd: frmValue.TxInfInstgAgtFinInstnIdClrSysMmbIdClrSysIdCd,
       mmbId: frmValue.TxInfInstgAgtFinInstnIdClrSysMmbIdMmbId,
@@ -698,7 +801,7 @@ export class Pacs004 implements OnInit, OnDestroy {
 
     };
     //Payment Return V09 -> Transaction Information->Charges Information -> Instructed Agent
-    payload.InstdAgt = {
+    payload.instdAgt = {
       bicfi: frmValue.TxInfInstdAgtFinInstnIdBICFI,
       clrSysIdCd: frmValue.TxInfInstdAgtFinInstnIdClrSysMmbIdClrSysIdCd,
       mmbId: frmValue.TxInfInstdAgtFinInstnIdClrSysMmbIdMmbId,
@@ -706,21 +809,151 @@ export class Pacs004 implements OnInit, OnDestroy {
 
     };
     //Payment Return V09 -> Transaction Information->ReturnChain
-    //
+    payload.ultmtDbtr ={
+      nm: frmValue.TxInfRtrChainUltmtDbtrPtyNm,
+      address:{
+        dept: frmValue.TxInfRtrChainUltmtDbtrPtyPstlAdrDept,
+        subDept: frmValue.TxInfRtrChainUltmtDbtrPtyPstlAdrSubDept,
+        strtNm: frmValue.TxInfRtrChainUltmtDbtrPtyPstlAdrStrtNm,
+        bldgNb: frmValue.TxInfRtrChainUltmtDbtrPtyPstlAdrBldgNb,
+        bldgNm: frmValue.TxInfRtrChainUltmtDbtrPtyPstlAdrBldgNm,
+        flr: frmValue.TxInfRtrChainUltmtDbtrPtyPstlAdrFlr,
+        pstBx: frmValue.TxInfRtrChainUltmtDbtrPtyPstlAdrPstBx,
+        room: frmValue.TxInfRtrChainUltmtDbtrPtyPstlAdrRoom,
+        pstCd: frmValue.TxInfRtrChainUltmtDbtrPtyPstlAdrPstCd,
+        twnNm: frmValue.TxInfRtrChainUltmtDbtrPtyPstlAdrTwnNm,
+        twnLctnNm: frmValue.TxInfRtrChainUltmtDbtrPtyPstlAdrTwnLctnNm,
+        dstrctNm: frmValue.TxInfRtrChainUltmtDbtrPtyPstlAdrDstrctNm,
+        ctrySubDvsn: frmValue.TxInfRtrChainUltmtDbtrPtyPstlAdrCtrySubDvsn,
+        ctry: frmValue.TxInfRtrChainUltmtDbtrPtyPstlAdrCtry,
 
+      },
+      orgIdBic:frmValue.TxInfRtrChainUltmtDbtrPtyIdOrgIdAnyBIC,
+      orgIdLEI:frmValue.TxInfRtrChainUltmtDbtrPtyIdOrgIdLEI,
+      orgIdOthrId:frmValue.TxInfRtrChainUltmtDbtrPtyIdOrgIdOthrId,
+      orgIdOthrScNmCd:frmValue.TxInfRtrChainUltmtDbtrPtyIdOrgIdOthrSchmeNmCd,
+      orgIdOthrScNmPrty:frmValue.TxInfRtrChainUltmtDbtrPtyIdOrgIdOthrSchmeNmPrtry,
+      orgIdOthrIssr:frmValue.TxInfRtrChainUltmtDbtrPtyIdOrgIdOthrIssr,
+      ctryOfRes:frmValue.TxInfRtrChainUltmtDbtrPtyCtryOfRes,
+      birthDt:frmValue.TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirthBirthDt,
+      prvcOfBirth:frmValue.TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirthPrvcOfBirth,
+      cityOfBirth:frmValue.TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirthCityOfBirth,
+      ctryOfBirth:frmValue.TxInfRtrChainUltmtDbtrPtyIdPrvtIdDtAndPlcOfBirthCtryOfBirth,
+
+
+    };
+
+    payload.dbtr ={
+      Nm: frmValue.TxInfRtrChainDbtrPtyNm,
+      address:{
+        dept: frmValue.TxInfRtrChainDbtrPtyPstlAdrDept,
+        subDept: frmValue.TxInfRtrChainDbtrPtyPstlAdrSubDept,
+        strtNm: frmValue.TxInfRtrChainDbtrPtyPstlAdrStrtNm,
+        bldgNb: frmValue.TxInfRtrChainDbtrPtyPstlAdrBldgNb,
+        bldgNm: frmValue.TxInfRtrChainDbtrPtyPstlAdrBldgNm,
+        flr: frmValue.TxInfRtrChainDbtrPtyPstlAdrFlr,
+        pstBx: frmValue.TxInfRtrChainDbtrPtyPstlAdrPstBx,
+        room: frmValue.TxInfRtrChainDbtrPtyPstlAdrRoom,
+        pstCd: frmValue.TxInfRtrChainDbtrPtyPstlAdrPstCd,
+        twnNm: frmValue.TxInfRtrChainDbtrPtyPstlAdrTwnNm,
+        twnLctnNm: frmValue.TxInfRtrChainDbtrPtyPstlAdrTwnLctnNm,
+        dstrctNm: frmValue.TxInfRtrChainDbtrPtyPstlAdrDstrctNm,
+        ctrySubDvsn: frmValue.TxInfRtrChainDbtrPtyPstlAdrCtrySubDvsn,
+        ctry: frmValue.TxInfRtrChainDbtrPtyPstlAdrCtry,
+
+      },
+      orgIdBic:frmValue.TxInfRtrChainDbtrPtyIdOrgIdAnyBIC,
+      orgIdLei:frmValue.TxInfRtrChainDbtrPtyIdOrgIdLEI,
+      orgIdOthrId:frmValue.TxInfRtrChainDbtrPtyIdOrgIdOthrId,
+      orgIdOthrScNmCd:frmValue.TxInfRtrChainDbtrPtyIdOrgIdOthrSchmeNmCd,
+      orgIdOthrScNmPrty:frmValue.TxInfRtrChainDbtrPtyIdOrgIdOthrSchmeNmPrtry,
+      orgIdOthrIssr:frmValue.TxInfRtrChainDbtrPtyIdOrgIdOthrIssr,
+      ctryOfRes:frmValue.TxInfRtrChainDbtrPtyCtryOfRes,
+      birthDt:frmValue.TxInfRtrChainDbtrPtyIdPrvtIdDtAndPlcOfBirthBirthDt,
+      prvcOfBirth:frmValue.TxInfRtrChainDbtrPtyIdPrvtIdDtAndPlcOfBirthPrvcOfBirth,
+      cityOfBirth:frmValue.TxInfRtrChainDbtrPtyIdPrvtIdDtAndPlcOfBirthCityOfBirth,
+      ctryOfBirth:frmValue.TxInfRtrChainDbtrPtyIdPrvtIdDtAndPlcOfBirthCtryOfBirth,
+      prvtOthId1:frmValue.TxInfRtrChainDbtrPtyIdOrgIdOthrId,
+      prvtOthIdSchNmCd1:frmValue.TxInfRtrChainDbtrPtyIdOrgIdOthrSchmeNmCd,
+      prvtOthIdSchNmPrtry1:frmValue.TxInfRtrChainDbtrPtyIdOrgIdOthrSchmeNmPrtry,
+      prvtOthIdIssr1:frmValue.TxInfRtrChainDbtrPtyIdOrgIdOthrIssr,
+    };
+
+    payload.initgPty ={
+      Nm: frmValue.TxInfRtrChainInitgPtyPtyNm,
+      address:{
+        dept: frmValue.TxInfRtrChainInitgPtyPtyPstlAdrDept,
+        subDept: frmValue.TxInfRtrChainInitgPtyPtyPstlAdrSubDept,
+        strtNm: frmValue.TxInfRtrChainInitgPtyPtyPstlAdrStrtNm,
+        bldgNb: frmValue.TxInfRtrChainInitgPtyPtyPstlAdrBldgNb,
+        bldgNm: frmValue.TxInfRtrChainInitgPtyPtyPstlAdrBldgNm,
+        flr: frmValue.TxInfRtrChainInitgPtyPtyPstlAdrFlr,
+        pstBx: frmValue.TxInfRtrChainInitgPtyPtyPstlAdrPstBx,
+        room: frmValue.TxInfRtrChainInitgPtyPtyPstlAdrRoom,
+        pstCd: frmValue.TxInfRtrChainInitgPtyPtyPstlAdrPstCd,
+        twnNm: frmValue.TxInfRtrChainInitgPtyPtyPstlAdrTwnNm,
+        twnLctnNm: frmValue.TxInfRtrChainInitgPtyPtyPstlAdrTwnLctnNm,
+        dstrctNm: frmValue.TxInfRtrChainInitgPtyPtyPstlAdrDstrctNm,
+        ctrySubDvsn: frmValue.TxInfRtrChainInitgPtyPtyPstlAdrCtrySubDvsn,
+        ctry: frmValue.TxInfRtrChainInitgPtyPtyPstlAdrCtry,
+
+
+      },
+      orgIdBic:frmValue.TxInfRtrChainInitgPtyPtyIdOrgIdAnyBIC,
+      orgIdLei:frmValue.TxInfRtrChainInitgPtyPtyIdOrgIdLEI,
+      orgIdOthrId:frmValue.TxInfRtrChainInitgPtyPtyIdOthrId,
+      orgIdOthrScNmCd:frmValue.TxInfRtrChainInitgPtyPtyIdOthrSchmeNmCd,
+      orgIdOthrScNmPrty:frmValue.TxInfRtrChainInitgPtyPtyIdOthrSchmeNmPrtry,
+      orgIdOthrIssr:frmValue.TxInfRtrChainInitgPtyPtyIdOthrIssr,
+      ctryOfRes:frmValue.TxInfRtrChainInitgPtyPtyCtryOfRes,
+      birthDt:frmValue.TxInfRtrChainInitgPtyPtyIdPrvtIdDtAndPlcOfBirthBirthDt,
+      prvcOfBirth:frmValue.TxInfRtrChainInitgPtyPtyIdPrvtIdDtAndPlcOfBirthPrvcOfBirth,
+      cityOfBirth:frmValue.TxInfRtrChainInitgPtyPtyIdPrvtIdDtAndPlcOfBirthCityOfBirth,
+      ctryOfBirth:frmValue.TxInfRtrChainInitgPtyPtyIdPrvtIdDtAndPlcOfBirthCtryOfBirth,
+      prvtOthId1:frmValue.TxInfRtrChainInitgPtyPtyIdPrvtIdOthrId,
+      prvtOthIdSchNmCd1:frmValue.TxInfRtrChainInitgPtyPtyIdPrvtIdOthrSchmeNmCd,
+      prvtOthIdSchNmPrtry1:frmValue.TxInfRtrChainInitgPtyPtyIdPrvtIdOthrSchmeNmPrtry,
+      prvtOthIdIssr1:frmValue.TxInfRtrChainInitgPtyPtyIdPrvtIdOthrIssr,
+    };
+
+    payload.dbtrAgt = {
+      bicfi: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdBICFI,
+      clrSysIdCd: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdClrSysMmbIdClrSysIdCd,
+      mmbId: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdClrSysMmbIdMmbId,
+      lei: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdLEI,
+      nm: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdNm,
+      adr:{
+        dept: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrDept,
+        subDept: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrSubDept,
+        strtNm: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrStrtNm,
+        bldgNb: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrBldgNb,
+        bldgNm: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrBldgNm,
+        flr: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrFlr,
+        pstBx: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrPstBx,
+        room: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrRoom,
+        pstCd: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrPstCd,
+        twnNm: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrTwnNm,
+        twnLctnNm: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrTwnLctnNm,
+        dstrctNm: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrDstrctNm,
+        ctrySubDvsn: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrCtrySubDvsn,
+        ctry: frmValue.TxInfRtrChainDbtrAgt1FinInstnIdPstlAdrCtry,
+
+
+      },
+    };
 
     return payload as Mx004Model;
   }
 
   save(): void {
     debugger;
-    if (this.frmGroup.invalid) {
-      this.toastr.error(
-        'Please fill in all required fields',
-        'Validation Error'
-      );
-      return;
-    }
+    // if (this.frmGroup.invalid) {
+    //   this.toastr.error(
+    //     'Please fill in all required fields',
+    //     'Validation Error'
+    //   );
+    //   return;
+    // }
 
     // Additional validation for required fields
     if (!this.validateRequiredFields()) {
@@ -760,6 +993,8 @@ export class Pacs004 implements OnInit, OnDestroy {
     }
     return true;
   }
+
+
 
   openBicSelectionModal(ctrlNm :string, nameField:string|null = null) :void{
     const val = {
@@ -801,6 +1036,57 @@ export class Pacs004 implements OnInit, OnDestroy {
       date: new Date()
     });
   }
+
+  private loadCurrencies(): void {
+    this.currencyService.getAllCurrency().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (response: any) => {
+        if (response.payload && response.payload.length > 0) {
+          this.currencies = response.payload;
+          // Map CurrencyModel[] to SelectOptionsModel[]
+          this.currencyOptions = this.currencies.map(c => ({
+            key: c.isoSwiftCode,
+            value: `${c.isoSwiftCode} - ${c.currencyFullNm}`
+          }));
+        }
+      },
+      error: (err: any) => {
+        console.error('Failed to load currencies', err);
+        this.toastr.error('Failed to load currencies', 'Error');
+        this.currencyOptions = [];
+      }
+    });
+  }
+
+  // private mapServiceDataToForm(data: any): void {
+  //   if (!this.frmGroup) return;
+  //
+  //   // Ensure currencies are loaded before mapping
+  //   if (this.currencyOptions.length === 0) {
+  //     this.loadCurrencies();
+  //     // Wait for currencies to load then map data
+  //     setTimeout(() => {
+  //       this.mapServiceDataToForm(data);
+  //     }, 100);
+  //     return;
+  //   }
+  //
+  //   // Find the correct currency option
+  //   const currencyOption = this.currencyOptions.find(option =>
+  //     option.key.toLowerCase() === data.isoSwiftCode.toLowerCase()
+  //   );
+  //
+  //   this.frmGroup.patchValue({
+  //     instrId: data.trnRefNo20,
+  //     endToEndId: data.relatedRef21,
+  //     intrBkSttlmAmt: data.valAmt32a,
+  //     intrBkSttlmAmtCcy: currencyOption ? currencyOption.key : data.isoSwiftCode,
+  //     instgAgtAdrLine: data.benfInstNmAddrs58d,
+  //     fromBicfi: data.senderBic,
+  //     instgAgtBicfi: data.senderBic,
+  //   });
+  // }
 
   // save() {
   //   this.mx002Service.save(this.frmGroup.value).subscribe(res => {
