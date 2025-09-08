@@ -295,7 +295,6 @@ export class Pacs009 implements OnInit, OnDestroy {
   settlementOptions: SelectOptionsModel[] = [];
 
   // Additional options for reimbursement agents
-  accountTypeOptions: SelectOptionsModel[] = [];
   rmbrsmntAgtPrxyCdOptions: SelectOptionsModel[] = [];
   purposeCodeOptions: SelectOptionsModel[] = [];
   clearingSystemIdOptions: SelectOptionsModel[] = [];
@@ -347,7 +346,6 @@ export class Pacs009 implements OnInit, OnDestroy {
       this.loadCurrencies();
       this.loadServiceLevelCodes();
       this.loadSettlementOptions();
-      this.loadAccountTypeOptions();
       this.loadReimbursementAgentProxyCodeOptions();
       this.loadPurposeCodeOptions();
       this.loadClearingSystemIdOptions();
@@ -719,32 +717,6 @@ export class Pacs009 implements OnInit, OnDestroy {
         this.settlementOptions = [
           { key: 'INDA', value: 'INDA - InstructedAgent' },
           { key: 'INGA', value: 'INGA - InstructingAgent' },
-        ];
-      }
-    });
-  }
-
-  private loadAccountTypeOptions(): void {
-    // Load account type options - adjust typeId as needed based on your backend
-    this.externalCodeService.getSwiftExternalCodes('ExternalCashAccountType1Code').pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (response: any) => {
-        if (response.payload && response.payload.length > 0) {
-          this.accountTypeOptions = response.payload.map((item: any) => ({
-            key: item.codeValue,
-            value: item.codeName ? `${item.codeValue} - ${item.codeName}` : item.codeValue,
-          }));
-        }
-      },
-      error: (err) => {
-        console.error('Failed to load account type options', err);
-        this.toastr.error('Failed to load account type options', 'Error');
-        // Fallback to default options if API fails
-        this.accountTypeOptions = [
-          { key: 'CACC', value: 'Current Account' },
-          { key: 'SVGS', value: 'Savings Account' },
-          { key: 'TRAN', value: 'Transactional Account' },
         ];
       }
     });
