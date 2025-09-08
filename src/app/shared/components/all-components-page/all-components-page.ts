@@ -1,11 +1,11 @@
-import { Component, inject, OnInit, signal, TemplateRef, ViewChild, WritableSignal } from '@angular/core';
+// Enhanced TypeScript Component with Relatable Fields
+import { Component, effect, inject, OnInit, signal, TemplateRef, ViewChild, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TextBaseInput } from '../input-types/text-base-input/text-base-input';
 import { IdBoxComponent } from '../input-types/id-box/id-box';
 import { AmountInput } from '../input-types/amount-input/amount-input';
 import { AmountToWordInput } from '../input-types/amount-to-word-input/amount-to-word-input';
 import { SelectOptionField } from '../input-types/select-option-field/select-option-field';
-import { DateInput } from '../input-types/date-input/date-input';
 import { FileComponent } from '../input-types/file-input/file-input';
 import { OfficeBoxComponent } from '../input-types/office-box/office-box';
 import { DataGridComponent, TableRowDesigner } from '../data-grid';
@@ -15,12 +15,14 @@ import { Switch } from '../input-types/switch/switch';
 import { TextArea } from '../input-types/text-area/text-area';
 import { ToastrService } from 'ngx-toastr';
 import { BicSelectionService } from '../../services/bic-selection.service';
-import { DateFormat, DateInputComponent } from '../input-types/date-input.component/date-input.component';
 import { NumberInput } from '../input-types/number-input/number-input';
 import { DropdownOption } from '../data-grid/data-grid';
 import { LdsStepperComponent, Step } from '../lds-stepper/lds-stepper';
 import { MultiSelectOptionField } from '../multi-select-option-field/multi-select-option-field';
 import { DataSelectionModal } from '../data-selection-modal/data-selection-modal';
+import { BUTTON_VISIBILITY, ONCLICK_SAVE } from '../../constant/button-signals.constant';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { DateInput } from '../input-types/date-input/date-input';
 
 @Component({
   selector: 'app-all-components-page',
@@ -37,7 +39,6 @@ import { DataSelectionModal } from '../data-selection-modal/data-selection-modal
     DateInput,
     MultiSelectOptionField,
     LdsStepperComponent,
-    DateInputComponent,
     FileComponent,
     OfficeBoxComponent,
     NumberInput,
@@ -54,206 +55,98 @@ export class AllComponentsPage implements OnInit {
   toastr = inject(ToastrService);
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
   isDataSelectionModalOpen = signal(false);
+  onClickSave = ONCLICK_SAVE;
+  // Relatable field signals
+  selectedCurrency = signal<string>('USD');
+  selectedCountry = signal<string>('');
+  selectedProductCategory = signal<string>('');
+  filteredSubCategories = signal<any[]>([]);
+  calculatedTaxRate = signal<number>(0);
+  isHighValueTransaction = signal<boolean>(false);
+  relatedTransactions = signal<any[]>([]);
 
-  dataSelectionConfig = signal<any>({
-  // Sample data - replace with your actual data source
-  pickTableDataSource: [
-    { id: 'ITEM001', name: 'Sample Item 1', description: 'First sample item', category: 'Electronics' },
-    { id: 'ITEM002', name: 'Sample Item 2', description: 'Second sample item', category: 'Books' },
-    { id: 'ITEM003', name: 'Sample Item 3', description: 'Third sample item', category: 'Clothing' },
-    { id: 'ITEM004', name: 'Sample Item 4', description: 'Fourth sample item', category: 'Electronics' },
-    { id: 'ITEM005', name: 'Sample Item 5', description: 'Fifth sample item', category: 'Sports' },
-    // Add more sample data as needed
-  ],
-  
-  // Define column mapping - key is the data property, value is display name
-  pickTablePair: new Map<string, string>([
-    ['id', 'Item ID'],
-    ['name', 'Item Name'],
-    ['description', 'Description'],
-    ['category', 'Category']
-  ]),
-  
-  // Customizable text
-  apiSearchPlaceholder: 'Search for items...',
-  findButtonText: 'Search',
-  loadingText: 'Searching...',
-  noDataMessage: 'No items found. Use search to find items.',
-  loadingMessage: 'Loading items...'
-});
+  // Enhanced dropdown options with relationships
+  currencyOptions = [
+    { key: 'USD', value: 'US Dollar', rate: 1, taxRate: 0.05, country: 'US' },
+    { key: 'EUR', value: 'Euro', rate: 0.85, taxRate: 0.08, country: 'EU' },
+    { key: 'GBP', value: 'British Pound', rate: 0.73, taxRate: 0.07, country: 'UK' },
+    { key: 'JPY', value: 'Japanese Yen', rate: 110, taxRate: 0.03, country: 'JP' },
+    { key: 'CAD', value: 'Canadian Dollar', rate: 1.25, taxRate: 0.06, country: 'CA' },
+    { key: 'AUD', value: 'Australian Dollar', rate: 1.35, taxRate: 0.04, country: 'AU' }
+  ];
 
-private mockItemService = {
-  getItems: async (params: any) => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+  countryOptions = [
+    { key: 'US', value: 'United States', region: 'NA', riskLevel: 'low' },
+    { key: 'EU', value: 'European Union', region: 'EU', riskLevel: 'low' },
+    { key: 'UK', value: 'United Kingdom', region: 'EU', riskLevel: 'low' },
+    { key: 'JP', value: 'Japan', region: 'AS', riskLevel: 'low' },
+    { key: 'CA', value: 'Canada', region: 'NA', riskLevel: 'low' },
+    { key: 'AU', value: 'Australia', region: 'OC', riskLevel: 'low' },
+    { key: 'CN', value: 'China', region: 'AS', riskLevel: 'medium' },
+    { key: 'RU', value: 'Russia', region: 'AS', riskLevel: 'high' },
+    { key: 'BD', value: 'Bangladesh', region: 'AS', riskLevel: 'medium' }
+  ];
+
+  productCategoryOptions = [
+    { key: 'electronics', value: 'Electronics', taxMultiplier: 1.2, requiresApproval: false },
+    { key: 'automotive', value: 'Automotive', taxMultiplier: 1.5, requiresApproval: true },
+    { key: 'healthcare', value: 'Healthcare', taxMultiplier: 0.8, requiresApproval: true },
+    { key: 'financial', value: 'Financial Services', taxMultiplier: 2.0, requiresApproval: true },
+    { key: 'retail', value: 'Retail', taxMultiplier: 1.0, requiresApproval: false },
+    { key: 'construction', value: 'Construction', taxMultiplier: 1.3, requiresApproval: true }
+  ];
+
+  subCategoryOptions = [
+    // Electronics
+    { key: 'mobile', value: 'Mobile Devices', parentCategory: 'electronics', minAmount: 100 },
+    { key: 'computers', value: 'Computers', parentCategory: 'electronics', minAmount: 500 },
+    { key: 'accessories', value: 'Accessories', parentCategory: 'electronics', minAmount: 10 },
     
-    const items = [
-      { id: 'ITEM001', name: 'Sample Item 1', description: 'First sample item', category: 'Electronics' },
-      { id: 'ITEM002', name: 'Sample Item 2', description: 'Second sample item', category: 'Books' },
-      { id: 'ITEM003', name: 'Sample Item 3', description: 'Third sample item', category: 'Clothing' },
-      { id: 'ITEM004', name: 'Sample Item 4', description: 'Fourth sample item', category: 'Electronics' },
-      { id: 'ITEM005', name: 'Sample Item 5', description: 'Fifth sample item', category: 'Sports' },
-    ];
+    // Automotive
+    { key: 'parts', value: 'Auto Parts', parentCategory: 'automotive', minAmount: 50 },
+    { key: 'services', value: 'Auto Services', parentCategory: 'automotive', minAmount: 100 },
+    { key: 'vehicles', value: 'Vehicles', parentCategory: 'automotive', minAmount: 5000 },
+    
+    // Healthcare
+    { key: 'equipment', value: 'Medical Equipment', parentCategory: 'healthcare', minAmount: 1000 },
+    { key: 'supplies', value: 'Medical Supplies', parentCategory: 'healthcare', minAmount: 50 },
+    { key: 'pharmaceuticals', value: 'Pharmaceuticals', parentCategory: 'healthcare', minAmount: 100 },
+    
+    // Financial
+    { key: 'banking', value: 'Banking Services', parentCategory: 'financial', minAmount: 1000 },
+    { key: 'insurance', value: 'Insurance', parentCategory: 'financial', minAmount: 500 },
+    { key: 'investment', value: 'Investment', parentCategory: 'financial', minAmount: 10000 },
+    
+    // Retail
+    { key: 'clothing', value: 'Clothing', parentCategory: 'retail', minAmount: 20 },
+    { key: 'food', value: 'Food & Beverages', parentCategory: 'retail', minAmount: 5 },
+    { key: 'home', value: 'Home & Garden', parentCategory: 'retail', minAmount: 25 },
+    
+    // Construction
+    { key: 'materials', value: 'Building Materials', parentCategory: 'construction', minAmount: 100 },
+    { key: 'tools', value: 'Construction Tools', parentCategory: 'construction', minAmount: 50 },
+    { key: 'labor', value: 'Labor Services', parentCategory: 'construction', minAmount: 200 }
+  ];
 
-    // Filter based on search if provided
-    let filteredItems = items;
-    if (params?.search) {
-      const searchTerm = params.search.toLowerCase();
-      filteredItems = items.filter(item => 
-        item.name.toLowerCase().includes(searchTerm) ||
-        item.description.toLowerCase().includes(searchTerm) ||
-        item.category.toLowerCase().includes(searchTerm)
-      );
-    }
-
-    return {
-      data: filteredItems,
-      totalRecords: filteredItems.length
-    };
-  }
-};
-
-  @ViewChild('step1Template', { static: true }) step1Template!: TemplateRef<any>;
-  @ViewChild('step2Template', { static: true }) step2Template!: TemplateRef<any>;
-  @ViewChild('step3Template', { static: true }) step3Template!: TemplateRef<any>;
-
-  // Sample data for dropdowns and grid
+  // Enhanced dropdown options for existing fields
   dropdownOptions = [
-    { key: 'option1', value: 'Option 1' },
-    { key: 'option2', value: 'Option 2' },
-    { key: 'option3', value: 'Option 3' },
-    { key: 'option4', value: 'Option 4' },
-    { key: 'option5', value: 'Option 5' },
-    { key: 'option6', value: 'Option 6' },
-    { key: 'option7', value: 'Option 7' },
-    { key: 'option8', value: 'Option 8' },
-    { key: 'option9', value: 'Option 9' },
-    { key: 'option10', value: 'Option 10' },
-    { key: 'option11', value: 'Option 11' },
-    { key: 'option12', value: 'Option 12' },
-    { key: 'option13', value: 'Option 13' },
-    { key: 'option14', value: 'Option 14' },
-    { key: 'option15', value: 'Option 15' },
-    { key: 'option16', value: 'Option 16' },
-    { key: 'option17', value: 'Option 17' },
-    { key: 'option18', value: 'Option 18' },
-    { key: 'option19', value: 'Option 19' },
-    { key: 'option20', value: 'Option 20' },
-    { key: 'option21', value: 'Option 21' },
-    { key: 'option22', value: 'Option 22' },
-    { key: 'option23', value: 'Option 23' },
-    { key: 'option24', value: 'Option 24' },
-    { key: 'option25', value: 'Option 25' },
-    { key: 'option26', value: 'Option 26' },
-    { key: 'option27', value: 'Option 27' },
-    { key: 'option28', value: 'Option 28' },
-    { key: 'option29', value: 'Option 29' },
-    { key: 'option30', value: 'Option 30' },
-    { key: 'option31', value: 'Option 31' },
-    { key: 'option32', value: 'Option 32' },
-    { key: 'option33', value: 'Option 33' },
-    { key: 'option34', value: 'Option 34' },
-    { key: 'option35', value: 'Option 35' },
-    { key: 'option36', value: 'Option 36' },
-    { key: 'option37', value: 'Option 37' },
-    { key: 'option38', value: 'Option 38' },
-    { key: 'option39', value: 'Option 39' },
-    { key: 'option40', value: 'Option 40' },
-    { key: 'option41', value: 'Option 41' },
-    { key: 'option42', value: 'Option 42' },
-    { key: 'option43', value: 'Option 43' },
-    { key: 'option44', value: 'Option 44' },
-    { key: 'option45', value: 'Option 45' },
-    { key: 'option46', value: 'Option 46' },
-    { key: 'option47', value: 'Option 47' },
-    { key: 'option48', value: 'Option 48' },
-    { key: 'option49', value: 'Option 49' },
-    { key: 'option50', value: 'Option 50' },
-    { key: 'option51', value: 'Option 51' },
-    { key: 'option52', value: 'Option 52' },
-    { key: 'option53', value: 'Option 53' },
-    { key: 'option54', value: 'Option 54' },
-    { key: 'option55', value: 'Option 55' },
-    { key: 'option56', value: 'Option 56' },
-    { key: 'option', value: 'Option 3' },
-    { key: 'option4', value: 'Option 4' },
-    { key: 'option5', value: 'Option 5' },
-    { key: 'option6', value: 'Option 6' },
-    { key: 'option7', value: 'Option 7' },
-    { key: 'option8', value: 'Option 8' },
-    { key: 'option9', value: 'Option 9' },
-    { key: 'option10', value: 'Option 10' },
-    { key: 'option11', value: 'Option 11' },
-    { key: 'option12', value: 'Option 12' },
-    { key: 'option13', value: 'Option 13' },
-    { key: 'option14', value: 'Option 14' },
-    { key: 'option15', value: 'Option 15' },
-    { key: 'option16', value: 'Option 16' },
-    { key: 'option17', value: 'Option 17' },
-    { key: 'option18', value: 'Option 18' },
-    { key: 'option19', value: 'Option 19' },
-    { key: 'option20', value: 'Option 20' },
-    { key: 'option21', value: 'Option 21' },
-    { key: 'option22', value: 'Option 22' },
-    { key: 'option23', value: 'Option 23' },
-    { key: 'option24', value: 'Option 24' },
-    { key: 'option25', value: 'Option 25' },
-    { key: 'option26', value: 'Option 26' },
-    { key: 'option27', value: 'Option 27' },
-    { key: 'option28', value: 'Option 28' },
-    { key: 'option29', value: 'Option 29' },
-    { key: 'option30', value: 'Option 30' },
-    { key: 'option31', value: 'Option 31' },
-    { key: 'option32', value: 'Option 32' },
-    { key: 'option33', value: 'Option 33' },
-    { key: 'option34', value: 'Option 34' },
-    { key: 'option35', value: 'Option 35' },
-    { key: 'option36', value: 'Option 36' },
-    { key: 'option37', value: 'Option 37' },
-    { key: 'option38', value: 'Option 38' },
-    { key: 'option39', value: 'Option 39' },
-    { key: 'option40', value: 'Option 40' },
-    { key: 'option41', value: 'Option 41' },
-    { key: 'option42', value: 'Option 42' },
-    { key: 'option43', value: 'Option 43' },
-    { key: 'option44', value: 'Option 44' },
-    { key: 'option45', value: 'Option 45' },
-    { key: 'option46', value: 'Option 46' },
-    { key: 'option47', value: 'Option 47' },
-    { key: 'option48', value: 'Option 48' },
-    { key: 'option49', value: 'Option 49' },
-    { key: 'option50', value: 'Option 50' },
-    { key: 'option51', value: 'Option 51' },
-    { key: 'option52', value: 'Option 52' },
-    { key: 'option53', value: 'Option 53' },
-    { key: 'option54', value: 'Option 54' },
-    { key: 'option55', value: 'Option 55' },
-    { key: 'option56', value: 'Option 56' },
-    { key: 'option', value: 'Option 3' },
+    { key: 'option1', value: 'High Priority Transaction' },
+    { key: 'option2', value: 'Medium Priority Transaction' },
+    { key: 'option3', value: 'Low Priority Transaction' },
+    { key: 'option4', value: 'Urgent Processing Required' },
+    { key: 'option5', value: 'Standard Processing' }
   ];
 
-  gridData = [
-    { id: '1', name: 'Item 1', value: 'Value 1' },
-    { id: '2', name: 'Item 2', value: 'Value 2' },
-    { id: '3', name: 'Item 3', value: 'Value 3' },
-  ];
-
-    // File upload demo state
-  showAnyFileUpload: boolean = true;
-  pdfFiles: File[] = [];
-  imageFiles: File[] = [];
-  anyFiles: File[] = [];
-  documentFiles: File[] = [];
-  profilePicFile?: File;
-  steps: Step[] = [];
-
-  // Sample data for data grid demonstration
-sampleTransactions = signal([
+  // Enhanced sample transactions with relatable fields
+  sampleTransactions = signal([
     {
       id: 'TXN001',
       transactionType: 'PACS.008',
       amount: 50000.00,
       currency: 'USD',
+      country: 'US',
+      productCategory: 'financial',
+      subCategory: 'banking',
       status: 'pending',
       fromAccount: '1234567890',
       toAccount: '0987654321',
@@ -261,7 +154,11 @@ sampleTransactions = signal([
       priority: 'high',
       department: 'sales',
       category: 'international',
-      // Dynamic dropdown source for roles
+      taxRate: 0.10,
+      calculatedTax: 5000.00,
+      totalAmount: 55000.00,
+      riskLevel: 'medium',
+      requiresApproval: true,
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
         { value: 'approver', label: 'Transaction Approver' },
@@ -274,6 +171,9 @@ sampleTransactions = signal([
       transactionType: 'PACS.008',
       amount: 25000.00,
       currency: 'EUR',
+      country: 'EU',
+      productCategory: 'electronics',
+      subCategory: 'computers',
       status: 'completed',
       fromAccount: '1111111111',
       toAccount: '2222222222',
@@ -281,6 +181,11 @@ sampleTransactions = signal([
       priority: 'normal',
       department: 'finance',
       category: 'domestic',
+      taxRate: 0.096,
+      calculatedTax: 2400.00,
+      totalAmount: 27400.00,
+      riskLevel: 'low',
+      requiresApproval: false,
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
         { value: 'viewer', label: 'View Only' }
@@ -292,6 +197,9 @@ sampleTransactions = signal([
       transactionType: 'PACS.008',
       amount: 100000.00,
       currency: 'GBP',
+      country: 'UK',
+      productCategory: 'automotive',
+      subCategory: 'vehicles',
       status: 'failed',
       fromAccount: '3333333333',
       toAccount: '4444444444',
@@ -299,87 +207,21 @@ sampleTransactions = signal([
       priority: 'high',
       department: 'operations',
       category: 'urgent',
+      taxRate: 0.105,
+      calculatedTax: 10500.00,
+      totalAmount: 110500.00,
+      riskLevel: 'low',
+      requiresApproval: true,
       availableRoles: [
         { value: 'admin', label: 'Administrator' },
         { value: 'approver', label: 'Transaction Approver' },
         { value: 'specialist', label: 'Operations Specialist' }
       ],
       assignedRole: 'specialist'
-    },
-    {
-      id: 'TXN004',
-      transactionType: 'PACS.008',
-      amount: 75000.00,
-      currency: 'USD',
-      status: 'pending',
-      fromAccount: '5555555555',
-      toAccount: '6666666666',
-      date: '2024-01-12',
-      priority: 'normal',
-      department: 'sales',
-      category: 'corporate',
-      availableRoles: [
-        { value: 'admin', label: 'Administrator' },
-        { value: 'approver', label: 'Transaction Approver' }
-      ],
-      assignedRole: 'approver'
-    },
-    {
-      id: 'TXN005',
-      transactionType: 'PACS.008',
-      amount: 30000.00,
-      currency: 'JPY',
-      status: 'completed',
-      fromAccount: '7777777777',
-      toAccount: '8888888888',
-      date: '2024-01-11',
-      priority: 'high',
-      department: 'treasury',
-      category: 'fx_trade',
-      availableRoles: [
-        { value: 'admin', label: 'Administrator' },
-        { value: 'trader', label: 'FX Trader' },
-        { value: 'risk_officer', label: 'Risk Officer' }
-      ],
-      assignedRole: 'trader'
-    },
-    {
-      id: 'TXN006',
-      transactionType: 'PACS.008',
-      amount: 30000.00,
-      currency: 'JPY',
-      status: 'completed',
-      fromAccount: '7777777777',
-      toAccount: '8888888888',
-      date: '2024-01-11',
-      priority: 'high',
-      department: 'treasury',
-      category: 'fx_trade',
-      availableRoles: [
-        { value: 'admin', label: 'Administrator' },
-        { value: 'viewer', label: 'View Only' }
-      ],
-      assignedRole: 'admin'
     }
   ]);
-  
-    // Custom column names for the data grid
-  transactionColumnNames = signal({
-    'id': 'Transaction ID',
-    'transactionType': 'Type',
-    'amount': 'Amount',
-    'currency': 'Currency',
-    'status': 'Status',
-    'fromAccount': 'From Account',
-    'toAccount': 'To Account',
-    'date': 'Date',
-    'priority': 'Priority',
-    'department': 'Department',
-    'category': 'Category',
-    'assignedRole': 'Assigned Role'
-  });
 
-
+  // Enhanced transaction dropdown options with relatable fields
   transactionDropdownOptions = signal<Record<string, DropdownOption[]>>({
     status: [
       { value: 'pending', label: 'Pending Review' },
@@ -409,65 +251,1104 @@ sampleTransactions = signal([
       { value: 'retail', label: 'Retail Payment' },
       { value: 'fx_trade', label: 'FX Trade Settlement' },
       { value: 'urgent', label: 'Urgent Payment' }
-    ]
+    ],
+  currency: [
+    { value: 'USD', label: 'US Dollar' },
+    { value: 'EUR', label: 'Euro' },
+    { value: 'GBP', label: 'British Pound' },
+    { value: 'JPY', label: 'Japanese Yen' },
+    { value: 'CAD', label: 'Canadian Dollar' },
+    { value: 'AUD', label: 'Australian Dollar' }
+  ],
+  // Add country options
+  country: [
+    { value: 'US', label: 'United States' },
+    { value: 'EU', label: 'European Union' },
+    { value: 'UK', label: 'United Kingdom' },
+    { value: 'JP', label: 'Japan' },
+    { value: 'CA', label: 'Canada' },
+    { value: 'AU', label: 'Australia' },
+    { value: 'CN', label: 'China' },
+    { value: 'RU', label: 'Russia' },
+    { value: 'BD', label: 'Bangladesh' }
+  ],
+  // Add product category options
+  productCategory: [
+    { value: 'electronics', label: 'Electronics' },
+    { value: 'automotive', label: 'Automotive' },
+    { value: 'healthcare', label: 'Healthcare' },
+    { value: 'financial', label: 'Financial Services' },
+    { value: 'retail', label: 'Retail' },
+    { value: 'construction', label: 'Construction' }
+  ],
+    subCategory: [] // Will be populated dynamically based on selected category
   });
 
-  //which column should have dropdown
-    transactionDropdownColumns = signal(['status', 'priority', 'department', 'category', 'assignedRole']);
-      
-  
-    // Row designers for conditional styling
-    transactionRowDesigners = signal<TableRowDesigner[]>([
-      // {
-      //   condition: (item: any) => item.status === 'Failed',
-      //   backgroundColor: '#fff5f5',
-      //   textColor: '#c53030',
-      //   borderColor: '#fed7d7'
-      // },
-      // {
-      //   condition: (item: any) => item.status === 'Completed',
-      //   backgroundColor: '#f0fff4',
-      //   textColor: '#22543d',
-      //   borderColor: '#c6f6d5'
-      // },
-      // {
-      //   condition: (item: any) => item.priority === 'HIGH',
-      //   backgroundColor: '#fef5e7',
-      //   textColor: '#c05621',
-      //   borderColor: '#faf089'
-      // }
-  
-      {
-      condition: (item:any) => true,
-      backgroundColor: '#f9fafb',
-      textColor: '#111827',
-      borderColor: '#e5e7eb'
-    },
-    {
-      condition: (item:any) => true,
-      backgroundColor: '#c7bbbbff',
-      textColor: '#111827',
-      borderColor: '#d1d5db'
-    }
-    ]);
-  
-
-    //   Define dynamic dropdown sources (options from row data)
-  transactionDynamicDropdownSources = signal<Record<string, string>>({
-    assignedRole: 'availableRoles' 
-  });
-
+  // Enhanced dropdown columns to include new relatable fields
+  transactionDropdownColumns = signal(['status', 'priority', 'department', 'category', 'assignedRole', 'currency', 'country', 'productCategory', 'subCategory']);
 
   constructor(
     private formBuilder: FormBuilder,
-   private bicSelectionService: BicSelectionService
-  ) {}
+    private bicSelectionService: BicSelectionService,
+  ) {
+    BUTTON_VISIBILITY.set({
+      save: true,
+      update: false,
+      view: true,
+      delete: true,
+      exit: true,
+      reset: true,
+    });
+
+    effect(() => {
+    if(this.onClickSave()) {
+        this.save();
+        ONCLICK_SAVE.set(false);
+    }
+  });
+  }
+
+
+save(): void {
+  console.log('=== STARTING SAVE PROCESS ===');
+  
+  // First, let's see what the form actually contains
+  console.log('Form valid status:', this.frmGroup.valid);
+  console.log('Form value:', this.frmGroup.value);
+  console.log('Form errors:', this.getFormErrors());
+  
+  // Check if form is invalid
+  if (this.frmGroup.invalid) {
+    console.log('❌ Form is invalid');
+    
+    // Get detailed error information
+    const errors = this.getDetailedFormErrors();
+    console.log('Detailed form errors:', errors);
+    
+    // Show specific error messages
+    this.showFormValidationErrors(errors);
+    return;
+  }
+  
+  // Additional custom validation
+  if (!this.validateRequiredFields()) {
+    console.log('❌ Custom validation failed');
+    return;
+  }
+  
+  // If we reach here, form is valid
+  console.log('✅ Form is valid, proceeding with save...');
+  
+  // Get all form data including calculated values
+  const completeFormData = this.getCompleteFormData();
+  
+  console.log('=== COMPLETE FORM DATA ===');
+  console.log(JSON.stringify(completeFormData, null, 2));
+  
+  this.toastr.success('Data saved successfully! Check console for complete data.', 'Save Successful');
+}
+
+// Improved validation method
+validateRequiredFields(): boolean {
+  // Define required fields based on your form
+  const requiredFields = [
+    'textBox',
+    'id', 
+    'amount',
+    'dropdown',
+    'currency',
+    'country',
+    'productCategory',
+    'subCategory',
+    'officeCode',
+    'number'
+    // Remove 'textArea' from required if express processing is enabled
+  ];
+  
+  // Check if express processing is enabled (switch is on)
+  const isExpressProcessing = this.frmGroup.get('switch')?.value;
+  
+  // Add textArea as required only if not in express processing mode
+  if (!isExpressProcessing) {
+    requiredFields.push('textArea');
+  }
+  
+  let hasErrors = false;
+  
+  for (const fieldName of requiredFields) {
+    const control = this.frmGroup.get(fieldName);
+    
+    if (!control) {
+      console.log(`⚠️ Control '${fieldName}' not found in form`);
+      continue;
+    }
+    
+    const value = control.value;
+    const isEmpty = value === null || value === undefined || value === '' || 
+                   (Array.isArray(value) && value.length === 0);
+    
+    if (isEmpty || control.invalid) {
+      console.log(`❌ Field '${fieldName}' is invalid or empty:`, {
+        value: value,
+        errors: control.errors,
+        valid: control.valid
+      });
+      
+      this.toastr.error(`Please fill in: ${this.getFieldDisplayName(fieldName)}`, 'Required Field');
+      hasErrors = true;
+    }
+  }
+  
+  return !hasErrors;
+}
+
+
+private getFieldDisplayName(fieldName: string): string {
+  const fieldNames: { [key: string]: string } = {
+    textBox: 'Transaction Reference',
+    id: 'Account ID',
+    amount: 'Transaction Amount',
+    dropdown: 'Priority Level',
+    currency: 'Currency',
+    country: 'Country',
+    productCategory: 'Product Category',
+    subCategory: 'Sub Category',
+    textArea: 'Transaction Notes',
+    officeCode: 'Office Code',
+    number: 'Reference Number'
+  };
+  
+  return fieldNames[fieldName] || fieldName;
+}
+
+// Get detailed form errors
+private getDetailedFormErrors(): any {
+  const formErrors: any = {};
+  
+  Object.keys(this.frmGroup.controls).forEach(key => {
+    const control = this.frmGroup.get(key);
+    if (control && control.errors) {
+      formErrors[key] = {
+        value: control.value,
+        errors: control.errors,
+        touched: control.touched,
+        dirty: control.dirty
+      };
+    }
+  });
+  
+  return formErrors;
+}
+
+// Show specific validation errors
+private showFormValidationErrors(errors: any): void {
+  const errorKeys = Object.keys(errors);
+  
+  if (errorKeys.length === 0) {
+    this.toastr.error('Form has validation errors but no specific errors found', 'Validation Error');
+    return;
+  }
+  
+  // Show first few errors to avoid spam
+  errorKeys.slice(0, 3).forEach(key => {
+    const fieldError = errors[key];
+    const fieldName = this.getFieldDisplayName(key);
+    
+    if (fieldError.errors.required) {
+      this.toastr.error(`${fieldName} is required`, 'Required Field');
+    } else if (fieldError.errors.minlength) {
+      this.toastr.error(`${fieldName} must be at least ${fieldError.errors.minlength.requiredLength} characters`, 'Validation Error');
+    } else if (fieldError.errors.maxlength) {
+      this.toastr.error(`${fieldName} must not exceed ${fieldError.errors.maxlength.requiredLength} characters`, 'Validation Error');
+    } else if (fieldError.errors.min) {
+      this.toastr.error(`${fieldName} must be at least ${fieldError.errors.min.min}`, 'Validation Error');
+    } else if (fieldError.errors.max) {
+      this.toastr.error(`${fieldName} must not exceed ${fieldError.errors.max.max}`, 'Validation Error');
+    } else if (fieldError.errors.pattern) {
+      this.toastr.error(`${fieldName} has invalid format`, 'Validation Error');
+    } else if (fieldError.errors.minAmount) {
+      this.toastr.error(`${fieldName} must be at least ${fieldError.errors.minAmount} for selected subcategory`, 'Validation Error');
+    } else {
+      this.toastr.error(`${fieldName} has validation errors`, 'Validation Error');
+    }
+  });
+  
+  if (errorKeys.length > 3) {
+    this.toastr.warning(`${errorKeys.length - 3} more validation errors found. Check form fields.`, 'Additional Errors');
+  }
+}
+
+// Get complete form data including calculated values
+private getCompleteFormData(): any {
+  const formValues = this.frmGroup.value;
+  
+  // Include disabled field values
+  const disabledValues = {
+    taxRate: this.frmGroup.get('taxRate')?.value,
+    calculatedTax: this.frmGroup.get('calculatedTax')?.value,
+    totalAmount: this.frmGroup.get('totalAmount')?.value,
+    riskLevel: this.frmGroup.get('riskLevel')?.value,
+    requiresApproval: this.frmGroup.get('requiresApproval')?.value
+  };
+  
+  return {
+    timestamp: new Date().toISOString(),
+    formData: {
+      ...formValues,
+      ...disabledValues
+    },
+    calculatedValues: {
+      selectedCurrency: this.selectedCurrency(),
+      selectedCountry: this.selectedCountry(),
+      selectedProductCategory: this.selectedProductCategory(),
+      calculatedTaxRate: this.calculatedTaxRate(),
+      isHighValueTransaction: this.isHighValueTransaction(),
+      isApprovalRequired: this.isApprovalRequired(),
+      relationshipStatus: this.getRelationshipStatus()
+    },
+    fileData: {
+      pdfFiles: this.pdfFiles.map(f => ({ name: f.name, size: f.size, type: f.type })),
+      anyFiles: this.anyFiles.map(f => ({ name: f.name, size: f.size, type: f.type })),
+      profilePicFile: this.profilePicFile ? { name: this.profilePicFile.name, size: this.profilePicFile.size } : null
+    },
+    gridData: {
+      transactions: this.sampleTransactions(),
+      transactionCount: this.sampleTransactions().length
+    },
+    formStatus: {
+      valid: this.frmGroup.valid,
+      dirty: this.frmGroup.dirty,
+      touched: this.frmGroup.touched
+    }
+  };
+}
+
+// Updated getFormErrors method
+private getFormErrors(): any {
+  const formErrors: any = {};
+  
+  Object.keys(this.frmGroup.controls).forEach(key => {
+    const control = this.frmGroup.get(key);
+    if (control && !control.valid && control.errors) {
+      formErrors[key] = control.errors;
+    }
+  });
+  
+  return formErrors;
+}
+
+// Method to mark all fields as touched (helpful for showing validation errors)
+markAllFieldsAsTouched(): void {
+  Object.keys(this.frmGroup.controls).forEach(key => {
+    this.frmGroup.get(key)?.markAsTouched();
+  });
+}
+
+// Debug method to check current form state
+debugFormState(): void {
+  console.log('=== FORM DEBUG INFO ===');
+  
+  Object.keys(this.frmGroup.controls).forEach(key => {
+    const control = this.frmGroup.get(key);
+    console.log(`${key}:`, {
+      value: control?.value,
+      valid: control?.valid,
+      errors: control?.errors,
+      touched: control?.touched,
+      dirty: control?.dirty,
+      disabled: control?.disabled
+    });
+  });
+}
+
+
+
+
+  ngOnInit(): void {
+    this.frmGroup = this.formBuilder.group({
+      textBox: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20), Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
+      id: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
+      textArea: ['', [Validators.required, Validators.maxLength(500)]],
+      switch: [false],
+      amount: ['', [Validators.required, Validators.max(1000000), Validators.min(1)]],
+      amountToWord: ['', [Validators.required, Validators.max(1000000), Validators.min(1)]],
+      dropdown: ['', Validators.required],
+      multiSelect: [[]],
+      // categories: [[], Validators.required],
+      date: ['', Validators.required],
+      number: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      officeCode: ['', [Validators.required, Validators.maxLength(10), Validators.minLength(3)]],
+      fileUpload: [null],
+      
+      // New relatable fields
+      currency: ['USD', Validators.required],
+      country: ['', Validators.required],
+      productCategory: ['', Validators.required],
+      subCategory: ['', Validators.required],
+      taxRate: [{ value: 0, disabled: true }],
+      calculatedTax: [{ value: 0, disabled: true }],
+      totalAmount: [{ value: 0, disabled: true }],
+      riskLevel: [{ value: '', disabled: true }],
+      requiresApproval: [{ value: false, disabled: true }]
+    });
+
+    this.setupFieldRelationships();
+
+      
+  }
+
+  private setupFieldRelationships(): void {
+    // Currency changes affect country, tax rate, and amount calculations
+    this.frmGroup.get('currency')?.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe((currencyCode: string) => {
+      this.handleCurrencyChange(currencyCode);
+    });
+
+    // Country changes affect risk level and approval requirements
+    this.frmGroup.get('country')?.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe((countryCode: string) => {
+      this.handleCountryChange(countryCode);
+    });
+
+    // Product category changes affect subcategories and tax calculations
+    this.frmGroup.get('productCategory')?.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe((categoryCode: string) => {
+      this.handleProductCategoryChange(categoryCode);
+    });
+
+    // Amount changes affect tax calculations and approval requirements
+    this.frmGroup.get('amount')?.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe((amount: number) => {
+      this.handleAmountChange(amount);
+    });
+
+    // Subcategory changes affect minimum amount validation
+    this.frmGroup.get('subCategory')?.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe((subCategoryCode: string) => {
+      this.handleSubCategoryChange(subCategoryCode);
+    });
+
+    // Switch toggle affects transaction processing
+    this.frmGroup.get('switch')?.valueChanges.subscribe((isEnabled: boolean) => {
+      this.handleSwitchToggle(isEnabled);
+    });
+  }
+
+  private handleCurrencyChange(currencyCode: string): void {
+    const currency = this.currencyOptions.find(c => c.key === currencyCode);
+    if (currency) {
+      this.selectedCurrency.set(currencyCode);
+      
+      // Auto-select related country
+      this.frmGroup.patchValue({
+        country: currency.country
+      }, { emitEvent: false });
+      
+      // Update tax rate
+      this.frmGroup.patchValue({
+        taxRate: currency.taxRate
+      });
+      
+      // Recalculate amounts
+      this.recalculateAmounts();
+      
+      // Filter related transactions in grid
+      this.filterRelatedTransactions();
+      
+      this.toastr.info(`Currency changed to ${currency.value}. Auto-selected ${currency.country}`, 'Currency Update');
+    }
+  }
+
+  private handleCountryChange(countryCode: string): void {
+    const country = this.countryOptions.find(c => c.key === countryCode);
+    if (country) {
+      this.selectedCountry.set(countryCode);
+      
+      // Update risk level
+      this.frmGroup.patchValue({
+        riskLevel: country.riskLevel
+      });
+      
+      // Update approval requirements based on risk
+      const requiresApproval = country.riskLevel === 'high' || country.riskLevel === 'medium';
+      this.frmGroup.patchValue({
+        requiresApproval: requiresApproval
+      });
+      
+      // Update validation rules based on risk level
+      this.updateValidationRules(country.riskLevel);
+      
+      this.toastr.info(`Country set to ${country.value}. Risk level: ${country.riskLevel}`, 'Country Update');
+    }
+  }
+
+  private handleProductCategoryChange(categoryCode: string): void {
+    const category = this.productCategoryOptions.find(c => c.key === categoryCode);
+    if (category) {
+      this.selectedProductCategory.set(categoryCode);
+      
+      // Filter subcategories
+      const filteredSubs = this.subCategoryOptions.filter(sub => sub.parentCategory === categoryCode);
+      this.filteredSubCategories.set(filteredSubs);
+      
+      // Update dropdown options for subcategory in grid
+      this.transactionDropdownOptions.update(options => ({
+        ...options,
+        subCategory: filteredSubs.map(sub => ({ value: sub.key, label: sub.value }))
+      }));
+      
+      // Reset subcategory selection
+      this.frmGroup.patchValue({
+        subCategory: ''
+      });
+      
+      // Update approval requirements
+      this.frmGroup.patchValue({
+        requiresApproval: category.requiresApproval
+      });
+      
+      // Recalculate tax with category multiplier
+      this.recalculateAmounts();
+      
+      this.toastr.info(`Product category changed to ${category.value}`, 'Category Update');
+    }
+  }
+
+  private handleAmountChange(amount: number): void {
+    if (amount && amount > 0) {
+      // Check if high value transaction
+      const isHighValue = amount > 50000;
+      this.isHighValueTransaction.set(isHighValue);
+      
+      // Update approval requirements for high value
+      if (isHighValue) {
+        this.frmGroup.patchValue({
+          requiresApproval: true
+        });
+      }
+      
+      // Recalculate tax and total
+      this.recalculateAmounts();
+      
+      // Update amount to words field
+      this.frmGroup.patchValue({
+        amountToWord: amount
+      });
+      
+      if (isHighValue) {
+        this.toastr.warning('High value transaction - Approval required', 'High Value Alert');
+      }
+    }
+  }
+
+  private handleSubCategoryChange(subCategoryCode: string): void {
+    const subCategory = this.subCategoryOptions.find(s => s.key === subCategoryCode);
+    if (subCategory) {
+      // Update minimum amount validation
+      const currentAmount = this.frmGroup.get('amount')?.value || 0;
+      if (currentAmount < subCategory.minAmount) {
+        this.frmGroup.get('amount')?.setErrors({ minAmount: subCategory.minAmount });
+        this.toastr.error(`Minimum amount for ${subCategory.value} is ${subCategory.minAmount}`, 'Validation Error');
+      }
+      
+      // Update amount field minimum validator
+      this.frmGroup.get('amount')?.setValidators([
+        Validators.required,
+        Validators.min(subCategory.minAmount),
+        Validators.max(1000000)
+      ]);
+      this.frmGroup.get('amount')?.updateValueAndValidity();
+    }
+  }
+
+  private handleSwitchToggle(isEnabled: boolean): void {
+    if (isEnabled) {
+      // Enable express processing - reduce validation requirements
+      this.frmGroup.get('textArea')?.setValidators([Validators.maxLength(500)]);
+      this.toastr.success('Express processing enabled', 'Processing Mode');
+    } else {
+      // Standard processing - restore full validation
+      this.frmGroup.get('textArea')?.setValidators([Validators.required, Validators.maxLength(500)]);
+      this.toastr.info('Standard processing mode', 'Processing Mode');
+    }
+    this.frmGroup.get('textArea')?.updateValueAndValidity();
+  }
+
+  private recalculateAmounts(): void {
+    const amount = this.frmGroup.get('amount')?.value || 0;
+    const taxRate = this.frmGroup.get('taxRate')?.value || 0;
+    const categoryCode = this.frmGroup.get('productCategory')?.value;
+    
+    let effectiveTaxRate = taxRate;
+    
+    // Apply category tax multiplier
+    if (categoryCode) {
+      const category = this.productCategoryOptions.find(c => c.key === categoryCode);
+      if (category) {
+        effectiveTaxRate = taxRate * category.taxMultiplier;
+      }
+    }
+    
+    const calculatedTax = amount * effectiveTaxRate;
+    const totalAmount = amount + calculatedTax;
+    
+    this.calculatedTaxRate.set(effectiveTaxRate);
+    
+    this.frmGroup.patchValue({
+      taxRate: effectiveTaxRate,
+      calculatedTax: calculatedTax,
+      totalAmount: totalAmount
+    });
+  }
+
+  private updateValidationRules(riskLevel: string): void {
+    // Update validation based on risk level
+    if (riskLevel === 'high') {
+      // High risk requires more documentation
+      this.frmGroup.get('textArea')?.setValidators([
+        Validators.required, 
+        Validators.minLength(50), 
+        Validators.maxLength(500)
+      ]);
+      this.frmGroup.get('fileUpload')?.setValidators([Validators.required]);
+    } else if (riskLevel === 'medium') {
+      this.frmGroup.get('textArea')?.setValidators([
+        Validators.required, 
+        Validators.minLength(20), 
+        Validators.maxLength(500)
+      ]);
+    } else {
+      // Low risk - standard validation
+      this.frmGroup.get('textArea')?.setValidators([
+        Validators.required, 
+        Validators.maxLength(500)
+      ]);
+    }
+    
+    // Update validity
+    this.frmGroup.get('textArea')?.updateValueAndValidity();
+    this.frmGroup.get('fileUpload')?.updateValueAndValidity();
+  }
+
+  private filterRelatedTransactions(): void {
+    const currentCurrency = this.frmGroup.get('currency')?.value;
+    const currentCategory = this.frmGroup.get('productCategory')?.value;
+    
+    // Filter transactions in grid based on current form values
+    const allTransactions = this.sampleTransactions();
+    const filtered = allTransactions.filter(t => 
+      t.currency === currentCurrency || t.productCategory === currentCategory
+    );
+    
+    this.relatedTransactions.set(filtered);
+    
+    // Update grid data if needed
+    // You can emit this to update the grid component
+  }
+
+  // Enhanced event handlers with relatable field logic
+  handleCategorySelection(event: { selectedOption: any; selectedKey: string; selectedValue: string }): void {
+    console.log('Selected option:', event.selectedOption);
+    
+    // Update priority based on selection
+    if (event.selectedKey === 'option1' || event.selectedKey === 'option4') {
+      // High priority or urgent
+      this.frmGroup.patchValue({
+        requiresApproval: true
+      });
+      this.toastr.info('High priority transaction - Approval required', 'Priority Update');
+    }
+  }
+
+  // Enhanced grid event handlers
+  onTransactionEdit(serializedData: string): void {
+    const transaction = JSON.parse(serializedData);
+    
+    // Pre-populate form with transaction data for editing
+    this.frmGroup.patchValue({
+      amount: transaction.amount,
+      currency: transaction.currency,
+      country: transaction.country,
+      productCategory: transaction.productCategory,
+      subCategory: transaction.subCategory,
+      textBox: transaction.id,
+      textArea: `Editing transaction ${transaction.id}`
+    });
+    
+    this.toastr.info(`Editing transaction: ${transaction.id}`, 'Edit Mode');
+  }
+
+  onTransactionDataChanged(newData: any[]): void {
+    console.log('Transaction data changed:', newData);
+    
+    // Update the signal
+    this.sampleTransactions.set(newData);
+    
+    // Recalculate related transactions
+    this.filterRelatedTransactions();
+    
+    // Validate data relationships
+    newData.forEach(transaction => {
+      this.validateTransactionRelationships(transaction);
+    });
+    
+    this.toastr.success('Transaction data updated with relationship validation', 'Data Updated');
+  }
+
+  private validateTransactionRelationships(transaction: any): void {
+    // Validate currency-country relationship
+    const currency = this.currencyOptions.find(c => c.key === transaction.currency);
+    if (currency && currency.country !== transaction.country) {
+      this.toastr.warning(`Currency-Country mismatch in ${transaction.id}`, 'Validation Warning');
+    }
+    
+    // Validate category-subcategory relationship
+    const subCategory = this.subCategoryOptions.find(s => s.key === transaction.subCategory);
+    if (subCategory && subCategory.parentCategory !== transaction.productCategory) {
+      this.toastr.error(`Invalid subcategory for ${transaction.id}`, 'Validation Error');
+    }
+    
+    // Validate minimum amount for subcategory
+    if (subCategory && transaction.amount < subCategory.minAmount) {
+      this.toastr.error(`Amount below minimum for ${transaction.subCategory} in ${transaction.id}`, 'Amount Error');
+    }
+  }
+
+  // Method to get filtered options for template
+  getFilteredSubCategories(): any[] {
+    return this.filteredSubCategories();
+  }
+
+  // Method to check if approval is required
+  isApprovalRequired(): boolean {
+    return this.frmGroup.get('requiresApproval')?.value || false;
+  }
+
+  // Method to get current tax rate
+  getCurrentTaxRate(): number {
+    return this.calculatedTaxRate();
+  }
+
+  // Method to get risk level styling
+  getRiskLevelClass(): string {
+    const riskLevel = this.frmGroup.get('riskLevel')?.value;
+    switch (riskLevel) {
+      case 'high': return 'text-red-600 bg-red-50';
+      case 'medium': return 'text-yellow-600 bg-yellow-50';
+      case 'low': return 'text-green-600 bg-green-50';
+      default: return 'text-gray-600 bg-gray-50';
+    }
+  }
+
+  // Export current form as transaction
+  addCurrentFormToGrid(): void {
+    const formValue = this.frmGroup.value;
+    
+    if (this.frmGroup.valid) {
+      const newTransaction = {
+        id: `TXN${Date.now().toString().slice(-6)}`,
+        transactionType: 'PACS.008',
+        amount: formValue.amount,
+        currency: formValue.currency,
+        country: formValue.country,
+        productCategory: formValue.productCategory,
+        subCategory: formValue.subCategory,
+        status: 'pending',
+        fromAccount: formValue.textBox || 'AUTO',
+        toAccount: formValue.id || 'AUTO',
+        date: formValue.date || new Date().toISOString().split('T')[0],
+        priority: this.isHighValueTransaction() ? 'high' : 'normal',
+        department: 'user_input',
+        category: 'form_generated',
+        taxRate: formValue.taxRate,
+        calculatedTax: formValue.calculatedTax,
+        totalAmount: formValue.totalAmount,
+        riskLevel: formValue.riskLevel,
+        requiresApproval: formValue.requiresApproval,
+        availableRoles: [
+          { value: 'admin', label: 'Administrator' },
+          { value: 'approver', label: 'Transaction Approver' },
+          { value: 'viewer', label: 'View Only' }
+        ],
+        assignedRole: formValue.requiresApproval ? 'approver' : 'viewer'
+      };
+      
+      // Add to grid data
+      const currentTransactions = this.sampleTransactions();
+      this.sampleTransactions.set([...currentTransactions, newTransaction]);
+      
+      // Reset form
+      this.resetFormWithDefaults();
+      
+      this.toastr.success(`Transaction ${newTransaction.id} added to grid`, 'Transaction Added');
+    } else {
+      this.toastr.error('Please fix form errors before adding to grid', 'Validation Error');
+    }
+  }
+
+  // Reset form but keep some relatable field values
+  private resetFormWithDefaults(): void {
+    const currentCurrency = this.frmGroup.get('currency')?.value;
+    const currentCountry = this.frmGroup.get('country')?.value;
+    
+    this.frmGroup.reset();
+    
+    // Restore some values to maintain context
+    this.frmGroup.patchValue({
+      currency: currentCurrency,
+      country: currentCountry,
+      switch: false,
+      taxRate: 0,
+      calculatedTax: 0,
+      totalAmount: 0
+    });
+  }
+
+  // Bulk update related fields in grid
+  bulkUpdateGridByCategory(): void {
+    const selectedCategory = this.frmGroup.get('productCategory')?.value;
+    if (!selectedCategory) {
+      this.toastr.warning('Please select a product category first', 'Bulk Update');
+      return;
+    }
+    
+    const currentTransactions = this.sampleTransactions();
+    const updatedTransactions = currentTransactions.map(transaction => {
+      if (transaction.productCategory === selectedCategory) {
+        const category = this.productCategoryOptions.find(c => c.key === selectedCategory);
+        if (category) {
+          // Recalculate tax for matching category
+          const newTaxRate = transaction.currency === 'USD' ? 0.05 * category.taxMultiplier : 
+                           transaction.currency === 'EUR' ? 0.08 * category.taxMultiplier :
+                           0.06 * category.taxMultiplier;
+          const newTax = transaction.amount * newTaxRate;
+          
+          return {
+            ...transaction,
+            taxRate: newTaxRate,
+            calculatedTax: newTax,
+            totalAmount: transaction.amount + newTax,
+            requiresApproval: category.requiresApproval
+          };
+        }
+      }
+      return transaction;
+    });
+    
+    this.sampleTransactions.set(updatedTransactions);
+    this.toastr.success(`Updated all transactions in category: ${selectedCategory}`, 'Bulk Update Complete');
+  }
+
+  // Advanced filtering for grid
+  filterGridByCriteria(): void {
+    const criteria = {
+      currency: this.frmGroup.get('currency')?.value,
+      country: this.frmGroup.get('country')?.value,
+      productCategory: this.frmGroup.get('productCategory')?.value,
+      minAmount: this.frmGroup.get('amount')?.value || 0,
+      riskLevel: this.frmGroup.get('riskLevel')?.value
+    };
+    
+    // This would typically be handled by the grid component's filtering mechanism
+    // For now, we'll update a filtered signal that the grid can use
+    const allTransactions = this.sampleTransactions();
+    const filtered = allTransactions.filter(transaction => {
+      let matches = true;
+      
+      if (criteria.currency && transaction.currency !== criteria.currency) matches = false;
+      if (criteria.country && transaction.country !== criteria.country) matches = false;
+      if (criteria.productCategory && transaction.productCategory !== criteria.productCategory) matches = false;
+      if (criteria.minAmount && transaction.amount < criteria.minAmount) matches = false;
+      if (criteria.riskLevel && transaction.riskLevel !== criteria.riskLevel) matches = false;
+      
+      return matches;
+    });
+    
+    // You would pass this filtered data to your grid component
+    console.log('Filtered transactions:', filtered);
+    this.toastr.info(`Found ${filtered.length} matching transactions`, 'Filter Applied');
+  }
+
+  // Get suggested values based on current form state
+  getSuggestedValues(): any {
+    const currency = this.frmGroup.get('currency')?.value;
+    const category = this.frmGroup.get('productCategory')?.value;
+    const amount = this.frmGroup.get('amount')?.value || 0;
+    
+    const suggestions = {
+      suggestedOfficeCode: currency === 'USD' ? 'US01' : currency === 'EUR' ? 'EU01' : 'INTL',
+      suggestedTextBox: `${currency}_${category}_${Date.now().toString().slice(-4)}`,
+      suggestedDate: new Date().toISOString().split('T')[0],
+      suggestedNumber: Math.floor(amount / 1000) || 1
+    };
+    
+    return suggestions;
+  }
+
+  // Auto-populate suggested values
+  applySuggestedValues(): void {
+    const suggestions = this.getSuggestedValues();
+    
+    this.frmGroup.patchValue({
+      officeCode: suggestions.suggestedOfficeCode,
+      textBox: suggestions.suggestedTextBox,
+      date: suggestions.suggestedDate,
+      number: suggestions.suggestedNumber
+    });
+    
+    this.toastr.info('Applied suggested values based on current selections', 'Auto-Complete');
+  }
+
+  // Validate all relationships
+  validateAllRelationships(): boolean {
+    const errors = [];
+    const formValue = this.frmGroup.value;
+    
+    // Currency-Country relationship
+    const currency = this.currencyOptions.find(c => c.key === formValue.currency);
+    if (currency && currency.country !== formValue.country) {
+      errors.push('Currency and Country do not match');
+    }
+    
+    // Category-Subcategory relationship
+    const subCategory = this.subCategoryOptions.find(s => s.key === formValue.subCategory);
+    if (subCategory && subCategory.parentCategory !== formValue.productCategory) {
+      errors.push('Product Category and Subcategory do not match');
+    }
+    
+    // Amount-Subcategory minimum
+    if (subCategory && formValue.amount < subCategory.minAmount) {
+      errors.push(`Amount must be at least ${subCategory.minAmount} for selected subcategory`);
+    }
+    
+    // Display errors
+    if (errors.length > 0) {
+      errors.forEach(error => this.toastr.error(error, 'Relationship Validation'));
+      return false;
+    }
+    
+    this.toastr.success('All relationships are valid', 'Validation Passed');
+    return true;
+  }
+
+  // Method to sync form with selected grid row
+  syncFormWithGridRow(transaction: any): void {
+    this.frmGroup.patchValue({
+      textBox: transaction.id,
+      amount: transaction.amount,
+      currency: transaction.currency,
+      country: transaction.country,
+      productCategory: transaction.productCategory,
+      subCategory: transaction.subCategory,
+      date: transaction.date,
+      textArea: `Synced with transaction: ${transaction.id}`,
+      taxRate: transaction.taxRate,
+      calculatedTax: transaction.calculatedTax,
+      totalAmount: transaction.totalAmount,
+      riskLevel: transaction.riskLevel,
+      requiresApproval: transaction.requiresApproval
+    });
+    
+    this.toastr.info(`Form synced with transaction ${transaction.id}`, 'Form Sync');
+  }
+
+  // Enhanced transaction view handler
+  onTransactionView(serializedData: string): void {
+    const transaction = JSON.parse(serializedData);
+    
+    // Sync form with selected transaction
+    this.syncFormWithGridRow(transaction);
+    
+    // Show detailed information
+    const details = `
+      Transaction: ${transaction.id}
+      Amount: ${transaction.amount} ${transaction.currency}
+      Tax: ${transaction.calculatedTax}
+      Total: ${transaction.totalAmount}
+      Risk Level: ${transaction.riskLevel}
+      Requires Approval: ${transaction.requiresApproval ? 'Yes' : 'No'}
+    `;
+    
+    console.log('Transaction Details:', details);
+    this.toastr.info(`Viewing transaction: ${transaction.id}`, 'View Mode');
+  }
+
+  // Method to get relationship status
+  getRelationshipStatus(): any {
+    return {
+      currencyCountryMatch: this.isCurrencyCountryMatch(),
+      categorySubcategoryMatch: this.isCategorySubcategoryMatch(),
+      amountValid: this.isAmountValidForSubcategory(),
+      highValueTransaction: this.isHighValueTransaction(),
+      approvalRequired: this.isApprovalRequired(),
+      riskLevel: this.frmGroup.get('riskLevel')?.value,
+      effectiveTaxRate: this.getCurrentTaxRate()
+    };
+  }
+
+  private isCurrencyCountryMatch(): boolean {
+    const currency = this.frmGroup.get('currency')?.value;
+    const country = this.frmGroup.get('country')?.value;
+    const currencyData = this.currencyOptions.find(c => c.key === currency);
+    return currencyData ? currencyData.country === country : false;
+  }
+
+  private isCategorySubcategoryMatch(): boolean {
+    const category = this.frmGroup.get('productCategory')?.value;
+    const subCategory = this.frmGroup.get('subCategory')?.value;
+    const subCategoryData = this.subCategoryOptions.find(s => s.key === subCategory);
+    return subCategoryData ? subCategoryData.parentCategory === category : true;
+  }
+
+  private isAmountValidForSubcategory(): boolean {
+    const amount = this.frmGroup.get('amount')?.value || 0;
+    const subCategory = this.frmGroup.get('subCategory')?.value;
+    const subCategoryData = this.subCategoryOptions.find(s => s.key === subCategory);
+    return subCategoryData ? amount >= subCategoryData.minAmount : true;
+  }
+
+  // Existing methods from your original code...
+  
+  dataSelectionConfig = signal<any>({
+    pickTableDataSource: [
+      { id: 'ITEM001', name: 'Sample Item 1', description: 'First sample item', category: 'Electronics' },
+      { id: 'ITEM002', name: 'Sample Item 2', description: 'Second sample item', category: 'Books' },
+      { id: 'ITEM003', name: 'Sample Item 3', description: 'Third sample item', category: 'Clothing' },
+      { id: 'ITEM004', name: 'Sample Item 4', description: 'Fourth sample item', category: 'Electronics' },
+      { id: 'ITEM005', name: 'Sample Item 5', description: 'Fifth sample item', category: 'Sports' },
+    ],
+    
+    pickTablePair: new Map<string, string>([
+      ['id', 'Item ID'],
+      ['name', 'Item Name'],
+      ['description', 'Description'],
+      ['category', 'Category']
+    ]),
+    
+    apiSearchPlaceholder: 'Search for items...',
+    findButtonText: 'Search',
+    loadingText: 'Searching...',
+    noDataMessage: 'No items found. Use search to find items.',
+    loadingMessage: 'Loading items...'
+  });
+
+  private mockItemService = {
+    getItems: async (params: any) => {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const items = [
+        { id: 'ITEM001', name: 'Sample Item 1', description: 'First sample item', category: 'Electronics' },
+        { id: 'ITEM002', name: 'Sample Item 2', description: 'Second sample item', category: 'Books' },
+        { id: 'ITEM003', name: 'Sample Item 3', description: 'Third sample item', category: 'Clothing' },
+        { id: 'ITEM004', name: 'Sample Item 4', description: 'Fourth sample item', category: 'Electronics' },
+        { id: 'ITEM005', name: 'Sample Item 5', description: 'Fifth sample item', category: 'Sports' },
+      ];
+
+      let filteredItems = items;
+      if (params?.search) {
+        const searchTerm = params.search.toLowerCase();
+        filteredItems = items.filter(item => 
+          item.name.toLowerCase().includes(searchTerm) ||
+          item.description.toLowerCase().includes(searchTerm) ||
+          item.category.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      return {
+        data: filteredItems,
+        totalRecords: filteredItems.length
+      };
+    }
+  };
+
+  @ViewChild('step1Template', { static: true }) step1Template!: TemplateRef<any>;
+  @ViewChild('step2Template', { static: true }) step2Template!: TemplateRef<any>;
+  @ViewChild('step3Template', { static: true }) step3Template!: TemplateRef<any>;
+
+  gridData = [
+    { id: '1', name: 'Item 1', value: 'Value 1' },
+    { id: '2', name: 'Item 2', value: 'Value 2' },
+    { id: '3', name: 'Item 3', value: 'Value 3' },
+  ];
+
+  showAnyFileUpload: boolean = true;
+  pdfFiles: File[] = [];
+  imageFiles: File[] = [];
+  anyFiles: File[] = [];
+  documentFiles: File[] = [];
+  profilePicFile?: File;
+  steps: Step[] = [];
+
+  transactionColumnNames = signal({
+    'id': 'Transaction ID',
+    'transactionType': 'Type',
+    'amount': 'Amount',
+    'currency': 'Currency',
+    'country': 'Country',
+    'productCategory': 'Product Category',
+    'subCategory': 'Sub Category',
+    'status': 'Status',
+    'fromAccount': 'From Account',
+    'toAccount': 'To Account',
+    'date': 'Date',
+    'priority': 'Priority',
+    'department': 'Department',
+    'category': 'Category',
+    'taxRate': 'Tax Rate',
+    'calculatedTax': 'Tax Amount',
+    'totalAmount': 'Total Amount',
+    'riskLevel': 'Risk Level',
+    'requiresApproval': 'Requires Approval',
+    'assignedRole': 'Assigned Role'
+  });
+
+  transactionRowDesigners = signal<TableRowDesigner[]>([
+    {
+      condition: (item: any) => item.riskLevel === 'high',
+      backgroundColor: '#fee2e2',
+      textColor: '#dc2626',
+      borderColor: '#fca5a5'
+    },
+    {
+      condition: (item: any) => item.riskLevel === 'medium',
+      backgroundColor: '#fef3c7',
+      textColor: '#d97706',
+      borderColor: '#fcd34d'
+    },
+    {
+      condition: (item: any) => item.riskLevel === 'low',
+      backgroundColor: '#dcfce7',
+      textColor: '#16a34a',
+      borderColor: '#86efac'
+    },
+    {
+      condition: (item: any) => item.requiresApproval,
+      backgroundColor: '#e0e7ff',
+      textColor: '#3730a3',
+      borderColor: '#a5b4fc'
+    }
+  ]);
+
+  transactionDynamicDropdownSources = signal<Record<string, string>>({
+    assignedRole: 'availableRoles' 
+  });
 
   bicTableHeaders = new Map<string, string>([
     ['swift', 'SWIFT Code'],
     ['branchName', 'Branch Name'],
     ['address', 'Address']
   ]);
+
   openFromBicSelectionModal(): void {
     this.bicSelectionService.openBicSelectionModal(
       this.frmGroup,
@@ -480,27 +1361,7 @@ sampleTransactions = signal([
     ).subscribe();
   }
 
-  ngOnInit(): void {
-    this.frmGroup = this.formBuilder.group({
-      textBox: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20),Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
-      id: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
-      textArea: ['', [Validators.required, Validators.maxLength(500)]],
-      switch: [false],
-      amount: ['', [Validators.required, Validators.max(200), Validators.min(2)]],
-      amountToWord: ['', [Validators.required, Validators.max(200), Validators.min(2)]],
-      dropdown: ['', Validators.required],
-      multiSelect: [[]],
-      categories: [[], Validators.required],
-      date: ['', Validators.required],
-      number: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
-      officeCode: ['', [Validators.required, Validators.maxLength(10), Validators.minLength(3)]],
-      fileUpload: [null],
-    });
-  }
-
-
   ngAfterViewInit(): void {
-    // Initialize steps after view templates are available
     setTimeout(() => {
       this.steps = [
         {
@@ -524,6 +1385,7 @@ sampleTransactions = signal([
       ];
     });
   }
+
   handleFileChange(files: File[]): void {
     console.log('Selected files:', files);
   }
@@ -532,23 +1394,15 @@ sampleTransactions = signal([
     console.log(`Grid action: ${action}`, rowData);
   }
 
-    onStepperSubmit() {
+  onStepperSubmit() {
     console.log('Stepper submitted!');
-    // Handle final submission logic here
-    // e.g., send data to API, show success message, etc.
   }
 
-   
-  // File input handlers used by the template examples
-onPdfSelected(files: File[]): void {
-  this.pdfFiles = files || [];
-  this.toastr.info(`${this.pdfFiles.length} PDF file(s) selected`, 'Files');
-  
-  // Now you can access the files via this.pdfFiles
-  console.log('Current PDF files:', this.pdfFiles);
-  
- 
-}
+  onPdfSelected(files: File[]): void {
+    this.pdfFiles = files || [];
+    this.toastr.info(`${this.pdfFiles.length} PDF file(s) selected`, 'Files');
+    console.log('Current PDF files:', this.pdfFiles);
+  }
 
   onImagesSelected(files: File[]): void {
     this.imageFiles = files || [];
@@ -571,165 +1425,113 @@ onPdfSelected(files: File[]): void {
   }
 
   onFileInputChanged(context: string): void {
-    // Context string helps distinguish which input fired, e.g., 'PDF', 'Images'
     this.toastr.show(`File input changed: ${context}`, 'Notice');
-  }
-
-
-   // Data Grid Event Handlers
-  onTransactionEdit(serializedData: string): void {
-    console.log('edit');
-    const transaction = JSON.parse(serializedData);
-    console.log('Edit transaction:', transaction);
-    this.toastr.info(`Editing transaction: ${transaction.id}`, 'Edit Mode');
-    // Add your edit logic here - open modal, navigate to edit page, etc.
   }
 
   onTransactionDelete(serializedData: string): void {
     const transaction = JSON.parse(serializedData);
     console.log('Delete transaction:', transaction);
     this.toastr.warning(`Deleting transaction: ${transaction.id}`, 'Delete Confirmation');
-    // Add your delete logic here - show confirmation dialog, call delete API, etc.
-  }
-
-  onTransactionView(serializedData: string): void {
-    const transaction = JSON.parse(serializedData);
-    console.log('View transaction:', transaction);
-    this.toastr.info(`Viewing transaction: ${transaction.id}`, 'View Mode');
-    // Add your view logic here - open modal, navigate to view page, etc.
   }
 
   onTransactionPrint(serializedData: string): void {
     const transaction = JSON.parse(serializedData);
     console.log('Print transaction:', transaction);
     this.toastr.success(`Printing transaction: ${transaction.id}`, 'Print');
-    // Add your print logic here - generate PDF, open print dialog, etc.
   }
 
   onTransactionRowSelect(serializedData: string): void {
     const transaction = JSON.parse(serializedData);
     console.log('Row selected:', transaction);
-    // Add your row selection logic here
   }
 
   onTransactionSelectAll(checked: boolean): void {
     console.log('Select all transactions:', checked);
-    // Add your select all logic here
   }
 
-  onTransactionDataChanged(newData: any[]): void {
-    console.log('Transaction data changed:', newData);
-    this.sampleTransactions.set(newData);
-    this.toastr.success('Transaction data updated successfully', 'Data Updated');
-    // Add your data change logic here - save to backend, update local state, etc.
-  }
-
-  handleCategorySelection(event: { selectedOption: any; selectedKey: string; selectedValue: string }): void {
-  console.log('Selected option:', event.selectedOption);
-  console.log('Selected key:', event.selectedKey);
-  console.log('Selected value:', event.selectedValue);
-  
-}
-
-openDataSelectionModal(): void {
-  this.dataSelectionConfig.set({
-    title: 'Select Item',
-    service: this.mockItemService,
-    serviceMethod: 'getItems',
-    columns: [
-      { field: 'id', header: 'Item ID', width: '120px', sortable: true, filterable: true },
-      { field: 'name', header: 'Item Name', width: '200px', sortable: true, filterable: true },
-      { field: 'description', header: 'Description', width: '250px', sortable: true, filterable: true },
-      { field: 'category', header: 'Category', width: '120px', sortable: true, filterable: true }
-    ],
-    pageSize: 10,
-    enablePagination: true,
-    enableSorting: true,
-    enableFiltering: true,
-    enableSelection: true,
-    enableSearch: true,
-    searchPlaceholder: 'Search for items...',
-    showInsertButton: true,
-    insertButtonText: 'Select Item',
-    showCloseButton: true,
-    closeButtonText: 'Cancel'
-  });
-  this.isDataSelectionModalOpen.set(true);
-}
-
-closeDataSelectionModal(): void {
-  this.isDataSelectionModalOpen.set(false);
-}
-
-onDataSelectionResult(selectedItem: any): void {
-  console.log('Selected item:', selectedItem);
-  
-  if (selectedItem) {
-    // Example: Set the selected item to a form control
-    this.frmGroup.patchValue({
-      id: selectedItem.id,
-      textBox: selectedItem.name
+  openDataSelectionModal(): void {
+    this.dataSelectionConfig.set({
+      title: 'Select Item',
+      service: this.mockItemService,
+      serviceMethod: 'getItems',
+      columns: [
+        { field: 'id', header: 'Item ID', width: '120px', sortable: true, filterable: true },
+        { field: 'name', header: 'Item Name', width: '200px', sortable: true, filterable: true },
+        { field: 'description', header: 'Description', width: '250px', sortable: true, filterable: true },
+        { field: 'category', header: 'Category', width: '120px', sortable: true, filterable: true }
+      ],
+      pageSize: 10,
+      enablePagination: true,
+      enableSorting: true,
+      enableFiltering: true,
+      enableSelection: true,
+      enableSearch: true,
+      searchPlaceholder: 'Search for items...',
+      showInsertButton: true,
+      insertButtonText: 'Select Item',
+      showCloseButton: true,
+      closeButtonText: 'Cancel'
     });
-    
-    // Show success message
-    this.toastr.success(`Selected: ${selectedItem.name}`, 'Item Selected');
+    this.isDataSelectionModalOpen.set(true);
   }
-  
-  // Close the modal
-  this.closeDataSelectionModal();
-}
 
-// Handle search functionality - called when user clicks "Find" button
-onFindClicked = (searchTerm: string): void => {
-  console.log('Search term:', searchTerm);
-  
-  // Set loading state
-  const currentConfig = this.dataSelectionConfig();
-  // Note: You'll need to manage loading state through the modal's setLoading method
-  
-  // Simulate API call
-  setTimeout(() => {
-    // Example: Filter or fetch data based on search term
-    const filteredData = this.generateSearchResults(searchTerm);
-    
-    // Update the data source
-    this.dataSelectionConfig.update(config => ({
-      ...config,
-      pickTableDataSource: filteredData
-    }));
-    
-    this.toastr.info(`Found ${filteredData.length} results for "${searchTerm}"`, 'Search Complete');
-  }, 1500); // Simulate API delay
-};
-
-// Generate sample search results
-private generateSearchResults(searchTerm: string): any[] {
-  if (!searchTerm.trim()) {
-    // Return original data if no search term
-    return [
-      { id: 'ITEM001', name: 'Sample Item 1', description: 'First sample item', category: 'Electronics' },
-      { id: 'ITEM002', name: 'Sample Item 2', description: 'Second sample item', category: 'Books' },
-      // ... other items
-    ];
+  closeDataSelectionModal(): void {
+    this.isDataSelectionModalOpen.set(false);
   }
-  
-  // Generate filtered results based on search term
-  const searchResults = [];
-  for (let i = 1; i <= 10; i++) {
-    searchResults.push({
-      id: `SEARCH${i.toString().padStart(3, '0')}`,
-      name: `${searchTerm} Result ${i}`,
-      description: `Search result ${i} for "${searchTerm}"`,
-      category: ['Electronics', 'Books', 'Clothing', 'Sports'][i % 4]
-    });
-  }
-  
-  return searchResults;
-}
 
-// Update your existing onDotsClick method:
-onDotsClick(): void {
-  console.log('Dots clicked - opening data selection modal');
-  this.openDataSelectionModal();
-}
+  onDataSelectionResult(selectedItem: any): void {
+    console.log('Selected item:', selectedItem);
+    
+    if (selectedItem) {
+      this.frmGroup.patchValue({
+        id: selectedItem.id,
+        textBox: selectedItem.name
+      });
+      
+      this.toastr.success(`Selected: ${selectedItem.name}`, 'Item Selected');
+    }
+    
+    this.closeDataSelectionModal();
+  }
+
+  onFindClicked = (searchTerm: string): void => {
+    console.log('Search term:', searchTerm);
+    
+    setTimeout(() => {
+      const filteredData = this.generateSearchResults(searchTerm);
+      
+      this.dataSelectionConfig.update(config => ({
+        ...config,
+        pickTableDataSource: filteredData
+      }));
+      
+      this.toastr.info(`Found ${filteredData.length} results for "${searchTerm}"`, 'Search Complete');
+    }, 1500);
+  };
+
+  private generateSearchResults(searchTerm: string): any[] {
+    if (!searchTerm.trim()) {
+      return [
+        { id: 'ITEM001', name: 'Sample Item 1', description: 'First sample item', category: 'Electronics' },
+        { id: 'ITEM002', name: 'Sample Item 2', description: 'Second sample item', category: 'Books' },
+      ];
+    }
+    
+    const searchResults = [];
+    for (let i = 1; i <= 10; i++) {
+      searchResults.push({
+        id: `SEARCH${i.toString().padStart(3, '0')}`,
+        name: `${searchTerm} Result ${i}`,
+        description: `Search result ${i} for "${searchTerm}"`,
+        category: ['Electronics', 'Books', 'Clothing', 'Sports'][i % 4]
+      });
+    }
+    
+    return searchResults;
+  }
+
+  onDotsClick(): void {
+    console.log('Dots clicked - opening data selection modal');
+    this.openDataSelectionModal();
+  }
 }

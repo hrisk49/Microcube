@@ -41,11 +41,11 @@ export class IdBoxComponent {
   
   // New validation inputs
   readonly minLen = input<number>();
-  readonly maxLen = input<number>();
+  readonly maxLen = input<number>();  
   readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
   readonly tooltipDelay = input<number>(500);
   readonly tooltipClass = input<string>('custom-tooltip');
-  readonly isRequired = input<boolean>(false);
+  // readonly isRequired = input<boolean>(false);
 
   // Custom error messages support
   readonly customErrorMessages = input<{ [key: string]: string }>({});
@@ -97,6 +97,8 @@ export class IdBoxComponent {
     }
     console.log('Existing Validators:', parentValidatorFn);
     
+
+    
     // Add required validator if needed
     if (this.isRequired()) {
       validators.push(Validators.required);
@@ -120,6 +122,13 @@ export class IdBoxComponent {
     // ✅ Combine parent + child validators properly
     control.setValidators(Validators.compose(validators));
     control.updateValueAndValidity();
+  }
+
+  isRequired(): boolean {
+    const control = this.frmGroup().get(this.controlName());
+    if (!control?.validator) return false;
+    const validation = control.validator({} as any);
+    return !!validation?.['required'];
   }
 
   private getInputType(): string {

@@ -34,7 +34,6 @@ import {Mx008Model} from '../../model/mx008.model';
 import {ExternalCodeService} from '../../../../shared/services/external-code.service';
 import {Subject, takeUntil} from 'rxjs';
 import {JsonPipe} from '@angular/common';
-import {DateInputComponent} from '../../../../shared/components/input-types/date-input.component/date-input.component';
 
 @Component({
   selector: 'app-pacs-008',
