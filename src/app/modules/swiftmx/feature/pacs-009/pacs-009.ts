@@ -42,7 +42,6 @@ import { CurrencyModel } from '../../../../shared/models/currency.model';
 import { LookupService } from '../../../../shared/services/lookup.service';
 import { MessageTypeService } from '../../../../shared/services/message-type.service';
 import { LEI_PATTERN } from '../../../../shared/constant/value-patterns.constant';
-import { DateInputComponent } from '../../../../shared/components/input-types/date-input.component/date-input.component';
 
 
 @Component({
@@ -51,7 +50,6 @@ import { DateInputComponent } from '../../../../shared/components/input-types/da
     ReactiveFormsModule,
     TextBaseInput,
     SelectOptionField,
-    DateInputComponent,
     TimeInput,
     AmountToWordInput,
     ExpansionPanelHeader,
