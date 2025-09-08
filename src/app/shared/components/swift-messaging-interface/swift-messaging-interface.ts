@@ -28,7 +28,7 @@ import { MessageTypeService } from '../../services/message-type.service';
 import { TextBaseInput } from '../input-types/text-base-input/text-base-input';
 
 import { CBSData, SwiftMessageRequest } from '../../models/swift-message.model';
-import { DateInputComponent } from '../input-types/date-input.component/date-input.component';
+import { DateInput } from '../input-types/date-input/date-input';
 
 @Component({
   selector: 'app-swift-messaging-interface',
@@ -48,7 +48,7 @@ import { DateInputComponent } from '../input-types/date-input.component/date-inp
     Button,
     SelectOptionField,
     FormsModule,
-    DateInputComponent,
+    DateInput,
     TextBaseInput,
     ReactiveFormsModule,
     RouterModule,
