@@ -1,62 +1,42 @@
-import { Component, ViewChild, AfterViewInit, OnInit } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { SwiftMessage } from '../prime-table-out/prime-table-out';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ELEMENT_DATA } from '../prime-table-out/prime-table-out';
-import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  FormGroup,
-  FormBuilder,
-  Validators,
-} from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
-import { Button } from '../input-types/button/button';
-import { SelectOptionField } from '../input-types/select-option-field/select-option-field';
-import { BranchInfoService } from '../../services/branch-info.service';
-import { MessageTypeService } from '../../services/message-type.service';
-import { TextBaseInput } from '../input-types/text-base-input/text-base-input';
-
-import { CBSData, SwiftMessageRequest } from '../../models/swift-message.model';
-import { DateInputComponent } from '../input-types/date-input.component/date-input.component';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {Button} from '../input-types/button/button';
+import {DateInput} from '../input-types/date-input/date-input';
+import {DatePipe, NgIf} from '@angular/common';
+import {MatIconButton} from '@angular/material/button';
+import {SelectOptionField} from '../input-types/select-option-field/select-option-field';
+import {TextBaseInput} from '../input-types/text-base-input/text-base-input';
+import {MatPaginator} from '@angular/material/paginator';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ELEMENT_DATA, SwiftMessage} from '../prime-table-out/prime-table-out';
+import {MatTableDataSource} from '@angular/material/table';
+import {CBSData, SwiftMessageRequest} from '../../models/swift-message.model';
+import {MatDialog} from '@angular/material/dialog';
+import {BranchInfoService} from '../../services/branch-info.service';
+import {MessageTypeService} from '../../services/message-type.service';
+import {Router} from '@angular/router';
+import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
+import {AuthorizationModel} from '../../models/authorization.model';
 
 @Component({
-  selector: 'app-swift-messaging-interface',
-  standalone: true,
+  selector: 'app-authorization',
   imports: [
-    CommonModule,
-    MatFormFieldModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTooltipModule,
-    MatDialogModule,
-    MatPaginatorModule,
     Button,
+    DateInput,
+    DatePipe,
+    MatIcon,
+    MatIconButton,
+    MatPaginator,
+    MatTooltip,
+    NgIf,
     SelectOptionField,
-    FormsModule,
-    DateInputComponent,
-    TextBaseInput,
-    ReactiveFormsModule,
-    RouterModule,
+    TextBaseInput
   ],
-  templateUrl: './swift-messaging-interface.html',
-  styleUrl: './swift-messaging-interface.scss',
+  templateUrl: './authorization.html',
+  styleUrl: './authorization.scss'
 })
-export class SwiftMessagingInterface implements OnInit, AfterViewInit {
+
+export class Authorization implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   // Form for the interface
@@ -96,37 +76,37 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
 
   // Message types for dropdown (MT types)
   messageTypes: any[] = [
-    { key: 'pacs-008', value: 'Pacs 008 - F1 to F1 Customer Credit Transfer' },
+    { key: 'pacs-008', value: 'pacs 008 - F1 to F1 Customer Credit Transfer' },
     {
       key: 'pacs-009',
-      value: 'Pacs 009 - Financial Institution Credit Transfer Return',
+      value: 'pacs 009 - Financial Institution Credit Transfer Return',
     },
-    { key: 'pacs-003', value: 'Pacs 003 - Direct Debit' },
-    { key: 'pacs-002', value: 'Pacs 002 - F1 to F1 Payment' },
-    { key: 'pacs-010', value: 'Pacs 010 - Payment Return' },
-    { key: 'pacs-011', value: 'Pacs 011 - Request for Investigation' },
-    { key: 'pacs-012', value: 'Pacs 012 - Request for Investigation Return' },
-    { key: 'pacs-013', value: 'Pacs 013 - Resolution of Investigation' },
-    { key: 'pacs-014', value: 'Pacs 014 - Additional Payment Information' },
+    { key: 'pacs-003', value: 'pacs 003 - Direct Debit' },
+    { key: 'pacs-002', value: 'pacs 002 - F1 to F1 Payment' },
+    { key: 'pacs-010', value: 'pacs 010 - Payment Return' },
+    { key: 'pacs-011', value: 'pacs 011 - Request for Investigation' },
+    { key: 'pacs-012', value: 'pacs 012 - Request for Investigation Return' },
+    { key: 'pacs-013', value: 'pacs 013 - Resolution of Investigation' },
+    { key: 'pacs-014', value: 'pacs 014 - Additional Payment Information' },
     {
       key: 'pacs-015',
-      value: 'Pacs 015 - Account Switching Information Request',
+      value: 'pacs 015 - Account Switching Information Request',
     },
     {
       key: 'pacs-016',
-      value: 'Pacs 016 - Intra-Position Movement Instruction',
+      value: 'pacs 016 - Intra-Position Movement Instruction',
     },
     {
       key: 'pacs-017',
-      value: 'Pacs 017 - Intra-Position Movement Confirmation',
+      value: 'pacs 017 - Intra-Position Movement Confirmation',
     },
     {
       key: 'pacs-018',
-      value: 'Pacs 018 - Intra-Position Movement Status Report',
+      value: 'pacs 018 - Intra-Position Movement Status Report',
     },
     {
       key: 'pacs-019',
-      value: 'Pacs 019 - Intra-Position Movement Cancellation Request',
+      value: 'pacs 019 - Intra-Position Movement Cancellation Request',
     },
   ];
 
@@ -179,8 +159,8 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
   private initializeForm() {
     this.swiftForm = this.fb.group({
       messageType: [null],
-      fromDate: [new Date(), [Validators.required]], // Add required validator if needed
-      toDate: [new Date(), [Validators.required]], // Add required validator if needed
+      fromDate: ['', [Validators.required]], // Add required validator if needed
+      toDate: ['', [Validators.required]], // Add required validator if needed
       branch: [null],
       messageRefNo: [''],
     });
@@ -191,6 +171,8 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
    */
   private loadBranchData() {
     this.isLoadingBranches = true;
+    console.log('Loading branch data from API...');
+
     this.branchInfoService.getBranchList().subscribe({
       next: (response) => {
         this.isLoadingBranches = false;
@@ -258,12 +240,12 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
     console.log('Setting fallback branch options');
     this.branchOptions = [
       {
-        key: '000031',
-        value: 'CORPORATE BRANCH, ABC Bank (0031)',
+        key: '000035',
+        value: 'HEAD OFFICE, SOUTHEAST BANK LIMITED (SEBDBDDH)',
       },
       {
         key: '086153',
-        value: 'PRINCIPAL BRANCH, SOUTHEAST BANK',
+        value: 'PRINCIPAL BRANCH, SOUTHEAST BANK LIMITED (SEBDBDDHSPB)',
       },
     ];
   }
@@ -728,7 +710,7 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
   /**
    * Build search request object from form values
    */
-  private buildSearchRequest(): SwiftMessageRequest {
+  private buildSearchRequest(): AuthorizationModel {
     const formValue = this.swiftForm.value;
     console.log('Building search request from form value:', formValue);
     return {
@@ -1176,10 +1158,10 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
     };
 
     console.log('Testing data flow with sample data:', sampleCBSData);
-    
+
     // Set message type to pacs-009 for testing
     this.swiftForm.patchValue({ messageType: 'pacs-009' });
-    
+
     // Process the sample data
     this.processCBSData(sampleCBSData);
   }

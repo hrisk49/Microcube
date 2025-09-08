@@ -11,11 +11,11 @@
 
       <!-- Other Fields Row -->
       <div class="grid grid-cols-4 gap-4 mb-4 justify-start items-center">
-        <app-date-input [frmGroup]="swiftForm" [controlName]="'fromDate'" [label]="'From Date'" 
-          [isVertical]="true"></app-date-input>
+        <lds-date-input [frmGroup]="swiftForm" [controlName]="'fromDate'" [label]="'From Date'" 
+          [isVertical]="true"></lds-date-input>
 
-        <app-date-input [frmGroup]="swiftForm" [controlName]="'toDate'" [label]="'To Date'" 
-          [isVertical]="true"></app-date-input>
+        <lds-date-input [frmGroup]="swiftForm" [controlName]="'toDate'" [label]="'To Date'" 
+          [isVertical]="true"></lds-date-input>
 
         <app-select-option-field [frmGroup]="swiftForm" controlName="branch" label="Branch" [options]="branchOptions"
           [isVertical]="true" (onChange)="onBranchChange($event)">

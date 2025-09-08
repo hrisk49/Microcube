@@ -50,7 +50,9 @@
             [controlName]="'fromLei'"
             [maxLength]="20"
             [minLength]="20"
-            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+            [tooltip]="
+              'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+            "
           />
         </div>
         }
@@ -88,7 +90,9 @@
             [controlName]="'toLei'"
             [maxLength]="20"
             [minLength]="20"
-            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+            [tooltip]="
+              'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+            "
           />
         </div>
         }
@@ -136,7 +140,7 @@
           }
         </div>
 
-        <app-date-input
+        <lds-date-input
           [frmGroup]="frmGroup"
           [label]="'Creation Date'"
           [controlName]="'creDt'"
@@ -162,13 +166,6 @@
           [label]="'Priority'"
           [controlName]="'priority'"
         />
-
-        <app-text-base-input
-          [frmGroup]="frmGroup"
-          [isReadonly]="true"
-          [label]="'Number of Transactions'"
-          [controlName]="'nbOfTxs'"
-        />
       </div>
       <!-- Related Information -->
       <div class="sub-panel">
@@ -191,7 +188,7 @@
             />
             @if(rltdFromBicPanel()) {
             <div class="form-grid-col-1">
-                            <app-text-base-input
+              <app-text-base-input
                 [frmGroup]="frmGroup"
                 [label]="'BIC'"
                 [controlName]="'rltdFromBicfi'"
@@ -207,9 +204,9 @@
                 [label]="'Clearing System ID Code'"
                 [controlName]="'rltdFromClrSysIdCd'"
               />
-    
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Member ID'"
                 [controlName]="'rltdFromMmbId'"
                 [maxLength]="28"
@@ -220,7 +217,9 @@
                 [controlName]="'rltdFromLei'"
                 [maxLength]="20"
                 [minLength]="20"
-                [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+                [tooltip]="
+                  'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+                "
               />
             </div>
             }
@@ -244,13 +243,13 @@
                 "
               />
               <app-select-option-field
-            [frmGroup]="frmGroup"
+                [frmGroup]="frmGroup"
                 [options]="clearingSystemIdOptions"
                 [label]="'Clearing System ID Code'"
-                [controlName]="'rltdToClrSysIdCd'"  
+                [controlName]="'rltdToClrSysIdCd'"
               />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Member ID'"
                 [controlName]="'rltdToMmbId'"
                 [maxLength]="28"
@@ -261,7 +260,9 @@
                 [controlName]="'rltdToLei'"
                 [maxLength]="20"
                 [minLength]="20"
-                [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+                [tooltip]="
+                  'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+                "
               />
             </div>
             }
@@ -282,7 +283,7 @@
             [label]="'Business Service'"
             [controlName]="'rltdBizSvc'"
           />
-          <app-date-input
+          <lds-date-input
             [frmGroup]="frmGroup"
             [label]="'Creation Date'"
             [controlName]="'rltdCreDt'"
@@ -294,10 +295,10 @@
             [controlName]="'rltdCpyDplct'"
           />
           <app-select-option-field
-          [frmGroup]="frmGroup"
-          [options]="priorityOptions"
-          [label]="'Priority'"
-          [controlName]="'rltdPrty'"
+            [frmGroup]="frmGroup"
+            [options]="priorityOptions"
+            [label]="'Priority'"
+            [controlName]="'rltdPrty'"
           />
         </div>
         }
@@ -325,7 +326,7 @@
             [controlName]="'msgId'"
           />
 
-          <app-date-input
+          <lds-date-input
             [frmGroup]="frmGroup"
             [label]="'Creation Date Time'"
             [controlName]="'creDtTm'"
@@ -360,47 +361,175 @@
             />
             @if(sttlmAccountPanel()) {
             <div class="form-grid-col-1">
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Account ID'"
-                [controlName]="'sttlmAcctId'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'IBAN'"
-                [controlName]="'sttlmAcctIban'"
-                [placeholder]="'e.g., GB82WEST12345698765432'"
-                [tooltip]="'International Bank Account Number (ISO 13616 format)'"
-              />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="currencyOptions"
-                [label]="'Account Currency'"
-            [controlName]="'sttlmAcctCcy'"
-          />
+              <!-- Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account -> Identification-->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header
+                  [isOpenSignal]="SttlmAcctIdPanel"
+                  [subPanelTitle]="'Identification'"
+                />
+
+                @if (SttlmAcctIdPanel()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'IBAN'"
+                    [controlName]="'sttlmAcctIban'"
+                    [tooltip]="
+                      'International Bank Account Number (ISO 13616 format)'
+                    "
+                    (input)="onAccountIdentificationChange('iban', 'sttlmAcct')"
+                  />
+                </div>
+                }
+              </div>
+              <!-- Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account -> Identification -> Other-->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header
+                  [isOpenSignal]="SttlmAcctIdOthrPanel"
+                  [subPanelTitle]="'Other'"
+                />
+
+                @if (SttlmAcctIdOthrPanel()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Identification'"
+                    [controlName]="'sttlmAcctId'"
+                    [tooltip]="
+                      'Other account identification (1-34 characters, CBPR_RestrictedFINXMax34Text format)'
+                    "
+                    (input)="
+                      onAccountIdentificationChange('other', 'sttlmAcct')
+                    "
+                  />
+                </div>
+
+                <div class="form-grid-col-1">
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Issuer'"
+                    [controlName]="'sttlmAcctIssr'"
+                    [tooltip]="
+                      'Entity that assigns the identification (1-35 characters)'
+                    "
+                    (input)="
+                      onAccountIdentificationChange('other', 'sttlmAcct')
+                    "
+                  />
+                </div>
+                <!-- Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account -> Identification -> Other ->SchemeName-->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header
+                    [isOpenSignal]="SttlmAcctIdOthrSchmeNmPanel"
+                    [subPanelTitle]="'Scheme Name'"
+                  />
+
+                  @if (SttlmAcctIdOthrSchmeNmPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-select-option-field
+                      [frmGroup]="frmGroup"
+                      [options]="accountIdentificationCodeOptions"
+                      [label]="'Code'"
+                      [controlName]="'sttlmAcctSchmeNmCd'"
+                      (change)="
+                        onSchemeNameChange('code', 'sttlmAcct');
+                        onAccountIdentificationChange('other', 'sttlmAcct')
+                      "
+                    />
+                    <app-text-base-input
+                      [frmGroup]="frmGroup"
+                      [label]="'Proprietary'"
+                      [controlName]="'sttlmAcctSchmeNmPrtry'"
+                      [tooltip]="
+                        'Free text identification scheme name (1-35 characters)'
+                      "
+                      (input)="
+                        onSchemeNameChange('prtry', 'sttlmAcct');
+                        onAccountIdentificationChange('other', 'sttlmAcct')
+                      "
+                    />
+                  </div>
+                  }
+                </div>
+                }
+              </div>
+              <!-- Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account -> Type-->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header
+                  [isOpenSignal]="SttlmAcctTpPanel"
+                  [subPanelTitle]="'Type'"
+                />
+
+                @if (SttlmAcctTpPanel()) {
+                <div class="form-grid-col-1">
+                  <app-select-option-field
+                    [frmGroup]="frmGroup"
+                    [options]="cashAccountTypeOptions"
+                    [label]="'Code'"
+                    [controlName]="'sttlmAcctTpCd'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Proprietary'"
+                    [controlName]="'sttlmAcctTpPrtry'"
+                  />
+                </div>
+                }
+              </div>
+
               <app-select-option-field
                 [frmGroup]="frmGroup"
-                [options]="accountTypeOptions"
-                [label]="'Account Type'"
-                [controlName]="'sttlmAcctTp'"
+                [options]="currencyOptions"
+                [label]="'Currency'"
+                [controlName]="'sttlmAcctCcy'"
               />
               <app-text-base-input
                 [frmGroup]="frmGroup"
-                [label]="'Account Name'"
+                [label]="'Name'"
                 [controlName]="'sttlmAcctNm'"
               />
-    
-              <app-select-option-field
-                [frmGroup]="frmGroup"
-                [options]="rmbrsmntAgtPrxyCdOptions"
-                [label]="'Proxy Code'"
-                [controlName]="'sttlmAgtAcctPrxyCd'"
-              />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-                [label]="'Proxy ID'"
-                [controlName]="'sttlmAgtAcctPrxyId'"
-              />
+
+              <!-- Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account -> Proxy-->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header
+                  [isOpenSignal]="SttlmAcctPrxyPanel"
+                  [subPanelTitle]="'Proxy'"
+                />
+
+                @if (SttlmAcctPrxyPanel()) {
+                <div class="form-grid-col-1">
+                  <!-- Payment Return V09 -> Group Header -> Settlement Information -> Settlement Account -> Proxy->Type-->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header
+                      [isOpenSignal]="SttlmAcctPrxyTpPanel"
+                      [subPanelTitle]="'Type'"
+                    />
+
+                    @if (SttlmAcctPrxyTpPanel()) {
+                    <div class="form-grid-col-1">
+                      <app-select-option-field
+                        [frmGroup]="frmGroup"
+                        [options]="cashAccountTypeOptions"
+                        [label]="'Code'"
+                        [controlName]="'sttlmAcctPrxyTpCd'"
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Proprietary'"
+                        [controlName]="'sttlmAcctPrxyTpPrtry'"
+                      />
+                    </div>
+                    }
+                  </div>
+
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Identification'"
+                    [controlName]="'sttlmAcctPrxyId'"
+                  />
+                </div>
+                }
+              </div>
             </div>
             }
           </div>
@@ -420,7 +549,7 @@
                 [minLength]="8"
                 (onDoubleClick)="openBicSelectionModal('instgRmbrsmntAgtBicfi')"
               />
-          <!-- <app-text-base-input
+              <!-- <app-text-base-input
             [frmGroup]="frmGroup"
                   [label]="'Clearing System ID Code'"
                   [controlName]="'instdRmbrsmntAgtClrSysIdCd'"
@@ -431,13 +560,15 @@
                 [controlName]="'instgRmbrsmntAgtMmbId'"
                 [maxLength]="28"
               />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'LEI'"
                 [controlName]="'instgRmbrsmntAgtLei'"
                 [maxLength]="20"
                 [minLength]="20"
-                [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+                [tooltip]="
+                  'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+                "
               />
               <app-text-base-input
                 [frmGroup]="frmGroup"
@@ -537,7 +668,9 @@
                     [controlName]="'instgRmbrsmntAgtAdrCtry'"
                     [maxLength]="2"
                     [minLength]="2"
-                    [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
+                    [tooltip]="
+                      'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'
+                    "
                   />
                 </div>
                 }
@@ -552,40 +685,199 @@
               [subPanelTitle]="'Instructing Reimbursement Agent Account'"
             />
             @if (instructingReimbursementAgentAccountPanel()) {
-            <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-                [label]="'Account ID'"
-                [controlName]="'instgRmbrsmntAgtAcctId'"
+            <!-- Instructing Reimbursement Agent Account - structured like Settlement Account -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="instgRmbrsmntAgtAcctPanel"
+                [subPanelTitle]="'Account'"
               />
-              <app-select-option-field
-                [frmGroup]="frmGroup"
-                [options]="accountTypeOptions"
-                [label]="'Type'"
-                [controlName]="'instgRmbrsmntAgtAcctTp'"
-              />
-              <app-select-option-field
-                [frmGroup]="frmGroup"
-                [options]="currencyOptions"
-                [label]="'Currency'"
-                [controlName]="'instgRmbrsmntAgtAcctCcy'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Name'"
-                [controlName]="'instgRmbrsmntAgtAcctNm'"
-              />
-              <app-select-option-field
-                [frmGroup]="frmGroup"
-                [options]="rmbrsmntAgtPrxyCdOptions"
-                [label]="'Proxy Code'"
-                [controlName]="'instgRmbrsmntAgtPrxyCd'"
-              />
-              <app-text-base-input
-                [frmGroup]="frmGroup"
-                [label]="'Proxy ID'"
-                [controlName]="'instgRmbrsmntAgtPrxyId'"
-              />
+              @if(instgRmbrsmntAgtAcctPanel()) {
+              <div class="form-grid-col-1">
+                <!-- Account Identification -->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header
+                    [isOpenSignal]="instgRmbrsmntAgtAcctIdPanel"
+                    [subPanelTitle]="'Identification'"
+                  />
+                  @if (instgRmbrsmntAgtAcctIdPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-text-base-input
+                      [frmGroup]="frmGroup"
+                      [label]="'IBAN'"
+                      [controlName]="'instgRmbrsmntAgtAcctIban'"
+                      [tooltip]="
+                        'International Bank Account Number (ISO 13616 format)'
+                      "
+                      (input)="
+                        onAccountIdentificationChange(
+                          'iban',
+                          'instgRmbrsmntAgtAcct'
+                        )
+                      "
+                    />
+                  </div>
+                  }
+                </div>
+
+                <!-- Other Account Identification -->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header
+                    [isOpenSignal]="instgRmbrsmntAgtAcctIdOthrPanel"
+                    [subPanelTitle]="'Other'"
+                  />
+                  @if (instgRmbrsmntAgtAcctIdOthrPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-text-base-input
+                      [frmGroup]="frmGroup"
+                      [label]="'Identification'"
+                      [controlName]="'instgRmbrsmntAgtAcctId'"
+                      [tooltip]="
+                        'Other account identification (1-34 characters)'
+                      "
+                      (input)="
+                        onAccountIdentificationChange(
+                          'other',
+                          'instgRmbrsmntAgtAcct'
+                        )
+                      "
+                    />
+                  </div>
+                  <div class="form-grid-col-1">
+                    <app-text-base-input
+                      [frmGroup]="frmGroup"
+                      [label]="'Issuer'"
+                      [controlName]="'instgRmbrsmntAgtAcctIssr'"
+                      [tooltip]="
+                        'Entity that assigns the identification (1-35 characters)'
+                      "
+                      (input)="
+                        onAccountIdentificationChange(
+                          'other',
+                          'instgRmbrsmntAgtAcct'
+                        )
+                      "
+                    />
+                  </div>
+
+                  <!-- Scheme Name -->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header
+                      [isOpenSignal]="instgRmbrsmntAgtAcctIdOthrSchmeNmPanel"
+                      [subPanelTitle]="'Scheme Name'"
+                    />
+                    @if (instgRmbrsmntAgtAcctIdOthrSchmeNmPanel()) {
+                    <div class="form-grid-col-1">
+                      <app-select-option-field
+                        [frmGroup]="frmGroup"
+                        [options]="accountIdentificationCodeOptions"
+                        [label]="'Code'"
+                        [controlName]="'instgRmbrsmntAgtAcctSchmeNmCd'"
+                        (change)="
+                          onSchemeNameChange('code', 'instgRmbrsmntAgtAcct');
+                          onAccountIdentificationChange(
+                            'other',
+                            'instgRmbrsmntAgtAcct'
+                          )
+                        "
+                      />
+                      <app-text-base-input
+                        [frmGroup]="frmGroup"
+                        [label]="'Proprietary'"
+                        [controlName]="'instgRmbrsmntAgtAcctSchmeNmPrtry'"
+                        [tooltip]="
+                          'Free text identification scheme name (1-35 characters)'
+                        "
+                        (input)="
+                          onSchemeNameChange('prtry', 'instgRmbrsmntAgtAcct');
+                          onAccountIdentificationChange(
+                            'other',
+                            'instgRmbrsmntAgtAcct'
+                          )
+                        "
+                      />
+                    </div>
+                    }
+                  </div>
+                  }
+                </div>
+
+                <!-- Account Type -->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header
+                    [isOpenSignal]="instgRmbrsmntAgtAcctTpPanel"
+                    [subPanelTitle]="'Type'"
+                  />
+                  @if (instgRmbrsmntAgtAcctTpPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-select-option-field
+                      [frmGroup]="frmGroup"
+                      [options]="cashAccountTypeOptions"
+                      [label]="'Code'"
+                      [controlName]="'instgRmbrsmntAgtAcctTpCd'"
+                    />
+                    <app-text-base-input
+                      [frmGroup]="frmGroup"
+                      [label]="'Proprietary'"
+                      [controlName]="'instgRmbrsmntAgtAcctTpPrtry'"
+                    />
+                  </div>
+                  }
+                </div>
+
+                <!-- Currency and Name -->
+                <app-select-option-field
+                  [frmGroup]="frmGroup"
+                  [options]="currencyOptions"
+                  [label]="'Currency'"
+                  [controlName]="'instgRmbrsmntAgtAcctCcy'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Name'"
+                  [controlName]="'instgRmbrsmntAgtAcctNm'"
+                />
+
+                <!-- Proxy -->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header
+                    [isOpenSignal]="instgRmbrsmntAgtAcctPrxyPanel"
+                    [subPanelTitle]="'Proxy'"
+                  />
+                  @if (instgRmbrsmntAgtAcctPrxyPanel()) {
+                  <div class="form-grid-col-1">
+                    <!-- Proxy Type -->
+                    <div class="sub-panel">
+                      <app-expansion-sub-panel-header
+                        [isOpenSignal]="instgRmbrsmntAgtAcctPrxyTpPanel"
+                        [subPanelTitle]="'Type'"
+                      />
+                      @if (instgRmbrsmntAgtAcctPrxyTpPanel()) {
+                      <div class="form-grid-col-1">
+                        <app-select-option-field
+                          [frmGroup]="frmGroup"
+                          [options]="cashAccountTypeOptions"
+                          [label]="'Code'"
+                          [controlName]="'instgRmbrsmntAgtAcctPrxyTpCd'"
+                        />
+                        <app-text-base-input
+                          [frmGroup]="frmGroup"
+                          [label]="'Proprietary'"
+                          [controlName]="'instgRmbrsmntAgtAcctPrxyTpPrtry'"
+                        />
+                      </div>
+                      }
+                    </div>
+
+                    <app-text-base-input
+                      [frmGroup]="frmGroup"
+                      [label]="'Identification'"
+                      [controlName]="'instgRmbrsmntAgtAcctPrxyId'"
+                    />
+                  </div>
+                  }
+                </div>
+              </div>
+              }
             </div>
             }
           </div>
@@ -597,13 +889,18 @@
             />
             @if (instructedReimbursementAgentPanel()) {
             <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'BIC'"
                 [controlName]="'instdRmbrsmntAgtBicfi'"
                 [maxLength]="11"
                 [minLength]="8"
-                (onDoubleClick)="openBicSelectionModal('instdRmbrsmntAgtBicfi', 'instdRmbrsmntAgtNm')"
+                (onDoubleClick)="
+                  openBicSelectionModal(
+                    'instdRmbrsmntAgtBicfi',
+                    'instdRmbrsmntAgtNm'
+                  )
+                "
               />
               <!-- <app-text-base-input
                   [frmGroup]="frmGroup"
@@ -622,7 +919,9 @@
                 [controlName]="'instdRmbrsmntAgtLei'"
                 [maxLength]="20"
                 [minLength]="20"
-                [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+                [tooltip]="
+                  'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+                "
               />
               <app-text-base-input
                 [frmGroup]="frmGroup"
@@ -722,7 +1021,9 @@
                     [controlName]="'instdRmbrsmntAgtAdrCtry'"
                     [maxLength]="2"
                     [minLength]="2"
-                    [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
+                    [tooltip]="
+                      'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'
+                    "
                   />
                 </div>
                 }
@@ -831,30 +1132,30 @@
       <!-- Payment Type Information -->
       <div class="sub-panel">
         <app-expansion-sub-panel-header
-        [isOpenSignal]="paymentTypePanel"
+          [isOpenSignal]="paymentTypePanel"
           [subPanelTitle]="'Payment Type Information'"
-      />
-      @if (paymentTypePanel()) {
-      <div class="form-grid-col-1">
-        <app-select-option-field
-          [frmGroup]="frmGroup"
-          [options]="priorityOptions"
-          [label]="'Instruction Priority'"
-          [controlName]="'instrPrty'"
         />
+        @if (paymentTypePanel()) {
+        <div class="form-grid-col-1">
+          <app-select-option-field
+            [frmGroup]="frmGroup"
+            [options]="priorityOptions"
+            [label]="'Instruction Priority'"
+            [controlName]="'instrPrty'"
+          />
 
-        <app-select-option-field
-          [frmGroup]="frmGroup"
-          [options]="clearingChannelOptions"
-          [label]="'Clearing Channel'"
-          [controlName]="'clrChanl'"
-        />
+          <app-select-option-field
+            [frmGroup]="frmGroup"
+            [options]="clearingChannelOptions"
+            [label]="'Clearing Channel'"
+            [controlName]="'clrChanl'"
+          />
 
-        <app-text-base-input
-          [frmGroup]="frmGroup"
-          [label]="'Local Instrument Code'"
-          [controlName]="'lclInstrmCD'"
-        />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Local Instrument Code'"
+            [controlName]="'lclInstrmCD'"
+          />
 
           <!-- <app-text-base-input
           [frmGroup]="frmGroup"
@@ -862,11 +1163,11 @@
           [controlName]="'lclInstrmPrtry'"
         /> -->
 
-        <app-text-base-input
-          [frmGroup]="frmGroup"
-          [label]="'Category Purpose Code'"
-          [controlName]="'ctgyPurpCd'"
-        />
+          <app-text-base-input
+            [frmGroup]="frmGroup"
+            [label]="'Category Purpose Code'"
+            [controlName]="'ctgyPurpCd'"
+          />
 
           <!-- <app-text-base-input
           [frmGroup]="frmGroup"
@@ -874,47 +1175,47 @@
           [controlName]="'ctgyPurpPrtry'"
         /> -->
 
-      <!-- Service Level Sub-Panel -->
-      <div class="sub-panel">
-        <app-expansion-sub-panel-header
-          [isOpenSignal]="serviceLevelPanel"
-          [subPanelTitle]="'Service Level'"
-          [isButton]="true"
-          [buttonText]="'Add'"
-          [buttonIcon]="'add'"
-          (addAction)="addServiceRow()"
-        />
-
-        @if (serviceLevelPanel()) { @if (frmGroup) {
-        <ng-container formArrayName="serviceLevels">
-          @for (group of serviceLevels.controls; track $index) {
-          <div [formGroupName]="$index" class="form-grid-col-1 mb-3">
-            <app-select-option-field
-              [frmGroup]="getServiceLevelGroup($index)"
-              [options]="serviceLevelCodeOptions"
-              [label]="'Service Code'"
-              [controlName]="'serviceCode'"
+          <!-- Service Level Sub-Panel -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="serviceLevelPanel"
+              [subPanelTitle]="'Service Level'"
+              [isButton]="true"
+              [buttonText]="'Add'"
+              [buttonIcon]="'add'"
+              (addAction)="addServiceRow()"
             />
 
-            <app-select-option-field
-              [frmGroup]="getServiceLevelGroup($index)"
-              [options]="priorityOptions"
-              [label]="'Service Priority'"
-              [controlName]="'servicePriority'"
-            />
-            @if (serviceLevels.controls.length > 1) {
-            <button
-              (click)="removeServiceRow($index)"
-              class="remove-row-btn mt-8"
-            >
-              Remove
-            </button>
-            }
+            @if (serviceLevelPanel()) { @if (frmGroup) {
+            <ng-container formArrayName="serviceLevels">
+              @for (group of serviceLevels.controls; track $index) {
+              <div [formGroupName]="$index" class="form-grid-col-1 mb-3">
+                <app-select-option-field
+                  [frmGroup]="getServiceLevelGroup($index)"
+                  [options]="serviceLevelCodeOptions"
+                  [label]="'Service Code'"
+                  [controlName]="'serviceCode'"
+                />
+
+                <app-select-option-field
+                  [frmGroup]="getServiceLevelGroup($index)"
+                  [options]="priorityOptions"
+                  [label]="'Service Priority'"
+                  [controlName]="'servicePriority'"
+                />
+                @if (serviceLevels.controls.length > 1) {
+                <button
+                  (click)="removeServiceRow($index)"
+                  class="remove-row-btn mt-8"
+                >
+                  Remove
+                </button>
+                }
+              </div>
+              }
+            </ng-container>
+            } }
           </div>
-          }
-        </ng-container>
-        } }
-      </div>
         </div>
 
         }
@@ -937,10 +1238,11 @@
             [frmGroup]="frmGroup"
             [label]="'Amount'"
             [decimalPlaces]="5"
+            [currency]="frmGroup.get('intrBkSttlmAmtCcy')?.value || 'BDT'"
             [controlName]="'intrBkSttlmAmt'"
           />
 
-          <app-date-input
+          <lds-date-input
             [frmGroup]="frmGroup"
             [label]="'Settlement Date'"
             [controlName]="'intrBkSttlmDt'"
@@ -958,12 +1260,12 @@
             />
             @if (interbankSettlementTimeIndicationPanel()) {
             <div class="form-grid-col-1">
-              <app-date-input
+              <lds-date-input
                 [frmGroup]="frmGroup"
                 [label]="'Debit Date'"
                 [controlName]="'intrBkSttlmDbtDtTm'"
               />
-              <app-date-input
+              <lds-date-input
                 [frmGroup]="frmGroup"
                 [label]="'Credit Date'"
                 [controlName]="'intrBkSttlmCdtDtTm'"
@@ -1052,9 +1354,9 @@
               openBicSelectionModal('prvsInstgAgt1Bicfi', 'prvsInstgAgt1Nm')
             "
           />
-                        <app-select-option-field
+          <app-select-option-field
             [frmGroup]="frmGroup"
-                [options]="clearingSystemIdOptions"
+            [options]="clearingSystemIdOptions"
             [label]="'Clearing System ID Code'"
             [controlName]="'prvsInstgAgt1ClrSysIdCd'"
           />
@@ -1069,7 +1371,9 @@
             [controlName]="'prvsInstgAgt1Lei'"
             [maxLength]="20"
             [minLength]="20"
-            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+            [tooltip]="
+              'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+            "
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1083,93 +1387,95 @@
             />
             @if (prevAgent1AddressPanel()) {
             <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Address Line 1'"
-            [controlName]="'prvsInstgAgt1AdrLine1'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Address Line 2'"
-            [controlName]="'prvsInstgAgt1AdrLine2'"
-          />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Address Line 1'"
+                [controlName]="'prvsInstgAgt1AdrLine1'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Address Line 2'"
+                [controlName]="'prvsInstgAgt1AdrLine2'"
+              />
               <!-- <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Address Line 3'"
             [controlName]="'prvsInstgAgt1AdrLine3'"
               /> -->
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Department'"
-            [controlName]="'prvsInstgAgt1AdrDept'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Sub Department'"
-            [controlName]="'prvsInstgAgt1AdrSubDept'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Street Name'"
-            [controlName]="'prvsInstgAgt1AdrStrtNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Building Number'"
-            [controlName]="'prvsInstgAgt1AdrBldgNb'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Building Name'"
-            [controlName]="'prvsInstgAgt1AdrBldgNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Floor'"
-            [controlName]="'prvsInstgAgt1AdrFlr'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Post Box'"
-            [controlName]="'prvsInstgAgt1AdrPstBx'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Room'"
-            [controlName]="'prvsInstgAgt1AdrRoom'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Post Code'"
-            [controlName]="'prvsInstgAgt1AdrPstCd'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Town Name'"
-            [controlName]="'prvsInstgAgt1AdrTwnNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Town Location Name'"
-            [controlName]="'prvsInstgAgt1AdrTwnLctnNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'District Name'"
-            [controlName]="'prvsInstgAgt1AdrDstrctNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Country Sub Division'"
-            [controlName]="'prvsInstgAgt1AdrCtrySubDvsn'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Country'"
-            [controlName]="'prvsInstgAgt1AdrCtry'"
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Department'"
+                [controlName]="'prvsInstgAgt1AdrDept'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Sub Department'"
+                [controlName]="'prvsInstgAgt1AdrSubDept'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Street Name'"
+                [controlName]="'prvsInstgAgt1AdrStrtNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Building Number'"
+                [controlName]="'prvsInstgAgt1AdrBldgNb'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Building Name'"
+                [controlName]="'prvsInstgAgt1AdrBldgNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Floor'"
+                [controlName]="'prvsInstgAgt1AdrFlr'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Post Box'"
+                [controlName]="'prvsInstgAgt1AdrPstBx'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Room'"
+                [controlName]="'prvsInstgAgt1AdrRoom'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Post Code'"
+                [controlName]="'prvsInstgAgt1AdrPstCd'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Town Name'"
+                [controlName]="'prvsInstgAgt1AdrTwnNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Town Location Name'"
+                [controlName]="'prvsInstgAgt1AdrTwnLctnNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'District Name'"
+                [controlName]="'prvsInstgAgt1AdrDstrctNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Country Sub Division'"
+                [controlName]="'prvsInstgAgt1AdrCtrySubDvsn'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Country'"
+                [controlName]="'prvsInstgAgt1AdrCtry'"
                 [maxLength]="2"
                 [minLength]="2"
-                [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
+                [tooltip]="
+                  'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'
+                "
               />
             </div>
             }
@@ -1184,18 +1490,119 @@
           [subPanelTitle]="'Previous Instructing Agent 1 Account'"
         />
         @if (prevAgent1AccountPanel()) {
+
         <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Account ID'"
-            [controlName]="'prvsInstgAgt1AcctId'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="accountTypeOptions"
-            [label]="'Type'"
-            [controlName]="'prvsInstgAgt1AcctTp'"
-          />
+          <!-- Account Identification -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="prvsInstgAgt1AcctIdPanel"
+              [subPanelTitle]="'Identification'"
+            />
+            @if (prvsInstgAgt1AcctIdPanel()) {
+            <div class="form-grid-col-1">
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'IBAN'"
+                [controlName]="'prvsInstgAgt1AcctIban'"
+                [tooltip]="
+                  'International Bank Account Number (ISO 13616 format)'
+                "
+                (input)="
+                  onAccountIdentificationChange('iban', 'prvsInstgAgt1Acct')
+                "
+              />
+            </div>
+            }
+          </div>
+
+          <!-- Other Account Identification -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="prvsInstgAgt1AcctIdOthrPanel"
+              [subPanelTitle]="'Other'"
+            />
+            @if (prvsInstgAgt1AcctIdOthrPanel()) {
+            <div class="form-grid-col-1">
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Identification'"
+                [controlName]="'prvsInstgAgt1AcctId'"
+                [tooltip]="'Other account identification (1-34 characters)'"
+                (input)="onAccountIdentificationChange('other', 'prvsInstgAgt1Acct')"
+              />
+            </div>
+            <div class="form-grid-col-1">
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Issuer'"
+                [controlName]="'prvsInstgAgt1AcctIssr'"
+                [tooltip]="
+                  'Entity that assigns the identification (1-35 characters)'
+                "
+                (input)="onAccountIdentificationChange('other', 'prvsInstgAgt1Acct')"
+              />
+            </div>
+
+            <!-- Scheme Name -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="prvsInstgAgt1AcctIdOthrSchmeNmPanel"
+                [subPanelTitle]="'Scheme Name'"
+              />
+              @if (prvsInstgAgt1AcctIdOthrSchmeNmPanel()) {
+              <div class="form-grid-col-1">
+                <app-select-option-field
+                  [frmGroup]="frmGroup"
+                  [options]="accountIdentificationCodeOptions"
+                  [label]="'Code'"
+                  [controlName]="'prvsInstgAgt1AcctSchmeNmCd'"
+                  (change)="
+                    onSchemeNameChange('code', 'prvsInstgAgt1Acct');
+                    onAccountIdentificationChange('other', 'prvsInstgAgt1Acct')
+                  "
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Proprietary'"
+                  [controlName]="'prvsInstgAgt1AcctSchmeNmPrtry'"
+                  [tooltip]="
+                    'Free text identification scheme name (1-35 characters)'
+                  "
+                  (input)="
+                    onSchemeNameChange('prtry', 'prvsInstgAgt1Acct');
+                    onAccountIdentificationChange('other', 'prvsInstgAgt1Acct')
+                  "
+                />
+              </div>
+              }
+            </div>
+            }
+          </div>
+
+          <!-- Account Type -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="prvsInstgAgt1AcctTpPanel"
+              [subPanelTitle]="'Type'"
+            />
+            @if (prvsInstgAgt1AcctTpPanel()) {
+            <div class="form-grid-col-1">
+              <app-select-option-field
+                [frmGroup]="frmGroup"
+                [options]="cashAccountTypeOptions"
+                [label]="'Code'"
+                [controlName]="'prvsInstgAgt1AcctTpCd'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Proprietary'"
+                [controlName]="'prvsInstgAgt1AcctTpPrtry'"
+              />
+            </div>
+            }
+          </div>
+
+          <!-- Currency and Name -->
           <app-select-option-field
             [frmGroup]="frmGroup"
             [options]="currencyOptions"
@@ -1204,20 +1611,49 @@
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Account Name'"
+            [label]="'Name'"
             [controlName]="'prvsInstgAgt1AcctNm'"
           />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="rmbrsmntAgtPrxyCdOptions"
-            [label]="'Proxy Code'"
-            [controlName]="'prvsInstgAgt1PrxyCd'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Proxy ID'"
-            [controlName]="'prvsInstgAgt1PrxyId'"
-          />
+
+          <!-- Proxy -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="prvsInstgAgt1AcctPrxyPanel"
+              [subPanelTitle]="'Proxy'"
+            />
+            @if (prvsInstgAgt1AcctPrxyPanel()) {
+            <div class="form-grid-col-1">
+              <!-- Proxy Type -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header
+                  [isOpenSignal]="prvsInstgAgt1AcctPrxyTpPanel"
+                  [subPanelTitle]="'Type'"
+                />
+                @if (prvsInstgAgt1AcctPrxyTpPanel()) {
+                <div class="form-grid-col-1">
+                  <app-select-option-field
+                    [frmGroup]="frmGroup"
+                    [options]="cashAccountTypeOptions"
+                    [label]="'Code'"
+                    [controlName]="'prvsInstgAgt1AcctPrxyTpCd'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Proprietary'"
+                    [controlName]="'prvsInstgAgt1AcctPrxyTpPrtry'"
+                  />
+                </div>
+                }
+              </div>
+
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Identification'"
+                [controlName]="'prvsInstgAgt1AcctPrxyId'"
+              />
+            </div>
+            }
+          </div>
         </div>
         }
       </div>
@@ -1257,7 +1693,9 @@
             [controlName]="'prvsInstgAgt2Lei'"
             [maxLength]="20"
             [minLength]="20"
-            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+            [tooltip]="
+              'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+            "
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1271,93 +1709,95 @@
             />
             @if (prevAgent2AddressPanel()) {
             <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Address Line 1'"
-            [controlName]="'prvsInstgAgt2AdrLine1'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Address Line 2'"
-            [controlName]="'prvsInstgAgt2AdrLine2'"
-          />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Address Line 1'"
+                [controlName]="'prvsInstgAgt2AdrLine1'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Address Line 2'"
+                [controlName]="'prvsInstgAgt2AdrLine2'"
+              />
               <!-- <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Address Line 3'"
             [controlName]="'prvsInstgAgt2AdrLine3'"
               /> -->
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Department'"
-            [controlName]="'prvsInstgAgt2AdrDept'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Sub Department'"
-            [controlName]="'prvsInstgAgt2AdrSubDept'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Street Name'"
-            [controlName]="'prvsInstgAgt2AdrStrtNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Building Number'"
-            [controlName]="'prvsInstgAgt2AdrBldgNb'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Building Name'"
-            [controlName]="'prvsInstgAgt2AdrBldgNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Floor'"
-            [controlName]="'prvsInstgAgt2AdrFlr'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Post Box'"
-            [controlName]="'prvsInstgAgt2AdrPstBx'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Room'"
-            [controlName]="'prvsInstgAgt2AdrRoom'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Post Code'"
-            [controlName]="'prvsInstgAgt2AdrPstCd'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Town Name'"
-            [controlName]="'prvsInstgAgt2AdrTwnNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Town Location Name'"
-            [controlName]="'prvsInstgAgt2AdrTwnLctnNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'District Name'"
-            [controlName]="'prvsInstgAgt2AdrDstrctNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Country Sub Division'"
-            [controlName]="'prvsInstgAgt2AdrCtrySubDvsn'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Country'"
-            [controlName]="'prvsInstgAgt2AdrCtry'"
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Department'"
+                [controlName]="'prvsInstgAgt2AdrDept'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Sub Department'"
+                [controlName]="'prvsInstgAgt2AdrSubDept'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Street Name'"
+                [controlName]="'prvsInstgAgt2AdrStrtNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Building Number'"
+                [controlName]="'prvsInstgAgt2AdrBldgNb'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Building Name'"
+                [controlName]="'prvsInstgAgt2AdrBldgNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Floor'"
+                [controlName]="'prvsInstgAgt2AdrFlr'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Post Box'"
+                [controlName]="'prvsInstgAgt2AdrPstBx'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Room'"
+                [controlName]="'prvsInstgAgt2AdrRoom'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Post Code'"
+                [controlName]="'prvsInstgAgt2AdrPstCd'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Town Name'"
+                [controlName]="'prvsInstgAgt2AdrTwnNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Town Location Name'"
+                [controlName]="'prvsInstgAgt2AdrTwnLctnNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'District Name'"
+                [controlName]="'prvsInstgAgt2AdrDstrctNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Country Sub Division'"
+                [controlName]="'prvsInstgAgt2AdrCtrySubDvsn'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Country'"
+                [controlName]="'prvsInstgAgt2AdrCtry'"
                 [maxLength]="2"
                 [minLength]="2"
-                [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
+                [tooltip]="
+                  'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'
+                "
               />
             </div>
             }
@@ -1372,18 +1812,123 @@
           [subPanelTitle]="'Previous Instructing Agent 2 Account'"
         />
         @if (prevAgent2AccountPanel()) {
+        <!-- Previous Instructing Agent 2 Account - structured like Settlement Account -->
         <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Account ID'"
-            [controlName]="'prvsInstgAgt2AcctId'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="accountTypeOptions"
-            [label]="'Type'"
-            [controlName]="'prvsInstgAgt2AcctTp'"
-          />
+          <!-- Account Identification -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="prvsInstgAgt2AcctIdPanel"
+              [subPanelTitle]="'Identification'"
+            />
+            @if (prvsInstgAgt2AcctIdPanel()) {
+            <div class="form-grid-col-1">
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'IBAN'"
+                [controlName]="'prvsInstgAgt2AcctIban'"
+                [tooltip]="
+                  'International Bank Account Number (ISO 13616 format)'
+                "
+                (input)="
+                  onAccountIdentificationChange('iban', 'prvsInstgAgt2Acct')
+                "
+              />
+            </div>
+            }
+          </div>
+
+          <!-- Other Account Identification -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="prvsInstgAgt2AcctIdOthrPanel"
+              [subPanelTitle]="'Other'"
+            />
+            @if (prvsInstgAgt2AcctIdOthrPanel()) {
+            <div class="form-grid-col-1">
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Identification'"
+                [controlName]="'prvsInstgAgt2AcctId'"
+                [tooltip]="'Other account identification (1-34 characters)'"
+                (input)="
+                  onAccountIdentificationChange('other', 'prvsInstgAgt2Acct')
+                "
+              />
+            </div>
+            <div class="form-grid-col-1">
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Issuer'"
+                [controlName]="'prvsInstgAgt2AcctIssr'"
+                [tooltip]="
+                  'Entity that assigns the identification (1-35 characters)'
+                "
+                (input)="
+                  onAccountIdentificationChange('other', 'prvsInstgAgt2Acct')
+                "
+              />
+            </div>
+
+            <!-- Scheme Name -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="prvsInstgAgt2AcctIdOthrSchmeNmPanel"
+                [subPanelTitle]="'Scheme Name'"
+              />
+              @if (prvsInstgAgt2AcctIdOthrSchmeNmPanel()) {
+              <div class="form-grid-col-1">
+                <app-select-option-field
+                  [frmGroup]="frmGroup"
+                  [options]="accountIdentificationCodeOptions"
+                  [label]="'Code'"
+                  [controlName]="'prvsInstgAgt2AcctSchmeNmCd'"
+                  (change)="
+                    onSchemeNameChange('code', 'prvsInstgAgt2Acct');
+                    onAccountIdentificationChange('other', 'prvsInstgAgt2Acct')
+                  "
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Proprietary'"
+                  [controlName]="'prvsInstgAgt2AcctSchmeNmPrtry'"
+                  [tooltip]="
+                    'Free text identification scheme name (1-35 characters)'
+                  "
+                  (input)="
+                    onSchemeNameChange('prtry', 'prvsInstgAgt2Acct');
+                    onAccountIdentificationChange('other', 'prvsInstgAgt2Acct')
+                  "
+                />
+              </div>
+              }
+            </div>
+            }
+          </div>
+
+          <!-- Account Type -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="prvsInstgAgt2AcctTpPanel"
+              [subPanelTitle]="'Type'"
+            />
+            @if (prvsInstgAgt2AcctTpPanel()) {
+            <div class="form-grid-col-1">
+              <app-select-option-field
+                [frmGroup]="frmGroup"
+                [options]="cashAccountTypeOptions"
+                [label]="'Code'"
+                [controlName]="'prvsInstgAgt2AcctTpCd'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Proprietary'"
+                [controlName]="'prvsInstgAgt2AcctTpPrtry'"
+              />
+            </div>
+            }
+          </div>
+
+          <!-- Currency and Name -->
           <app-select-option-field
             [frmGroup]="frmGroup"
             [options]="currencyOptions"
@@ -1392,20 +1937,49 @@
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
-            [label]="'Account Name'"
+            [label]="'Name'"
             [controlName]="'prvsInstgAgt2AcctNm'"
           />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="rmbrsmntAgtPrxyCdOptions"
-            [label]="'Proxy Code'"
-            [controlName]="'prvsInstgAgt2PrxyCd'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Proxy ID'"
-            [controlName]="'prvsInstgAgt2PrxyId'"
-          />
+
+          <!-- Proxy -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
+              [isOpenSignal]="prvsInstgAgt2AcctPrxyPanel"
+              [subPanelTitle]="'Proxy'"
+            />
+            @if (prvsInstgAgt2AcctPrxyPanel()) {
+            <div class="form-grid-col-1">
+              <!-- Proxy Type -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header
+                  [isOpenSignal]="prvsInstgAgt2AcctPrxyTpPanel"
+                  [subPanelTitle]="'Type'"
+                />
+                @if (prvsInstgAgt2AcctPrxyTpPanel()) {
+                <div class="form-grid-col-1">
+                  <app-select-option-field
+                    [frmGroup]="frmGroup"
+                    [options]="cashAccountTypeOptions"
+                    [label]="'Code'"
+                    [controlName]="'prvsInstgAgt2AcctPrxyTpCd'"
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Proprietary'"
+                    [controlName]="'prvsInstgAgt2AcctPrxyTpPrtry'"
+                  />
+                </div>
+                }
+              </div>
+
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Identification'"
+                [controlName]="'prvsInstgAgt2AcctPrxyId'"
+              />
+            </div>
+            }
+          </div>
         </div>
         }
       </div>
@@ -1445,7 +2019,9 @@
             [controlName]="'prvsInstgAgt3Lei'"
             [maxLength]="20"
             [minLength]="20"
-            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+            [tooltip]="
+              'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+            "
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1459,94 +2035,95 @@
             />
             @if (prevAgent3AddressPanel()) {
             <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Address Line 1'"
-            [controlName]="'prvsInstgAgt3AdrLine1'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Address Line 2'"
-            [controlName]="'prvsInstgAgt3AdrLine2'"
-          />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Address Line 1'"
+                [controlName]="'prvsInstgAgt3AdrLine1'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Address Line 2'"
+                [controlName]="'prvsInstgAgt3AdrLine2'"
+              />
               <!-- <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Address Line 3'"
             [controlName]="'prvsInstgAgt3AdrLine3'"
               /> -->
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Department'"
-            [controlName]="'prvsInstgAgt3AdrDept'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Sub Department'"
-            [controlName]="'prvsInstgAgt3AdrSubDept'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Street Name'"
-            [controlName]="'prvsInstgAgt3AdrStrtNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Building Number'"
-            [controlName]="'prvsInstgAgt3AdrBldgNb'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Building Name'"
-            [controlName]="'prvsInstgAgt3AdrBldgNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Floor'"
-            [controlName]="'prvsInstgAgt3AdrFlr'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Post Box'"
-            [controlName]="'prvsInstgAgt3AdrPstBx'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Room'"
-            [controlName]="'prvsInstgAgt3AdrRoom'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Post Code'"
-            [controlName]="'prvsInstgAgt3AdrPstCd'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Town Name'"
-            [controlName]="'prvsInstgAgt3AdrTwnNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Town Location Name'"
-            [controlName]="'prvsInstgAgt3AdrTwnLctnNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'District Name'"
-            [controlName]="'prvsInstgAgt3AdrDstrctNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Country Sub Division'"
-            [controlName]="'prvsInstgAgt3AdrCtrySubDvsn'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Country'"
-            [controlName]="'prvsInstgAgt3AdrCtry'"
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Department'"
+                [controlName]="'prvsInstgAgt3AdrDept'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Sub Department'"
+                [controlName]="'prvsInstgAgt3AdrSubDept'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Street Name'"
+                [controlName]="'prvsInstgAgt3AdrStrtNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Building Number'"
+                [controlName]="'prvsInstgAgt3AdrBldgNb'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Building Name'"
+                [controlName]="'prvsInstgAgt3AdrBldgNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Floor'"
+                [controlName]="'prvsInstgAgt3AdrFlr'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Post Box'"
+                [controlName]="'prvsInstgAgt3AdrPstBx'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Room'"
+                [controlName]="'prvsInstgAgt3AdrRoom'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Post Code'"
+                [controlName]="'prvsInstgAgt3AdrPstCd'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Town Name'"
+                [controlName]="'prvsInstgAgt3AdrTwnNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Town Location Name'"
+                [controlName]="'prvsInstgAgt3AdrTwnLctnNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'District Name'"
+                [controlName]="'prvsInstgAgt3AdrDstrctNm'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Country Sub Division'"
+                [controlName]="'prvsInstgAgt3AdrCtrySubDvsn'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Country'"
+                [controlName]="'prvsInstgAgt3AdrCtry'"
                 [maxLength]="2"
                 [minLength]="2"
-                [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
-
+                [tooltip]="
+                  'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'
+                "
               />
             </div>
             }
@@ -1561,41 +2138,180 @@
           [subPanelTitle]="'Previous Instructing Agent 3 Account'"
         />
         @if (prevAgent3AccountPanel()) {
-        <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Account ID'"
-            [controlName]="'prvsInstgAgt3AcctId'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="accountTypeOptions"
-            [label]="'Type'"
-            [controlName]="'prvsInstgAgt3AcctTp'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="currencyOptions"
-            [label]="'Currency'"
-            [controlName]="'prvsInstgAgt3AcctCcy'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Account Name'"
-            [controlName]="'prvsInstgAgt3AcctNm'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="rmbrsmntAgtPrxyCdOptions"
-            [label]="'Proxy Code'"
-            [controlName]="'prvsInstgAgt3PrxyCd'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Proxy ID'"
-            [controlName]="'prvsInstgAgt3PrxyId'"
-          />
-        </div>
+          <div class="form-grid-col-1">
+            <!-- Account Identification -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="prvsInstgAgt3AcctIdPanel"
+                [subPanelTitle]="'Identification'"
+              />
+              @if (prvsInstgAgt3AcctIdPanel()) {
+              <div class="form-grid-col-1">
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'IBAN'"
+                  [controlName]="'prvsInstgAgt3AcctIban'"
+                  [tooltip]="
+                    'International Bank Account Number (ISO 13616 format)'
+                  "
+                  (input)="
+                    onAccountIdentificationChange('iban', 'prvsInstgAgt3Acct')
+                  "
+                />
+              </div>
+              }
+            </div>
+
+            <!-- Other Account Identification -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="prvsInstgAgt3AcctIdOthrPanel"
+                [subPanelTitle]="'Other'"
+              />
+              @if (prvsInstgAgt3AcctIdOthrPanel()) {
+              <div class="form-grid-col-1">
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Identification'"
+                  [controlName]="'prvsInstgAgt3AcctId'"
+                  [tooltip]="'Other account identification (1-34 characters)'"
+                  (input)="
+                    onAccountIdentificationChange('other', 'prvsInstgAgt3Acct')
+                  "
+                />
+              </div>
+              <div class="form-grid-col-1">
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Issuer'"
+                  [controlName]="'prvsInstgAgt3AcctIssr'"
+                  [tooltip]="
+                    'Entity that assigns the identification (1-35 characters)'
+                  "
+                  (input)="
+                    onAccountIdentificationChange('other', 'prvsInstgAgt3Acct')
+                  "
+                />
+              </div>
+
+              <!-- Scheme Name -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header
+                  [isOpenSignal]="prvsInstgAgt3AcctIdOthrSchmeNmPanel"
+                  [subPanelTitle]="'Scheme Name'"
+                />
+                @if (prvsInstgAgt3AcctIdOthrSchmeNmPanel()) {
+                <div class="form-grid-col-1">
+                  <app-select-option-field
+                    [frmGroup]="frmGroup"
+                    [options]="accountIdentificationCodeOptions"
+                    [label]="'Code'"
+                    [controlName]="'prvsInstgAgt3AcctSchmeNmCd'"
+                    (change)="
+                      onSchemeNameChange('code', 'prvsInstgAgt3Acct');
+                      onAccountIdentificationChange(
+                        'other',
+                        'prvsInstgAgt3Acct'
+                      )
+                    "
+                  />
+                  <app-text-base-input
+                    [frmGroup]="frmGroup"
+                    [label]="'Proprietary'"
+                    [controlName]="'prvsInstgAgt3AcctSchmeNmPrtry'"
+                    [tooltip]="
+                      'Free text identification scheme name (1-35 characters)'
+                    "
+                    (input)="
+                      onSchemeNameChange('prtry', 'prvsInstgAgt3Acct');
+                      onAccountIdentificationChange(
+                        'other',
+                        'prvsInstgAgt3Acct'
+                      )
+                    "
+                  />
+                </div>
+                }
+              </div>
+              }
+            </div>
+
+            <!-- Account Type -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="prvsInstgAgt3AcctTpPanel"
+                [subPanelTitle]="'Type'"
+              />
+              @if (prvsInstgAgt3AcctTpPanel()) {
+              <div class="form-grid-col-1">
+                <app-select-option-field
+                  [frmGroup]="frmGroup"
+                  [options]="cashAccountTypeOptions"
+                  [label]="'Code'"
+                  [controlName]="'prvsInstgAgt3AcctTpCd'"
+                />
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Proprietary'"
+                  [controlName]="'prvsInstgAgt3AcctTpPrtry'"
+                />
+              </div>
+              }
+            </div>
+
+            <!-- Currency and Name -->
+            <app-select-option-field
+              [frmGroup]="frmGroup"
+              [options]="currencyOptions"
+              [label]="'Currency'"
+              [controlName]="'prvsInstgAgt3AcctCcy'"
+            />
+            <app-text-base-input
+              [frmGroup]="frmGroup"
+              [label]="'Name'"
+              [controlName]="'prvsInstgAgt3AcctNm'"
+            />
+
+            <!-- Proxy -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header
+                [isOpenSignal]="prvsInstgAgt3AcctPrxyPanel"
+                [subPanelTitle]="'Proxy'"
+              />
+              @if (prvsInstgAgt3AcctPrxyPanel()) {
+              <div class="form-grid-col-1">
+                <!-- Proxy Type -->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header
+                    [isOpenSignal]="prvsInstgAgt3AcctPrxyTpPanel"
+                    [subPanelTitle]="'Type'"
+                  />
+                  @if (prvsInstgAgt3AcctPrxyTpPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-select-option-field
+                      [frmGroup]="frmGroup"
+                      [options]="cashAccountTypeOptions"
+                      [label]="'Code'"
+                      [controlName]="'prvsInstgAgt3AcctPrxyTpCd'"
+                    />
+                    <app-text-base-input
+                      [frmGroup]="frmGroup"
+                      [label]="'Proprietary'"
+                      [controlName]="'prvsInstgAgt3AcctPrxyTpPrtry'"
+                    />
+                  </div>
+                  }
+                </div>
+
+                <app-text-base-input
+                  [frmGroup]="frmGroup"
+                  [label]="'Identification'"
+                  [controlName]="'prvsInstgAgt3AcctPrxyId'"
+                />
+              </div>
+              }
+            </div>
+          </div>
         }
       </div>
       }
@@ -1643,7 +2359,9 @@
             [controlName]="'instgAgtLei'"
             [maxLength]="20"
             [minLength]="20"
-            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+            [tooltip]="
+              'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+            "
           />
         </div>
         }
@@ -1684,7 +2402,9 @@
             [controlName]="'instdAgtLei'"
             [maxLength]="20"
             [minLength]="20"
-            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+            [tooltip]="
+              'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+            "
           />
         </div>
         }
@@ -1700,8 +2420,8 @@
       />
       @if (intermediaryAgentsPanel()) {
       <!-- Intermediary Agent 1 -->
-        <div class="sub-panel">
-          <app-expansion-sub-panel-header
+      <div class="sub-panel">
+        <app-expansion-sub-panel-header
           [isOpenSignal]="intermediary1Panel"
           [subPanelTitle]="'Intermediary Agent 1'"
         />
@@ -1734,7 +2454,9 @@
             [controlName]="'intrmyAgt1Lei'"
             [maxLength]="20"
             [minLength]="20"
-            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+            [tooltip]="
+              'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+            "
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -1744,100 +2466,102 @@
           <div class="sub-panel">
             <app-expansion-sub-panel-header
               [isOpenSignal]="intermediary1AddressPanel"
-            [subPanelTitle]="'Postal Address'"
-          />
+              [subPanelTitle]="'Postal Address'"
+            />
             @if (intermediary1AddressPanel()) {
-          <div class="form-grid-col-1">
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 1'"
+            <div class="form-grid-col-1">
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Address Line 1'"
                 [controlName]="'intrmyAgt1AdrLine1'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 2'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Address Line 2'"
                 [controlName]="'intrmyAgt1AdrLine2'"
-            />
+              />
               <!-- <app-text-base-input
               [frmGroup]="frmGroup"
               [label]="'Address Line 3'"
                 [controlName]="'intrmyAgt1AdrLine3'"
               /> -->
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Department'"
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Department'"
                 [controlName]="'intrmyAgt1AdrDept'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Sub Department'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Sub Department'"
                 [controlName]="'intrmyAgt1AdrSubDept'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Street Name'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Street Name'"
                 [controlName]="'intrmyAgt1AdrStrtNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Building Number'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Building Number'"
                 [controlName]="'intrmyAgt1AdrBldgNb'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Building Name'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Building Name'"
                 [controlName]="'intrmyAgt1AdrBldgNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Floor'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Floor'"
                 [controlName]="'intrmyAgt1AdrFlr'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Post Box'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Post Box'"
                 [controlName]="'intrmyAgt1AdrPstBx'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Room'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Room'"
                 [controlName]="'intrmyAgt1AdrRoom'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Post Code'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Post Code'"
                 [controlName]="'intrmyAgt1AdrPstCd'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Town Name'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Town Name'"
                 [controlName]="'intrmyAgt1AdrTwnNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Town Location Name'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Town Location Name'"
                 [controlName]="'intrmyAgt1AdrTwnLctnNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'District Name'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'District Name'"
                 [controlName]="'intrmyAgt1AdrDstrctNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Country Sub Division'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Country Sub Division'"
                 [controlName]="'intrmyAgt1AdrCtrySubDvsn'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Country'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Country'"
                 [controlName]="'intrmyAgt1AdrCtry'"
                 [maxLength]="2"
                 [minLength]="2"
-                [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
-            />
-          </div>
-          }
+                [tooltip]="
+                  'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'
+                "
+              />
+            </div>
+            }
           </div>
         </div>
         }
@@ -1849,41 +2573,115 @@
           [subPanelTitle]="'Intermediary Agent 1 Account'"
         />
         @if (intermediary1AccountPanel()) {
-        <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Account ID'"
-            [controlName]="'intrmyAgt1AcctId'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="accountTypeOptions"
-            [label]="'Type'"
-            [controlName]="'intrmyAgt1AcctTp'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="currencyOptions"
-            [label]="'Currency'"
-            [controlName]="'intrmyAgt1AcctCcy'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Name'"
-            [controlName]="'intrmyAgt1AcctNm'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="rmbrsmntAgtPrxyCdOptions"
-            [label]="'Proxy Code'"
-            [controlName]="'intrmyAgt1PrxyCd'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Proxy ID'"
-            [controlName]="'intrmyAgt1PrxyId'"
-          />
-        </div>
+       
+            <div class="form-grid-col-1">
+              <!-- Account Identification -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt1AcctIdPanel" [subPanelTitle]="'Identification'"/>
+                @if (intrmyAgt1AcctIdPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'IBAN'"
+                                         [controlName]="'intrmyAgt1AcctIban'"
+                                         [tooltip]="'International Bank Account Number (ISO 13616 format)'"
+                                         (input)="onAccountIdentificationChange('iban', 'intrmyAgt1Acct')"/>
+                  </div>
+                }
+              </div>
+              
+              <!-- Other Account Identification -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt1AcctIdOthrPanel" [subPanelTitle]="'Other'"/>
+                @if (intrmyAgt1AcctIdOthrPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Identification'"
+                                         [controlName]="'intrmyAgt1AcctId'"
+                                         [tooltip]="'Other account identification (1-34 characters)'"
+                                         (input)="onAccountIdentificationChange('other', 'intrmyAgt1Acct')"/>
+                  </div>
+                  <div class="form-grid-col-1">
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Issuer'"
+                                         [controlName]="'intrmyAgt1AcctIssr'"
+                                         [tooltip]="'Entity that assigns the identification (1-35 characters)'"
+                                         (input)="onAccountIdentificationChange('other', 'intrmyAgt1Acct')"/>
+                  </div>
+                  
+                  <!-- Scheme Name -->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt1AcctIdOthrSchmeNmPanel" [subPanelTitle]="'Scheme Name'"/>
+                    @if (intrmyAgt1AcctIdOthrSchmeNmPanel()) {
+                      <div class="form-grid-col-1">
+                        <app-select-option-field [frmGroup]="frmGroup"
+                                             [options]="accountIdentificationCodeOptions"
+                                             [label]="'Code'"
+                                             [controlName]="'intrmyAgt1AcctSchmeNmCd'"
+                                             (change)="onSchemeNameChange('code', 'intrmyAgt1Acct'); onAccountIdentificationChange('other', 'intrmyAgt1Acct')"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Proprietary'"
+                                             [controlName]="'intrmyAgt1AcctSchmeNmPrtry'"
+                                             [tooltip]="'Free text identification scheme name (1-35 characters)'"
+                                             (input)="onSchemeNameChange('prtry', 'intrmyAgt1Acct'); onAccountIdentificationChange('other', 'intrmyAgt1Acct')"/>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+              
+              <!-- Account Type -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt1AcctTpPanel" [subPanelTitle]="'Type'"/>
+                @if (intrmyAgt1AcctTpPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-select-option-field [frmGroup]="frmGroup"
+                                             [options]="cashAccountTypeOptions"
+                                             [label]="'Code'"
+                                             [controlName]="'intrmyAgt1AcctTpCd'"/>
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Proprietary'"
+                                         [controlName]="'intrmyAgt1AcctTpPrtry'"/>
+                  </div>
+                }
+              </div>
+              
+              <!-- Currency and Name -->
+              <app-select-option-field [frmGroup]="frmGroup"
+                                       [options]="currencyOptions"
+                                       [label]="'Currency'"
+                                       [controlName]="'intrmyAgt1AcctCcy'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Name'"
+                                   [controlName]="'intrmyAgt1AcctNm'"/>
+              
+              <!-- Proxy -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt1AcctPrxyPanel" [subPanelTitle]="'Proxy'"/>
+                @if (intrmyAgt1AcctPrxyPanel()) {
+                  <div class="form-grid-col-1">
+                    <!-- Proxy Type -->
+                    <div class="sub-panel">
+                      <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt1AcctPrxyTpPanel" [subPanelTitle]="'Type'"/>
+                      @if (intrmyAgt1AcctPrxyTpPanel()) {
+                        <div class="form-grid-col-1">
+                          <app-select-option-field [frmGroup]="frmGroup"
+                                               [options]="cashAccountTypeOptions"
+                                               [label]="'Code'"
+                                               [controlName]="'intrmyAgt1AcctPrxyTpCd'"/>
+                          <app-text-base-input [frmGroup]="frmGroup"
+                                               [label]="'Proprietary'"
+                                               [controlName]="'intrmyAgt1AcctPrxyTpPrtry'"/>
+                        </div>
+                      }
+                    </div>
+                    
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Identification'"
+                                         [controlName]="'intrmyAgt1AcctPrxyId'"/>
+                  </div>
+                }
+              </div>
+            </div>
         }
       </div>
 
@@ -1922,114 +2720,118 @@
             [controlName]="'intrmyAgt2Lei'"
             [maxLength]="20"
             [minLength]="20"
-            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+            [tooltip]="
+              'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+            "
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Name'"
             [controlName]="'intrmyAgt2Nm'"
           />
-        <div class="sub-panel">
-          <app-expansion-sub-panel-header
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
               [isOpenSignal]="intermediary2AddressPanel"
-            [subPanelTitle]="'Postal Address'"
-          />
+              [subPanelTitle]="'Postal Address'"
+            />
             @if (intermediary2AddressPanel()) {
-          <div class="form-grid-col-1">
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 1'"
+            <div class="form-grid-col-1">
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Address Line 1'"
                 [controlName]="'intrmyAgt2AdrLine1'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Address Line 2'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Address Line 2'"
                 [controlName]="'intrmyAgt2AdrLine2'"
-            />
+              />
               <!-- <app-text-base-input
               [frmGroup]="frmGroup"
               [label]="'Address Line 3'"
                 [controlName]="'intrmyAgt2AdrLine3'"
               /> -->
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Department'"
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Department'"
                 [controlName]="'intrmyAgt2AdrDept'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Sub Department'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Sub Department'"
                 [controlName]="'intrmyAgt2AdrSubDept'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Street Name'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Street Name'"
                 [controlName]="'intrmyAgt2AdrStrtNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Building Number'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Building Number'"
                 [controlName]="'intrmyAgt2AdrBldgNb'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Building Name'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Building Name'"
                 [controlName]="'intrmyAgt2AdrBldgNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Floor'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Floor'"
                 [controlName]="'intrmyAgt2AdrFlr'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Post Box'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Post Box'"
                 [controlName]="'intrmyAgt2AdrPstBx'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Room'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Room'"
                 [controlName]="'intrmyAgt2AdrRoom'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Post Code'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Post Code'"
                 [controlName]="'intrmyAgt2AdrPstCd'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Town Name'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Town Name'"
                 [controlName]="'intrmyAgt2AdrTwnNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Town Location Name'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Town Location Name'"
                 [controlName]="'intrmyAgt2AdrTwnLctnNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'District Name'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'District Name'"
                 [controlName]="'intrmyAgt2AdrDstrctNm'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Country Sub Division'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Country Sub Division'"
                 [controlName]="'intrmyAgt2AdrCtrySubDvsn'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Country'"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
+                [label]="'Country'"
                 [controlName]="'intrmyAgt2AdrCtry'"
                 [maxLength]="2"
                 [minLength]="2"
-                [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
-            />
+                [tooltip]="
+                  'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'
+                "
+              />
+            </div>
+            }
           </div>
-          }
         </div>
+        }
       </div>
-      }
-    </div>
 
       <!-- Intermediary Agent 2 Account-->
       <div class="sub-panel">
@@ -2038,41 +2840,115 @@
           [subPanelTitle]="'Intermediary Agent 2 Account'"
         />
         @if (intermediary2AccountPanel()) {
-        <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Account ID'"
-            [controlName]="'intrmyAgt2AcctId'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="accountTypeOptions"
-            [label]="'Type'"
-            [controlName]="'intrmyAgt2AcctTp'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="currencyOptions"
-            [label]="'Currency'"
-            [controlName]="'intrmyAgt2AcctCcy'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Name'"
-            [controlName]="'intrmyAgt2AcctNm'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="rmbrsmntAgtPrxyCdOptions"
-            [label]="'Proxy Code'"
-            [controlName]="'intrmyAgt2PrxyCd'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Proxy ID'"
-            [controlName]="'intrmyAgt2PrxyId'"
-          />
-        </div>
+        
+            <div class="form-grid-col-1">
+              <!-- Account Identification -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt2AcctIdPanel" [subPanelTitle]="'Identification'"/>
+                @if (intrmyAgt2AcctIdPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'IBAN'"
+                                         [controlName]="'intrmyAgt2AcctIban'"
+                                         [tooltip]="'International Bank Account Number (ISO 13616 format)'"
+                                         (input)="onAccountIdentificationChange('iban', 'intrmyAgt2Acct')"/>
+                  </div>
+                }
+              </div>
+              
+              <!-- Other Account Identification -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt2AcctIdOthrPanel" [subPanelTitle]="'Other'"/>
+                @if (intrmyAgt2AcctIdOthrPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Identification'"
+                                         [controlName]="'intrmyAgt2AcctId'"
+                                         [tooltip]="'Other account identification (1-34 characters)'"
+                                         (input)="onAccountIdentificationChange('other', 'intrmyAgt2Acct')"/>
+                  </div>
+                  <div class="form-grid-col-1">
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Issuer'"
+                                         [controlName]="'intrmyAgt2AcctIssr'"
+                                         [tooltip]="'Entity that assigns the identification (1-35 characters)'"
+                                         (input)="onAccountIdentificationChange('other', 'intrmyAgt2Acct')"/>
+                  </div>
+                  
+                  <!-- Scheme Name -->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt2AcctIdOthrSchmeNmPanel" [subPanelTitle]="'Scheme Name'"/>
+                    @if (intrmyAgt2AcctIdOthrSchmeNmPanel()) {
+                      <div class="form-grid-col-1">
+                        <app-select-option-field [frmGroup]="frmGroup"
+                                             [options]="accountIdentificationCodeOptions"
+                                             [label]="'Code'"
+                                             [controlName]="'intrmyAgt2AcctSchmeNmCd'"
+                                             (change)="onSchemeNameChange('code', 'intrmyAgt2Acct'); onAccountIdentificationChange('other', 'intrmyAgt2Acct')"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Proprietary'"
+                                             [controlName]="'intrmyAgt2AcctSchmeNmPrtry'"
+                                             [tooltip]="'Free text identification scheme name (1-35 characters)'"
+                                             (input)="onSchemeNameChange('prtry', 'intrmyAgt2Acct'); onAccountIdentificationChange('other', 'intrmyAgt2Acct')"/>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+              
+              <!-- Account Type -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt2AcctTpPanel" [subPanelTitle]="'Type'"/>
+                @if (intrmyAgt2AcctTpPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-select-option-field [frmGroup]="frmGroup"
+                                             [options]="cashAccountTypeOptions"
+                                             [label]="'Code'"
+                                             [controlName]="'intrmyAgt2AcctTpCd'"/>
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Proprietary'"
+                                         [controlName]="'intrmyAgt2AcctTpPrtry'"/>
+                  </div>
+                }
+              </div>
+              
+              <!-- Currency and Name -->
+              <app-select-option-field [frmGroup]="frmGroup"
+                                       [options]="currencyOptions"
+                                       [label]="'Currency'"
+                                       [controlName]="'intrmyAgt2AcctCcy'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Name'"
+                                   [controlName]="'intrmyAgt2AcctNm'"/>
+              
+              <!-- Proxy -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt2AcctPrxyPanel" [subPanelTitle]="'Proxy'"/>
+                @if (intrmyAgt2AcctPrxyPanel()) {
+                  <div class="form-grid-col-1">
+                    <!-- Proxy Type -->
+                    <div class="sub-panel">
+                      <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt2AcctPrxyTpPanel" [subPanelTitle]="'Type'"/>
+                      @if (intrmyAgt2AcctPrxyTpPanel()) {
+                        <div class="form-grid-col-1">
+                          <app-select-option-field [frmGroup]="frmGroup"
+                                               [options]="cashAccountTypeOptions"
+                                               [label]="'Code'"
+                                               [controlName]="'intrmyAgt2AcctPrxyTpCd'"/>
+                          <app-text-base-input [frmGroup]="frmGroup"
+                                               [label]="'Proprietary'"
+                                               [controlName]="'intrmyAgt2AcctPrxyTpPrtry'"/>
+                        </div>
+                      }
+                    </div>
+                    
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Identification'"
+                                         [controlName]="'intrmyAgt2AcctPrxyId'"/>
+                  </div>
+                }
+              </div>
+            </div>
         }
       </div>
       <!-- Intermediary Agent 3 -->
@@ -2110,107 +2986,111 @@
             [controlName]="'intrmyAgt3Lei'"
             [maxLength]="20"
             [minLength]="20"
-            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+            [tooltip]="
+              'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+            "
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
             [label]="'Name'"
             [controlName]="'intrmyAgt3Nm'"
           />
-      <div class="sub-panel">
-        <app-expansion-sub-panel-header
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header
               [isOpenSignal]="intermediary3AddressPanel"
               [subPanelTitle]="'Postal Address'"
-        />
+            />
             @if (intermediary3AddressPanel()) {
-        <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+            <div class="form-grid-col-1">
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Address Line 1'"
                 [controlName]="'intrmyAgt3AdrLine1'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Address Line 2'"
                 [controlName]="'intrmyAgt3AdrLine2'"
-          />
+              />
               <!-- <app-text-base-input
                 [frmGroup]="frmGroup"
                 [label]="'Address Line 3'"
                 [controlName]="'intrmyAgt3AdrLine3'"
               /> -->
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Department'"
                 [controlName]="'intrmyAgt3AdrDept'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Sub Department'"
                 [controlName]="'intrmyAgt3AdrSubDept'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Street Name'"
                 [controlName]="'intrmyAgt3AdrStrtNm'"
-          />
+              />
               <app-text-base-input
-            [frmGroup]="frmGroup"
+                [frmGroup]="frmGroup"
                 [label]="'Building Number'"
                 [controlName]="'intrmyAgt3AdrBldgNb'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Building Name'"
                 [controlName]="'intrmyAgt3AdrBldgNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Floor'"
                 [controlName]="'intrmyAgt3AdrFlr'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Post Box'"
                 [controlName]="'intrmyAgt3AdrPstBx'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Room'"
                 [controlName]="'intrmyAgt3AdrRoom'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Post Code'"
                 [controlName]="'intrmyAgt3AdrPstCd'"
               />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Town Name'"
                 [controlName]="'intrmyAgt3AdrTwnNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Town Location Name'"
                 [controlName]="'intrmyAgt3AdrTwnLctnNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'District Name'"
                 [controlName]="'intrmyAgt3AdrDstrctNm'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Country Sub Division'"
                 [controlName]="'intrmyAgt3AdrCtrySubDvsn'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
+              />
+              <app-text-base-input
+                [frmGroup]="frmGroup"
                 [label]="'Country'"
                 [controlName]="'intrmyAgt3AdrCtry'"
                 [maxLength]="2"
                 [minLength]="2"
-                [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
+                [tooltip]="
+                  'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'
+                "
               />
             </div>
             }
@@ -2225,41 +3105,114 @@
           [subPanelTitle]="'Intermediary Agent 3 Account'"
         />
         @if (intermediary3AccountPanel()) {
-        <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Account ID'"
-            [controlName]="'intrmyAgt3AcctId'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="accountTypeOptions"
-            [label]="'Type'"
-            [controlName]="'intrmyAgt3AcctTp'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="currencyOptions"
-            [label]="'Currency'"
-            [controlName]="'intrmyAgt3AcctCcy'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Name'"
-            [controlName]="'intrmyAgt3AcctNm'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="rmbrsmntAgtPrxyCdOptions"
-            [label]="'Proxy Code'"
-            [controlName]="'intrmyAgt3PrxyCd'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Proxy ID'"
-            [controlName]="'intrmyAgt3PrxyId'"
-          />
-        </div>
+            <div class="form-grid-col-1">
+              <!-- Account Identification -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt3AcctIdPanel" [subPanelTitle]="'Identification'"/>
+                @if (intrmyAgt3AcctIdPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'IBAN'"
+                                         [controlName]="'intrmyAgt3AcctIban'"
+                                         [tooltip]="'International Bank Account Number (ISO 13616 format)'"
+                                         (input)="onAccountIdentificationChange('iban', 'intrmyAgt3Acct')"/>
+                  </div>
+                }
+              </div>
+              
+              <!-- Other Account Identification -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt3AcctIdOthrPanel" [subPanelTitle]="'Other'"/>
+                @if (intrmyAgt3AcctIdOthrPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Identification'"
+                                         [controlName]="'intrmyAgt3AcctId'"
+                                         [tooltip]="'Other account identification (1-34 characters)'"
+                                         (input)="onAccountIdentificationChange('other', 'intrmyAgt3Acct')"/>
+                  </div>
+                  <div class="form-grid-col-1">
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Issuer'"
+                                         [controlName]="'intrmyAgt3AcctIssr'"
+                                         [tooltip]="'Entity that assigns the identification (1-35 characters)'"
+                                         (input)="onAccountIdentificationChange('other', 'intrmyAgt3Acct')"/>
+                  </div>
+                  
+                  <!-- Scheme Name -->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt3AcctIdOthrSchmeNmPanel" [subPanelTitle]="'Scheme Name'"/>
+                    @if (intrmyAgt3AcctIdOthrSchmeNmPanel()) {
+                      <div class="form-grid-col-1">
+                        <app-select-option-field [frmGroup]="frmGroup"
+                                             [options]="accountIdentificationCodeOptions"
+                                             [label]="'Code'"
+                                             [controlName]="'intrmyAgt3AcctSchmeNmCd'"
+                                             (change)="onSchemeNameChange('code', 'intrmyAgt3Acct'); onAccountIdentificationChange('other', 'intrmyAgt3Acct')"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Proprietary'"
+                                             [controlName]="'intrmyAgt3AcctSchmeNmPrtry'"
+                                             [tooltip]="'Free text identification scheme name (1-35 characters)'"
+                                             (input)="onSchemeNameChange('prtry', 'intrmyAgt3Acct'); onAccountIdentificationChange('other', 'intrmyAgt3Acct')"/>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+              
+              <!-- Account Type -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt3AcctTpPanel" [subPanelTitle]="'Type'"/>
+                @if (intrmyAgt3AcctTpPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-select-option-field [frmGroup]="frmGroup"
+                                             [options]="cashAccountTypeOptions"
+                                             [label]="'Code'"
+                                             [controlName]="'intrmyAgt3AcctTpCd'"/>
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Proprietary'"
+                                         [controlName]="'intrmyAgt3AcctTpPrtry'"/>
+                  </div>
+                }
+              </div>
+              
+              <!-- Currency and Name -->
+              <app-select-option-field [frmGroup]="frmGroup"
+                                       [options]="currencyOptions"
+                                       [label]="'Currency'"
+                                       [controlName]="'intrmyAgt3AcctCcy'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Name'"
+                                   [controlName]="'intrmyAgt3AcctNm'"/>
+              
+              <!-- Proxy -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt3AcctPrxyPanel" [subPanelTitle]="'Proxy'"/>
+                @if (intrmyAgt3AcctPrxyPanel()) {
+                  <div class="form-grid-col-1">
+                    <!-- Proxy Type -->
+                    <div class="sub-panel">
+                      <app-expansion-sub-panel-header [isOpenSignal]="intrmyAgt3AcctPrxyTpPanel" [subPanelTitle]="'Type'"/>
+                      @if (intrmyAgt3AcctPrxyTpPanel()) {
+                        <div class="form-grid-col-1">
+                          <app-select-option-field [frmGroup]="frmGroup"
+                                               [options]="cashAccountTypeOptions"
+                                               [label]="'Code'"
+                                               [controlName]="'intrmyAgt3AcctPrxyTpCd'"/>
+                          <app-text-base-input [frmGroup]="frmGroup"
+                                               [label]="'Proprietary'"
+                                               [controlName]="'intrmyAgt3AcctPrxyTpPrtry'"/>
+                        </div>
+                      }
+                    </div>
+                    
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Identification'"
+                                         [controlName]="'intrmyAgt3AcctPrxyId'"/>
+                  </div>
+                }
+              </div>
+            </div>
         }
       </div>
       }
@@ -2298,7 +3251,9 @@
           [controlName]="'dbtrLei'"
           [maxLength]="20"
           [minLength]="20"
-          [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+          [tooltip]="
+            'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+          "
         />
         <app-text-base-input
           [frmGroup]="frmGroup"
@@ -2386,7 +3341,9 @@
             [controlName]="'dbtrAdrCtry'"
             [maxLength]="2"
             [minLength]="2"
-            [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
+            [tooltip]="
+              'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'
+            "
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -2414,42 +3371,114 @@
           [subPanelTitle]="'Debtor Account'"
         />
         @if(dbtrAccountPanel()) {
-        <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Account ID'"
-            [controlName]="'dbtrAcctId'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="currencyOptions"
-            [label]="'Account Currency'"
-            [controlName]="'dbtrAcctCcy'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="accountTypeOptions"
-            [label]="'Account Type'"
-            [controlName]="'dbtrAcctTp'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Account Name'"
-            [controlName]="'dbtrAcctNm'"
-          />
-
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="rmbrsmntAgtPrxyCdOptions"
-            [label]="'Proxy Code'"
-            [controlName]="'dbtrAgtAcctPrxyCd'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Proxy ID'"
-            [controlName]="'dbtrAgtAcctPrxyId'"
-          />
-        </div>
+            <div class="form-grid-col-1">
+              <!-- Account Identification -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="dbtrAcctIdPanel" [subPanelTitle]="'Identification'"/>
+                @if (dbtrAcctIdPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'IBAN'"
+                                         [controlName]="'dbtrAcctIban'"
+                                         [tooltip]="'International Bank Account Number (ISO 13616 format)'"
+                                         (input)="onAccountIdentificationChange('iban', 'dbtrAcct')"/>
+                  </div>
+                }
+              </div>
+              
+              <!-- Other Account Identification -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="dbtrAcctIdOthrPanel" [subPanelTitle]="'Other'"/>
+                @if (dbtrAcctIdOthrPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Identification'"
+                                         [controlName]="'dbtrAcctId'"
+                                         [tooltip]="'Other account identification (1-34 characters)'"
+                                         (input)="onAccountIdentificationChange('other', 'dbtrAcct')"/>
+                  </div>
+                  <div class="form-grid-col-1">
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Issuer'"
+                                         [controlName]="'dbtrAcctIssr'"
+                                         [tooltip]="'Entity that assigns the identification (1-35 characters)'"
+                                         (input)="onAccountIdentificationChange('other', 'dbtrAcct')"/>
+                  </div>
+                  
+                  <!-- Scheme Name -->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="dbtrAcctIdOthrSchmeNmPanel" [subPanelTitle]="'Scheme Name'"/>
+                    @if (dbtrAcctIdOthrSchmeNmPanel()) {
+                      <div class="form-grid-col-1">
+                        <app-select-option-field [frmGroup]="frmGroup"
+                                             [options]="accountIdentificationCodeOptions"
+                                             [label]="'Code'"
+                                             [controlName]="'dbtrAcctSchmeNmCd'"
+                                             (change)="onSchemeNameChange('code', 'dbtrAcct'); onAccountIdentificationChange('other', 'dbtrAcct')"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Proprietary'"
+                                             [controlName]="'dbtrAcctSchmeNmPrtry'"
+                                             [tooltip]="'Free text identification scheme name (1-35 characters)'"
+                                             (input)="onSchemeNameChange('prtry', 'dbtrAcct'); onAccountIdentificationChange('other', 'dbtrAcct')"/>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+              
+              <!-- Account Type -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="dbtrAcctTpPanel" [subPanelTitle]="'Type'"/>
+                @if (dbtrAcctTpPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-select-option-field [frmGroup]="frmGroup"
+                                             [options]="cashAccountTypeOptions"
+                                             [label]="'Code'"
+                                             [controlName]="'dbtrAcctTpCd'"/>
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Proprietary'"
+                                         [controlName]="'dbtrAcctTpPrtry'"/>
+                  </div>
+                }
+              </div>
+              
+              <!-- Currency and Name -->
+              <app-select-option-field [frmGroup]="frmGroup"
+                                       [options]="currencyOptions"
+                                       [label]="'Currency'"
+                                       [controlName]="'dbtrAcctCcy'"/>
+              <app-text-base-input [frmGroup]="frmGroup"
+                                   [label]="'Name'"
+                                   [controlName]="'dbtrAcctNm'"/>
+              
+              <!-- Proxy -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="dbtrAcctPrxyPanel" [subPanelTitle]="'Proxy'"/>
+                @if (dbtrAcctPrxyPanel()) {
+                  <div class="form-grid-col-1">
+                    <!-- Proxy Type -->
+                    <div class="sub-panel">
+                      <app-expansion-sub-panel-header [isOpenSignal]="dbtrAcctPrxyTpPanel" [subPanelTitle]="'Type'"/>
+                      @if (dbtrAcctPrxyTpPanel()) {
+                        <div class="form-grid-col-1">
+                          <app-select-option-field [frmGroup]="frmGroup"
+                                               [options]="cashAccountTypeOptions"
+                                               [label]="'Code'"
+                                               [controlName]="'dbtrAcctPrxyTpCd'"/>
+                          <app-text-base-input [frmGroup]="frmGroup"
+                                               [label]="'Proprietary'"
+                                               [controlName]="'dbtrAcctPrxyTpPrtry'"/>
+                        </div>
+                      }
+                    </div>
+                    
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Identification'"
+                                         [controlName]="'dbtrAcctPrxyId'"/>
+                  </div>
+                }
+              </div>
+            </div>
         }
       </div>
 
@@ -2469,10 +3498,10 @@
             [minLength]="8"
             (onDoubleClick)="openBicSelectionModal('dbtrAgtBicfi', 'dbtrAgtNm')"
           />
-                      <app-select-option-field
+          <app-select-option-field
             [frmGroup]="frmGroup"
-              [options]="clearingSystemIdOptions"
-              [label]="'Clearing System ID Code'"
+            [options]="clearingSystemIdOptions"
+            [label]="'Clearing System ID Code'"
             [controlName]="'dbtrAgtClrSysIdCd'"
           />
           <app-text-base-input
@@ -2486,7 +3515,9 @@
             [controlName]="'dbtrAgtLei'"
             [maxLength]="20"
             [minLength]="20"
-            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+            [tooltip]="
+              'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+            "
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -2589,7 +3620,9 @@
               [controlName]="'dbtrAgtAdrCtry'"
               [maxLength]="2"
               [minLength]="2"
-              [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
+              [tooltip]="
+                'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'
+              "
             />
           </div>
           }
@@ -2602,40 +3635,114 @@
             [subPanelTitle]="'Debtor Agent Account'"
           />
           @if(dbtrAgentAccountPanel()) {
+          <!-- Debtor Agent Account - structured like Settlement Account (no wrapper) -->
           <div class="form-grid-col-1">
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Account ID'"
-              [controlName]="'dbtrAgtAcctId'"
-            />
-            <app-select-option-field
-              [frmGroup]="frmGroup"
-              [options]="currencyOptions"
-              [label]="'Account Currency'"
-              [controlName]="'dbtrAgtAcctCcy'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Account Type'"
-              [controlName]="'dbtrAgtAcctTp'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Account Name'"
-              [controlName]="'dbtrAgtAcctNm'"
-            />
-
-            <app-select-option-field
-              [frmGroup]="frmGroup"
-              [options]="rmbrsmntAgtPrxyCdOptions"
-              [label]="'Proxy Code'"
-              [controlName]="'dbtrAgtAcctPrxyCd'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Proxy ID'"
-              [controlName]="'dbtrAgtAcctPrxyId'"
-            />
+            <!-- Account Identification -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="dbtrAgtAcctIdPanel" [subPanelTitle]="'Identification'"/>
+              @if (dbtrAgtAcctIdPanel()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'IBAN'"
+                                       [controlName]="'dbtrAgtAcctIban'"
+                                       [tooltip]="'International Bank Account Number (ISO 13616 format)'"
+                                       (input)="onAccountIdentificationChange('iban', 'dbtrAgtAcct')"/>
+                </div>
+              }
+            </div>
+            
+            <!-- Other Account Identification -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="dbtrAgtAcctIdOthrPanel" [subPanelTitle]="'Other'"/>
+              @if (dbtrAgtAcctIdOthrPanel()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Identification'"
+                                       [controlName]="'dbtrAgtAcctId'"
+                                       [tooltip]="'Other account identification (1-34 characters)'"
+                                       (input)="onAccountIdentificationChange('other', 'dbtrAgtAcct')"/>
+                </div>
+                <div class="form-grid-col-1">
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Issuer'"
+                                       [controlName]="'dbtrAgtAcctIssr'"
+                                       [tooltip]="'Entity that assigns the identification (1-35 characters)'"
+                                       (input)="onAccountIdentificationChange('other', 'dbtrAgtAcct')"/>
+                </div>
+                
+                <!-- Scheme Name -->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header [isOpenSignal]="dbtrAgtAcctIdOthrSchmeNmPanel" [subPanelTitle]="'Scheme Name'"/>
+                  @if (dbtrAgtAcctIdOthrSchmeNmPanel()) {
+                    <div class="form-grid-col-1">
+                      <app-select-option-field [frmGroup]="frmGroup"
+                                           [options]="accountIdentificationCodeOptions"
+                                           [label]="'Code'"
+                                           [controlName]="'dbtrAgtAcctSchmeNmCd'"
+                                           (change)="onSchemeNameChange('code', 'dbtrAgtAcct'); onAccountIdentificationChange('other', 'dbtrAgtAcct')"/>
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Proprietary'"
+                                           [controlName]="'dbtrAgtAcctSchmeNmPrtry'"
+                                           [tooltip]="'Free text identification scheme name (1-35 characters)'"
+                                           (input)="onSchemeNameChange('prtry', 'dbtrAgtAcct'); onAccountIdentificationChange('other', 'dbtrAgtAcct')"/>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+            
+            <!-- Account Type -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="dbtrAgtAcctTpPanel" [subPanelTitle]="'Type'"/>
+              @if (dbtrAgtAcctTpPanel()) {
+                <div class="form-grid-col-1">
+                  <app-select-option-field [frmGroup]="frmGroup"
+                                           [options]="cashAccountTypeOptions"
+                                           [label]="'Code'"
+                                           [controlName]="'dbtrAgtAcctTpCd'"/>
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Proprietary'"
+                                       [controlName]="'dbtrAgtAcctTpPrtry'"/>
+                </div>
+              }
+            </div>
+            
+            <!-- Currency and Name -->
+            <app-select-option-field [frmGroup]="frmGroup"
+                                     [options]="currencyOptions"
+                                     [label]="'Currency'"
+                                     [controlName]="'dbtrAgtAcctCcy'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Name'"
+                                 [controlName]="'dbtrAgtAcctNm'"/>
+            
+            <!-- Proxy -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="dbtrAgtAcctPrxyPanel" [subPanelTitle]="'Proxy'"/>
+              @if (dbtrAgtAcctPrxyPanel()) {
+                <div class="form-grid-col-1">
+                  <!-- Proxy Type -->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="dbtrAgtAcctPrxyTpPanel" [subPanelTitle]="'Type'"/>
+                    @if (dbtrAgtAcctPrxyTpPanel()) {
+                      <div class="form-grid-col-1">
+                        <app-select-option-field [frmGroup]="frmGroup"
+                                             [options]="cashAccountTypeOptions"
+                                             [label]="'Code'"
+                                             [controlName]="'dbtrAgtAcctPrxyTpCd'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Proprietary'"
+                                             [controlName]="'dbtrAgtAcctPrxyTpPrtry'"/>
+                      </div>
+                    }
+                  </div>
+                  
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Identification'"
+                                       [controlName]="'dbtrAgtAcctPrxyId'"/>
+                </div>
+              }
+            </div>
           </div>
           }
         </div>
@@ -2660,10 +3767,10 @@
           [minLength]="8"
           (onDoubleClick)="openBicSelectionModal('cdtrBicfi', 'cdtrNm')"
         />
-                  <app-select-option-field
+        <app-select-option-field
           [frmGroup]="frmGroup"
-            [options]="clearingSystemIdOptions"
-            [label]="'Clearing System ID Code'"
+          [options]="clearingSystemIdOptions"
+          [label]="'Clearing System ID Code'"
           [controlName]="'cdtrClrSysIdCd'"
         />
         <app-text-base-input
@@ -2677,7 +3784,9 @@
           [controlName]="'cdtrLei'"
           [maxLength]="20"
           [minLength]="20"
-          [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+          [tooltip]="
+            'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+          "
         />
         <app-text-base-input
           [frmGroup]="frmGroup"
@@ -2765,7 +3874,9 @@
             [controlName]="'cdtrAdrCtry'"
             [maxLength]="2"
             [minLength]="2"
-            [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
+            [tooltip]="
+              'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'
+            "
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -2793,41 +3904,114 @@
           [subPanelTitle]="'Creditor Account'"
         />
         @if(cdtrAccountPanel()) {
+        <!-- Creditor Account - structured like Settlement Account (no wrapper) -->
         <div class="form-grid-col-1">
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Account ID'"
-            [controlName]="'cdtrAcctId'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="currencyOptions"
-            [label]="'Account Currency'"
-            [controlName]="'cdtrAcctCcy'"
-          />
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="accountTypeOptions"
-            [label]="'Account Type'"
-            [controlName]="'cdtrAcctTp'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Account Name'"
-            [controlName]="'cdtrAcctNm'"
-          />
-
-          <app-select-option-field
-            [frmGroup]="frmGroup"
-            [options]="rmbrsmntAgtPrxyCdOptions"
-            [label]="'Proxy Code'"
-            [controlName]="'cdtrAcctPrxyCd'"
-          />
-          <app-text-base-input
-            [frmGroup]="frmGroup"
-            [label]="'Proxy ID'"
-            [controlName]="'cdtrAcctPrxyId'"
-          />
+          <!-- Account Identification -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header [isOpenSignal]="cdtrAcctIdPanel" [subPanelTitle]="'Identification'"/>
+            @if (cdtrAcctIdPanel()) {
+              <div class="form-grid-col-1">
+                <app-text-base-input [frmGroup]="frmGroup"
+                                     [label]="'IBAN'"
+                                     [controlName]="'cdtrAcctIban'"
+                                     [tooltip]="'International Bank Account Number (ISO 13616 format)'"
+                                     (input)="onAccountIdentificationChange('iban', 'cdtrAcct')"/>
+              </div>
+            }
+          </div>
+          
+          <!-- Other Account Identification -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header [isOpenSignal]="cdtrAcctIdOthrPanel" [subPanelTitle]="'Other'"/>
+            @if (cdtrAcctIdOthrPanel()) {
+              <div class="form-grid-col-1">
+                <app-text-base-input [frmGroup]="frmGroup"
+                                     [label]="'Identification'"
+                                     [controlName]="'cdtrAcctId'"
+                                     [tooltip]="'Other account identification (1-34 characters)'"
+                                     (input)="onAccountIdentificationChange('other', 'cdtrAcct')"/>
+              </div>
+              <div class="form-grid-col-1">
+                <app-text-base-input [frmGroup]="frmGroup"
+                                     [label]="'Issuer'"
+                                     [controlName]="'cdtrAcctIssr'"
+                                     [tooltip]="'Entity that assigns the identification (1-35 characters)'"
+                                     (input)="onAccountIdentificationChange('other', 'cdtrAcct')"/>
+              </div>
+              
+              <!-- Scheme Name -->
+              <div class="sub-panel">
+                <app-expansion-sub-panel-header [isOpenSignal]="cdtrAcctIdOthrSchmeNmPanel" [subPanelTitle]="'Scheme Name'"/>
+                @if (cdtrAcctIdOthrSchmeNmPanel()) {
+                  <div class="form-grid-col-1">
+                    <app-select-option-field [frmGroup]="frmGroup"
+                                         [options]="accountIdentificationCodeOptions"
+                                         [label]="'Code'"
+                                         [controlName]="'cdtrAcctSchmeNmCd'"
+                                         (change)="onSchemeNameChange('code', 'cdtrAcct'); onAccountIdentificationChange('other', 'cdtrAcct')"/>
+                    <app-text-base-input [frmGroup]="frmGroup"
+                                         [label]="'Proprietary'"
+                                         [controlName]="'cdtrAcctSchmeNmPrtry'"
+                                         [tooltip]="'Free text identification scheme name (1-35 characters)'"
+                                         (input)="onSchemeNameChange('prtry', 'cdtrAcct'); onAccountIdentificationChange('other', 'cdtrAcct')"/>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+          
+          <!-- Account Type -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header [isOpenSignal]="cdtrAcctTpPanel" [subPanelTitle]="'Type'"/>
+            @if (cdtrAcctTpPanel()) {
+              <div class="form-grid-col-1">
+                <app-select-option-field [frmGroup]="frmGroup"
+                                         [options]="cashAccountTypeOptions"
+                                         [label]="'Code'"
+                                         [controlName]="'cdtrAcctTpCd'"/>
+                <app-text-base-input [frmGroup]="frmGroup"
+                                     [label]="'Proprietary'"
+                                     [controlName]="'cdtrAcctTpPrtry'"/>
+              </div>
+            }
+          </div>
+          
+          <!-- Currency and Name -->
+          <app-select-option-field [frmGroup]="frmGroup"
+                                   [options]="currencyOptions"
+                                   [label]="'Currency'"
+                                   [controlName]="'cdtrAcctCcy'"/>
+          <app-text-base-input [frmGroup]="frmGroup"
+                               [label]="'Name'"
+                               [controlName]="'cdtrAcctNm'"/>
+          
+          <!-- Proxy -->
+          <div class="sub-panel">
+            <app-expansion-sub-panel-header [isOpenSignal]="cdtrAcctPrxyPanel" [subPanelTitle]="'Proxy'"/>
+            @if (cdtrAcctPrxyPanel()) {
+              <div class="form-grid-col-1">
+                <!-- Proxy Type -->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header [isOpenSignal]="cdtrAcctPrxyTpPanel" [subPanelTitle]="'Type'"/>
+                  @if (cdtrAcctPrxyTpPanel()) {
+                    <div class="form-grid-col-1">
+                      <app-select-option-field [frmGroup]="frmGroup"
+                                           [options]="cashAccountTypeOptions"
+                                           [label]="'Code'"
+                                           [controlName]="'cdtrAcctPrxyTpCd'"/>
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Proprietary'"
+                                           [controlName]="'cdtrAcctPrxyTpPrtry'"/>
+                    </div>
+                  }
+                </div>
+                
+                <app-text-base-input [frmGroup]="frmGroup"
+                                     [label]="'Identification'"
+                                     [controlName]="'cdtrAcctPrxyId'"/>
+              </div>
+            }
+          </div>
         </div>
         }
       </div>
@@ -2848,10 +4032,10 @@
             [minLength]="8"
             (onDoubleClick)="openBicSelectionModal('cdtrAgtBicfi', 'cdtrAgtNm')"
           />
-                      <app-select-option-field
+          <app-select-option-field
             [frmGroup]="frmGroup"
-              [options]="clearingSystemIdOptions"
-              [label]="'Clearing System ID Code'"
+            [options]="clearingSystemIdOptions"
+            [label]="'Clearing System ID Code'"
             [controlName]="'cdtrAgtClrSysIdCd'"
           />
           <app-text-base-input
@@ -2865,7 +4049,9 @@
             [controlName]="'cdtrAgtLei'"
             [maxLength]="20"
             [minLength]="20"
-            [tooltip] = "'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'"
+            [tooltip]="
+              'The LEI must be exactly 20 characters long (18 Alphanumeric + 2 Digits).'
+            "
           />
           <app-text-base-input
             [frmGroup]="frmGroup"
@@ -2968,7 +4154,9 @@
               [controlName]="'cdtrAgtAdrCtry'"
               [maxLength]="2"
               [minLength]="2"
-              [tooltip] = "'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'"
+              [tooltip]="
+                'The Country must be exactly 2 characters long (ISO 3166-1 alpha-2).'
+              "
             />
           </div>
           }
@@ -2981,40 +4169,114 @@
             [subPanelTitle]="'Creditor Agent Account'"
           />
           @if(cdtrAgentAccountPanel()) {
+          <!-- Creditor Agent Account - structured like Settlement Account (no wrapper) -->
           <div class="form-grid-col-1">
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Account ID'"
-              [controlName]="'cdtrAgtAcctId'"
-            />
-            <app-select-option-field
-              [frmGroup]="frmGroup"
-              [options]="currencyOptions"
-              [label]="'Account Currency'"
-              [controlName]="'cdtrAgtAcctCcy'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Account Type'"
-              [controlName]="'cdtrAgtAcctTp'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Account Name'"
-              [controlName]="'cdtrAgtAcctNm'"
-            />
-
-            <app-select-option-field
-              [frmGroup]="frmGroup"
-              [options]="rmbrsmntAgtPrxyCdOptions"
-              [label]="'Proxy Code'"
-              [controlName]="'cdtrAgtAcctPrxyCd'"
-            />
-            <app-text-base-input
-              [frmGroup]="frmGroup"
-              [label]="'Proxy ID'"
-              [controlName]="'cdtrAgtAcctPrxyId'"
-            />
+            <!-- Account Identification -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="cdtrAgtAcctIdPanel" [subPanelTitle]="'Identification'"/>
+              @if (cdtrAgtAcctIdPanel()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'IBAN'"
+                                       [controlName]="'cdtrAgtAcctIban'"
+                                       [tooltip]="'International Bank Account Number (ISO 13616 format)'"
+                                       (input)="onAccountIdentificationChange('iban', 'cdtrAgtAcct')"/>
+                </div>
+              }
+            </div>
+            
+            <!-- Other Account Identification -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="cdtrAgtAcctIdOthrPanel" [subPanelTitle]="'Other'"/>
+              @if (cdtrAgtAcctIdOthrPanel()) {
+                <div class="form-grid-col-1">
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Identification'"
+                                       [controlName]="'cdtrAgtAcctId'"
+                                       [tooltip]="'Other account identification (1-34 characters)'"
+                                       (input)="onAccountIdentificationChange('other', 'cdtrAgtAcct')"/>
+                </div>
+                <div class="form-grid-col-1">
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Issuer'"
+                                       [controlName]="'cdtrAgtAcctIssr'"
+                                       [tooltip]="'Entity that assigns the identification (1-35 characters)'"
+                                       (input)="onAccountIdentificationChange('other', 'cdtrAgtAcct')"/>
+                </div>
+                
+                <!-- Scheme Name -->
+                <div class="sub-panel">
+                  <app-expansion-sub-panel-header [isOpenSignal]="cdtrAgtAcctIdOthrSchmeNmPanel" [subPanelTitle]="'Scheme Name'"/>
+                  @if (cdtrAgtAcctIdOthrSchmeNmPanel()) {
+                    <div class="form-grid-col-1">
+                      <app-select-option-field [frmGroup]="frmGroup"
+                                           [options]="accountIdentificationCodeOptions"
+                                           [label]="'Code'"
+                                           [controlName]="'cdtrAgtAcctSchmeNmCd'"
+                                           (change)="onSchemeNameChange('code', 'cdtrAgtAcct'); onAccountIdentificationChange('other', 'cdtrAgtAcct')"/>
+                      <app-text-base-input [frmGroup]="frmGroup"
+                                           [label]="'Proprietary'"
+                                           [controlName]="'cdtrAgtAcctSchmeNmPrtry'"
+                                           [tooltip]="'Free text identification scheme name (1-35 characters)'"
+                                           (input)="onSchemeNameChange('prtry', 'cdtrAgtAcct'); onAccountIdentificationChange('other', 'cdtrAgtAcct')"/>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+            
+            <!-- Account Type -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="cdtrAgtAcctTpPanel" [subPanelTitle]="'Type'"/>
+              @if (cdtrAgtAcctTpPanel()) {
+                <div class="form-grid-col-1">
+                  <app-select-option-field [frmGroup]="frmGroup"
+                                           [options]="cashAccountTypeOptions"
+                                           [label]="'Code'"
+                                           [controlName]="'cdtrAgtAcctTpCd'"/>
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Proprietary'"
+                                       [controlName]="'cdtrAgtAcctTpPrtry'"/>
+                </div>
+              }
+            </div>
+            
+            <!-- Currency and Name -->
+            <app-select-option-field [frmGroup]="frmGroup"
+                                     [options]="currencyOptions"
+                                     [label]="'Currency'"
+                                     [controlName]="'cdtrAgtAcctCcy'"/>
+            <app-text-base-input [frmGroup]="frmGroup"
+                                 [label]="'Name'"
+                                 [controlName]="'cdtrAgtAcctNm'"/>
+            
+            <!-- Proxy -->
+            <div class="sub-panel">
+              <app-expansion-sub-panel-header [isOpenSignal]="cdtrAgtAcctPrxyPanel" [subPanelTitle]="'Proxy'"/>
+              @if (cdtrAgtAcctPrxyPanel()) {
+                <div class="form-grid-col-1">
+                  <!-- Proxy Type -->
+                  <div class="sub-panel">
+                    <app-expansion-sub-panel-header [isOpenSignal]="cdtrAgtAcctPrxyTpPanel" [subPanelTitle]="'Type'"/>
+                    @if (cdtrAgtAcctPrxyTpPanel()) {
+                      <div class="form-grid-col-1">
+                        <app-select-option-field [frmGroup]="frmGroup"
+                                             [options]="cashAccountTypeOptions"
+                                             [label]="'Code'"
+                                             [controlName]="'cdtrAgtAcctPrxyTpCd'"/>
+                        <app-text-base-input [frmGroup]="frmGroup"
+                                             [label]="'Proprietary'"
+                                             [controlName]="'cdtrAgtAcctPrxyTpPrtry'"/>
+                      </div>
+                    }
+                  </div>
+                  
+                  <app-text-base-input [frmGroup]="frmGroup"
+                                       [label]="'Identification'"
+                                       [controlName]="'cdtrAgtAcctPrxyId'"/>
+                </div>
+              }
+            </div>
           </div>
           }
         </div>
