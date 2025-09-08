@@ -26,8 +26,9 @@ import { SelectOptionField } from '../input-types/select-option-field/select-opt
 import { BranchInfoService } from '../../services/branch-info.service';
 import { MessageTypeService } from '../../services/message-type.service';
 import { TextBaseInput } from '../input-types/text-base-input/text-base-input';
-import { DateInput } from '../input-types/date-input/date-input';
+
 import { CBSData, SwiftMessageRequest } from '../../models/swift-message.model';
+import { DateInputComponent } from '../input-types/date-input.component/date-input.component';
 
 @Component({
   selector: 'app-swift-messaging-interface',
@@ -47,7 +48,7 @@ import { CBSData, SwiftMessageRequest } from '../../models/swift-message.model';
     Button,
     SelectOptionField,
     FormsModule,
-    DateInput,
+    DateInputComponent,
     TextBaseInput,
     ReactiveFormsModule,
     RouterModule,
@@ -95,37 +96,37 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
 
   // Message types for dropdown (MT types)
   messageTypes: any[] = [
-    { key: 'pacs-008', value: 'pacs 008 - F1 to F1 Customer Credit Transfer' },
+    { key: 'pacs-008', value: 'Pacs 008 - F1 to F1 Customer Credit Transfer' },
     {
       key: 'pacs-009',
-      value: 'pacs 009 - Financial Institution Credit Transfer Return',
+      value: 'Pacs 009 - Financial Institution Credit Transfer Return',
     },
-    { key: 'pacs-003', value: 'pacs 003 - Direct Debit' },
-    { key: 'pacs-002', value: 'pacs 002 - F1 to F1 Payment' },
-    { key: 'pacs-010', value: 'pacs 010 - Payment Return' },
-    { key: 'pacs-011', value: 'pacs 011 - Request for Investigation' },
-    { key: 'pacs-012', value: 'pacs 012 - Request for Investigation Return' },
-    { key: 'pacs-013', value: 'pacs 013 - Resolution of Investigation' },
-    { key: 'pacs-014', value: 'pacs 014 - Additional Payment Information' },
+    { key: 'pacs-003', value: 'Pacs 003 - Direct Debit' },
+    { key: 'pacs-002', value: 'Pacs 002 - F1 to F1 Payment' },
+    { key: 'pacs-010', value: 'Pacs 010 - Payment Return' },
+    { key: 'pacs-011', value: 'Pacs 011 - Request for Investigation' },
+    { key: 'pacs-012', value: 'Pacs 012 - Request for Investigation Return' },
+    { key: 'pacs-013', value: 'Pacs 013 - Resolution of Investigation' },
+    { key: 'pacs-014', value: 'Pacs 014 - Additional Payment Information' },
     {
       key: 'pacs-015',
-      value: 'pacs 015 - Account Switching Information Request',
+      value: 'Pacs 015 - Account Switching Information Request',
     },
     {
       key: 'pacs-016',
-      value: 'pacs 016 - Intra-Position Movement Instruction',
+      value: 'Pacs 016 - Intra-Position Movement Instruction',
     },
     {
       key: 'pacs-017',
-      value: 'pacs 017 - Intra-Position Movement Confirmation',
+      value: 'Pacs 017 - Intra-Position Movement Confirmation',
     },
     {
       key: 'pacs-018',
-      value: 'pacs 018 - Intra-Position Movement Status Report',
+      value: 'Pacs 018 - Intra-Position Movement Status Report',
     },
     {
       key: 'pacs-019',
-      value: 'pacs 019 - Intra-Position Movement Cancellation Request',
+      value: 'Pacs 019 - Intra-Position Movement Cancellation Request',
     },
   ];
 
@@ -178,8 +179,8 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
   private initializeForm() {
     this.swiftForm = this.fb.group({
       messageType: [null],
-      fromDate: ['', [Validators.required]], // Add required validator if needed
-      toDate: ['', [Validators.required]], // Add required validator if needed
+      fromDate: [new Date(), [Validators.required]], // Add required validator if needed
+      toDate: [new Date(), [Validators.required]], // Add required validator if needed
       branch: [null],
       messageRefNo: [''],
     });
@@ -190,8 +191,6 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
    */
   private loadBranchData() {
     this.isLoadingBranches = true;
-    console.log('Loading branch data from API...');
-
     this.branchInfoService.getBranchList().subscribe({
       next: (response) => {
         this.isLoadingBranches = false;
@@ -259,12 +258,12 @@ export class SwiftMessagingInterface implements OnInit, AfterViewInit {
     console.log('Setting fallback branch options');
     this.branchOptions = [
       {
-        key: '000035',
-        value: 'HEAD OFFICE, SOUTHEAST BANK LIMITED (SEBDBDDH)',
+        key: '000031',
+        value: 'CORPORATE BRANCH, ABC Bank (0031)',
       },
       {
         key: '086153',
-        value: 'PRINCIPAL BRANCH, SOUTHEAST BANK LIMITED (SEBDBDDHSPB)',
+        value: 'PRINCIPAL BRANCH, SOUTHEAST BANK',
       },
     ];
   }
