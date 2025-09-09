@@ -46,8 +46,59 @@
                     [tooltip]="'Click to select account ID'"
                     [tooltipPosition]="'above'"
                     [tooltipDelay]="300"
-                    (dotsClicked)="openFromBicSelectionModal()"
+                    (dotsClicked)="openModal()"
                   ></lds-id-box>
+                </div>
+
+
+                <div>
+                  <lds-modal 
+                      [isVisible]="showModal" 
+                      modalTitle="Your Modal Title" 
+                      cssClass="modal-xl">
+                      
+                      <!-- Search section (if needed) -->
+                      <div class="modal-search-section">
+                        <div class="modal-search-wrapper">
+                          <input class="modal-search-input" placeholder="Search...">
+                          <i class="fa fa-search modal-search-icon"></i>
+                        </div>
+                      </div>
+                      
+                          <div class="p-4">
+                                      <lds-data-grid
+                                        [id]="'enhanced-transactions'"
+                                        [dataSource]="sampleTransactions()"
+                                        [initPageSize]="8"
+                                        [enableSelection]="true"
+                                        [showEditButton]="true"
+                                        [showDeleteButton]="true"
+                                        [showViewButton]="true"
+                                        [showPrintButton]="true"
+                                        [useInlineEdit]="true"
+                                        [editableColumns]="['amount', 'status', 'priority', 'currency', 'country', 'productCategory', 'subCategory', 'assignedRole']"
+                                        [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
+                                        [dropdownColumns]="transactionDropdownColumns()"
+                                        [dropdownOptions]="transactionDropdownOptions()"
+                                        [selectedColumns]="['id', 'amount', 'currency', 'country', 'productCategory', 'subCategory', 'status', 'riskLevel', 'totalAmount', 'requiresApproval']"
+                                        [rowDesignerList]="transactionRowDesigners()"
+                                        [tblClass]="'enhanced-transaction-table'"
+                                        (onFHEditClick)="onTransactionEdit($event)"
+                                        (onFHDeleteClick)="onTransactionDelete($event)"
+                                        (onFHViewClick)="onTransactionView($event)"
+                                        (onPrint)="onTransactionPrint($event)"
+                                        (onChecked)="onTransactionRowSelect($event)"
+                                        (onSelectAllChange)="onTransactionSelectAll($event)"
+                                        (dataSourceChanged)="onTransactionDataChanged($event)"
+                                      >
+                                      </lds-data-grid>
+                                    </div>
+                      
+                      <!-- Footer -->
+                      <div slot="footer">
+                        <button class="modal-btn modal-btn-primary">Action</button>
+                      </div>
+                    </lds-modal>
                 </div>
 
                 <!-- Amount Input -->
@@ -224,6 +275,8 @@
                     [controlName]="'date'"
                     [label]="'Transaction Date'"
                     [dateFormat]="'DD-MM-YYYY'"
+                    [maxYear]="2034"
+                    [enableYearRangeValidation]="false"
                   ></app-date-input>
                 </div>
 

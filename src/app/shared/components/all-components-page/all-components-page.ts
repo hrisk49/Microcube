@@ -23,6 +23,8 @@ import { DataSelectionModal } from '../data-selection-modal/data-selection-modal
 import { BUTTON_VISIBILITY, ONCLICK_SAVE } from '../../constant/button-signals.constant';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { DateInput } from '../input-types/date-input/date-input';
+import { LdsModalComponent } from '../lds-modal/lds-modal';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-all-components-page',
@@ -37,10 +39,12 @@ import { DateInput } from '../input-types/date-input/date-input';
     AmountToWordInput,
     SelectOptionField,
     DateInput,
+    CommonModule,
     MultiSelectOptionField,
     LdsStepperComponent,
     FileComponent,
     OfficeBoxComponent,
+    LdsModalComponent,
     NumberInput,
     DataGridComponent,
     ExpansionPanelHeader,
@@ -64,7 +68,7 @@ export class AllComponentsPage implements OnInit {
   calculatedTaxRate = signal<number>(0);
   isHighValueTransaction = signal<boolean>(false);
   relatedTransactions = signal<any[]>([]);
-
+  showModal = false;  
   // Enhanced dropdown options with relationships
   currencyOptions = [
     { key: 'USD', value: 'US Dollar', rate: 1, taxRate: 0.05, country: 'US' },
@@ -287,6 +291,36 @@ export class AllComponentsPage implements OnInit {
   // Enhanced dropdown columns to include new relatable fields
   transactionDropdownColumns = signal(['status', 'priority', 'department', 'category', 'assignedRole', 'currency', 'country', 'productCategory', 'subCategory']);
 
+
+    accountsData = [
+    { accountId: 'ACC001', accountName: 'Main Current Account', accountType: 'Current', balance: 50000.00 },
+    { accountId: 'ACC002', accountName: 'Savings Account', accountType: 'Savings', balance: 25000.00 },
+    { accountId: 'ACC003', accountName: 'Business Account', accountType: 'Business', balance: 100000.00 },
+    { accountId: 'ACC004', accountName: 'Investment Account', accountType: 'Investment', balance: 75000.00 },
+    { accountId: 'ACC005', accountName: 'Foreign Currency Account', accountType: 'FC', balance: 30000.00 }
+  ];
+  
+  filteredAccounts = [...this.accountsData];
+   filterAccounts(searchTerm: string) {
+    if (!searchTerm.trim()) {
+      this.filteredAccounts = [...this.accountsData];
+      return;
+    }
+    
+    const term = searchTerm.toLowerCase();
+    this.filteredAccounts = this.accountsData.filter(account =>
+      account.accountId.toLowerCase().includes(term) ||
+      account.accountName.toLowerCase().includes(term) ||
+      account.accountType.toLowerCase().includes(term)
+    );
+  }
+  
+  // Create new account handler
+  createNewAccount() {
+    // You can implement account creation logic here
+    this.toastr.info('Create new account functionality would be implemented here', 'Feature');
+    this.showModal = false;
+  }
   constructor(
     private formBuilder: FormBuilder,
     private bicSelectionService: BicSelectionService,
@@ -438,6 +472,28 @@ private getDetailedFormErrors(): any {
   });
   
   return formErrors;
+}
+
+
+openModal() {
+  this.showModal = false; // Reset first
+  setTimeout(() => {
+    this.showModal = true; // Then open
+  }, 0);
+}
+ 
+  onModalClose(isVisible: boolean) {
+    console.log('Modal visibility changed:', isVisible);
+    this.showModal = isVisible;
+    
+    if (!isVisible) {
+      console.log('Modal closed');
+    }
+  }
+
+  onModalVisibilityChange(isVisible: boolean) {
+  this.showModal = isVisible;
+  console.log('Modal visibility changed to:', isVisible);
 }
 
 // Show specific validation errors
@@ -888,23 +944,69 @@ debugFormState(): void {
     this.toastr.info(`Editing transaction: ${transaction.id}`, 'Edit Mode');
   }
 
-  onTransactionDataChanged(newData: any[]): void {
-    console.log('Transaction data changed:', newData);
-    
-    // Update the signal
-    this.sampleTransactions.set(newData);
-    
-    // Recalculate related transactions
-    this.filterRelatedTransactions();
-    
-    // Validate data relationships
-    newData.forEach(transaction => {
-      this.validateTransactionRelationships(transaction);
-    });
-    
-    this.toastr.success('Transaction data updated with relationship validation', 'Data Updated');
-  }
+onTransactionDataChanged(newData: any[]): void {
+  console.log('Transaction data changed:', newData);
+  
+  // Validate amounts in the updated data
+  const validatedData = newData.map(transaction => {
+    if (transaction.amount) {
+      // Ensure amount is within valid range
+      if (transaction.amount < 1) {
+        transaction.amount = 1;
+        this.toastr.warning(`Minimum amount of 1 applied to transaction ${transaction.id}`, 'Validation');
+      } else if (transaction.amount > 1000000) {
+        transaction.amount = 1000000;
+        this.toastr.warning(`Maximum amount of 1,000,000 applied to transaction ${transaction.id}`, 'Validation');
+      }
+      
+      // Validate against subcategory minimum
+      const subCategory = this.subCategoryOptions.find(s => s.key === transaction.subCategory);
+      if (subCategory && transaction.amount < subCategory.minAmount) {
+        transaction.amount = subCategory.minAmount;
+        this.toastr.warning(`Minimum amount of ${subCategory.minAmount} applied for ${subCategory.value}`, 'Validation');
+      }
+      
+      // Recalculate related fields
+      transaction = this.recalculateTransactionAmounts(transaction);
+    }
+    return transaction;
+  });
+  
+  // Update with validated data
+  this.sampleTransactions.set(validatedData);
+  this.filterRelatedTransactions();
+  
+  this.toastr.success('Transaction data updated with validation', 'Data Updated');
+}
 
+private recalculateTransactionAmounts(transaction: any): any {
+  const amount = Number(transaction.amount) || 0;
+  let taxRate = 0.05; // Default tax rate
+  
+  // Get currency-specific tax rate
+  const currency = this.currencyOptions.find(c => c.key === transaction.currency);
+  if (currency) {
+    taxRate = currency.taxRate;
+  }
+  
+  // Apply category multiplier
+  const category = this.productCategoryOptions.find(c => c.key === transaction.productCategory);
+  if (category) {
+    taxRate *= category.taxMultiplier;
+  }
+  
+  const calculatedTax = amount * taxRate;
+  const totalAmount = amount + calculatedTax;
+  
+  return {
+    ...transaction,
+    amount: amount,
+    taxRate: taxRate,
+    calculatedTax: calculatedTax,
+    totalAmount: totalAmount,
+    requiresApproval: category?.requiresApproval || amount > 50000
+  };
+}
   private validateTransactionRelationships(transaction: any): void {
     // Validate currency-country relationship
     const currency = this.currencyOptions.find(c => c.key === transaction.currency);
@@ -1315,27 +1417,27 @@ debugFormState(): void {
   transactionRowDesigners = signal<TableRowDesigner[]>([
     {
       condition: (item: any) => item.riskLevel === 'high',
-      backgroundColor: '#fee2e2',
-      textColor: '#dc2626',
-      borderColor: '#fca5a5'
+      // backgroundColor: '#fee2e2',
+      // textColor: '#dc2626',
+      // borderColor: '#fca5a5'
     },
     {
       condition: (item: any) => item.riskLevel === 'medium',
-      backgroundColor: '#fef3c7',
-      textColor: '#d97706',
-      borderColor: '#fcd34d'
+      // backgroundColor: '#d8d4c5ff',
+      // textColor: '#d97706',
+      // borderColor: '#d4d4d4ff'
     },
     {
       condition: (item: any) => item.riskLevel === 'low',
-      backgroundColor: '#dcfce7',
-      textColor: '#16a34a',
-      borderColor: '#86efac'
+      // backgroundColor: '#dcfce7',
+      // textColor: '#070707ff',
+      // borderColor: '#86efac'
     },
     {
       condition: (item: any) => item.requiresApproval,
-      backgroundColor: '#e0e7ff',
-      textColor: '#3730a3',
-      borderColor: '#a5b4fc'
+      // backgroundColor: '#e0e7ff',
+      // textColor: '#3730a3',
+      // borderColor: '#a5b4fc'
     }
   ]);
 

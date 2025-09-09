@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "../node_modules/ngx-toastr/toastr.css";
+@import "./app/shared/components/lds-modal/lds-modal.scss";
+
 @reference "tailwindcss";
 
 html, body { height: 100%; }
@@ -10,6 +12,17 @@ body { margin: 0; font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;}
 .mat-mdc-card {
   background-color: white !important;
 }
+
+// Global fix for Material Angular overlays in modals
+.cdk-overlay-container {
+  z-index: 2000 !important;
+}
+
+.mat-mdc-select-panel {
+  z-index: 2000 !important;
+  max-height: 300px !important;
+}
+
 
 input[type=number]::-webkit-outer-spin-button,
 input[type=number]::-webkit-inner-spin-button {
