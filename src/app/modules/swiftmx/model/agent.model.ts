@@ -1,7 +1,4 @@
 import {AddressModel} from './address.model';
-import {OtherModel} from './other.model';
-
-
 
 
 export interface AgentModel {
@@ -14,5 +11,4 @@ export interface AgentModel {
   adrLine2: string;           // AddressLine 2 (max 35)
   adrLine3: string;           // AddressLine 3 (max 35)
   adr: AddressModel;               // Address object
-  orgOtherList:OtherModel[];
 }
