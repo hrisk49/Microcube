@@ -2,6 +2,8 @@ import {AddressModel} from './address.model';
 import {OtherModel} from './other.model';
 
 
+
+
 export interface AgentModel {
   bicfi: string;              // BICFI (max 12)
   clrSysIdCd: string;         // ClearingSystemIdentification Code (ExternalClearingSystemIdentification1Code)

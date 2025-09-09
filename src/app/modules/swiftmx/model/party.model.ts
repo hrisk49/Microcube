@@ -8,6 +8,9 @@ export  interface  PartyModel {
   // Organisation Identification
   orgIdBic: string;                   // BIC (max 12)
   orgIdLEI: string;                   // LEI (Legal Entity Identifier, max 20)
+
+
+  orgOtherList?:any;
   orgIdOthrId: string;                // Other ID (max 35)
   orgIdOthrScNmCd: string;           // Scheme Name Code (max 4)
   orgIdOthrScNmPrty: string;           // Scheme Name Prty (max 4)
