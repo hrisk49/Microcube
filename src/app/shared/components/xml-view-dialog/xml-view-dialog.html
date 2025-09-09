@@ -1,22 +1,41 @@
 <div class="xml-dialog-container">
+  <!-- Header -->
   <div class="dialog-header">
-    <h2 mat-dialog-title class="text-lg font-semibold text-gray-900">XML Message Details</h2>
-    <button mat-icon-button mat-dialog-close class="close-button">
+    <div class="header-content align-items-center">
+      <mat-icon class="header-icon">code</mat-icon>
+      <h2 mat-dialog-title class="dialog-title">XML Message Preview</h2>
+    </div>
+    <button mat-icon-button mat-dialog-close class="close-button" aria-label="Close dialog">
       <mat-icon>close</mat-icon>
     </button>
   </div>
   
+  <!-- Content -->
   <mat-dialog-content class="dialog-content">
-    <div class="xml-content">
-      <pre class="xml-text">{{xmlData}}</pre>
+    <div class="xml-wrapper">
+      <div class="xml-header">
+        <span class="xml-label">Generated XML Content:</span>
+        <button mat-icon-button (click)="copyToClipboard()" class="copy-icon-button" title="Copy to clipboard">
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </div>
+      <div class="xml-content-container" #xmlContainer>
+        <pre class="xml-text">{{xmlData}}</pre>
+      </div>
     </div>
   </mat-dialog-content>
   
-  <mat-dialog-actions class="dialog-actions">
-    <button mat-button mat-dialog-close class="cancel-button">Close</button>
-    <button mat-raised-button color="primary" (click)="copyToClipboard()" class="copy-button">
-      <mat-icon>content_copy</mat-icon>
-      Copy XML
-    </button>
-  </mat-dialog-actions>
+  <!-- Actions -->
+  <!-- <mat-dialog-actions class="dialog-actions">
+    <div class="actions-container">
+      <button mat-button mat-dialog-close class="cancel-button">
+        <mat-icon>close</mat-icon>
+        Close
+      </button>
+      <button mat-raised-button color="primary" (click)="copyToClipboard()" class="copy-button">
+        <mat-icon>content_copy</mat-icon>
+        Copy XML
+      </button>
+    </div>
+  </mat-dialog-actions> -->
 </div>
