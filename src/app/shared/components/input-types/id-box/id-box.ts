@@ -99,6 +99,8 @@ export class IdBoxComponent {
     
 
     
+
+    
     // Add required validator if needed
     if (this.isRequired()) {
       validators.push(Validators.required);

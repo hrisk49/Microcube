@@ -42,14 +42,19 @@ import { CurrencyModel } from '../../../../shared/models/currency.model';
 import { LookupService } from '../../../../shared/services/lookup.service';
 import { MessageTypeService } from '../../../../shared/services/message-type.service';
 import { LEI_PATTERN } from '../../../../shared/constant/value-patterns.constant';
+import { MatIcon } from '@angular/material/icon';
+import { DateInput } from '../../../../shared/components/input-types/date-input/date-input';
+import { accountIdValidator, cbprRestrictedFINXMax16ExtendedValidator, cbprRestrictedFINXMax320Validator, cbprRestrictedFINXMax35ExtendedValidator, cbprRestrictedFINXMax35Validator, cbprRestrictedFINXMax70ExtendedValidator, cbprRestrictedFINXMax70Validator, countryCodeValidator, ibanValidator, settlementMethodValidator } from '../../../../shared/helpers/custom-validator.helper';
 
 
 @Component({
   selector: 'app-pacs-009',
   imports: [
+    MatIcon,
     ReactiveFormsModule,
     TextBaseInput,
     SelectOptionField,
+    DateInput,
     TimeInput,
     AmountToWordInput,
     ExpansionPanelHeader,
@@ -157,6 +162,8 @@ export class Pacs009 implements OnInit, OnDestroy {
   paymentIdPanel: WritableSignal<boolean> = signal(true);
   paymentTypePanel: WritableSignal<boolean> = signal(false);
   serviceLevelPanel: WritableSignal<boolean> = signal(true);
+  localInstrumentPanel: WritableSignal<boolean> = signal(false);
+  categoryPurposePanel: WritableSignal<boolean> = signal(false);
   interbankPanel: WritableSignal<boolean> = signal(true);
   interbankSettlementTimeIndicationPanel: WritableSignal<boolean> = signal(false);
   interbankSettlementTimeRequestPanel: WritableSignal<boolean> = signal(false);
@@ -289,7 +296,6 @@ export class Pacs009 implements OnInit, OnDestroy {
   settlementOptions: SelectOptionsModel[] = [];
 
   // Additional options for reimbursement agents
-  accountTypeOptions: SelectOptionsModel[] = [];
   rmbrsmntAgtPrxyCdOptions: SelectOptionsModel[] = [];
   purposeCodeOptions: SelectOptionsModel[] = [];
   clearingSystemIdOptions: SelectOptionsModel[] = [];
@@ -341,7 +347,6 @@ export class Pacs009 implements OnInit, OnDestroy {
       this.loadCurrencies();
       this.loadServiceLevelCodes();
       this.loadSettlementOptions();
-      this.loadAccountTypeOptions();
       this.loadReimbursementAgentProxyCodeOptions();
       this.loadPurposeCodeOptions();
       this.loadClearingSystemIdOptions();
@@ -350,6 +355,9 @@ export class Pacs009 implements OnInit, OnDestroy {
       this.loadLocalInstrumentCodes();
       this.loadCategoryPurposeCodes();
       FormGroupSignal.set(this.frmGroup);
+      // Sync priority fields bidirectionally
+      this.frmGroup.get('priority')?.valueChanges.subscribe(val => this.frmGroup.get('instrPrty')?.setValue(val));
+      this.frmGroup.get('instrPrty')?.valueChanges.subscribe(val => this.frmGroup.get('priority')?.setValue(val));
       this.setupPurposeMutualExclusivity();
       this.setupBicAgentSynchronization();
       this.setupConditionalValidation();
@@ -597,8 +605,8 @@ export class Pacs009 implements OnInit, OnDestroy {
       option?.key?.toLowerCase() === data?.isoSwiftCode?.toLowerCase()
     );
 
-    // Limit amount to max 5 decimal places without padding
-    const limitedAmount = this.limitToFiveDecimals(data?.valAmt32a);
+    // Limit amount to exactly 2 decimals by truncation (floor)
+    const limitedAmount = this.floorToTwoDecimals(data?.valAmt32a);
 
     this.frmGroup.patchValue({
       bizMsgIdr: data.trnRefNo20,
@@ -616,19 +624,23 @@ export class Pacs009 implements OnInit, OnDestroy {
     this.frmGroup.get('intrBkSttlmAmtCcy')?.disable({ emitEvent: false });
   }
 
-  private limitToFiveDecimals(value: any): any {
+  private floorToTwoDecimals(value: any): any {
     if (value === null || value === undefined) return value;
     const str = String(value);
+    if (str.trim() === '') return str;
+
     const parts = str.split('.');
-    if (parts.length !== 2) {
-      return str;
+    if (parts.length === 1) {
+      return `${parts[0]}.00`;
     }
     const integerPart = parts[0];
-    const fractionalPart = parts[1];
-    if (fractionalPart.length <= 5) {
-      return str;
+    let fractionalPart = parts[1] ?? '';
+    if (fractionalPart.length >= 2) {
+      fractionalPart = fractionalPart.slice(0, 2); // truncate, no rounding
+    } else {
+      fractionalPart = fractionalPart.padEnd(2, '0');
     }
-    return `${integerPart}.${fractionalPart.slice(0, 5)}`;
+    return `${integerPart}.${fractionalPart}`;
   }
 
   private loadServiceLevelCodes(): void {
@@ -706,32 +718,6 @@ export class Pacs009 implements OnInit, OnDestroy {
         this.settlementOptions = [
           { key: 'INDA', value: 'INDA - InstructedAgent' },
           { key: 'INGA', value: 'INGA - InstructingAgent' },
-        ];
-      }
-    });
-  }
-
-  private loadAccountTypeOptions(): void {
-    // Load account type options - adjust typeId as needed based on your backend
-    this.externalCodeService.getSwiftExternalCodes('ExternalCashAccountType1Code').pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (response: any) => {
-        if (response.payload && response.payload.length > 0) {
-          this.accountTypeOptions = response.payload.map((item: any) => ({
-            key: item.codeValue,
-            value: item.codeName ? `${item.codeValue} - ${item.codeName}` : item.codeValue,
-          }));
-        }
-      },
-      error: (err) => {
-        console.error('Failed to load account type options', err);
-        this.toastr.error('Failed to load account type options', 'Error');
-        // Fallback to default options if API fails
-        this.accountTypeOptions = [
-          { key: 'CACC', value: 'Current Account' },
-          { key: 'SVGS', value: 'Savings Account' },
-          { key: 'TRAN', value: 'Transactional Account' },
         ];
       }
     });
@@ -1015,7 +1001,7 @@ export class Pacs009 implements OnInit, OnDestroy {
 
       cpyDplct: [null],
       pssblDplct: [null],
-      priority: ['NORM'],
+      priority: [null],
       msgId: ['MSG' + new Date().getTime(), [
         Validators.required,
         Validators.maxLength(35),
@@ -1026,23 +1012,23 @@ export class Pacs009 implements OnInit, OnDestroy {
       nbOfTxs: ['1', Validators.required],
 
       // Settlement Information
-      sttlmMtd: [null, [Validators.required, this.settlementMethodValidator]],
+      sttlmMtd: [null, [Validators.required, settlementMethodValidator]],
       // Settlement Account (flat)
-      sttlmAcctId: ['', [this.accountIdValidator]],
-      sttlmAcctIban: ['', [this.ibanValidator]],
+      sttlmAcctId: ['', [accountIdValidator]],
+      sttlmAcctIban: ['', [ibanValidator]],
       sttlmAcctSchmeNmCd: [''],
-      sttlmAcctSchmeNmPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      sttlmAcctIssr: ['', [this.cbprRestrictedFINXMax35Validator]],
+      sttlmAcctSchmeNmPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      sttlmAcctIssr: ['', [cbprRestrictedFINXMax35Validator]],
       sttlmAcctCcy: [null],
       sttlmAcctTp: [''],
-      sttlmAcctNm: ['', [this.cbprRestrictedFINXMax70Validator]],
+      sttlmAcctNm: ['', [cbprRestrictedFINXMax70Validator]],
       sttlmAgtAcctPrxyCd: [''],
       sttlmAgtAcctPrxyId: [''],
       sttlmAcctTpCd: [''],
-      sttlmAcctTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
+      sttlmAcctTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
       sttlmAcctPrxyTpCd: [null],
-      sttlmAcctPrxyTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      sttlmAcctPrxyId: ['', [this.cbprRestrictedFINXMax320Validator]],
+      sttlmAcctPrxyTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      sttlmAcctPrxyId: ['', [cbprRestrictedFINXMax320Validator]],
 
       // Instructing Reimbursement Agent
       instgRmbrsmntAgtBicfi: ['', [Validators.pattern(/^[A-Z0-9]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/)]],
@@ -1051,37 +1037,37 @@ export class Pacs009 implements OnInit, OnDestroy {
       instgRmbrsmntAgtLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       instgRmbrsmntAgtNm: [''],
       // Instructing Reimbursement Agent Address - with CBPR validation
-      instgRmbrsmntAgtAdrLine1: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instgRmbrsmntAgtAdrLine2: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instgRmbrsmntAgtAdrLine3: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instgRmbrsmntAgtAdrDept: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      instgRmbrsmntAgtAdrSubDept: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      instgRmbrsmntAgtAdrStrtNm: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      instgRmbrsmntAgtAdrBldgNb: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      instgRmbrsmntAgtAdrBldgNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instgRmbrsmntAgtAdrFlr: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      instgRmbrsmntAgtAdrPstBx: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      instgRmbrsmntAgtAdrRoom: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      instgRmbrsmntAgtAdrPstCd: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      instgRmbrsmntAgtAdrTwnNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instgRmbrsmntAgtAdrTwnLctnNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instgRmbrsmntAgtAdrDstrctNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instgRmbrsmntAgtAdrCtrySubDvsn: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instgRmbrsmntAgtAdrCtry: ['', [this.countryCodeValidator]],
+      instgRmbrsmntAgtAdrLine1: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instgRmbrsmntAgtAdrLine2: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instgRmbrsmntAgtAdrLine3: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instgRmbrsmntAgtAdrDept: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      instgRmbrsmntAgtAdrSubDept: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      instgRmbrsmntAgtAdrStrtNm: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      instgRmbrsmntAgtAdrBldgNb: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      instgRmbrsmntAgtAdrBldgNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instgRmbrsmntAgtAdrFlr: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      instgRmbrsmntAgtAdrPstBx: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      instgRmbrsmntAgtAdrRoom: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      instgRmbrsmntAgtAdrPstCd: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      instgRmbrsmntAgtAdrTwnNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instgRmbrsmntAgtAdrTwnLctnNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instgRmbrsmntAgtAdrDstrctNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instgRmbrsmntAgtAdrCtrySubDvsn: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instgRmbrsmntAgtAdrCtry: ['', [countryCodeValidator]],
       instgRmbrsmntAgtAdrLine: [''],
       // Instructing Reimbursement Agent Account - structured like Settlement Account
-      instgRmbrsmntAgtAcctIban: ['', [this.ibanValidator]],
-      instgRmbrsmntAgtAcctId: ['', [this.accountIdValidator]],
+      instgRmbrsmntAgtAcctIban: ['', [ibanValidator]],
+      instgRmbrsmntAgtAcctId: ['', [accountIdValidator]],
       instgRmbrsmntAgtAcctSchmeNmCd: [''],
-      instgRmbrsmntAgtAcctSchmeNmPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      instgRmbrsmntAgtAcctIssr: ['', [this.cbprRestrictedFINXMax35Validator]],
+      instgRmbrsmntAgtAcctSchmeNmPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      instgRmbrsmntAgtAcctIssr: ['', [cbprRestrictedFINXMax35Validator]],
       instgRmbrsmntAgtAcctTpCd: [''],
-      instgRmbrsmntAgtAcctTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
+      instgRmbrsmntAgtAcctTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
       instgRmbrsmntAgtAcctCcy: [null],
-      instgRmbrsmntAgtAcctNm: ['', [this.cbprRestrictedFINXMax70Validator]],
+      instgRmbrsmntAgtAcctNm: ['', [cbprRestrictedFINXMax70Validator]],
       instgRmbrsmntAgtAcctPrxyTpCd: [null],
-      instgRmbrsmntAgtAcctPrxyTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      instgRmbrsmntAgtAcctPrxyId: ['', [this.cbprRestrictedFINXMax320Validator]],
+      instgRmbrsmntAgtAcctPrxyTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      instgRmbrsmntAgtAcctPrxyId: ['', [cbprRestrictedFINXMax320Validator]],
       // Legacy fields (keeping for backward compatibility)
       instgRmbrsmntAgtAcctTp: [null],
       instgRmbrsmntAgtPrxyCd: [''],
@@ -1094,23 +1080,23 @@ export class Pacs009 implements OnInit, OnDestroy {
       instdRmbrsmntAgtLei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       instdRmbrsmntAgtNm: [''],
       // Instructed Reimbursement Agent Address - with CBPR validation
-      instdRmbrsmntAgtAdrLine1: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instdRmbrsmntAgtAdrLine2: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instdRmbrsmntAgtAdrLine3: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instdRmbrsmntAgtAdrDept: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      instdRmbrsmntAgtAdrSubDept: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      instdRmbrsmntAgtAdrStrtNm: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      instdRmbrsmntAgtAdrBldgNb: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      instdRmbrsmntAgtAdrBldgNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instdRmbrsmntAgtAdrFlr: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      instdRmbrsmntAgtAdrPstBx: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      instdRmbrsmntAgtAdrRoom: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      instdRmbrsmntAgtAdrPstCd: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      instdRmbrsmntAgtAdrTwnNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instdRmbrsmntAgtAdrTwnLctnNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instdRmbrsmntAgtAdrDstrctNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instdRmbrsmntAgtAdrCtrySubDvsn: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      instdRmbrsmntAgtAdrCtry: ['', [this.countryCodeValidator]],
+      instdRmbrsmntAgtAdrLine1: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instdRmbrsmntAgtAdrLine2: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instdRmbrsmntAgtAdrLine3: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instdRmbrsmntAgtAdrDept: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      instdRmbrsmntAgtAdrSubDept: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      instdRmbrsmntAgtAdrStrtNm: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      instdRmbrsmntAgtAdrBldgNb: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      instdRmbrsmntAgtAdrBldgNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instdRmbrsmntAgtAdrFlr: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      instdRmbrsmntAgtAdrPstBx: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      instdRmbrsmntAgtAdrRoom: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      instdRmbrsmntAgtAdrPstCd: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      instdRmbrsmntAgtAdrTwnNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instdRmbrsmntAgtAdrTwnLctnNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instdRmbrsmntAgtAdrDstrctNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instdRmbrsmntAgtAdrCtrySubDvsn: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      instdRmbrsmntAgtAdrCtry: ['', [countryCodeValidator]],
       instdRmbrsmntAgtAdrLine: [''],
       instdRmbrsmntAgtAcctId: [''],
       instdRmbrsmntAgtAcctTp: [null],
@@ -1156,37 +1142,37 @@ export class Pacs009 implements OnInit, OnDestroy {
       prvsInstgAgt1Lei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       prvsInstgAgt1Nm: [''],
       // Previous Instructing Agent 1 Address - with CBPR validation
-      prvsInstgAgt1AdrLine1: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt1AdrLine2: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt1AdrLine3: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt1AdrDept: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt1AdrSubDept: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt1AdrStrtNm: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt1AdrBldgNb: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      prvsInstgAgt1AdrBldgNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt1AdrFlr: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt1AdrPstBx: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      prvsInstgAgt1AdrRoom: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt1AdrPstCd: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      prvsInstgAgt1AdrTwnNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt1AdrTwnLctnNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt1AdrDstrctNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt1AdrCtrySubDvsn: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt1AdrCtry: ['', [this.countryCodeValidator]],
+      prvsInstgAgt1AdrLine1: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt1AdrLine2: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt1AdrLine3: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt1AdrDept: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt1AdrSubDept: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt1AdrStrtNm: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt1AdrBldgNb: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      prvsInstgAgt1AdrBldgNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt1AdrFlr: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt1AdrPstBx: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      prvsInstgAgt1AdrRoom: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt1AdrPstCd: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      prvsInstgAgt1AdrTwnNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt1AdrTwnLctnNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt1AdrDstrctNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt1AdrCtrySubDvsn: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt1AdrCtry: ['', [countryCodeValidator]],
       prvsInstgAgt1AdrLine: [''],
       // Previous Instructing Agent 1 Account - structured like Settlement Account
-      prvsInstgAgt1AcctIban: ['', [this.ibanValidator]],
-      prvsInstgAgt1AcctId: ['', [this.accountIdValidator]],
+      prvsInstgAgt1AcctIban: ['', [ibanValidator]],
+      prvsInstgAgt1AcctId: ['', [accountIdValidator]],
       prvsInstgAgt1AcctSchmeNmCd: [''],
-      prvsInstgAgt1AcctSchmeNmPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      prvsInstgAgt1AcctIssr: ['', [this.cbprRestrictedFINXMax35Validator]],
+      prvsInstgAgt1AcctSchmeNmPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      prvsInstgAgt1AcctIssr: ['', [cbprRestrictedFINXMax35Validator]],
       prvsInstgAgt1AcctTpCd: [''],
-      prvsInstgAgt1AcctTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
+      prvsInstgAgt1AcctTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
       prvsInstgAgt1AcctCcy: [null],
-      prvsInstgAgt1AcctNm: ['', [this.cbprRestrictedFINXMax70Validator]],
+      prvsInstgAgt1AcctNm: ['', [cbprRestrictedFINXMax70Validator]],
       prvsInstgAgt1AcctPrxyTpCd: [null],
-      prvsInstgAgt1AcctPrxyTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      prvsInstgAgt1AcctPrxyId: ['', [this.cbprRestrictedFINXMax320Validator]],
+      prvsInstgAgt1AcctPrxyTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      prvsInstgAgt1AcctPrxyId: ['', [cbprRestrictedFINXMax320Validator]],
       // Legacy fields (keeping for backward compatibility)
       prvsInstgAgt1AcctTp: [''],
       prvsInstgAgt1AcctSchmeNm: [''],
@@ -1200,37 +1186,37 @@ export class Pacs009 implements OnInit, OnDestroy {
       prvsInstgAgt2Lei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       prvsInstgAgt2Nm: [''],
       // Previous Instructing Agent 2 Address - with CBPR validation
-      prvsInstgAgt2AdrLine1: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt2AdrLine2: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt2AdrLine3: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt2AdrDept: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt2AdrSubDept: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt2AdrStrtNm: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt2AdrBldgNb: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      prvsInstgAgt2AdrBldgNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt2AdrFlr: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt2AdrPstBx: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      prvsInstgAgt2AdrRoom: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt2AdrPstCd: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      prvsInstgAgt2AdrTwnNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt2AdrTwnLctnNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt2AdrDstrctNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt2AdrCtrySubDvsn: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt2AdrCtry: ['', [this.countryCodeValidator]],
+      prvsInstgAgt2AdrLine1: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt2AdrLine2: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt2AdrLine3: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt2AdrDept: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt2AdrSubDept: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt2AdrStrtNm: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt2AdrBldgNb: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      prvsInstgAgt2AdrBldgNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt2AdrFlr: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt2AdrPstBx: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      prvsInstgAgt2AdrRoom: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt2AdrPstCd: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      prvsInstgAgt2AdrTwnNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt2AdrTwnLctnNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt2AdrDstrctNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt2AdrCtrySubDvsn: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt2AdrCtry: ['', [countryCodeValidator]],
       prvsInstgAgt2AdrLine: [''],
       // Previous Instructing Agent 2 Account - structured like Settlement Account
-      prvsInstgAgt2AcctIban: ['', [this.ibanValidator]],
-      prvsInstgAgt2AcctId: ['', [this.accountIdValidator]],
+      prvsInstgAgt2AcctIban: ['', [ibanValidator]],
+      prvsInstgAgt2AcctId: ['', [accountIdValidator]],
       prvsInstgAgt2AcctSchmeNmCd: [''],
-      prvsInstgAgt2AcctSchmeNmPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      prvsInstgAgt2AcctIssr: ['', [this.cbprRestrictedFINXMax35Validator]],
+      prvsInstgAgt2AcctSchmeNmPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      prvsInstgAgt2AcctIssr: ['', [cbprRestrictedFINXMax35Validator]],
       prvsInstgAgt2AcctTpCd: [''],
-      prvsInstgAgt2AcctTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
+      prvsInstgAgt2AcctTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
       prvsInstgAgt2AcctCcy: [null],
-      prvsInstgAgt2AcctNm: ['', [this.cbprRestrictedFINXMax70Validator]],
+      prvsInstgAgt2AcctNm: ['', [cbprRestrictedFINXMax70Validator]],
       prvsInstgAgt2AcctPrxyTpCd: [null],
-      prvsInstgAgt2AcctPrxyTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      prvsInstgAgt2AcctPrxyId: ['', [this.cbprRestrictedFINXMax320Validator]],
+      prvsInstgAgt2AcctPrxyTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      prvsInstgAgt2AcctPrxyId: ['', [cbprRestrictedFINXMax320Validator]],
       // Legacy fields (keeping for backward compatibility)
       prvsInstgAgt2AcctTp: [''],
       prvsInstgAgt2AcctSchmeNm: [''],
@@ -1244,37 +1230,37 @@ export class Pacs009 implements OnInit, OnDestroy {
       prvsInstgAgt3Lei: ['', [Validators.minLength(20), Validators.maxLength(20), Validators.pattern(LEI_PATTERN)]],
       prvsInstgAgt3Nm: [''],
       // Previous Instructing Agent 3 Address - with CBPR validation
-      prvsInstgAgt3AdrLine1: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt3AdrLine2: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt3AdrLine3: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt3AdrDept: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt3AdrSubDept: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt3AdrStrtNm: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt3AdrBldgNb: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      prvsInstgAgt3AdrBldgNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt3AdrFlr: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt3AdrPstBx: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      prvsInstgAgt3AdrRoom: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      prvsInstgAgt3AdrPstCd: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      prvsInstgAgt3AdrTwnNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt3AdrTwnLctnNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt3AdrDstrctNm: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt3AdrCtrySubDvsn: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      prvsInstgAgt3AdrCtry: ['', [this.countryCodeValidator]],
+      prvsInstgAgt3AdrLine1: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt3AdrLine2: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt3AdrLine3: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt3AdrDept: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt3AdrSubDept: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt3AdrStrtNm: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt3AdrBldgNb: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      prvsInstgAgt3AdrBldgNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt3AdrFlr: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt3AdrPstBx: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      prvsInstgAgt3AdrRoom: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      prvsInstgAgt3AdrPstCd: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      prvsInstgAgt3AdrTwnNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt3AdrTwnLctnNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt3AdrDstrctNm: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt3AdrCtrySubDvsn: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      prvsInstgAgt3AdrCtry: ['', [countryCodeValidator]],
       prvsInstgAgt3AdrLine: [''],
       // Previous Instructing Agent 3 Account - structured like Settlement Account
-      prvsInstgAgt3AcctIban: ['', [this.ibanValidator]],
-      prvsInstgAgt3AcctId: ['', [this.accountIdValidator]],
+      prvsInstgAgt3AcctIban: ['', [ibanValidator]],
+      prvsInstgAgt3AcctId: ['', [accountIdValidator]],
       prvsInstgAgt3AcctSchmeNmCd: [''],
-      prvsInstgAgt3AcctSchmeNmPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      prvsInstgAgt3AcctIssr: ['', [this.cbprRestrictedFINXMax35Validator]],
+      prvsInstgAgt3AcctSchmeNmPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      prvsInstgAgt3AcctIssr: ['', [cbprRestrictedFINXMax35Validator]],
       prvsInstgAgt3AcctTpCd: [''],
-      prvsInstgAgt3AcctTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
+      prvsInstgAgt3AcctTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
       prvsInstgAgt3AcctCcy: [null],
-      prvsInstgAgt3AcctNm: ['', [this.cbprRestrictedFINXMax70Validator]],
+      prvsInstgAgt3AcctNm: ['', [cbprRestrictedFINXMax70Validator]],
       prvsInstgAgt3AcctPrxyTpCd: [null],
-      prvsInstgAgt3AcctPrxyTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      prvsInstgAgt3AcctPrxyId: ['', [this.cbprRestrictedFINXMax320Validator]],
+      prvsInstgAgt3AcctPrxyTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      prvsInstgAgt3AcctPrxyId: ['', [cbprRestrictedFINXMax320Validator]],
       // Legacy fields (keeping for backward compatibility)
       prvsInstgAgt3AcctTp: [''],
       prvsInstgAgt3AcctSchmeNm: [''],
@@ -1319,18 +1305,18 @@ export class Pacs009 implements OnInit, OnDestroy {
       intrmyAgt1AdrCtry: ['', Validators.maxLength(3)],
       intrmyAgt1AdrLine: [''],
       // Intermediary Agent 1 Account - structured like Settlement Account
-      intrmyAgt1AcctIban: ['', [this.ibanValidator]],
-      intrmyAgt1AcctId: ['', [this.accountIdValidator]],
+      intrmyAgt1AcctIban: ['', [ibanValidator]],
+      intrmyAgt1AcctId: ['', [accountIdValidator]],
       intrmyAgt1AcctSchmeNmCd: [''],
-      intrmyAgt1AcctSchmeNmPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      intrmyAgt1AcctIssr: ['', [this.cbprRestrictedFINXMax35Validator]],
+      intrmyAgt1AcctSchmeNmPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      intrmyAgt1AcctIssr: ['', [cbprRestrictedFINXMax35Validator]],
       intrmyAgt1AcctTpCd: [''],
-      intrmyAgt1AcctTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
+      intrmyAgt1AcctTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
       intrmyAgt1AcctCcy: [null],
-      intrmyAgt1AcctNm: ['', [this.cbprRestrictedFINXMax70Validator]],
+      intrmyAgt1AcctNm: ['', [cbprRestrictedFINXMax70Validator]],
       intrmyAgt1AcctPrxyTpCd: [null],
-      intrmyAgt1AcctPrxyTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      intrmyAgt1AcctPrxyId: ['', [this.cbprRestrictedFINXMax320Validator]],
+      intrmyAgt1AcctPrxyTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      intrmyAgt1AcctPrxyId: ['', [cbprRestrictedFINXMax320Validator]],
       // Legacy fields (keeping for backward compatibility)
       intrmyAgt1AcctTp: [''],
       intrmyAgt1AcctSchmeNm: [''],
@@ -1362,18 +1348,18 @@ export class Pacs009 implements OnInit, OnDestroy {
       intrmyAgt2AdrCtry: ['', Validators.maxLength(3)],
       intrmyAgt2AdrLine: [''],
       // Intermediary Agent 2 Account - structured like Settlement Account
-      intrmyAgt2AcctIban: ['', [this.ibanValidator]],
-      intrmyAgt2AcctId: ['', [this.accountIdValidator]],
+      intrmyAgt2AcctIban: ['', [ibanValidator]],
+      intrmyAgt2AcctId: ['', [accountIdValidator]],
       intrmyAgt2AcctSchmeNmCd: [''],
-      intrmyAgt2AcctSchmeNmPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      intrmyAgt2AcctIssr: ['', [this.cbprRestrictedFINXMax35Validator]],
+      intrmyAgt2AcctSchmeNmPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      intrmyAgt2AcctIssr: ['', [cbprRestrictedFINXMax35Validator]],
       intrmyAgt2AcctTpCd: [''],
-      intrmyAgt2AcctTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
+      intrmyAgt2AcctTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
       intrmyAgt2AcctCcy: [null],
-      intrmyAgt2AcctNm: ['', [this.cbprRestrictedFINXMax70Validator]],
+      intrmyAgt2AcctNm: ['', [cbprRestrictedFINXMax70Validator]],
       intrmyAgt2AcctPrxyTpCd: [null],
-      intrmyAgt2AcctPrxyTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      intrmyAgt2AcctPrxyId: ['', [this.cbprRestrictedFINXMax320Validator]],
+      intrmyAgt2AcctPrxyTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      intrmyAgt2AcctPrxyId: ['', [cbprRestrictedFINXMax320Validator]],
       // Legacy fields (keeping for backward compatibility)
       intrmyAgt2AcctTp: [''],
       intrmyAgt2AcctSchmeNm: [''],
@@ -1405,18 +1391,18 @@ export class Pacs009 implements OnInit, OnDestroy {
       intrmyAgt3AdrCtry: ['', Validators.maxLength(3)],
       intrmyAgt3AdrLine: [''],
       // Intermediary Agent 3 Account - structured like Settlement Account
-      intrmyAgt3AcctIban: ['', [this.ibanValidator]],
-      intrmyAgt3AcctId: ['', [this.accountIdValidator]],
+      intrmyAgt3AcctIban: ['', [ibanValidator]],
+      intrmyAgt3AcctId: ['', [accountIdValidator]],
       intrmyAgt3AcctSchmeNmCd: [''],
-      intrmyAgt3AcctSchmeNmPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      intrmyAgt3AcctIssr: ['', [this.cbprRestrictedFINXMax35Validator]],
+      intrmyAgt3AcctSchmeNmPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      intrmyAgt3AcctIssr: ['', [cbprRestrictedFINXMax35Validator]],
       intrmyAgt3AcctTpCd: [''],
-      intrmyAgt3AcctTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
+      intrmyAgt3AcctTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
       intrmyAgt3AcctCcy: [null],
-      intrmyAgt3AcctNm: ['', [this.cbprRestrictedFINXMax70Validator]],
+      intrmyAgt3AcctNm: ['', [cbprRestrictedFINXMax70Validator]],
       intrmyAgt3AcctPrxyTpCd: [null],
-      intrmyAgt3AcctPrxyTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      intrmyAgt3AcctPrxyId: ['', [this.cbprRestrictedFINXMax320Validator]],
+      intrmyAgt3AcctPrxyTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      intrmyAgt3AcctPrxyId: ['', [cbprRestrictedFINXMax320Validator]],
       // Legacy fields (keeping for backward compatibility)
       intrmyAgt3AcctTp: [''],
       intrmyAgt3AcctSchmeNm: [''],
@@ -1448,18 +1434,18 @@ export class Pacs009 implements OnInit, OnDestroy {
       dbtrAdrLine2: [''],
       dbtrAdrLine3: [''],
       // Debtor Account - structured like Settlement Account
-      dbtrAcctIban: ['', [this.ibanValidator]],
-      dbtrAcctId: ['', [this.accountIdValidator]],
+      dbtrAcctIban: ['', [ibanValidator]],
+      dbtrAcctId: ['', [accountIdValidator]],
       dbtrAcctSchmeNmCd: [''],
-      dbtrAcctSchmeNmPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      dbtrAcctIssr: ['', [this.cbprRestrictedFINXMax35Validator]],
+      dbtrAcctSchmeNmPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      dbtrAcctIssr: ['', [cbprRestrictedFINXMax35Validator]],
       dbtrAcctTpCd: [''],
-      dbtrAcctTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
+      dbtrAcctTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
       dbtrAcctCcy: [null],
-      dbtrAcctNm: ['', [this.cbprRestrictedFINXMax70Validator]],
+      dbtrAcctNm: ['', [cbprRestrictedFINXMax70Validator]],
       dbtrAcctPrxyTpCd: [null],
-      dbtrAcctPrxyTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      dbtrAcctPrxyId: ['', [this.cbprRestrictedFINXMax320Validator]],
+      dbtrAcctPrxyTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      dbtrAcctPrxyId: ['', [cbprRestrictedFINXMax320Validator]],
       // Legacy fields (keeping for backward compatibility)
       dbtrAcctTp: [''],
       dbtrAcctSchmeNm: [''],
@@ -1490,18 +1476,18 @@ export class Pacs009 implements OnInit, OnDestroy {
       dbtrAgtAdrCtry: ['', Validators.maxLength(3)],
       dbtrAgtAdrLine: [''],
       // Debtor Agent Account - structured like Settlement Account
-      dbtrAgtAcctIban: ['', [this.ibanValidator]],
-      dbtrAgtAcctId: ['', [this.accountIdValidator]],
+      dbtrAgtAcctIban: ['', [ibanValidator]],
+      dbtrAgtAcctId: ['', [accountIdValidator]],
       dbtrAgtAcctSchmeNmCd: [''],
-      dbtrAgtAcctSchmeNmPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      dbtrAgtAcctIssr: ['', [this.cbprRestrictedFINXMax35Validator]],
+      dbtrAgtAcctSchmeNmPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      dbtrAgtAcctIssr: ['', [cbprRestrictedFINXMax35Validator]],
       dbtrAgtAcctTpCd: [''],
-      dbtrAgtAcctTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
+      dbtrAgtAcctTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
       dbtrAgtAcctCcy: [null],
-      dbtrAgtAcctNm: ['', [this.cbprRestrictedFINXMax70Validator]],
+      dbtrAgtAcctNm: ['', [cbprRestrictedFINXMax70Validator]],
       dbtrAgtAcctPrxyTpCd: [null],
-      dbtrAgtAcctPrxyTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      dbtrAgtAcctPrxyId: ['', [this.cbprRestrictedFINXMax320Validator]],
+      dbtrAgtAcctPrxyTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      dbtrAgtAcctPrxyId: ['', [cbprRestrictedFINXMax320Validator]],
       // Legacy fields (keeping for backward compatibility)
       dbtrAgtAcctTp: [''],
       dbtrAgtAcctSchmeNm: [''],
@@ -1532,18 +1518,18 @@ export class Pacs009 implements OnInit, OnDestroy {
       cdtrAgtAdrCtry: ['', Validators.maxLength(3)],
       cdtrAgtAdrLine: [''],
       // Creditor Agent Account - structured like Settlement Account
-      cdtrAgtAcctIban: ['', [this.ibanValidator]],
-      cdtrAgtAcctId: ['', [this.accountIdValidator]],
+      cdtrAgtAcctIban: ['', [ibanValidator]],
+      cdtrAgtAcctId: ['', [accountIdValidator]],
       cdtrAgtAcctSchmeNmCd: [''],
-      cdtrAgtAcctSchmeNmPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      cdtrAgtAcctIssr: ['', [this.cbprRestrictedFINXMax35Validator]],
+      cdtrAgtAcctSchmeNmPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      cdtrAgtAcctIssr: ['', [cbprRestrictedFINXMax35Validator]],
       cdtrAgtAcctTpCd: [''],
-      cdtrAgtAcctTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
+      cdtrAgtAcctTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
       cdtrAgtAcctCcy: [null],
-      cdtrAgtAcctNm: ['', [this.cbprRestrictedFINXMax70Validator]],
+      cdtrAgtAcctNm: ['', [cbprRestrictedFINXMax70Validator]],
       cdtrAgtAcctPrxyTpCd: [null],
-      cdtrAgtAcctPrxyTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      cdtrAgtAcctPrxyId: ['', [this.cbprRestrictedFINXMax320Validator]],
+      cdtrAgtAcctPrxyTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      cdtrAgtAcctPrxyId: ['', [cbprRestrictedFINXMax320Validator]],
       // Legacy fields (keeping for backward compatibility)
       cdtrAgtAcctTp: [''],
       cdtrAgtAcctSchmeNm: [''],
@@ -1574,18 +1560,18 @@ export class Pacs009 implements OnInit, OnDestroy {
       cdtrAdrLine2: [''],
       cdtrAdrLine3: [''],
       // Creditor Account - structured like Settlement Account
-      cdtrAcctIban: ['', [this.ibanValidator]],
-      cdtrAcctId: ['', [this.accountIdValidator]],
+      cdtrAcctIban: ['', [ibanValidator]],
+      cdtrAcctId: ['', [accountIdValidator]],
       cdtrAcctSchmeNmCd: [''],
-      cdtrAcctSchmeNmPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      cdtrAcctIssr: ['', [this.cbprRestrictedFINXMax35Validator]],
+      cdtrAcctSchmeNmPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      cdtrAcctIssr: ['', [cbprRestrictedFINXMax35Validator]],
       cdtrAcctTpCd: [''],
-      cdtrAcctTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
+      cdtrAcctTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
       cdtrAcctCcy: [null],
-      cdtrAcctNm: ['', [this.cbprRestrictedFINXMax70Validator]],
+      cdtrAcctNm: ['', [cbprRestrictedFINXMax70Validator]],
       cdtrAcctPrxyTpCd: [null],
-      cdtrAcctPrxyTpPrtry: ['', [this.cbprRestrictedFINXMax35Validator]],
-      cdtrAcctPrxyId: ['', [this.cbprRestrictedFINXMax320Validator]],
+      cdtrAcctPrxyTpPrtry: ['', [cbprRestrictedFINXMax35Validator]],
+      cdtrAcctPrxyId: ['', [cbprRestrictedFINXMax320Validator]],
       // Legacy fields (keeping for backward compatibility)
       cdtrAcctTp: [''],
       cdtrAcctSchmeNm: [''],
@@ -1694,7 +1680,7 @@ export class Pacs009 implements OnInit, OnDestroy {
         toBicfi: '',
         txId: '',
         intrBkSttlmAmtCcy: null,
-        intrBkSttlmAmt: '1000.00',
+        intrBkSttlmAmt: '0.00',
         intrBkSttlmDt: new Date(),
         intrBkSttlmDbtDtTm: '',
         intrBkSttlmCdtDtTm: '',
@@ -1829,9 +1815,12 @@ export class Pacs009 implements OnInit, OnDestroy {
   addServiceRow() {
     const serviceGroup = this.formBuilder.group({
       serviceCode: [null],
-      servicePriority: [null],
+      serviceProprietary: ['', [Validators.maxLength(35)]],
     });
     this.serviceLevels.push(serviceGroup);
+    
+    // Setup conditional clearing for this new row
+    this.setupServiceLevelCodePrtryPair(this.serviceLevels.length - 1);
   }
 
   // Remove service level row
@@ -1930,26 +1919,14 @@ export class Pacs009 implements OnInit, OnDestroy {
     payload.instrPrty = frmValue.instrPrty;
     payload.clrChanl = frmValue.clrChanl;
 
-    // Convert service level FormArray to fixed arrays of 3 elements as per model
+    // Convert service level FormArray to list of ServiceLevelRequest objects
     const serviceLevels = frmValue.serviceLevels || [];
-    const serviceCodes = serviceLevels
-      .map((level: any) => level.serviceCode)
-      .filter((code: string) => code);
-    const servicePriorities = serviceLevels
-      .map((level: any) => level.servicePriority)
-      .filter((priority: string) => priority);
-
-    // Ensure arrays have exactly 3 elements as per model specification
-    payload.svcLvlCD = [
-      serviceCodes[0] || '',
-      serviceCodes[1] || '',
-      serviceCodes[2] || '',
-    ];
-    payload.svcLvlPrtry = [
-      servicePriorities[0] || '',
-      servicePriorities[1] || '',
-      servicePriorities[2] || '',
-    ];
+    payload.svcLvl = serviceLevels
+      .map((level: any) => ({
+        cd: level.serviceCode || null,
+        prtry: level.serviceProprietary || null
+      }))
+      .filter((level: any) => level.cd || level.prtry); // Only include levels that have either code or proprietary
 
     payload.lclInstrmCD = frmValue.lclInstrmCD;
     payload.lclInstrmPrtry = frmValue.lclInstrmPrtry;
@@ -2657,322 +2634,28 @@ export class Pacs009 implements OnInit, OnDestroy {
   getInstructionForNextAgentGroup(index: number): FormGroup {
     return this.instructionForNextAgent.at(index) as FormGroup;
   }
-
-  // Custom validator for Settlement Method
-  private settlementMethodValidator(control: any) {
-    const validCodes = ['INDA', 'INGA'];
-    // Allow empty/null values (required validation is handled separately)
-    if (!control.value || control.value === '') {
-      return null;
-    }
-    // Check if the value is in the valid codes list
-    if (!validCodes.includes(control.value)) {
-      return {
-        invalidSettlementMethod: {
-          message: 'Settlement Method must be either INDA (InstructedAgent) or INGA (InstructingAgent). CLRG (ClearingSystem) and COVE (CoverMethod) codes are removed as per usage guidelines.'
-        }
-      };
-    }
-    return null;
-  }
-
-  // Custom validator for IBAN (ISO 13616 format)
-  private ibanValidator(control: any) {
-    // Allow empty/null values (required validation is handled separately)
-    if (!control.value || control.value === '') {
-      return null;
-    }
-    
-    const iban = control.value.toString().toUpperCase().replace(/\s/g, ''); // Remove spaces and convert to uppercase
-    
-    // Update the form control value to the cleaned/uppercase version
-    if (control.value !== iban) {
-      setTimeout(() => control.setValue(iban, { emitEvent: false }), 0);
-    }
-    
-    // Check basic format: 2 country code letters + 2 check digits + up to 30 alphanumeric BBAN
-    const ibanPattern = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/;
-    if (!ibanPattern.test(iban)) {
-      return {
-        invalidIban: 'IBAN must follow ISO 13616 format: 2 country code letters + 2 check digits + up to 30 alphanumeric IBAN characters'
-      };
-    }
-    
-    // Check length (max 34 characters)
-    if (iban.length > 34) {
-      return {
-        invalidIban: 'IBAN must not exceed 34 characters'
-      };
-    }
-    
-    // Basic IBAN check digit validation (mod-97 algorithm)
-    try {
-      const rearranged = iban.slice(4) + iban.slice(0, 4);
-      const numericString = rearranged.replace(/[A-Z]/g, (char: string) => (char.charCodeAt(0) - 55).toString());
-      
-      // For very long numbers, we need to handle BigInt or use a different approach
-      // Simple mod 97 check for basic validation
-      let remainder = 0;
-      for (let i = 0; i < numericString.length; i++) {
-        remainder = (remainder * 10 + parseInt(numericString[i])) % 97;
-      }
-      
-      if (remainder !== 1) {
-        return {
-          invalidIban: 'Invalid IBAN format or invalid check digits (Error Code: D00003)'
-        };
-      }
-    } catch (error) {
-      return {
-        invalidIban: 'Invalid IBAN format or invalid check digits (Error Code: D00003)'
-      };
-    }
-    
-    return null;
-  }
-
-  // Custom validator for Account ID (CBPR_RestrictedFINXMax34Text)
-  private accountIdValidator(control: any) {
-    // Allow empty/null values (required validation is handled separately)
-    if (!control.value || control.value === '') {
-      return null;
-    }
-    
-    const value = control.value.toString();
-    
-    // Check length
-    if (value.length < 1 || value.length > 34) {
-      return {
-        invalidAccountId: 'Account ID must be between 1 and 34 characters'
-      };
-    }
-    
-    // Check CBPR_RestrictedFINXMax34Text pattern: no leading/trailing slash, no double slash
-    const pattern = /^[0-9a-zA-Z\-\?:\(\)\.,'\+ \/]*$/;
-    if (!pattern.test(value)) {
-      return {
-        invalidAccountId: 'Account ID must follow CBPR_RestrictedFINXMax34Text format: characters [0-9a-zA-Z/-?:().,\'+space], no leading/trailing slash, no double slash'
-      };
-    }
-    
-    return null;
-  }
-
-  // Custom validator for CBPR_RestrictedFINXMax35Text (SchemeName Proprietary, Issuer)
-  private cbprRestrictedFINXMax35Validator(control: any) {
-    // Allow empty/null values (required validation is handled separately)
-    if (!control.value || control.value === '') {
-      return null;
-    }
-    
-    const value = control.value.toString();
-    
-    // Check length
-    if (value.length < 1 || value.length > 35) {
-      return {
-        invalidCBPRText: {
-          message: 'Field must be between 1 and 35 characters'
-        }
-      };
-    }
-    
-    // Check CBPR_RestrictedFINXMax35Text pattern
-    const pattern = /^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/;
-    if (!pattern.test(value)) {
-      return {
-        invalidCBPRText: {
-          message: 'Field must follow CBPR_RestrictedFINXMax35Text format: characters [0-9a-zA-Z/-?:().,\'+space]'
-        }
-      };
-    }
-    
-    return null;
-  }
-
-  // Custom validator for CBPR_RestrictedFINXMax70Text (Account Name)
-  private cbprRestrictedFINXMax70Validator(control: any) {
-    // Allow empty/null values (required validation is handled separately)
-    if (!control.value || control.value === '') {
-      return null;
-    }
-    
-    const value = control.value.toString();
-    
-    // Check length
-    if (value.length < 1 || value.length > 70) {
-      return {
-        invalidCBPRText: {
-          message: 'Account Name must be between 1 and 70 characters'
-        }
-      };
-    }
-    
-    // Check CBPR_RestrictedFINXMax70Text pattern
-    const pattern = /^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/;
-    if (!pattern.test(value)) {
-      return {
-        invalidCBPRText:  'Account Name must follow CBPR_RestrictedFINXMax70Text format: characters [0-9a-zA-Z/-?:().,\'+space]'
-      };
-    }
-    
-    return null;
-  }
-
-  // Custom validator for CBPR_RestrictedFINXMax320Text_Extended (Proxy ID)
-  private cbprRestrictedFINXMax320Validator(control: any) {
-    // Allow empty/null values (required validation is handled separately)
-    if (!control.value || control.value === '') {
-      return null;
-    }
-    
-    const value = control.value.toString();
-    
-    // Check length
-    if (value.length < 1 || value.length > 320) {
-      return {
-        invalidCBPRText: 'Proxy ID must be between 1 and 320 characters'
-      };
-    }
-    
-    // Check CBPR_RestrictedFINXMax320Text_Extended pattern
-    const pattern = /^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ ]+$/;
-    if (!pattern.test(value)) {
-      return {
-        invalidCBPRText: 'Proxy ID must follow CBPR_RestrictedFINXMax320Text_Extended format: characters [0-9a-zA-Z/-?:().,\'+space]'
-      };
-    }
-    
-    return null;
-  }
-
-  // ===== POSTAL ADDRESS VALIDATORS =====
-
-  // Custom validator for CBPR_RestrictedFINXMax70Text_Extended (Department, SubDepartment, StreetName, Floor, Room)
-  private cbprRestrictedFINXMax70ExtendedValidator(control: any) {
-    if (!control.value || control.value === '') {
-      return null;
-    }
-    
-    const value = control.value.toString();
-    
-    if (value.length > 70) {
-      return {
-        invalidPostalField: 'Field must not exceed 70 characters (CBPR_RestrictedFINXMax70Text_Extended)'
-      };
-    }
-    
-    // Extended character set pattern
-    const pattern = /^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ !#$%&\*=^_`\{\|\}~";<>@\[\\\]]+$/;
-    if (!pattern.test(value)) {
-      return {
-        invalidPostalField: 'Field must follow CBPR_RestrictedFINXMax70Text_Extended format'
-      };
-    }
-    
-    return null;
-  }
-
-  // Custom validator for CBPR_RestrictedFINXMax35Text_Extended (BuildingName, TownName, TownLocationName, DistrictName, CountrySubDivision, AddressLine)
-  private cbprRestrictedFINXMax35ExtendedValidator(control: any) {
-    if (!control.value || control.value === '') {
-      return null;
-    }
-    
-    const value = control.value.toString();
-    
-    if (value.length > 35) {
-      return {
-        invalidPostalField: 'Field must not exceed 35 characters (CBPR_RestrictedFINXMax35Text_Extended)'
-      };
-    }
-    
-    // Extended character set pattern
-    const pattern = /^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ !#$%&\*=^_`\{\|\}~";<>@\[\\\]]+$/;
-    if (!pattern.test(value)) {
-      return {
-        invalidPostalField: 'Field must follow CBPR_RestrictedFINXMax35Text_Extended format'
-      };
-    }
-    
-    return null;
-  }
-
-  // Custom validator for CBPR_RestrictedFINXMax16Text_Extended (BuildingNumber, PostBox, PostCode)
-  private cbprRestrictedFINXMax16ExtendedValidator(control: any) {
-    if (!control.value || control.value === '') {
-      return null;
-    }
-    
-    const value = control.value.toString();
-    
-    if (value.length > 16) {
-      return {
-        invalidPostalField: 'Field must not exceed 16 characters (CBPR_RestrictedFINXMax16Text_Extended)'
-      };
-    }
-    
-    // Extended character set pattern
-    const pattern = /^[0-9a-zA-Z\/\-\?:\(\)\.,'\+ !#$%&\*=^_`\{\|\}~";<>@\[\\\]]+$/;
-    if (!pattern.test(value)) {
-      return {
-        invalidPostalField: 'Field must follow CBPR_RestrictedFINXMax16Text_Extended format'
-      };
-    }
-    
-    return null;
-  }
-
-  // Custom validator for CountryCode (ISO 3166 Alpha-2)
-  private countryCodeValidator(control: any) {
-    if (!control.value || control.value === '') {
-      return null;
-    }
-    
-    const value = control.value.toString().toUpperCase();
-    
-    // Auto-convert to uppercase
-    if (control.value !== value) {
-      setTimeout(() => control.setValue(value, { emitEvent: false }), 0);
-    }
-    
-    if (value.length !== 2) {
-      return {
-        invalidCountryCode: 'Country code must be exactly 2 characters (ISO 3166 Alpha-2)'
-      };
-    }
-    
-    const pattern = /^[A-Z]{2}$/;
-    if (!pattern.test(value)) {
-      return {
-        invalidCountryCode: 'Country must be a valid ISO 3166 Alpha-2 country code (Error Code: D00004)'
-      };
-    }
-    
-    return null;
-  }
-
   // ===== POSTAL ADDRESS HELPER METHODS =====
 
   // Helper method to get postal address validation for a specific prefix
   private getPostalAddressValidation(prefix: string) {
     return {
-      [`${prefix}AdrLine1`]: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      [`${prefix}AdrLine2`]: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      [`${prefix}AdrLine3`]: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      [`${prefix}AdrDept`]: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      [`${prefix}AdrSubDept`]: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      [`${prefix}AdrStrtNm`]: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      [`${prefix}AdrBldgNb`]: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      [`${prefix}AdrBldgNm`]: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      [`${prefix}AdrFlr`]: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      [`${prefix}AdrPstBx`]: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      [`${prefix}AdrRoom`]: ['', [this.cbprRestrictedFINXMax70ExtendedValidator]],
-      [`${prefix}AdrPstCd`]: ['', [this.cbprRestrictedFINXMax16ExtendedValidator]],
-      [`${prefix}AdrTwnNm`]: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      [`${prefix}AdrTwnLctnNm`]: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      [`${prefix}AdrDstrctNm`]: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      [`${prefix}AdrCtrySubDvsn`]: ['', [this.cbprRestrictedFINXMax35ExtendedValidator]],
-      [`${prefix}AdrCtry`]: ['', [this.countryCodeValidator]],
+      [`${prefix}AdrLine1`]: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      [`${prefix}AdrLine2`]: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      [`${prefix}AdrLine3`]: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      [`${prefix}AdrDept`]: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      [`${prefix}AdrSubDept`]: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      [`${prefix}AdrStrtNm`]: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      [`${prefix}AdrBldgNb`]: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      [`${prefix}AdrBldgNm`]: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      [`${prefix}AdrFlr`]: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      [`${prefix}AdrPstBx`]: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      [`${prefix}AdrRoom`]: ['', [cbprRestrictedFINXMax70ExtendedValidator]],
+      [`${prefix}AdrPstCd`]: ['', [cbprRestrictedFINXMax16ExtendedValidator]],
+      [`${prefix}AdrTwnNm`]: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      [`${prefix}AdrTwnLctnNm`]: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      [`${prefix}AdrDstrctNm`]: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      [`${prefix}AdrCtrySubDvsn`]: ['', [cbprRestrictedFINXMax35ExtendedValidator]],
+      [`${prefix}AdrCtry`]: ['', [countryCodeValidator]],
       [`${prefix}AdrLine`]: ['']
     };
   }
@@ -3130,6 +2813,37 @@ export class Pacs009 implements OnInit, OnDestroy {
         if (val !== null && String(val).trim() !== '') {
           this.isUpdatingSchemeFields = true;
           codeControl.patchValue(null);
+          this.isUpdatingSchemeFields = false;
+        }
+      });
+  }
+
+  private setupServiceLevelCodePrtryPair(index: number): void {
+    const serviceGroup = this.serviceLevels.at(index) as FormGroup;
+    if (!serviceGroup) return;
+
+    const codeControl = serviceGroup.get('serviceCode');
+    const prtryControl = serviceGroup.get('serviceProprietary');
+    if (!codeControl || !prtryControl) return;
+
+    codeControl.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((val: any) => {
+        if (this.isUpdatingSchemeFields) return;
+        if (val !== null && val !== '') {
+          this.isUpdatingSchemeFields = true;
+          prtryControl.patchValue('', { emitEvent: false });
+          this.isUpdatingSchemeFields = false;
+        }
+      });
+
+    prtryControl.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((val: any) => {
+        if (this.isUpdatingSchemeFields) return;
+        if (val !== null && String(val).trim() !== '') {
+          this.isUpdatingSchemeFields = true;
+          codeControl.patchValue(null, { emitEvent: false });
           this.isUpdatingSchemeFields = false;
         }
       });
