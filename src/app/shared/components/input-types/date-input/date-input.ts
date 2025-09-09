@@ -163,7 +163,6 @@ private showYearValidationMessage(selectedYear: number): void {
 }
 
  onKeyDown(event: KeyboardEvent): void {
- onKeyDown(event: KeyboardEvent): void {
   const format = this.dateFormat();
   const input = event.target as HTMLInputElement;
   const currentValue = input.value;
@@ -200,26 +199,9 @@ private showYearValidationMessage(selectedYear: number): void {
     }
   }
 
-  // PREVENT CONSECUTIVE SEPARATORS
-  if (isSeparatorKey) {
-    // Check if the last character is already a separator
-    if (currentValue.charAt(cursorPosition - 1) === separator) {
-      event.preventDefault();
-      return;
-    }
-    
-    // Check if adding this separator would create consecutive separators
-    const newValue = currentValue.substring(0, cursorPosition) + separator + currentValue.substring(cursorPosition);
-    if (this.hasConsecutiveSeparators(newValue)) {
-      event.preventDefault();
-      return;
-    }
-  }
-
   if (isNumberKey) {
     const newValue = currentValue.substring(0, cursorPosition) + event.key + currentValue.substring(cursorPosition);
 
-    // Check validity of the partial input before allowing
     // Check validity of the partial input before allowing
     if (!this.isPartialInputValid(newValue)) {
       event.preventDefault();
@@ -240,123 +222,6 @@ private showYearValidationMessage(selectedYear: number): void {
     }
   }
 }
-
-
-// onInputChange(event: Event): void {
-//   const input = event.target as HTMLInputElement;
-//   let value = input.value;
-  
-//   // Ensure we're working with a string
-//   if (typeof value !== 'string') {
-//     value = String(value || '');
-//   }
-  
-//   const format = this.dateFormat();
-//   const control = this.frmGroup().get(this.controlName());
-  
-//   // Handle the 'DD MMM, YYYY' display format
-//   if (format === 'DD MMM, YYYY') {
-//     // Allow letters, numbers, spaces, and commas for month abbreviation format
-//     const cleanValue = value.replace(/[^0-9A-Za-z\s,]/g, '');
-//     if (cleanValue !== value) {
-//       input.value = cleanValue;
-//       control?.setValue(cleanValue);
-//       control?.setErrors({ ...control.errors, invalidCharacters: true });
-//       return;
-//     } else {
-//       if (control?.errors?.['invalidCharacters']) {
-//         const errors = { ...control.errors };
-//         delete errors['invalidCharacters'];
-//         control.setErrors(Object.keys(errors).length ? errors : null);
-//       }
-//     }
-//   } else {
-//     // Remove any characters that are not numbers or the expected separator
-//     const separator = this.getDateSeparator();
-//     const cleanValue = value.replace(new RegExp(`[^0-9\\${separator}]`, 'g'), '');
-    
-//     if (cleanValue !== value) {
-//       input.value = cleanValue;
-//       control?.setValue(cleanValue);
-//       control?.setErrors({ ...control.errors, invalidCharacters: true });
-//       return;
-//     }
-
-//     // CHECK FOR CONSECUTIVE SEPARATORS AND INVALID PATTERNS
-//     if (this.hasConsecutiveSeparators(cleanValue) || this.hasInvalidSeparatorPattern(cleanValue)) {
-//       control?.setErrors({ ...control.errors, invalidDateFormat: true });
-//       return;
-//     } else {
-//       // Remove invalidCharacters and invalidDateFormat errors if input is clean
-//       if (control?.errors?.['invalidCharacters'] || control?.errors?.['invalidDateFormat']) {
-//         const errors = { ...control.errors };
-//         delete errors['invalidCharacters'];
-//         delete errors['invalidDateFormat'];
-//         control.setErrors(Object.keys(errors).length ? errors : null);
-//       }
-//     }
-//   }
-  
-//   // Only validate if the input looks like it might be complete or nearly complete
-//   if (value.length > 0) {
-//     if (!this.isPartialInputValid(value)) {
-//       this.clearField();
-//     }
-//   }
-// }
-
-
-private hasConsecutiveSeparators(value: string): boolean {
-  const separator = this.getDateSeparator();
-  const consecutivePattern = new RegExp(`\\${separator}{2,}`, 'g');
-  return consecutivePattern.test(value);
-}
-
-private hasInvalidSeparatorPattern(value: string): boolean {
-  const separator = this.getDateSeparator();
-  
-  // Check if starts or ends with separator
-  if (value.startsWith(separator) ) {
-    return true; // Allow trailing separator during typing
-  }
-
-  const part = value.split(separator);
-  if (value.endsWith(separator) && part.length > 3) {
-    return true;
-  }
-
-  if (value.endsWith(separator)) {
-    return false; 
-  }
-
-  // Check if there are more than 2 separators
-  const separatorCount = (value.match(new RegExp(`\\${separator}`, 'g')) || []).length;
-  if (separatorCount > 2) {
-    return true;
-  }
-  
-  // Check for empty segments (like "12//12" or "12/12/")
-  const parts = value.split(separator);
-  let emptySegments = 0;
-  for (let i = 0; i < parts.length; i++) {
-    if (parts[i].trim() === '') {
-      emptySegments++;
-    }
-  }
-  
-  // Allow one empty segment at the end (for typing), but not in the middle
-  if (emptySegments > 1) {
-    return true;
-  }
-  
-  if (emptySegments === 1 && parts[parts.length - 1] !== '') {
-    return true; // Empty segment in the middle
-  }
-  
-  return false;
-}
-
-
 
 
 // onInputChange(event: Event): void {
@@ -621,15 +486,8 @@ getDetailedErrorMessage(): string {
     }
   }
   
-  // Check for format errors (including consecutive separators)
+  // Check for format errors
   if (errors['invalidDateFormat']) {
-    const currentValue = control.value || '';
-    if (this.hasConsecutiveSeparators(currentValue)) {
-      return `Consecutive ${this.getDateSeparator()} separators are not allowed`;
-    }
-    if (this.hasInvalidSeparatorPattern(currentValue)) {
-      return `Invalid date format - please use ${this.dateFormat()} format`;
-    }
     const currentValue = control.value || '';
     if (this.hasConsecutiveSeparators(currentValue)) {
       return `Consecutive ${this.getDateSeparator()} separators are not allowed`;
@@ -651,79 +509,6 @@ getDetailedErrorMessage(): string {
   
   return 'Please enter a valid date';
 }
-onFocus(event: FocusEvent): void {
-  const control = this.frmGroup().get(this.controlName());
-  if (!control) return;
-
-  let currentValue = control.value;
-
-  // If value is a Date, convert to editable format
-  if (currentValue instanceof Date) {
-    const date = currentValue as Date;
-    const separator = this.getDateSeparator();
-    const editable = `${String(date.getDate()).padStart(2, '0')}${separator}${String(date.getMonth() + 1).padStart(2, '0')}${separator}${date.getFullYear()}`;
-
-    const input = event.target as HTMLInputElement;
-    input.value = editable;
-  }
-  else if (this.isDisplayFormat(currentValue)) {
-    const convertedValue = this.convertDisplayFormatToInputFormat(currentValue);
-    if (convertedValue) {
-
-      const input = event.target as HTMLInputElement;
-      input.value = convertedValue;
-    }
-  }
-}
-
-
-
-
-private isDisplayFormat(value: string): boolean {
-  // Check if the value matches "DD MMM, YYYY" format (e.g., "18 Aug, 2025")
-  const displayFormatPattern = /^(\d{1,2})\s+([A-Za-z]{3})\s*,?\s*(\d{4})$/;
-  return displayFormatPattern.test(value);
-}
-
-
-private convertDisplayFormatToInputFormat(displayValue: string): string | null {
-  const match = displayValue.match(/^(\d{1,2})\s+([A-Za-z]{3})\s*,?\s*(\d{4})$/);
-  if (!match) return null;
-
-  const day = match[1].padStart(2, '0');
-  const monthAbbr = match[2].toLowerCase();
-  const year = match[3];
-
-  // Month abbreviation to number mapping
-  const monthMap: { [key: string]: string } = {
-    'jan': '01', 'feb': '02', 'mar': '03', 'apr': '04', 
-    'may': '05', 'jun': '06', 'jul': '07', 'aug': '08', 
-    'sep': '09', 'oct': '10', 'nov': '11', 'dec': '12'
-  };
-
-  const month = monthMap[monthAbbr];
-  if (!month) return null;
-
-  const format = this.dateFormat();
-  const separator = this.getDateSeparator();
-
-  // Convert based on the current format
-  switch (format) {
-    case 'DD/MM/YYYY':
-    case 'DD-MM-YYYY':
-      return `${day}${separator}${month}${separator}${year}`;
-    case 'MM/DD/YYYY':
-    case 'MM-DD-YYYY':
-      return `${month}${separator}${day}${separator}${year}`;
-    case 'YYYY/MM/DD':
-    case 'YYYY-MM-DD':
-      return `${year}${separator}${month}${separator}${day}`;
-    default:
-      return null;
-  }
-}
-
-
 onFocus(event: FocusEvent): void {
   const control = this.frmGroup().get(this.controlName());
   if (!control) return;
@@ -974,24 +759,8 @@ private clearField(): void {
     const isCurrentlyFocused = inputElement === document.activeElement;
     
     if (!isCurrentlyFocused) {
-private clearField(): void {
-  const control = this.frmGroup().get(this.controlName());
-  if (control) {
-    // Only clear if the field is not currently focused
-    const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
-    const isCurrentlyFocused = inputElement === document.activeElement;
-    
-    if (!isCurrentlyFocused) {
       control.setValue('');
       control.markAsTouched();
-      
-      // Clear the input element as well
-      if (inputElement) {
-        inputElement.value = '';
-      }
-    }
-  }
-}
       
       // Clear the input element as well
       if (inputElement) {
@@ -1015,96 +784,6 @@ private clearField(): void {
 }
 
 
-private isPartialInputValid(value: string): boolean {
-  if (!value) return true;
-  
-  const format = this.dateFormat();
-  
-  // Handle the 'DD MMM, YYYY' display format
-  if (format === 'DD MMM, YYYY') {
-    return this.isPartialMonthAbbreviationInputValid(value);
-  }
-  
-  const separator = this.getDateSeparator();
-  
-  // Check for consecutive separators
-  if (this.hasConsecutiveSeparators(value)) {
-    return false;
-  }
-  
-  // Check for invalid separator patterns
-  if (this.hasInvalidSeparatorPattern(value)) {
-    return false;
-  }
-  
-  const parts = value.split(separator);
-  
-  // Allow trailing separators during typing (e.g., "02/03/")
-  if (value.endsWith(separator)) {
-    return true;
-  }
-  
-  // Very lenient validation for partial input - only check obvious errors
-  for (let i = 0; i < parts.length; i++) {
-    const part = parts[i].trim();
-    
-    // Allow completely empty parts during typing
-    if (part === '') continue;
-    
-    const num = parseInt(part);
-    if (isNaN(num)) return false;
-    
-    // Basic range checks based on position and format
-    if (format.startsWith('YYYY')) {
-      if (i === 0) { // Year position
-        if (part.length > 4) return false;
-        if (part.length === 4 && (num < 1900 || num > 2030)) return false;
-        if (part.length === 3 && num > 203) return false;
-        if (part.length === 2 && num > 29) return false;
-        if (part.length === 1 && num > 2) return false;
-      } else if (i === 1) { // Month position
-        if (part.length > 2) return false;
-        if (part.length === 2 && (num > 12 || num < 1)) return false;
-      } else if (i === 2) { // Day position  
-        if (part.length > 2) return false;
-        if (part.length === 2 && (num > 31 || num < 1)) return false;
-        if (part.length === 1 && num > 3) return false;
-      }
-    } else if (format.startsWith('DD')) {
-      if (i === 0) { // Day position
-        if (part.length === 2 && (num > 31 || num < 1)) return false;
-        if (part.length > 2) return false;
-        if (part.length === 1 && num > 3) return false;
-      } else if (i === 1) { // Month position
-        if (part.length > 2) return false;
-        if (part.length == 2 && (num > 12 || num < 1)) return false;
-      } else if (i === 2) { // Year position
-        if (part.length > 4) return false;
-        if (part.length === 4 && (num < 1900 || num > 2030)) return false;
-        if (part.length === 3 && num > 299) return false;
-        if (part.length === 2 && num > 29) return false;
-        if (part.length === 1 && num > 2) return false;
-      }
-    } else if (format.startsWith('MM')) {
-      if (i === 0) { // Month position
-        if (part.length > 2) return false;
-        if (part.length === 2 && (num > 12 || num < 1)) return false;
-      } else if (i === 1) { // Day position
-        if (part.length > 2) return false;
-        if (part.length === 2 && (num > 31 || num < 1)) return false;
-        if (part.length === 1 && num > 3) return false;
-      } else if (i === 2) { // Year position
-        if (part.length > 4) return false;
-        if (part.length === 4 && (num < 1900 || num > 2030)) return false;
-        if (part.length === 3 && num > 299) return false;
-        if (part.length === 2 && num > 29) return false;
-        if (part.length === 1 && num > 2) return false;
-      }
-    }
-  }
-  
-  return true;
-}
 private isPartialInputValid(value: string): boolean {
   if (!value) return true;
   

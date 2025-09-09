@@ -1,7 +1,5 @@
 <!-- Enhanced HTML Template with Relatable Fields -->
-<!-- Enhanced HTML Template with Relatable Fields -->
 <div class="page-wrapper">
-  @if(frmGroup) {
   @if(frmGroup) {
     <form [formGroup]="frmGroup">
       <div class="panel">
@@ -269,15 +267,6 @@
                     [options]="dropdownOptions"
                   ></app-multi-select-option-field>
                 </div>
-                <!-- Multi-Select Dropdown -->
-                <div class="component-section">
-                  <app-multi-select-option-field
-                    [frmGroup]="frmGroup"
-                    [controlName]="'multiSelect'"
-                    [label]="'Additional Services'"
-                    [options]="dropdownOptions"
-                  ></app-multi-select-option-field>
-                </div>
 
                 <!-- Date Input -->
                 <div class="component-section">
@@ -303,31 +292,7 @@
                     placeholder="Auto-generated number">
                   </lds-number>
                 </div>
-                <!-- Number Input -->
-                <div class="component-section">
-                  <lds-number 
-                    [frmGroup]="frmGroup"
-                    controlName="number"
-                    label="Reference Number"
-                    [minValue]="1"
-                    [maxValue]="9999"
-                    [maxLen]="4"
-                    placeholder="Auto-generated number">
-                  </lds-number>
-                </div>
 
-                <!-- Office Box -->
-                <div class="component-section">
-                  <lds-office-box
-                    [frmGroup]="frmGroup"
-                    controlName="officeCode"
-                    labelText="Office Code"
-                    placeholder="Auto-suggested based on currency"
-                    [enable]="true"
-                    [visible]="true"
-                    [maxLen]="4"
-                  ></lds-office-box>
-                </div>
                 <!-- Office Box -->
                 <div class="component-section">
                   <lds-office-box
@@ -376,75 +341,7 @@
                 </div>
               </div>
             </div>
-                <!-- Switch -->
-                <div class="component-section">
-                  <lds-switch
-                    [frmGroup]="frmGroup"
-                    [controlName]="'switch'"
-                    [labelText]="'Express Processing'"
-                  ></lds-switch>
-                  <div class="text-xs text-gray-600 mt-1">
-                    Express processing reduces validation requirements
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <!-- File Upload Section -->
-            <div class="rounded-lg p-4 mb-6">
-              <h3 class="text-lg font-medium text-purple-900 mb-4">Document Upload</h3>
-              <div class="component-section">
-                <lds-file
-                  #pdfFileInput
-                  [id]="'pdf-upload'"
-                  [multipleFile]="false"
-                  [fileExtension]="'.pdf'"
-                  [labelText]="'Upload Supporting Document'"
-                  [cssClass]="'border-purple-300 bg-purple-50'"
-                  [savePath]="'documents/transactions'"
-                  [customFileName]="'transaction-document'"
-                  (selectedFilesChanged)="onPdfSelected($event)"
-                  (onFileChanged)="onFileInputChanged('Transaction Document')"
-                />
-                <div class="text-xs text-gray-600 mt-2" *ngIf="frmGroup.get('riskLevel')?.value === 'high'">
-                  ⚠️ High risk transactions require supporting documentation
-                </div>
-              </div>
-            </div>
-
-            <!-- Text Area -->
-            <div class="component-section">
-              <lds-txt-area
-                [frmGroup]="frmGroup"
-                [controlName]="'textArea'"
-                [labelText]="'Transaction Notes'"
-                [rows]="3"
-                [minRows]="2"
-                [maxRows]="10"
-                [maxCols]="80"
-                [placeholder]="'Enter transaction description and notes...'"
-                [showRowCount]="true"
-                [autoResize]="true"
-              ></lds-txt-area>
-
-            </div>
-
-<!-- Action Buttons -->
-<div class=" rounded-lg p-4 mb-6 mt-6">
-  <div class="flex flex-wrap gap-3">
-    
-    <!-- Primary Add Button -->
-    <button type="button" 
-            class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white  py-2 px-4 rounded shadow"
-            (click)="addCurrentFormToGrid()"
-            [disabled]="frmGroup.invalid">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-      </svg>
-      <span>Add to Grid</span>
-    </button> 
-  </div>
-</div>
             <!-- Text Area -->
             <div class="component-section">
               <lds-txt-area
@@ -521,60 +418,6 @@
 
       
 
-
-            <!-- Enhanced Data Grid with Relatable Fields -->
-            <div class="component-section mt-6">
-              <div class="bg-white rounded-lg shadow-sm">
-                <div class="px-4 py-3 bg-gray-50">
-                  <h3 class="text-lg font-medium text-gray-900">Transaction Grid with Relationships</h3>
-                 
-                </div>
-                <div class="p-4">
-                  <lds-data-grid
-                    [id]="'enhanced-transactions'"
-                    [dataSource]="sampleTransactions()"
-                    [initPageSize]="8"
-                    [enableSelection]="true"
-                    [showEditButton]="true"
-                    [showDeleteButton]="true"
-                    [showViewButton]="true"
-                    [showPrintButton]="true"
-                    [useInlineEdit]="true"
-                    [editableColumns]="['amount', 'status', 'priority', 'currency', 'country', 'productCategory', 'subCategory', 'assignedRole']"
-                    [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
-                    [dropdownColumns]="transactionDropdownColumns()"
-                    [dropdownOptions]="transactionDropdownOptions()"
-                    [selectedColumns]="['id', 'amount', 'currency', 'country', 'productCategory', 'subCategory', 'status', 'riskLevel', 'totalAmount', 'requiresApproval']"
-                    [rowDesignerList]="transactionRowDesigners()"
-                    [tblClass]="'enhanced-transaction-table'"
-                    (onFHEditClick)="onTransactionEdit($event)"
-                    (onFHDeleteClick)="onTransactionDelete($event)"
-                    (onFHViewClick)="onTransactionView($event)"
-                    (onPrint)="onTransactionPrint($event)"
-                    (onChecked)="onTransactionRowSelect($event)"
-                    (onSelectAllChange)="onTransactionSelectAll($event)"
-                    (dataSourceChanged)="onTransactionDataChanged($event)"
-                  >
-                  </lds-data-grid>
-                </div>
-              </div>
-            </div>
-
-      
-
-          </div>
-        </div>
-      </div>
-    </form>
-
-    <!-- Data Selection Modal -->
-    <app-data-selection-modal
-      *ngIf="isDataSelectionModalOpen()"
-      (onFindClicked)="onFindClicked($event)"
-      (onRowDoubleClick)="onDataSelectionResult($event)"
-      (result)="onDataSelectionResult($event)"
-    >
-    </app-data-selection-modal>
           </div>
         </div>
       </div>
@@ -589,9 +432,6 @@
     >
     </app-data-selection-modal>
 
-  }
   }
 </div>
-
-
 
