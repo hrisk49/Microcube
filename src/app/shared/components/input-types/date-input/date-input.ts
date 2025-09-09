@@ -45,7 +45,9 @@ export class DateInput {
   readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
   readonly tooltipDelay = input<number>(500);
   readonly tooltipClass = input<string>('custom-tooltip');
-
+  readonly minYear = input<number>(1900);
+  readonly maxYear = input<number>(2030);
+  readonly enableYearRangeValidation = input<boolean>(true);
   
   constructor() {
     // Add custom validator when component initializes
@@ -95,11 +97,44 @@ export class DateInput {
 onDateSelected(event: any): void {
   if (event.value instanceof Date) {
     const date = event.value as Date;
+    const selectedYear = date.getFullYear();
     const control = this.frmGroup().get(this.controlName());
     
     if (control) {
-      // Always store the Date object itself, not the formatted string
-      // This makes it consistent and easier to handle
+      // Validate year range before setting the value
+      if (selectedYear < 1900 || selectedYear > 2030) {
+        // Don't set the invalid date
+        control.setValue('');
+        
+        // Set specific error for year range
+        control.setErrors({
+          ...control.errors,
+          yearOutOfRange: {
+            selectedYear: selectedYear,
+            minYear: 1900,
+            maxYear: 2030
+          }
+        });
+        
+        // Clear the input display
+        const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
+        if (inputElement) {
+          inputElement.value = '';
+        }
+        
+        // Show user-friendly message
+        this.showYearValidationMessage(selectedYear);
+        return;
+      }
+      
+      // Clear any existing year range errors
+      if (control.errors?.['yearOutOfRange']) {
+        const errors = { ...control.errors };
+        delete errors['yearOutOfRange'];
+        control.setErrors(Object.keys(errors).length ? errors : null);
+      }
+      
+      // Set the valid date
       control.setValue(date);
       
       // Update the input display immediately
@@ -112,6 +147,19 @@ onDateSelected(event: any): void {
       }
     }
   }
+}
+
+private showYearValidationMessage(selectedYear: number): void {
+  let message = '';
+  
+  if (selectedYear < 1900) {
+    message = `Year ${selectedYear} is too old. Please select a year between 1900 and 2030.`;
+  } else if (selectedYear > 2030) {
+    message = `Year ${selectedYear} is too far in the future. Please select a year between 1900 and 2030.`;
+  }
+
+  console.warn(message);
+  
 }
 
  onKeyDown(event: KeyboardEvent): void {
@@ -423,6 +471,12 @@ getDetailedErrorMessage(): string {
     return `${this.label()} is required!`;
   }
   
+  // Check for year out of range error
+  if (errors['yearOutOfRange']) {
+    const yearInfo = errors['yearOutOfRange'];
+    return `Year ${yearInfo.selectedYear} is not allowed. Please select a year between ${yearInfo.minYear} and ${yearInfo.maxYear}.`;
+  }
+  
   // Check for invalid characters
   if (errors['invalidCharacters']) {
     if (this.dateFormat() === 'DD MMM, YYYY') {
@@ -432,7 +486,7 @@ getDetailedErrorMessage(): string {
     }
   }
   
-  // Check for format errors (including consecutive separators)
+  // Check for format errors
   if (errors['invalidDateFormat']) {
     const currentValue = control.value || '';
     if (this.hasConsecutiveSeparators(currentValue)) {
@@ -546,7 +600,7 @@ onBlur(): void {
         inputElement.value = stringValue;
       }
       
-      console.log('Date object converted to display format on blur:', stringValue);
+      // console.log('Date object converted to display format on blur:', stringValue);
       return; // Date objects are always valid, no need to validate further
     } else {
       stringValue = typeof control.value === 'string' ? control.value : String(control.value);
@@ -985,22 +1039,35 @@ private dateFormatValidator(control: AbstractControl): { [key: string]: any } | 
   if (!control.value) return null;
 
   let value: string;
+  let dateObject: Date | null = null;
 
   // Check if the value is a Date object
   if (control.value instanceof Date) {
-    const date = control.value as Date;
+    dateObject = control.value as Date;
     const format = this.dateFormat();
+    
+    // Check year range for Date objects
+    const year = dateObject.getFullYear();
+    if (year < 1900 || year > 2030) {
+      return {
+        yearOutOfRange: {
+          selectedYear: year,
+          minYear: 1900,
+          maxYear: 2030
+        }
+      };
+    }
     
     // Format the Date object based on the current dateFormat
     if (format === 'DD MMM, YYYY') {
       const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      value = `${String(date.getDate()).padStart(2, '0')} ${monthNames[date.getMonth()]}, ${date.getFullYear()}`;
+      value = `${String(dateObject.getDate()).padStart(2, '0')} ${monthNames[dateObject.getMonth()]}, ${dateObject.getFullYear()}`;
     } else {
       const separator = this.getDateSeparator();
       value = format
-        .replace('YYYY', date.getFullYear().toString())
-        .replace('MM', String(date.getMonth() + 1).padStart(2, '0'))
-        .replace('DD', String(date.getDate()).padStart(2, '0'));
+        .replace('YYYY', dateObject.getFullYear().toString())
+        .replace('MM', String(dateObject.getMonth() + 1).padStart(2, '0'))
+        .replace('DD', String(dateObject.getDate()).padStart(2, '0'));
     }
   } else {
     value = String(control.value || '');
@@ -1017,7 +1084,6 @@ private dateFormatValidator(control: AbstractControl): { [key: string]: any } | 
 }
 
 private validateMonthAbbreviationFormat(value: string): { [key: string]: any } | null {
-  // Expected format: "18 Aug, 2025" or "18 Aug 2025"
   const match = value.match(/^(\d{1,2})\s+([A-Za-z]{3})\s*,?\s*(\d{4})$/);
   
   if (!match) {
@@ -1033,6 +1099,17 @@ private validateMonthAbbreviationFormat(value: string): { [key: string]: any } |
     return { invalidDateFormat: true };
   }
   
+  // Validate year range specifically
+  if (year < 1900 || year > 2030) {
+    return {
+      yearOutOfRange: {
+        selectedYear: year,
+        minYear: 1900,
+        maxYear: 2030
+      }
+    };
+  }
+  
   // Month abbreviation mapping
   const monthMap: { [key: string]: number } = {
     'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
@@ -1044,24 +1121,18 @@ private validateMonthAbbreviationFormat(value: string): { [key: string]: any } |
     return { invalidDateFormat: true };
   }
   
-  // Validate year range
-  if (year < 1900 || year > 2030) {
-    return { invalidDate: true };
-  }
-  
   // Validate day range
   if (day < 1 || day > 31) {
     return { invalidDate: true };
   }
   
-  // IMPORTANT: Check if the date actually exists (catches cases like June 31)
+  // Check if the date actually exists
   const date = new Date(year, month - 1, day);
   const isValidDate = date.getFullYear() === year && 
                       date.getMonth() === (month - 1) && 
                       date.getDate() === day;
   
   if (!isValidDate) {
-    // Store additional info for better error messages
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
                        'July', 'August', 'September', 'October', 'November', 'December'];
     const daysInMonth = new Date(year, month, 0).getDate();
@@ -1112,19 +1183,29 @@ private validateStandardDateFormat(value: string): { [key: string]: any } | null
     return { invalidDateFormat: true };
   }
   
-  // Validate basic ranges
-  if (year < 1900 || year > 2030 || month < 1 || month > 12 || day < 1 || day > 31) {
+  // Validate year range specifically
+  if (year < 1900 || year > 2030) {
+    return {
+      yearOutOfRange: {
+        selectedYear: year,
+        minYear: 1900,
+        maxYear: 2030
+      }
+    };
+  }
+  
+  // Validate other basic ranges
+  if (month < 1 || month > 12 || day < 1 || day > 31) {
     return { invalidDate: true };
   }
   
-  // IMPORTANT: Check if the date actually exists (catches cases like June 31)
+  // Check if the date actually exists (catches cases like June 31)
   const date = new Date(year, month - 1, day);
   const isValidDate = date.getFullYear() === year && 
                       date.getMonth() === (month - 1) && 
                       date.getDate() === day;
   
   if (!isValidDate) {
-    // Store additional info for better error messages
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
                        'July', 'August', 'September', 'October', 'November', 'December'];
     const daysInMonth = new Date(year, month, 0).getDate();

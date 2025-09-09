@@ -130,7 +130,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
     effect(() => {
       const data = this.dataSource();
       
-      console.log('DataGridComponent: dataSource changed:', data);
+      // console.log('DataGridComponent: dataSource changed:', data);
       if (data && data.length > 0) {
         this._dataSource.set([...data]); // Create a copy
         this.applyFilters();
@@ -151,7 +151,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
 
   ngOnInit() {
     // Initial setup if needed
-    console.log('DataGridComponent initialized');
+    // console.log('DataGridComponent initialized');
   }
 
   ngOnDestroy() {
@@ -257,7 +257,7 @@ private getColumnWidth(property: string): string {
 
   // Data filtering and sorting
   private applyFilters(): void {
-    console.log('Applying filters to data:', this._dataSource().length, 'items');
+    // console.log('Applying filters to data:', this._dataSource().length, 'items');
     let filtered = [...this._dataSource()];
 
     // Apply search filter
@@ -284,7 +284,7 @@ private getColumnWidth(property: string): string {
     }
 
     this._filteredData.set(filtered);
-    console.log('Filtered data set:', filtered.length, 'items');
+    // console.log('Filtered data set:', filtered.length, 'items');
     
     // Reset to first page when filtering, but don't reset if it's initial load
     if (this._searchTerm() || this._sortColumn()) {
@@ -300,7 +300,7 @@ private getColumnWidth(property: string): string {
     const startIndex = this._currentPage() * this._pageSize();
     const endIndex = startIndex + this._pageSize();
     const displayed = this._filteredData().slice(startIndex, endIndex);
-    console.log('Getting displayed data:', displayed.length, 'items');
+    // console.log('Getting displayed data:', displayed.length, 'items');
     return displayed;
   }
 
@@ -319,7 +319,7 @@ private getColumnWidth(property: string): string {
   onPageChange(event: PageEvent): void {
     this._currentPage.set(event.pageIndex);
     this._pageSize.set(event.pageSize);
-    console.log('Page changed:', event.pageIndex, 'Page size:', event.pageSize);
+    // console.log('Page changed:', event.pageIndex, 'Page size:', event.pageSize);
   }
 
   // Search
@@ -409,10 +409,10 @@ private getColumnWidth(property: string): string {
     for (const designer of this.rowDesignerList()) {
       if (designer.condition(item)) {
         return {
-          // backgroundColor: designer.backgroundColor,
-          // color: designer.textColor,
-          // fontWeight: designer.fontWeight,
-          // borderColor: designer.borderColor
+          backgroundColor: designer.backgroundColor,
+          color: designer.textColor,
+          fontWeight: designer.fontWeight,
+          borderColor: designer.borderColor
         };
       }
     }

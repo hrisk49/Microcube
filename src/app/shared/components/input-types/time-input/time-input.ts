@@ -360,7 +360,7 @@ class TimePickerDialog {
     // Format time string in the required format: HH:MM:SS.sss±HH:MM
     const timeString = `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}.${milli.padStart(3, '0')}${timezone}`;
     
-    console.log('Selected time:', timeString); // Debug log
+    // console.log('Selected time:', timeString); // Debug log
     this.dialogRef.close(timeString);
   }
 } 
