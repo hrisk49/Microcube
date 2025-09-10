@@ -31,7 +31,8 @@
                     [customErrorMessages]="{ 
                       required: 'Transaction reference is required',
                       minlength: 'Minimum 3 characters required', 
-                      maxlength: 'Maximum 20 characters allowed' 
+                      maxlength: 'Maximum 20 characters allowed' ,
+                      pattern: 'Only alphanumeric characters and underscores are allowed'
                     }"
                   ></app-text-base-input>
                 </div>

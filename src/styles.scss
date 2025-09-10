@@ -509,7 +509,7 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
 
 .custom-input {
   /* Base styling - Standard width instead of full */
-  @apply w-80 max-w-full px-2 py-1 !text-sm leading-6; /* w-80 = 320px standard width */
+  @apply w-80 max-w-full px-2 pe-8 py-1 !text-sm leading-6; /* w-80 = 320px standard width */
   @apply border border-[#106ebe] border-slate-500 rounded-md;
   @apply bg-slate-50 placeholder-slate-400 placeholder:text-sm;
 
@@ -583,4 +583,48 @@ $btn-shadow-hover: rgba(59, 130, 246, 0.15);
   pointer-events: none;
   user-select: none;
   border-radius: 6px;
+}
+
+
+//for cross button
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+
+
+.clear-button {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.clear-button:hover {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.clear-button:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+.clear-button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }

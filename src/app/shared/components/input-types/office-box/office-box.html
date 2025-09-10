@@ -6,7 +6,7 @@
     }
   </label>
 
-  <div class="office-box-input-group">
+  <div class="office-box-input-group input-wrapper">
     <!-- Office Code Input -->
     <input
       [formControlName]="controlName()"
@@ -23,7 +23,15 @@
       class="custom-input office-box-input"
       (keydown)="preventSpecialChars($event)"
     />
-
+    @if (frmGroup().get(controlName())?.value && !isReadonly()) {
+      <button 
+        type="button"
+        class="clear-button"
+        (click)="clearInput()"
+        [attr.aria-label]="'Clear ' + labelText()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
     <!-- Office Name Display -->
     <span class="office-box-name" *ngIf="officeName()">
       {{ officeName() }}

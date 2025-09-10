@@ -6,21 +6,33 @@
     }
   </label>
   
-  <input 
-    [formControlName]="controlName()"
-    [ngClass]="{'readonly-input': isReadonly() }"
-    [readonly]="isReadonly()"
-    matInput
-    [placeholder]="placeholder() ?? 'Enter ' + label()"
-    [type]="type() ?? 'text'"
-    [matTooltip]="tooltip()"
-    [matTooltipPosition]="tooltipPosition()"
-    [matTooltipClass]="tooltipClass()"
-    [matTooltipDisabled]="!tooltip()"
-    [maxlength]="maxLength() || null"
-    class="custom-input"
-    (dblclick)="onDoubleClick.emit()"
-    (keydown)="preventSpecialChars($event)"/>
+  <div class="input-wrapper">
+    <input 
+      [formControlName]="controlName()"
+      [ngClass]="{'readonly-input': isReadonly() }"
+      [readonly]="isReadonly()"
+      matInput
+      [placeholder]="placeholder() ?? 'Enter ' + label()"
+      [type]="type() ?? 'text'"
+      [matTooltip]="tooltip()"
+      [matTooltipPosition]="tooltipPosition()"
+      [matTooltipClass]="tooltipClass()"
+      [matTooltipDisabled]="!tooltip()"
+      [maxlength]="maxLength() || null"
+      class="custom-input"
+      (dblclick)="onDoubleClick.emit()"
+      (keydown)="preventSpecialChars($event)"/>
+    
+    @if (frmGroup().get(controlName())?.value && !isReadonly()) {
+      <button 
+        type="button"
+        class="clear-button"
+        (click)="clearInput()"
+        [attr.aria-label]="'Clear ' + label()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </div>
 
   @if (frmGroup().get(controlName())?.errors && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
     <div class="text-red-500 text-sm mt-1">

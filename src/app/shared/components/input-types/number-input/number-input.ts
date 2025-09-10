@@ -3,6 +3,7 @@ import {MatInput} from "@angular/material/input";
 import {FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgClass} from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'lds-number',
@@ -10,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatInput,
     ReactiveFormsModule,
     MatTooltipModule,
+    MatIconModule,
     NgClass
   ],
   templateUrl: './number-input.html',
@@ -314,9 +316,24 @@ export class NumberInput {
 
 
   // Get custom error message for a specific error key
-  getCustomErrorMessage(errorKey: string): string {
+ getCustomErrorMessage(errorKey: string): string {
     const customMessages = this.customErrorMessages();
-    return customMessages[errorKey] || `${this.label()} has validation error: ${errorKey}`;
+    const control = this.frmGroup().get(this.controlName());
+    let message = `${this.label()} has validation error: ${errorKey}`;
+   
+    if (typeof customMessages[errorKey] === 'string') {
+      message = customMessages[errorKey];
+    } else if (customMessages[errorKey] && typeof customMessages[errorKey] === 'object' && 'message' in customMessages[errorKey]) {
+      message = (customMessages[errorKey] as any).message;
+    } else if (control?.errors?.[errorKey]) {
+      const errorValue = control.errors[errorKey];
+      if (typeof errorValue === 'string') {
+        message = errorValue;
+      } else if (errorValue && typeof errorValue === 'object' && 'message' in errorValue) {
+        message = (errorValue as any).message || message;
+      }
+    }
+    return message;
   }
 
   // Get all error keys that are not handled by default error messages
@@ -332,4 +349,12 @@ export class NumberInput {
   hasCustomErrors(): boolean {
     return this.getCustomErrorKeys().length > 0;
   }
+
+  clearInput(): void {
+  const control = this.frmGroup().get(this.controlName());
+  if (control) {
+    control.setValue('');
+    control.markAsTouched();
+  }
+}
 }

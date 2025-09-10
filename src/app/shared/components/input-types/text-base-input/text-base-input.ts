@@ -1,8 +1,11 @@
 import {Component, input, output, effect} from '@angular/core';
 import {FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {MatInput} from "@angular/material/input";
+import {MatInput, MatInputModule} from "@angular/material/input";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {NgClass} from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-text-base-input',
@@ -11,7 +14,11 @@ import {NgClass} from '@angular/common';
     MatInput,
     ReactiveFormsModule,
     NgClass,
-    MatTooltipModule
+    MatTooltipModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule,
   ],
   templateUrl: './text-base-input.html',
   standalone: true,
@@ -113,7 +120,22 @@ export class TextBaseInput {
   // Get custom error message for a specific error key
   getCustomErrorMessage(errorKey: string): string {
     const customMessages = this.customErrorMessages();
-    return customMessages[errorKey] || `${this.label()} has validation error: ${errorKey}`;
+    const control = this.frmGroup().get(this.controlName());
+    let message = `${this.label()} has validation error: ${errorKey}`;
+   
+    if (typeof customMessages[errorKey] === 'string') {
+      message = customMessages[errorKey];
+    } else if (customMessages[errorKey] && typeof customMessages[errorKey] === 'object' && 'message' in customMessages[errorKey]) {
+      message = (customMessages[errorKey] as any).message;
+    } else if (control?.errors?.[errorKey]) {
+      const errorValue = control.errors[errorKey];
+      if (typeof errorValue === 'string') {
+        message = errorValue;
+      } else if (errorValue && typeof errorValue === 'object' && 'message' in errorValue) {
+        message = (errorValue as any).message || message;
+      }
+    }
+    return message;
   }
 
   // Get all error keys that are not handled by default error messages
@@ -129,4 +151,13 @@ export class TextBaseInput {
   hasCustomErrors(): boolean {
     return this.getCustomErrorKeys().length > 0;
   }
+
+  clearInput(): void {
+  const control = this.frmGroup().get(this.controlName());
+  if (control) {
+    control.setValue('');
+    control.markAsTouched();
+  }
+}
+
 }

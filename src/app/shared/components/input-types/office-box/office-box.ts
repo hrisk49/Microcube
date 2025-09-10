@@ -3,6 +3,7 @@ import {FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatInput} from "@angular/material/input";
 import {NgClass, NgIf} from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'lds-office-box',
@@ -11,6 +12,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatInput,
     ReactiveFormsModule,
     MatTooltipModule,
+    MatIconModule,
     NgClass,
     NgIf
   ],
@@ -113,5 +115,13 @@ export class OfficeBoxComponent implements OnInit {
   hasCustomErrors(): boolean {
     return this.getCustomErrorKeys().length > 0;
   }
+
+  clearInput(): void {
+  const control = this.frmGroup().get(this.controlName());
+  if (control) {
+    control.setValue('');
+    control.markAsTouched();
+  }
+}
 
 }

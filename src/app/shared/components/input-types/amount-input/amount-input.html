@@ -6,6 +6,7 @@
     }
   </label>
 
+  <div class="input-wrapper">
   <input [formControlName]="controlName()"
          [ngClass]="{'readonly-input': isReadonly() }"
          type="number"
@@ -14,9 +15,9 @@
          (paste)="onPaste($event)"
          [readonly]="isReadonly()"
          matInput
-        [matTooltip]="tooltip()"
-        [matTooltipPosition]="tooltipPosition()"
-        [matTooltipClass]="tooltipClass()"
+         [matTooltip]="tooltip()"
+         [matTooltipPosition]="tooltipPosition()"
+         [matTooltipClass]="tooltipClass()"
          [matTooltipDisabled]="!tooltip()"
          [placeholder]="placeholder() ?? 'Enter ' + label()"
          class="custom-input"
@@ -24,6 +25,16 @@
          [min]="allowNegative() ? null : 0"
          [max]="maxAmt() || null"/>
 
+             @if (frmGroup().get(controlName())?.value && !isReadonly()) {
+      <button 
+        type="button"
+        class="clear-button"
+        (click)="clearInput()"
+        [attr.aria-label]="'Clear ' + label()">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+</div>
   @if (isInvalid()) {
     <div class="text-red-500 text-sm mt-1">
       @if (hasError('required')) {
