@@ -34,6 +34,7 @@ import {Mx008Model} from '../../model/mx008.model';
 import {ExternalCodeService} from '../../../../shared/services/external-code.service';
 import {Subject, takeUntil} from 'rxjs';
 import {JsonPipe} from '@angular/common';
+import {countryCodeValidator} from '../../../../shared/helpers/custom-validator.helper';
 
 @Component({
   selector: 'app-pacs-008',
@@ -379,7 +380,7 @@ export class Pacs008 implements OnInit {
       validators: [Validators.required]
     });
 
-    this.setupDynamicValidators(this.frmGroup, {
+    /*this.setupDynamicValidators(this.frmGroup, {
       panel: this.privateIdenOthr, // signal controlling private iden expansion
       controls: [], // no top-level controls in this example
       formArrayControls: [
@@ -401,7 +402,7 @@ export class Pacs008 implements OnInit {
         }
       ],
       validators: [Validators.required]
-    });
+    });*/
   }
 
   ngOnInit(): void {
@@ -427,16 +428,16 @@ export class Pacs008 implements OnInit {
     this.frmGroup = this.formBuilder.group({
       // Business Message Header
       charSet: [''],
-      fromBicfi: ['', Validators.required],
-      fromMembId: [''],
-      fromClrSysIdCd: [''],
+      fromBicfi: ['',[Validators.maxLength(12),Validators.required]],
+      fromMembId: ['',[Validators.maxLength(28)]],
+      fromClrSysIdCd: ['',[Validators.maxLength(4)]],
       fromLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
-      toBicfi: ['', Validators.required],
-      toMembId: [''],
-      toClrSysIdCd: [''],
+      toBicfi: ['',[Validators.maxLength(12),Validators.required]],
+      toMembId: ['',[Validators.maxLength(28)]],
+      toClrSysIdCd: ['',[Validators.maxLength(4)]],
       toLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
 
-      bizMsgIdr: ['PACS008_' + new Date().getTime(), Validators.required],
+      bizMsgIdr: ['PACS008_' + new Date().getTime(),[Validators.maxLength(35),Validators.required]],
       msgDefIdr: ['pacs.008.001.08', Validators.required],
       bizSvc: ['swift.cbprplus.02',Validators.required],
       regy: ['',[Validators.maxLength(350),Validators.minLength(1)]],
@@ -475,7 +476,7 @@ export class Pacs008 implements OnInit {
       sttlmAcctCcy: [null],
       sttlmAcctTp: [''],
       sttlmAcctNm: [''],
-      sttlmAcctSchmeNm: [''],
+      sttlmAcctSchmeNm: ['',[Validators.maxLength(4)]],
       sttlmAcctIssr: [''],
 
       // Instructing Reimbursement Agent
@@ -486,7 +487,7 @@ export class Pacs008 implements OnInit {
       instgRmbrsmntgAgtAcctCcy: [null],
       instgRmbrsmntgAgtAcctTp: [''],
       instgRmbrsmntgAgtAcctNm: [''],
-      instgRmbrsmntgAgtAcctSchmeNm: [''],
+      instgRmbrsmntgAgtAcctSchmeNm: ['',[Validators.maxLength(4)]],
       instgRmbrsmntgAgtAcctIssr: [''],
       instgRmbrsmntgAgtProxyCd: [''],
       instgRmbrsmntgAgtProxyId: [''],
@@ -499,7 +500,7 @@ export class Pacs008 implements OnInit {
       instdRmbrsmntgAgtAcctCcy: [null],
       instdRmbrsmntgAgtAcctTp: [''],
       instdRmbrsmntgAgtAcctNm: [''],
-      instdRmbrsmntgAgtAcctSchmeNm: [''],
+      instdRmbrsmntgAgtAcctSchmeNm: ['',[Validators.maxLength(4)]],
       instdRmbrsmntgAgtAcctIssr: [''],
       instdRmbrsmntgAgtProxyCd: [''],
       instdRmbrsmntgAgtProxyId: [''],
@@ -550,7 +551,7 @@ export class Pacs008 implements OnInit {
       prvsInstgAgt1AcctCcy: [null],
       prvsInstgAgt1AcctTp: [''],
       prvsInstgAgt1AcctNm: [''],
-      prvsInstgAgt1AcctSchmeNm: [''],
+      prvsInstgAgt1AcctSchmeNm: ['',[Validators.maxLength(4)]],
       prvsInstgAgt1AcctIssr: [''],
       prvsInstgAgt1ProxyCd: [''],
       prvsInstgAgt1ProxyPrtry: [''],
@@ -564,7 +565,7 @@ export class Pacs008 implements OnInit {
       prvsInstgAgt2AcctCcy: [''],
       prvsInstgAgt2AcctTp: [''],
       prvsInstgAgt2AcctNm: [''],
-      prvsInstgAgt2AcctSchmeNm: [''],
+      prvsInstgAgt2AcctSchmeNm: ['',[Validators.maxLength(4)]],
       prvsInstgAgt2AcctIssr: [''],
       prvsInstgAgt2ProxyCd: [''],
       prvsInstgAgt2ProxyPrtry: [''],
@@ -578,20 +579,20 @@ export class Pacs008 implements OnInit {
       prvsInstgAgt3AcctCcy: [''],
       prvsInstgAgt3AcctTp: [''],
       prvsInstgAgt3AcctNm: [''],
-      prvsInstgAgt3AcctSchmeNm: [''],
+      prvsInstgAgt3AcctSchmeNm: ['',[Validators.maxLength(4)]],
       prvsInstgAgt3AcctIssr: [''],
       prvsInstgAgt3ProxyCd: [''],
       prvsInstgAgt3ProxyPrtry: [''],
       prvsInstgAgt3ProxyId: [''],
 
       // Agents (flat)
-      instgAgtBicfi: [''],
+      instgAgtBicfi: ['',[Validators.maxLength(12)]],
       instgAgtClrSysIdCd: [''],
       instgAgtMmbId: [''],
       instgAgtLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
 
 
-      instdAgtBicfi: [''],
+      instdAgtBicfi: ['',[Validators.maxLength(12)]],
       instdAgtClrSysIdCd: [''],
       instdAgtMmbId: [''],
       instdAgtLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
@@ -605,7 +606,7 @@ export class Pacs008 implements OnInit {
       intrmyAgt1AcctCcy: [''],
       intrmyAgt1AcctTp: [''],
       intrmyAgt1AcctNm: [''],
-      intrmyAgt1AcctSchmeNm: [''],
+      intrmyAgt1AcctSchmeNm: ['',[Validators.maxLength(4)]],
       intrmyAgt1AcctIssr: [''],
       intrmyAgt1ProxyCd: [''],
       intrmyAgt1ProxyPrtry: [''],
@@ -619,7 +620,7 @@ export class Pacs008 implements OnInit {
       intrmyAgt2AcctCcy: [''],
       intrmyAgt2AcctTp: [''],
       intrmyAgt2AcctNm: [''],
-      intrmyAgt2AcctSchmeNm: [''],
+      intrmyAgt2AcctSchmeNm: ['',[Validators.maxLength(4)]],
       intrmyAgt2AcctIssr: [''],
       intrmyAgt2ProxyCd: [''],
       intrmyAgt2ProxyPrtry: [''],
@@ -633,15 +634,15 @@ export class Pacs008 implements OnInit {
       intrmyAgt3AcctCcy: [''],
       intrmyAgt3AcctTp: [''],
       intrmyAgt3AcctNm: [''],
-      intrmyAgt3AcctSchmeNm: [''],
+      intrmyAgt3AcctSchmeNm: ['',[Validators.maxLength(4)]],
       intrmyAgt3AcctIssr: [''],
       intrmyAgt3ProxyCd: [''],
       intrmyAgt3ProxyPrtry: [''],
       intrmyAgt3ProxyId: [''],
 
       // Debtor (flat)
-      dbtrNm: [''],
-      dbtrCtryOfRes: [''],
+      dbtrNm: ['', [Validators.maxLength(140)]],
+      dbtrCtryOfRes: ['', [countryCodeValidator]],
 
       //postal address
       dbtrDept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
@@ -657,7 +658,7 @@ export class Pacs008 implements OnInit {
       dbtrTwnLctnNm: ['', [Validators.maxLength(35)]],
       dbtrDstrctNm: ['', [Validators.maxLength(35)]],
       dbtrCtrySubDvsn: ['', [Validators.maxLength(35)]],
-      dbtrCtry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      dbtrCtry: ['', [countryCodeValidator]],
       dbtrAdrLine1: ['', [Validators.maxLength(70)]],
       dbtrAdrLine2: ['', [Validators.maxLength(70)]],
       dbtrAdrLine3: ['', [Validators.maxLength(70)]],
@@ -679,7 +680,7 @@ export class Pacs008 implements OnInit {
       dbtrBirthDt: [''],
       dbtrPrvcOfBirth: [''],
       dbtrCityOfBirth: [''],
-      dbtrCtryOfBirth: [''],
+      dbtrCtryOfBirth: ['', [countryCodeValidator]],
       //Other
       dbtrPrivtIdenOthr: this.formBuilder.array([]),
 
@@ -704,21 +705,21 @@ export class Pacs008 implements OnInit {
       dbtrAgt: this.getAgentGroup(this.agentValidator()),
 
       // Debtor Agent Account (flat)
-      dbtrAgAccIBAN: [''],
+      dbtrAgtAccIBAN: [''],
       dbtrAgtAcctId: [''],
       dbtrAgtAcctCcy: [''],
       dbtrAgtAcctTp: [''],
       dbtrAgtAcctNm: [''],
-      dbtrAgtAcctSchmeNm: [''],
+      dbtrAgtAcctSchmeNm: ['',[Validators.maxLength(4)]],
       dbtrAgtAcctIssr: [''],
-      dbtrAgtAcctProxyCd: [''],
-      dbtrAgtAcctProxyPrtry: [''],
-      dbtrAgtAcctProxyId: [''],
+      dbtrAgtProxyCd: [''],
+      dbtrAgtProxyPrtry: [''],
+      dbtrAgtProxyId: [''],
 
 
       // Ultimate Debtor
-      ultDbtrNm: [''],
-      ultDbtrCtryOfRes: [''],
+      ultDbtrNm: ['', [Validators.maxLength(140)]],
+      ultDbtrCtryOfRes: ['', [countryCodeValidator]],
 
       //postal address
       ultDbtrDept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
@@ -734,7 +735,7 @@ export class Pacs008 implements OnInit {
       ultDbtrTwnLctnNm: ['', [Validators.maxLength(35)]],
       ultDbtrDstrctNm: ['', [Validators.maxLength(35)]],
       ultDbtrCtrySubDvsn: ['', [Validators.maxLength(35)]],
-      ultDbtrCtry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      ultDbtrCtry: ['', [countryCodeValidator]],
       ultDbtrAdrLine1: ['', [Validators.maxLength(70)]],
       ultDbtrAdrLine2: ['', [Validators.maxLength(70)]],
       ultDbtrAdrLine3: ['', [Validators.maxLength(70)]],
@@ -752,15 +753,15 @@ export class Pacs008 implements OnInit {
       ultDbtrBirthDt: [''],
       ultDbtrPrvcOfBirth: [''],
       ultDbtrCityOfBirth: [''],
-      ultDbtrCtryOfBirth: [''],
+      ultDbtrCtryOfBirth: ['', [countryCodeValidator]],
 
       ultDbtrPrivtIdenOthr: this.formBuilder.array([]),
 
       // Ultimate Debtor ends
 
 // Initiating Party
-      initgPrtyNm: [''],
-      initgPrtyCtryOfRes: [''],
+      initgPrtyNm: ['', [Validators.maxLength(140)]],
+      initgPrtyCtryOfRes: ['', [countryCodeValidator]],
 
 // Postal address
       initgPrtyDept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
@@ -777,7 +778,7 @@ export class Pacs008 implements OnInit {
       initgPrtyTwnLctnNm: ['', [Validators.maxLength(35)]],
       initgPrtyDstrctNm: ['', [Validators.maxLength(35)]],
       initgPrtyCtrySubDvsn: ['', [Validators.maxLength(35)]],
-      initgPrtyCtry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      initgPrtyCtry: ['', [countryCodeValidator]],
       initgPrtyAdrLine1: ['', [Validators.maxLength(70)]],
       initgPrtyAdrLine2: ['', [Validators.maxLength(70)]],
       initgPrtyAdrLine3: ['', [Validators.maxLength(70)]],
@@ -793,7 +794,7 @@ export class Pacs008 implements OnInit {
       initgPrtyBirthDt: [''],
       initgPrtyPrvcOfBirth: [''],
       initgPrtyCityOfBirth: [''],
-      initgPrtyCtryOfBirth: [''],
+      initgPrtyCtryOfBirth: ['', [countryCodeValidator]],
       initgPrtyPrivtId: [''],
       initgPrtySchmNm: [''],
       initgPrtyIssr: [''],
@@ -801,8 +802,8 @@ export class Pacs008 implements OnInit {
 
 
       // Creditor Starts
-      crdtrNm: [''],
-      crdtrCtryOfRes: [''],
+      cdtrNm: ['', [Validators.maxLength(140)]],
+      cdtrCtryOfRes: ['', [countryCodeValidator]],
 
       //postal address
       cdtrDept: [''],
@@ -818,30 +819,30 @@ export class Pacs008 implements OnInit {
       cdtrTwnLctnNm: [''],
       cdtrDstrctNm: [''],
       cdtrCtrySubDvsn: [''],
-      crdtrCtry: [''],
-      crdtrAdrLine1: [''],
-      crdtrAdrLine2: [''],
-      crdtrAdrLine3: [''],
+      cdtrCtry: [''],
+      cdtrAdrLine1: [''],
+      cdtrAdrLine2: [''],
+      cdtrAdrLine3: [''],
 
       //Identification starts
 
       //Organisation Identification starts
-      crdtrAnyBic: [''],
-      crdtrLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
+      cdtrAnyBic: [''],
+      cdtrLei: ['', [Validators.pattern(/^[A-Z0-9]{18}[0-9]{2}$/)]],
       //Other
-      crdtrOrgIdOthr: this.formBuilder.array([]),
+      cdtrOrgIdOthr: this.formBuilder.array([]),
       //Organisation Identification ends
 
 
       //PrivateIdentification starts
 
       //DateAndPlaceOfBirth
-      crdtrBirthDt: [''],
-      crdtrprvcOfBirth: [''],
-      crdtrcityOfBirth: [''],
-      crdtrctryOfBirth: [''],
+      cdtrBirthDt: [''],
+      cdtrprvcOfBirth: [''],
+      cdtrcityOfBirth: [''],
+      cdtrctryOfBirth: ['', [countryCodeValidator]],
       //Other
-      crdtrPrivtIdenOthr: this.formBuilder.array([]),
+      cdtrPrivtIdenOthr: this.formBuilder.array([]),
 
       //PrivateIdentification ends
 
@@ -864,21 +865,21 @@ export class Pacs008 implements OnInit {
       crdtrAgt: this.getAgentGroup(this.agentValidator()),
 
       // Creditor Agent Account (flat)
-      crdtrAgAccIBAN: [''],
+      crdtrAgtAcctIBAN: [''],
       crdtrAgtAcctId: [''],
       crdtrAgtAcctCcy: [''],
       crdtrAgtAcctTp: [''],
       crdtrAgtAcctNm: [''],
-      crdtrAgtAcctSchmeNm: [''],
+      crdtrAgtAcctSchmeNm: ['',[Validators.maxLength(4)]],
       crdtrAgtAcctIssr: [''],
-      crdtrAgtAcctPrxyId: [''],
-      crdtrAgtAcctPrxyTpCd: [''],
-      crdtrAgtAcctPrxyTpPrtry: [''],
+      crdtrAgtProxyId: [''],
+      crdtrAgtProxyTpCd: [''],
+      crdtrAgtProxyTpPrtry: [''],
 
 
       // Ultimate Creditor
-      ultCrdtrNm: [''],
-      ultCrdtrCtryOfRes: [''],
+      ultCrdtrNm: ['', [Validators.maxLength(140)]],
+      ultCrdtrCtryOfRes: ['', [countryCodeValidator]],
 
       //postal address
       ultCrdtrDept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
@@ -892,9 +893,9 @@ export class Pacs008 implements OnInit {
       ultCrdtrPstCd: ['', [Validators.maxLength(16)]],
       ultCrdtrTwnNm: ['', [Validators.maxLength(35)]],
       ultCrdtrTwnLctnNm: ['', [Validators.maxLength(35)]],
-      ultCrdtrDtrctNm: ['', [Validators.maxLength(35)]],
+      ultCrdtrDstrctNm: ['', [Validators.maxLength(35)]],
       ultCrdtrCtrySubDvsn: ['', [Validators.maxLength(35)]],
-      ultCrdtrCtry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      ultCrdtrCtry: ['', [countryCodeValidator]],
       ultCrdtrAdrLine1: ['', [Validators.maxLength(70)]],
       ultCrdtrAdrLine2: ['', [Validators.maxLength(70)]],
       ultCrdtrAdrLine3: ['', [Validators.maxLength(70)]],
@@ -912,7 +913,7 @@ export class Pacs008 implements OnInit {
       ultCrdtrBirthDt: [''],
       ultCrdtrPrvcOfBirth: [''],
       ultCrdtrCityOfBirth: [''],
-      ultCrdtrCtryOfBirth: [''],
+      ultCrdtrCtryOfBirth: ['', [countryCodeValidator]],
 
       ultCrdtrPrivtIdenOthr: this.formBuilder.array([]),
 
@@ -923,22 +924,22 @@ export class Pacs008 implements OnInit {
       instructionForCreditorAgent: this.formBuilder.array([]),
       instructionForNextAgent: this.formBuilder.array([]),
       instrForCdtrAgtCD1: [null],
-      instrForCdtrAgtInf1: [''],
+      instrForCdtrAgtInf1: ['', [Validators.maxLength(140)]],
       instrForCdtrAgtCD2: [null],
-      instrForCdtrAgtInf2: [''],
-      instrForNxtAgt1: [''],
-      instrForNxtAgt2: [''],
-      instrForNxtAgt3: [''],
-      instrForNxtAgt4: [''],
-      instrForNxtAgt5: [''],
-      instrForNxtAgt6: [''],
+      instrForCdtrAgtInf2: ['', [Validators.maxLength(140)]],
+      instrForNxtAgt1: ['', [Validators.maxLength(35)]],
+      instrForNxtAgt2: ['', [Validators.maxLength(35)]],
+      instrForNxtAgt3: ['', [Validators.maxLength(35)]],
+      instrForNxtAgt4: ['', [Validators.maxLength(35)]],
+      instrForNxtAgt5: ['', [Validators.maxLength(35)]],
+      instrForNxtAgt6: ['', [Validators.maxLength(35)]],
 
       // Purpose
       purpCD: [''],
       purpPrtry: [''],
 
       // Remittance
-      rmtInf: [''],
+      rmtInf: ['', [Validators.maxLength(140)]],
       rltdRemInfoForm: this.formBuilder.array([]),
       //Regulatory Reporting
       rgltryRptg: this.formBuilder.array([this.createRgltryRptgGroup()]),
@@ -959,7 +960,7 @@ export class Pacs008 implements OnInit {
       validators: Validators.compose([
         this.remittanceMutualExclusionValidator(),
         this.validateSettlementMethod(),
-        this.partyIdentificationValidator('crdtr', true),
+        this.partyIdentificationValidator('cdtr', true),
         this.partyIdentificationValidator('dbtr', true),
         this.partyIdentificationValidator('ultDbtr', false),
         this.partyIdentificationValidator('ultCrdtr', false),
@@ -1023,7 +1024,7 @@ export class Pacs008 implements OnInit {
       ccy: frm.sttlmAcctCcy ,
       tp: frm.sttlmAcct ,
       nm: frm.sttlmAcct,
-      schmeNm: frm.sttlmAcct,
+      schmeNmCd: frm.sttlmAcct,
       issr: frm.sttlmAcct,
     };
     payload.instgAgtBic = frm.instgAgtBicfi,
@@ -1117,7 +1118,7 @@ export class Pacs008 implements OnInit {
       }
     }));
 
-    // 7. Agents & Accounts (Generic Builder)
+    // 7. Agents (Generic Builder)
     const buildParty = (pfx: string) => {
       const group = frm[pfx] || {};
 
@@ -1153,15 +1154,16 @@ export class Pacs008 implements OnInit {
 
 
     const buildAccount = (pfx: string) => ({
+      iban: frm[`${pfx}AcctIBAN`] ,
       id: frm[`${pfx}AcctId`] ,
       ccy: frm[`${pfx}AcctCcy`] ,
       tpCd: frm[`${pfx}AcctTp`] ,
       nm: frm[`${pfx}AcctNm`] ,
-      schmeNm: frm[`${pfx}AcctSchmeNm`] ,
+      schmeNmCd: frm[`${pfx}AcctSchmeNm`] ,
       issr: frm[`${pfx}AcctIssr`] ,
-      prxyCd: frm[`${pfx}ProxyCd`] ,
-      prxyPrtry: frm[`${pfx}ProxyPrtry`] ,
-      prxyId: frm[`${pfx}ProxyId`] ,
+      prxyTpCd: frm[`${pfx}ProxyCd`],
+      prxyTpPrtry: frm[`${pfx}ProxyPrtry`],
+      prxyId: frm[`${pfx}ProxyId`],
     });
 
     [
@@ -1197,20 +1199,20 @@ export class Pacs008 implements OnInit {
         nm: frm[`${pfx}Nm`],
         ctryOfRes: frm[`${pfx}CtryOfRes`],
         address: {
-          dept: frm[`${pfx}dept`],
-          subDept: frm[`${pfx}subDept`],
-          strtNm: frm[`${pfx}strtNm`],
-          bldgNb: frm[`${pfx}bldgNb`],
-          bldgNm: frm[`${pfx}bldgNm`],
-          flr: frm[`${pfx}flr`],
-          pstBx: frm[`${pfx}pstBx`],
-          room: frm[`${pfx}room`],
-          pstCd: frm[`${pfx}pstCd`],
-          twnNm: frm[`${pfx}twnNm`],
-          twnLctnNm: frm[`${pfx}twnLctnNm`],
-          dstrctNm: frm[`${pfx}dstrctNm`],
-          ctrySubDvsn: frm[`${pfx}ctrySubDvsn`],
-          ctry: frm[`${pfx}ctry`],
+          dept: frm[`${pfx}Dept`],
+          subDept: frm[`${pfx}SubDept`],
+          strtNm: frm[`${pfx}StrtNm`],
+          bldgNb: frm[`${pfx}BldgNb`],
+          bldgNm: frm[`${pfx}BldgNm`],
+          flr: frm[`${pfx}Flr`],
+          pstBx: frm[`${pfx}PstBx`],
+          room: frm[`${pfx}Room`],
+          pstCd: frm[`${pfx}PstCd`],
+          twnNm: frm[`${pfx}TwnNm`],
+          twnLctnNm: frm[`${pfx}TwnLctnNm`],
+          dstrctNm: frm[`${pfx}DstrctNm`],
+          ctrySubDvsn: frm[`${pfx}CtrySubDvsn`],
+          ctry: frm[`${pfx}Ctry`],
           adrLine: [
             frm[`${pfx}AdrLine1`],
             frm[`${pfx}AdrLine2`],
@@ -1239,8 +1241,8 @@ export class Pacs008 implements OnInit {
       "dbtr",
       "ultDbtr",
       "initgPrty",
-      "crdtr",
-      "ultmtCrdtr",
+      "cdtr",
+      "ultCrdtr",
 
     ].forEach(pfx => {
       payload[pfx] = buildPartyDetails(frm, pfx);
@@ -1252,7 +1254,7 @@ export class Pacs008 implements OnInit {
       tpCd: frm.dbtrAcctTp,
       ccy: frm.dbtrAcctCcy ,
       nm: frm.dbtrAcctNm ,
-      schmeNm: frm.dbAccOthrScmNm ,
+      schmeNmCd: frm.dbAccOthrScmNm ,
       issr: frm.dbOthrIssr ,
       prxyId: frm.dbtrAcctProxyId ,
       prxyTpCd: frm.dbtrAcctProxyCd ,
@@ -1265,7 +1267,7 @@ export class Pacs008 implements OnInit {
       tpCd: frm.crdtrAcctTp,
       ccy: frm.crdtrAcctCcy ,
       nm: frm.crdtrAcctNm ,
-      schmeNm: frm.crdtrAccOthrScmNm ,
+      schmeNmCd: frm.crdtrAccOthrScmNm ,
       issr: frm.crdtrOthrIssr ,
       prxyId: frm.cdtrAcctPrxyId ,
       prxyTpCd: frm.cdtrAcctPrxyTpCd ,
@@ -1276,8 +1278,8 @@ export class Pacs008 implements OnInit {
     const creditorAgentInstructions = frm.instructionForCreditorAgent || [];
     payload.instrForCdtrAgtCD1 = creditorAgentInstructions[0]?.code || '';
     payload.instrForCdtrAgtInf1 = creditorAgentInstructions[0]?.info || '';
-    payload.instrForCdtrAgtCD2 = creditorAgentInstructions[0]?.code || '';
-    payload.instrForCdtrAgtInf2 = creditorAgentInstructions[0]?.info || '';
+    payload.instrForCdtrAgtCD2 = creditorAgentInstructions[1]?.code || '';
+    payload.instrForCdtrAgtInf2 = creditorAgentInstructions[1]?.info || '';
 
     // Map instruction for next agent FormArray to individual fields as per DTO
     const nextAgentInstructions = frm.instructionForNextAgent || [];
@@ -1288,7 +1290,7 @@ export class Pacs008 implements OnInit {
     payload.instrForNxtAgt5 = nextAgentInstructions[4]?.instruction || '';
     payload.instrForNxtAgt6 = nextAgentInstructions[5]?.instruction || '';
 
-    payload.purpCd = frm.purpCd ;
+    payload.purpCD = frm.purpCD ;
     payload.purpPrtry = frm.purpPrtry ;
     payload.rmtInf = frm.rmtInf ;
 
@@ -1671,7 +1673,7 @@ export class Pacs008 implements OnInit {
 
   //Creditor
   get crdtrorgIdenOthrGetter() {
-    return this.frmGroup.get('crdtrOrgIdOthr') as FormArray;
+    return this.frmGroup.get('cdtrOrgIdOthr') as FormArray;
   }
 
   getcrdtrOrgIdenOthr(index: number): FormGroup {
@@ -1681,9 +1683,9 @@ export class Pacs008 implements OnInit {
   addcrdtrOrgIdenOthrRow() {
     if (this.crdtrorgIdenOthrGetter.length < 2) { // Max 6 as per spec
       const OrgIdenOthr = this.formBuilder.group({
-        crdtrOrgIdOthrId: [''],
-        crdtrOrgIdOthrScmNm: [''],
-        crdtrOrgIdOthrIssr: [''],
+        cdtrOrgIdOthrId: [''],
+        cdtrOrgIdOthrScmNm: [''],
+        cdtrOrgIdOthrIssr: [''],
       });
       this.crdtrorgIdenOthrGetter.push(OrgIdenOthr);
     } else {
@@ -1699,7 +1701,7 @@ export class Pacs008 implements OnInit {
 
 
   get crdtrprivateIdenOthrGetter() {
-    return this.frmGroup.get('crdtrPrivtIdenOthr') as FormArray;
+    return this.frmGroup.get('cdtrPrivtIdenOthr') as FormArray;
   }
 
   getcrdtrPrivateIdenOthr(index: number): FormGroup {
@@ -1709,9 +1711,9 @@ export class Pacs008 implements OnInit {
   addcrdtrPrivateIdenOthrRow() {
     if (this.crdtrprivateIdenOthrGetter.length < 2) { // Max 6 as per spec
       const crdtrPrivtIdenOthr = this.formBuilder.group({
-        crdtrPrivateIdOthrId: [''],
-        crdtrPrivateIdOthrScmNm: [''],
-        crdtrPrivateIdOthrIssr: [''],
+        cdtrPrivateIdOthrId: [''],
+        cdtrPrivateIdOthrScmNm: [''],
+        cdtrPrivateIdOthrIssr: [''],
       });
       this.crdtrprivateIdenOthrGetter.push(crdtrPrivtIdenOthr);
     } else {
@@ -1858,7 +1860,7 @@ export class Pacs008 implements OnInit {
     return this.formBuilder.group({
       mhtd: [''],
       elctrncAdr: [''],
-      nm: [''],
+      nm: ['', [Validators.maxLength(140)]],
       dept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
       subDept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
       strtNm: ['', [Validators.minLength(1), Validators.maxLength(70)]],
@@ -1872,11 +1874,11 @@ export class Pacs008 implements OnInit {
       twnLctnNm: ['', [Validators.maxLength(35)]],
       dstrctNm: ['', [Validators.maxLength(35)]],
       ctrySubDvsn: ['', [Validators.maxLength(35)]],
-      ctry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      ctry: ['', [countryCodeValidator]],
       adrLine1: ['', [Validators.maxLength(70)]],
       adrLine2: ['', [Validators.maxLength(70)]],
       adrLine3: ['', [Validators.maxLength(70)]],
-      ctryOfRes: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      ctryOfRes: ['', [countryCodeValidator]],
     });
   }
 
@@ -1911,7 +1913,7 @@ export class Pacs008 implements OnInit {
     return this.formBuilder.group({
       dbtCdtRptgInd: [''],
       authrtyNm: [''],
-      authrtyCtry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      authrtyCtry: ['', [countryCodeValidator]],
       dtlsForm: this.formBuilder.array([this.createDbtCdtRptgIndGroup()])
     });
   }
@@ -1921,7 +1923,7 @@ export class Pacs008 implements OnInit {
     return this.formBuilder.group({
       dtlsTp: ['', [Validators.minLength(1), Validators.maxLength(35), Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+\s]+$/)]],
       dtlsDt: [''],
-      dtlsCtry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      dtlsCtry: ['', [countryCodeValidator]],
       dtlsCd: ['', [Validators.minLength(1), Validators.maxLength(10), Validators.pattern(/^[0-9a-zA-Z\/\-\?:\(\)\.,'\+\s]+$/)]],
       dtlsCcy: [null],
       dtlsAmt: [''],
@@ -2060,20 +2062,20 @@ export class Pacs008 implements OnInit {
       Nm: [''],
 
       // Postal Address Fields
-      Dept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
-      SubDept: ['', [Validators.minLength(1), Validators.maxLength(70)]],
-      StrtNm: ['', [Validators.minLength(1), Validators.maxLength(70)]],
-      BldgNb: ['', [Validators.maxLength(16)]],
-      BldgNm: ['', [Validators.maxLength(35)]],
-      Flr: ['', [Validators.maxLength(70)]],
-      PstBx: ['', [Validators.maxLength(16)]],
-      Room: ['', [Validators.maxLength(70)]],
-      PstCd: ['', [Validators.maxLength(16)]],
-      TwnNm: ['', [Validators.maxLength(35)]],
+      Dept: [''],
+      SubDept: [''],
+      StrtNm: [''],
+      BldgNb: [''],
+      BldgNm: [''],
+      Flr: [''],
+      PstBx: [''],
+      Room: [''],
+      PstCd: [''],
+      TwnNm: [''],
       TwnLctnNm: ['', [Validators.maxLength(35)]],
       DstrctNm: ['', [Validators.maxLength(35)]],
       CtrySubDvsn: ['', [Validators.maxLength(35)]],
-      Ctry: ['', [Validators.pattern(/^[A-Z]{2}$/)]],
+      Ctry: [''],
       AdrLine1: ['', [Validators.maxLength(70)]],
       AdrLine2: ['', [Validators.maxLength(70)]],
       AdrLine3: ['', [Validators.maxLength(70)]],
@@ -2176,6 +2178,9 @@ remittanceMutualExclusionValidator(): ValidatorFn {
 
       const bicfi = get('Bicfi');
       const name = get('Nm');
+      const clrSysId = get('ClrSysIdCd');
+      const mmbId = get('MmbId');
+      const clrSysMmbIdPresent = clrSysId && mmbId;
 
       const adrLines = ['AdrLine1', 'AdrLine2', 'AdrLine3'].map(get).filter(v => v.length > 0);
       const townName = get('TwnNm');
@@ -2186,51 +2191,52 @@ remittanceMutualExclusionValidator(): ValidatorFn {
         'Room', 'PstCd', 'TwnNm', 'TwnLctnNm', 'DstrctNm', 'CtrySubDvsn', 'Ctry',
         'AdrLine1', 'AdrLine2', 'AdrLine3'
       ];
-      console.log(this.frmGroup.get('dbtrAgt')?.errors);
       const addressHasData = postalFields.some(field => get(field).length > 0);
 
       const errors: ValidationErrors = {};
 
-      // Rule 1: If everything is empty → VALID
-      if (!bicfi && !name && !addressHasData) {
+      // Rule 1: All empty — valid (agent info not provided)
+      if (!bicfi && !clrSysId && !mmbId && !name && !addressHasData) {
         return null;
       }
 
-      // Rule 2: If BICFI present, name & postal must be empty
+      // Rule 2: BICFI present → must be alone (no name, address, or ClrSys)
       if (bicfi) {
-        if (name || addressHasData) {
+        if (name || addressHasData || clrSysId || mmbId) {
           errors['bicfiConflict'] = true;
         }
-      } else {
-        // Rule 3: If no BICFI → Name and Postal are mandatory
-        if (!name) {
-          errors['missingNameOrPostalOrBicfi'] = true;
+        return Object.keys(errors).length > 0 ? errors : null;
+      }
+
+      // Rule 3: ClrSysMmbId (both fields required)
+      if (clrSysMmbIdPresent) {
+        if (bicfi || name || addressHasData) {
+          errors['clrSysMmbIdConflict'] = true;
         }
+        return Object.keys(errors).length > 0 ? errors : null;
+      }
 
-        if (!addressHasData) {
-          errors['missingNameOrPostalOrBicfi'] = true;
-        } else {
-          // Postal Address-specific validation
+      // Rule 4: Name + Postal Address required
+      if (!name) {
+        errors['missingNameOrPostalOrBicfi'] = true;
+      }
 
-          if (adrLines.length > 2) {
-            errors['tooManyAddressLines'] = true;
-          }
+      if (!addressHasData) {
+        errors['missingNameOrPostalOrBicfi'] = true;
+      } else {
+        /*if (adrLines.length > 2) {
+          errors['tooManyAddressLines'] = true;
+        }*/
 
-          const otherPostalFieldsUsed = postalFields
-            .filter(f => !['AdrLine1', 'AdrLine2', 'AdrLine3'].includes(f))
-            .some(f => get(f).length > 0);
+        const otherPostalFieldsUsed = postalFields
+          .filter(f => !['AdrLine1', 'AdrLine2', 'AdrLine3'].includes(f))
+          .some(f => get(f).length > 0);
 
-          const townAndCountryMissing = !townName || !country;
+        const townAndCountryMissing = !townName || !country;
 
-          // Address Lines present + other postal fields used → town and country required
-          if (adrLines.length > 0 && otherPostalFieldsUsed && townAndCountryMissing) {
-            errors['missingTownAndCountry'] = true;
-          }
-
-          // Address Lines NOT present → town and country required
-          if (adrLines.length === 0 && townAndCountryMissing) {
-            errors['missingTownAndCountry'] = true;
-          }
+        if ((adrLines.length > 0 && otherPostalFieldsUsed && townAndCountryMissing) ||
+          (adrLines.length === 0 && townAndCountryMissing)) {
+          errors['missingTownAndCountry'] = true;
         }
       }
 
@@ -2271,8 +2277,8 @@ remittanceMutualExclusionValidator(): ValidatorFn {
     return (group: AbstractControl): ValidationErrors | null => {
       const sttlmMtd = group.get('sttlmMtd')?.value;
 
-      const instgRmbrsmntgAgtBic = group.get('instgRmbrsmntgAgtBicfi')?.value;
-      const instdRmbrsmntgAgtBic = group.get('instdRmbrsmntgAgtBicfi')?.value;
+      const instgRmbrsmntgAgtBic = group.get('instgRmbrsmntgAgt.Bicfi')?.value;
+      const instdRmbrsmntgAgtBic = group.get('instdRmbrsmntgAgt.Bicfi')?.value;
 
       const sttlmAcctId = group.get('sttlmAcctId')?.value;
       const sttlmAcctCcy = group.get('sttlmAcctCcy')?.value;
@@ -2378,9 +2384,9 @@ remittanceMutualExclusionValidator(): ValidatorFn {
         .map(s => fieldValue(s))
         .filter(v => !!v);
 
-      if (adrLines.length > 2) {
+      /*if (adrLines.length > 2) {
         errors[`${prefix}Postal_MaxTwoAdrLines`] = true;
-      }
+      }*/
 
       const townName = fieldValue('TwnNm');
       const country = fieldValue('Ctry');

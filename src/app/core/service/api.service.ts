@@ -28,4 +28,7 @@ export class ApiService<I> {
     return this.http.delete<I>(this.baseUrl + '/' + uuid);
   }
 
+  preview(data: I): Observable<I> {
+    return this.http.post<I>(this.baseUrl+'/preview', data);
+  }
 }

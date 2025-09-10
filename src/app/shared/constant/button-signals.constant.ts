@@ -15,4 +15,5 @@ export const BUTTON_VISIBILITY = signal<ButtonActionsModel>({
 export const FormGroupSignal = signal<FormGroup>(new FormGroup({}));
 
 export const ONCLICK_SAVE = signal(false);
+export const ONCLICK_VIEW = signal(false);
 export const ONCLICK_RESET = signal(false);

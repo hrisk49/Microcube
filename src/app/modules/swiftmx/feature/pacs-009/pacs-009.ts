@@ -24,6 +24,7 @@ import {
   FormGroupSignal,
   ONCLICK_RESET,
   ONCLICK_SAVE,
+  ONCLICK_VIEW,
 } from '../../../../shared/constant/button-signals.constant';
 import { SelectOptionsModel } from '../../../../shared/models/select-options-model';
 import { TextBaseInput } from '../../../../shared/components/input-types/text-base-input/text-base-input';
@@ -36,6 +37,8 @@ import { ExpansionPanelHeader } from '../../../../shared/components/expansion-pa
 import { ExpansionSubPanelHeader } from '../../../../shared/components/expansion-sub-panel-header/expansion-sub-panel-header';
 import { DialogUtils } from '../../../../shared/service/dialog-utils';
 import { BicSelectionService } from '../../../../shared/services/bic-selection.service';
+import { MatDialog } from '@angular/material/dialog';
+import { XmlViewDialog } from '../../../../shared/components/xml-view-dialog/xml-view-dialog';
 import { ExternalCodeService } from '../../../../shared/services/external-code.service';
 import { CurrencyService } from '../../../../shared/services/currency.service';
 import { CurrencyModel } from '../../../../shared/models/currency.model';
@@ -70,6 +73,7 @@ export class Pacs009 implements OnInit, OnDestroy {
   formBuilder = inject(FormBuilder);
   toastr = inject(ToastrService);
   pacs009Service = inject(Pacs009Service);
+  dialog = inject(MatDialog);
   externalCodeService = inject(ExternalCodeService);
   currencyService = inject(CurrencyService);
   lookupService = inject(LookupService);
@@ -79,6 +83,7 @@ export class Pacs009 implements OnInit, OnDestroy {
   frmGroup: FormGroup;
   onClickReset = ONCLICK_RESET;
   onClickSave = ONCLICK_SAVE;
+  onClickView = ONCLICK_VIEW;
   priorityOptions: SelectOptionsModel[] = [
     { key: 'HIGH', value: 'High' },
     { key: 'NORM', value: 'Normal' },
@@ -335,6 +340,10 @@ export class Pacs009 implements OnInit, OnDestroy {
       } else if (this.onClickSave()) {
         this.save();
         ONCLICK_SAVE.set(false);
+      }
+      else if(this.onClickView()){
+        this.view();
+        ONCLICK_VIEW.set(false);
       }
       this.conditionalPanelToggle();
     });
@@ -610,6 +619,7 @@ export class Pacs009 implements OnInit, OnDestroy {
 
     this.frmGroup.patchValue({
       bizMsgIdr: data.trnRefNo20,
+      msgId: data.trnRefNo20,
       instrId: data.trnRefNo20,
       endToEndId: data.relatedRef21,
       intrBkSttlmAmt: limitedAmount,
@@ -1002,7 +1012,7 @@ export class Pacs009 implements OnInit, OnDestroy {
       cpyDplct: [null],
       pssblDplct: [null],
       priority: [null],
-      msgId: ['MSG' + new Date().getTime(), [
+      msgId: ['', [
         Validators.required,
         Validators.maxLength(35),
         Validators.minLength(1),
@@ -1647,14 +1657,6 @@ export class Pacs009 implements OnInit, OnDestroy {
           this.frmGroup.patchValue({'instdAgtBicfi': swiftCode});
           this.frmGroup.patchValue({'instdAgtNm': branchName});
         }
-        if(ctrlNm==='dbtrBicfi' ){
-          this.frmGroup.patchValue({'dbtrAgtBicfi': swiftCode});
-          this.frmGroup.patchValue({'dbtrAgtNm': branchName});
-        }
-        if(ctrlNm==='cdtrBicfi' ){
-          this.frmGroup.patchValue({'cdtrAgtBicfi': swiftCode});
-          this.frmGroup.patchValue({'cdtrAgtNm': branchName});
-        }
       }
     });
   }
@@ -1666,7 +1668,7 @@ export class Pacs009 implements OnInit, OnDestroy {
       this.frmGroup.patchValue({
         bizMsgIdr: '',
         msgDefIdr: 'pacs.009.001.08',
-        bizSvc: 'swift.cbprplus.02',
+        bizSvc: 'swift.cbprplus.03',
         mktPrctcRegy: '',
         mktPrctcId: '',
         creDt: new Date(),
@@ -2579,6 +2581,34 @@ export class Pacs009 implements OnInit, OnDestroy {
       },
     });
   }
+  
+  view(): void {
+    const payload = this.generatePayload();
+
+    this.pacs009Service.preview(payload).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (res:any) => {
+        this.toastr.success('PACS.009 message preview successful!', 'Success');
+        
+        // Open modal with XML content
+        this.dialog.open(XmlViewDialog, {
+          data: { xmlData: res.payload.xmlContent },
+          width: '90vw',
+          height: '90%'
+        });
+      },
+      error: (error) => {
+        let errorMessage = 'Failed to preview PACS.009 message';
+        if (error.error && error.error.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        this.toastr.error(errorMessage, 'Error');
+      },
+    });
+  }
 
   // Instruction for Creditor Agent FormArray getter
   get instructionForCreditorAgent() {
@@ -2612,7 +2642,7 @@ export class Pacs009 implements OnInit, OnDestroy {
   addInstructionForNextAgentRow() {
     if (this.instructionForNextAgent.length < 6) { // Max 6 as per spec
       const instructionGroup = this.formBuilder.group({
-        instruction: ['', Validators.maxLength(35)],
+        instruction: ['REC/BEN', Validators.maxLength(35)],
       });
       this.instructionForNextAgent.push(instructionGroup);
     } else {

@@ -151,7 +151,7 @@ export class Pacs053 implements OnInit {
           bizMsgIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
           msgDefIdr: ['',[Validators.required, Validators.minLength(1),Validators.maxLength(35)]],
           bizSvc: ['',[Validators.required, Validators.minLength(6),Validators.maxLength(35),Validators.pattern(/^[a-z0-9]{1,10}(\.[a-z0-9]{1,10})+\.\d\d$/)]],
-          CreDt: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
+          creDt: ['', [Validators.required,Validators.pattern(/^(\+|-)((0[0-9])|(1[0-3])):[0-5][0-9]$/)]],
 
           cpyDplct: [null],
           psblDplct: [null],
