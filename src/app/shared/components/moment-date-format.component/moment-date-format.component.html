@@ -1,0 +1,30 @@
+ <mat-form-field [appearance]="appearance()" class="full-width">
+      <mat-label *ngIf="label()">{{ label() }}</mat-label>
+      
+      <input 
+        matInput 
+        [matDatepicker]="dp" 
+        [formControl]="getFormControl()"
+        [placeholder]="placeholder()"
+        [readonly]="readonly()"
+        [required]="required()"
+      />
+      
+      <mat-hint *ngIf="hint()">{{ hint() }}</mat-hint>
+      
+      <mat-datepicker-toggle 
+        matSuffix 
+        [for]="dp"
+        *ngIf="!readonly()">
+      </mat-datepicker-toggle>
+      
+      <mat-datepicker #dp [disabled]="readonly()"></mat-datepicker>
+      
+      <!-- Error messages -->
+      <mat-error *ngIf="getFormControl().hasError('required')">
+        {{ label() || 'Date' }} is required
+      </mat-error>
+      <mat-error *ngIf="getFormControl().hasError('matDatepickerParse')">
+        Please enter a valid date
+      </mat-error>
+    </mat-form-field>

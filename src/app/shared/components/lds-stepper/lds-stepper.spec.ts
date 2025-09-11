@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Pacs053 } from './pacs-053';
+import { LdsStepper } from './lds-stepper';
 
-describe('Pacs053', () => {
-  let component: Pacs053;
-  let fixture: ComponentFixture<Pacs053>;
+describe('LdsStepper', () => {
+  let component: LdsStepper;
+  let fixture: ComponentFixture<LdsStepper>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Pacs053]
+      imports: [LdsStepper]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Pacs053);
+    fixture = TestBed.createComponent(LdsStepper);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -3,7 +3,7 @@
 
     <div class="border-b border-gray-200">
       <div
-        class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer cursor-pointer"
+        class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
         (click)="toggleSection('messageList')">
         <div class="flex items-center gap-3">
           <div class="w-10 h-6 bg-gray-100 rounded-full flex items-center justify-center">
@@ -24,29 +24,7 @@
           <div class="max-w-md mx-auto bg-gray-0 p-4 pt-0 rounded-lg">
             <!-- Notification List -->
             <div class="">
-              <div routerLink="/mx/optimus-prime"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Incoming</p>
-              </div>
-
-              <div routerLink="/mx/optimus-prime-out"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Outgoing</p>
-              </div>
-
-              <div routerLink="/mx/swift-messaging-interface"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Swift Messaging Interface</p>
-              </div>
-
-              <div routerLink="/mx/authorization"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Authorization</p>
-              </div>
+              
             </div>
           </div>
         </div>
@@ -56,7 +34,7 @@
     <!-- MX Message -->
     <div class="border-b border-gray-200">
       <div
-        class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer cursor-pointer"
+        class="flex items-center justify-between p-3 text-gray-700 hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
         (click)="toggleSection('mxMessages')">
         <div class="flex items-center gap-3">
           <div class="w-10 h-6 bg-gray-100 rounded-full flex items-center justify-center">
@@ -75,119 +53,40 @@
         <div class="space-y-3">
           <!-- Notification Items -->
           <div class="max-w-md mx-auto bg-gray-0 p-4 pt-0 rounded-lg">
-            <!-- Notification List -->
+            <!-- Dynamic Route List -->
             <div class="">
-              <div routerLink="/mx/pacs-002"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">FI To FI Payment(PACS-002)</p>
+              <!-- Loading State -->
+              <div *ngIf="isLoading" class="flex gap-3 p-3 items-center">
+                <mat-icon class="text-gray-400 animate-spin">refresh</mat-icon>
+                <p class="text-sm text-gray-500">Loading menu items...</p>
               </div>
 
-              <div routerLink="/mx/pacs-003"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">FI To FI Customer Direct Debit(PACS-003)</p>
-              </div>
-              <div routerLink="/mx/pacs-004"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Payment Return(PACS-004)</p>
-              </div>
-              <!-- Item 1: Password Expiry -->
-              <div routerLink="/mx/pacs-008"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">FI To FI Customer Credit Transfer(PACS-008)</p>
+              <!-- Error State -->
+              <div *ngIf="error && !isLoading" class="flex gap-3 p-3 items-center">
+                <mat-icon class="text-red-500">error</mat-icon>
+                <p class="text-sm text-red-500">{{ error }}</p>
               </div>
 
-              <div routerLink="/mx/pacs-009"
+              <!-- Dynamic Menu Items -->
+              <div *ngFor="let item of userAccessList" 
+                   [routerLink]="item.AppRoute"
                    class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
                 <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Financial Institution Credit Transfer(PACS-009)</p>
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-gray-800">{{ item.FunctionName }}</p>
+                  <p class="text-xs text-gray-500">{{ item.ModuleName }}</p>
+                </div>
+                <div class="flex items-center" *ngIf="item.QuickRouteNo">
+                  <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">{{ item.QuickRouteNo }}</span>
+                </div>
               </div>
 
-              <div routerLink="/mx/pacs-029"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Resolution Of Investigation(CAMT-029)</p>
+              <!-- Empty State -->
+              <div *ngIf="!isLoading && !error && userAccessList.length === 0" 
+                   class="flex gap-3 p-3 items-center">
+                <mat-icon class="text-gray-400">inbox</mat-icon>
+                <p class="text-sm text-gray-500">No menu items available</p>
               </div>
-
-              <div routerLink="/mx/pacs-052"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Bank To Customer Account Report(CAMT-052)</p>
-              </div>
-
-              <div routerLink="/mx/pacs-053"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Bank To Customer Statement(CAMT-053)</p>
-              </div>
-
-
-              <div routerLink="/mx/pacs-054"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Bank To Customer Dr Cr Notification(CAMT-054)</p>
-              </div>
-              <div routerLink="/mx/pacs-055"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Customer Payment Cancellation Request(CAMT-055)</p>
-              </div>
-              <div routerLink="/mx/pacs-056"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">FI To FI Payment Cancellation(CAMT-056)</p>
-              </div>
-
-              <div routerLink="/mx/pacs-057"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Notification To Receive(CAMT-057)</p>
-              </div>
-
-              <div routerLink="/mx/pacs-058"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Notification Cancellation Advice(CAMT-058)</p>
-              </div>
-
-              <div routerLink="/mx/pacs-060"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Account Reporting Request(CAMT-060)</p>
-              </div>
-
-              <div routerLink="/mx/pacs-105"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Charges Payment Notification(CAMT-105)</p>
-              </div>
-              <div routerLink="/mx/pacs-106"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Charges Payment Request(CAMT-106)</p>
-              </div>
-
-              <div routerLink="/mx/pacs-107"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Cheque Presentment Notification(CAMT-107) </p>
-              </div>
-
-              <div routerLink="/mx/pacs-108"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Cheque Cancellation Or Stop Request(CAMT-108)</p>
-              </div>
-
-              <div routerLink="/mx/pacs-109"
-                   class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
-                <mat-icon class="text-blue-600">view_headline</mat-icon>
-                <p class="text-sm font-medium text-gray-800">Cheque Cancellation Or Stop Report(CAMT-109)</p>
-              </div>
-
             </div>
           </div>
         </div>
