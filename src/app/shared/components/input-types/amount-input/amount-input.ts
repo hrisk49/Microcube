@@ -40,6 +40,7 @@ export class AmountInput {
   readonly decimalPlaces = input<number>(2); // Default to 2 decimal places
   readonly allowNegative = input<boolean>(false);
   readonly allowLeadingZeros = input<boolean>(false);
+  readonly isVertical = input<boolean>(false);
 
 
   readonly customErrorMessages = input<{ [key: string]: string }>({});
@@ -47,7 +48,7 @@ export class AmountInput {
   // Outputs
   readonly valueChanged = output<string>();
   readonly onChanged = output<any>();
-  readonly onInput = output<any>();
+  // readonly onInput = output<any>();
 
   // Internal state
   isInvalidState = signal(false);
@@ -417,6 +418,23 @@ export class AmountInput {
     control.setValue('');
     control.markAsTouched();
   }
+}
+
+onInput(event: Event): void {
+  const value = (event.target as HTMLInputElement)?.value;
+  this.valueChanged.emit(value);
+  this.onChanged.emit(value);
+}
+
+onChange(event: Event): void {
+  const value = (event.target as HTMLInputElement)?.value;
+  this.onChanged.emit(value);
+}
+
+onBlur(): void {
+  const control = this.frmGroup().get(this.controlName());
+  const value = control ? control.value : undefined;
+  this.onChanged.emit(value);
 }
   
 }

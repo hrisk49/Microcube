@@ -1,4 +1,4 @@
-<div [formGroup]="frmGroup()" class="input-container-horizontal">
+<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'">
   <label class="input-label relative">
     {{ label() }}
     @if (isRequired()) {
@@ -22,7 +22,9 @@
       [readonly]="isReadonly()"
       class="custom-input"
       (keydown)="preventSpecialChars($event)"
-      (keydown)="preventSpecialChars($event)"
+      (input)="onInput($event)" 
+      (change)="onChange($event)"
+      (blur)="onBlur()"
       />
     
     @if (isDotsVisible()) {

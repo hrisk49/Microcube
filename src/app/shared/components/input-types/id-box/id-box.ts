@@ -46,14 +46,14 @@ export class IdBoxComponent {
   readonly tooltipDelay = input<number>(500);
   readonly tooltipClass = input<string>('custom-tooltip');
   // readonly isRequired = input<boolean>(false);
-
+  readonly isVertical = input<boolean>(false);
   // Custom error messages support
   readonly customErrorMessages = input<{ [key: string]: string }>({});
 
   // Outputs
   readonly valueChanged = output<string>();
   readonly onChanged = output<any>();
-  readonly onInput = output<any>();
+  // readonly onInput = output<any>();
   readonly onDoubleClick = output<void>();
   readonly dotsClicked = output<void>(); 
   readonly isDotsVisible = input<boolean>(true);
@@ -202,6 +202,23 @@ export class IdBoxComponent {
     const control = this.frmGroup().get(this.controlName());
     this.valueChange.emit(control?.value);
   }
+  onInput(event: Event): void {
+    const value = (event.target as HTMLInputElement)?.value;
+    this.valueChanged.emit(value);
+    this.onChanged.emit(value);
+  }
+
+  onChange(event: Event): void {
+    const value = (event.target as HTMLInputElement)?.value;
+    this.onChanged.emit(value);
+  }
+
+  onBlur(): void {
+    const control = this.frmGroup().get(this.controlName());
+    const value = control ? control.value : undefined;
+    this.onChanged.emit(value);
+  }
+
 
   onDotsClick() {
     this.dotsClicked.emit();

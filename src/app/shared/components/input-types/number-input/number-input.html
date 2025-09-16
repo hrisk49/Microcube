@@ -20,6 +20,7 @@
     [matTooltipDisabled]="!tooltip()"
     [readonly]="isReadonly()"
     [disabled]="isDisabled"
+    (change)="onChange($event)"
     (blur)="onBlur($event)"
     matInput
     [placeholder]="placeholder() ?? 'Enter ' + label()"

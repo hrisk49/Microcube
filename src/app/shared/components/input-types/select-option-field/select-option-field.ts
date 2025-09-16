@@ -28,7 +28,7 @@ export class SelectOptionField implements OnInit {
   readonly isReadonly = input<boolean>();
   readonly options = input<Option[] | null>(null);
   readonly isVertical = input<boolean>(false);
-  readonly searchable = input<boolean>(true); // NEW: Toggle searchability
+  readonly searchable = input<boolean>(true); 
   readonly tooltip = input<string>();
   readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
   readonly tooltipDelay = input<number>(500);
@@ -187,6 +187,32 @@ export class SelectOptionField implements OnInit {
         }
       }
     }, 200);
+  }
+
+  onStaticSelectChange(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedKey = selectElement.value;
+    
+    if (selectedKey) {
+      const selectedOption = this.options()?.find(opt => opt.key === selectedKey);
+      if (selectedOption) {
+        // Update signals
+        this.selectedValue.set(selectedKey);
+        this.displayText.set(selectedOption.value);
+        
+        // Emit the onSelect event
+        this.onSelect.emit({
+          selectedOption: selectedOption,
+          selectedKey: selectedKey,
+          selectedValue: selectedOption.value,
+          formControl: this.frmGroup().get(this.controlName())
+        });
+      }
+    } else {
+      // Clear selection
+      this.selectedValue.set('');
+      this.displayText.set('');
+    }
   }
 
   onKeyDown(event: KeyboardEvent): void {

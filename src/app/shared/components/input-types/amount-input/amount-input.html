@@ -1,4 +1,4 @@
-<div [formGroup]="frmGroup()" class="input-container-horizontal">
+<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'">
   <label class="input-label relative">
     {{ label() }}
     @if (isRequired()) {
@@ -23,7 +23,10 @@
          class="custom-input"
          [step]="getStepValue()"
          [min]="allowNegative() ? null : 0"
-         [max]="maxAmt() || null"/>
+         [max]="maxAmt() || null"
+         (input)="onInput($event)"
+         (change)="onChange($event)"
+         (blur)="onBlur()"/>
 
              @if (frmGroup().get(controlName())?.value && !isReadonly()) {
       <button 

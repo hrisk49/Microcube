@@ -28,6 +28,7 @@
                     tooltipPosition="above"
                     [tooltipDelay]="300"
                     tooltipClass="success-tooltip"
+                    (onChanged)="onTextBoxChanged($event)"
                     [customErrorMessages]="{ 
                       required: 'Transaction reference is required',
                       minlength: 'Minimum 3 characters required', 
@@ -45,9 +46,11 @@
                     [label]="'Account ID'"
                     [isDotsVisible]="true"
                     [tooltip]="'Click to select account ID'"
+                    [isVertical]="true"
                     [tooltipPosition]="'above'"
                     [tooltipDelay]="300"
                     (dotsClicked)="openModal()"
+                    (onChanged)="onIdBoxChanged($event)"
                   ></lds-id-box>
                 </div>
 
@@ -112,6 +115,7 @@
                     [tooltip]="'Amount affects tax calculation and approval requirements'"
                     [allowLeadingZeros]="false"
                     [maxLen]="12"
+                    (onChanged)="onAmountChanged($event)"
                   ></lds-amount>
                   <div class="text-xs text-gray-600 mt-1" *ngIf="isHighValueTransaction()">
                     ⚠️ High Value Transaction - Approval Required
@@ -128,6 +132,7 @@
                     [decimalPlaces]="2"
                     [maxLen]="12"
                     [tooltip]="'Automatically synced with amount field'"
+                    (onChanged)="onAmountToWordChanged($event)"
                   ></app-amount-to-word-input>
                 </div>
               </div>
@@ -147,6 +152,7 @@
                     [options]="currencyOptions"
                     [tooltip]="'Currency selection affects country and tax rate'"
                     (onSelect)="handleCategorySelection($event)"
+                    [searchable]="false"
                   ></app-select-option-field>
                 </div>
 
@@ -205,7 +211,7 @@
             <!-- Calculated Fields Section -->
             <div class="bg-gray-50 rounded-lg p-4 mb-6">
               <h3 class="text-lg font-medium text-yellow-900 mb-4">Calculated Fields</h3>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 
                 <!-- Tax Rate -->
                 <div class="component-section">
@@ -214,6 +220,7 @@
                     [controlName]="'taxRate'"
                     [label]="'Tax Rate (%)'"
                     [isReadonly]="true"
+                    [isVertical]="true"
                     tooltip="Calculated based on currency and product category"
                   ></app-text-base-input>
                 </div>
@@ -225,6 +232,7 @@
                     [controlName]="'calculatedTax'"
                     [label]="'Tax Amount'"
                     [isReadonly]="true"
+                    [isVertical]="true"
                     tooltip="Auto-calculated: Amount × Tax Rate"
                   ></app-text-base-input>
                 </div>
@@ -236,6 +244,7 @@
                     [controlName]="'totalAmount'"
                     [label]="'Total Amount'"
                     [isReadonly]="true"
+                    [isVertical]="true"
                     tooltip="Auto-calculated: Amount + Tax"
                   ></app-text-base-input>
                 </div>
@@ -290,6 +299,7 @@
                     [minValue]="1"
                     [maxValue]="9999"
                     [maxLen]="4"
+                    (onChanged)="onNumberChanged($event)"
                     placeholder="Auto-generated number">
                   </lds-number>
                 </div>
@@ -304,6 +314,7 @@
                     [enable]="true"
                     [visible]="true"
                     [maxLen]="4"
+                    (onChanged)="onOfficeBoxChanged($event)"
                   ></lds-office-box>
                 </div>
 
@@ -356,6 +367,7 @@
                 [placeholder]="'Enter transaction description and notes...'"
                 [showRowCount]="true"
                 [autoResize]="true"
+                (onChanged)="onTextAreaChanged($event)"
               ></lds-txt-area>
 
             </div>

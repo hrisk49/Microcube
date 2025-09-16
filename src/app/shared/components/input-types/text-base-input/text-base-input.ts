@@ -157,7 +157,25 @@ export class TextBaseInput {
   if (control) {
     control.setValue('');
     control.markAsTouched();
+    this.valueChanged.emit('');
+    this.onChanged.emit('');
   }
 }
 
+  onInput(event: Event): void {
+    const value = (event.target as HTMLInputElement)?.value;
+    this.valueChanged.emit(value);
+    this.onChanged.emit(value);
+  }
+
+  onChange(event: Event): void {
+    const value = (event.target as HTMLInputElement)?.value;
+    this.onChanged.emit(value);
+  }
+
+  onBlur(): void {
+    const control = this.frmGroup().get(this.controlName());
+    const value = control ? control.value : undefined;
+    this.onChanged.emit(value);
+  }
 }

@@ -33,7 +33,8 @@ export class AmountToWordInput {
   readonly placeholder = input<any>();
   readonly valueChange = output<any>();
   readonly isVertical = input<boolean>(false);
-  
+  readonly valueChanged = output<string>();
+  readonly onChanged = output<any>();
   // Currency parameter - defaults to BDT
   readonly currency = input<string>('BDT');
   
@@ -565,6 +566,23 @@ export class AmountToWordInput {
     control.setValue('');
     control.markAsTouched();
   }
+}
+
+onInput(event: Event): void {
+  const value = (event.target as HTMLInputElement)?.value;
+  this.valueChanged.emit(value);
+  this.onChanged.emit(value);
+}
+
+onChange(event: Event): void {
+  const value = (event.target as HTMLInputElement)?.value;
+  this.onChanged.emit(value);
+}
+
+onBlur(): void {
+  const control = this.frmGroup().get(this.controlName());
+  const value = control ? control.value : undefined;
+  this.onChanged.emit(value);
 }
 
 }

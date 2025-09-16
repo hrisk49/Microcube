@@ -41,7 +41,7 @@ export class OfficeBoxComponent implements OnInit {
   readonly allowSpecialChars = input<boolean>(false);
   readonly maxLen = input<number>();
   readonly minLen = input<number>();
-
+  readonly isVertical = input<boolean>(false);
   // Custom error messages
   readonly customErrorMessages = input<{ [key: string]: string }>({});
 
@@ -122,6 +122,23 @@ export class OfficeBoxComponent implements OnInit {
     control.setValue('');
     control.markAsTouched();
   }
+}
+
+onInput(event: Event): void {
+  const value = (event.target as HTMLInputElement)?.value;
+  this.valueChanged.emit(Number(value));
+  this.onChanged.emit({ officeCode: value, officeName: this.officeName() });
+}
+
+onChange(event: Event): void {
+  const value = (event.target as HTMLInputElement)?.value;
+  this.onChanged.emit({ officeCode: value, officeName: this.officeName() });
+}
+
+onBlur(): void {
+  const control = this.frmGroup().get(this.controlName());
+  const value = control ? control.value : undefined;
+  this.onChanged.emit(value);
 }
 
 }

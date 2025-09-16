@@ -1,4 +1,4 @@
-<div [formGroup]="frmGroup()" class="input-container-horizontal">
+<div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'">
   <label class="input-label">
     {{ labelText() }}
     @if (isRequired()) {
@@ -22,6 +22,9 @@
       [placeholder]="placeholder() ?? 'Enter ' + labelText()"
       class="custom-input office-box-input"
       (keydown)="preventSpecialChars($event)"
+      (input)="onInput($event)"
+      (change)="onChange($event)"
+      (blur)="onBlur()"
     />
     @if (frmGroup().get(controlName())?.value && !isReadonly()) {
       <button 
@@ -32,11 +35,13 @@
         <mat-icon>close</mat-icon>
       </button>
     }
-    <!-- Office Name Display -->
-    <span class="office-box-name" *ngIf="officeName()">
-      {{ officeName() }}
-    </span>
+
   </div>
+
+      <!-- Office Name Display -->
+      <span class="office-box-name" *ngIf="officeName()">
+        {{ officeName() }}
+      </span>
 
   @if (frmGroup().get(controlName())?.errors && 
       (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {

@@ -21,7 +21,10 @@
       [maxlength]="maxLength() || null"
       class="custom-input"
       (dblclick)="onDoubleClick.emit()"
-      (keydown)="preventSpecialChars($event)"/>
+      (keydown)="preventSpecialChars($event)"
+      (input)="onInput($event)"
+      (change)="onChange($event)"
+      (blur)="onBlur()"/>
     
     @if (frmGroup().get(controlName())?.value && !isReadonly()) {
       <button 

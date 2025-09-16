@@ -700,6 +700,30 @@ debugFormState(): void {
     });
   }
 
+
+  onTextBoxChanged(value: string): void {
+    console.log('TextBox changed:', value);
+  }  
+
+  onTextAreaChanged(value: string): void {
+    console.log('TextArea changed:', value);
+  }
+  onIdBoxChanged(value: string): void {
+    console.log('IdBox changed:', value);
+  }
+  onAmountChanged(value: string): void {
+    console.log('Amount changed:', value);
+  }
+  onAmountToWordChanged(value: string): void {
+    console.log('AmountToWord changed:', value);
+  }
+  onNumberChanged(value: string): void {
+    console.log('Number changed:', value);
+  }
+  onOfficeBoxChanged(value: { officeCode: string, officeName: string }): void {
+    console.log('OfficeBox changed:', value);
+  }
+
   private handleCurrencyChange(currencyCode: string): void {
     const currency = this.currencyOptions.find(c => c.key === currencyCode);
     if (currency) {

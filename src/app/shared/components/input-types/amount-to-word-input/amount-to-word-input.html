@@ -30,6 +30,9 @@
         [step]="getStepValue()"
         [min]="allowNegative() ? null : 0"
         [max]="maxAmt() || null"
+        (input)="onInput($event)"
+        (change)="onChange($event)"
+        (blur)="onBlur()"
       />
           @if (frmGroup().get(controlName())?.value && !isReadonly()) {
       <button 

@@ -64,7 +64,7 @@ export class TextArea implements OnInit, OnChanges, AfterViewInit {
   readonly isVertical = input<boolean>(false);
   // Outputs
   readonly valueChanged = output<string>();
-  readonly onChanged = output<Event>();
+  readonly onChanged = output<any>();
   readonly onRowLimitExceeded = output<RowLimitExceededEvent>();
   readonly onColLimitExceeded = output<ColLimitExceededEvent>();
   readonly onManualResize = output<{ rows: number; action: 'increase' | 'decrease' }>(); // New output

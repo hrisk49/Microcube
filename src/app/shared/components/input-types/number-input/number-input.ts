@@ -247,6 +247,12 @@ export class NumberInput {
     this.onChangeInput();
   }
 
+  onChange(event: Event): void {
+    const value = (event.target as HTMLInputElement)?.value;
+    // console.log('Number changed:', value);
+    this.onChanged.emit(value);
+  }
+
   // Handle paste events to clean pasted content
   onPaste(event: ClipboardEvent): void {
     event.preventDefault();
@@ -312,6 +318,7 @@ export class NumberInput {
   onChangeInput() {
     const control = this.frmGroup().get(this.controlName());
     this.valueChange.emit(control?.value);
+    this.onChanged.emit(control?.value);
   }
 
 
@@ -357,4 +364,6 @@ export class NumberInput {
     control.markAsTouched();
   }
 }
+
+
 }

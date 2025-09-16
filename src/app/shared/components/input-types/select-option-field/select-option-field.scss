@@ -127,3 +127,45 @@
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
   }
 }
+
+// .static-select {
+//   width: 100%;
+//   padding: 8px 12px;
+//   border: 1px solid #d1d5db;
+//   border-radius: 6px;
+//   background-color: white;
+//   font-size: 14px;
+//   line-height: 1.5;
+  
+//   &:focus {
+//     outline: none;
+//     border-color: #3b82f6;
+//     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+//   }
+  
+//   &:disabled {
+//     background-color: #f9fafb;
+//     color: #6b7280;
+//     cursor: not-allowed;
+//   }
+// }
+
+/* Hide the custom select elements when in static mode */
+.hidden-select {
+  display: none;
+}
+
+/* Your existing custom dropdown styles for searchable mode */
+.select-wrapper {
+  position: relative;
+  /* ... your existing styles ... */
+}
+
+.custom-select {
+  /* ... your existing styles ... */
+  padding: 2px !important;
+}
+
+.dropdown-menu {
+  /* ... your existing styles ... */
+}
