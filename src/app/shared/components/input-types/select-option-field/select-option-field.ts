@@ -33,7 +33,7 @@ export class SelectOptionField implements OnInit {
   readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
   readonly tooltipDelay = input<number>(500);
   readonly tooltipClass = input<string>('custom-tooltip');
-
+  readonly placeholder = input<any>();
   // Output event for when an option is selected
   readonly onSelect = output<{
     selectedOption: Option;
@@ -44,6 +44,7 @@ export class SelectOptionField implements OnInit {
 
   // Component state
   searchTerm = signal('');
+  filterTerm = signal('');
   isOpen = signal(false);
   highlightedIndex = signal(-1);
   selectedValue = signal<any>('');
@@ -64,8 +65,8 @@ export class SelectOptionField implements OnInit {
         // Non-searchable mode: show all options
         this.filteredOptions.set(opts);
       } else {
-        // Searchable mode: filter by search term
-        const term = this.searchTerm().toLowerCase();
+        // Searchable mode: filter by filter term (not the visible text)
+        const term = this.filterTerm().toLowerCase();
         if (!term) {
           this.filteredOptions.set(opts);
         } else {
@@ -149,6 +150,7 @@ export class SelectOptionField implements OnInit {
 
     const input = event.target as HTMLInputElement;
     this.searchTerm.set(input.value);
+    this.filterTerm.set(input.value);
     if (!this.isOpen()) {
       this.openDropdown();
     }
@@ -190,6 +192,16 @@ export class SelectOptionField implements OnInit {
   }
 
   onStaticSelectChange(event: Event): void {
+    if (this.isReadonly()) {
+      // Revert any attempted change in readonly mode
+      const control = this.frmGroup().get(this.controlName());
+      const selectElement = event.target as HTMLSelectElement;
+      const current = control?.value ?? '';
+      selectElement.value = current ?? '';
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
     const selectElement = event.target as HTMLSelectElement;
     const selectedKey = selectElement.value;
     
@@ -212,6 +224,20 @@ export class SelectOptionField implements OnInit {
       // Clear selection
       this.selectedValue.set('');
       this.displayText.set('');
+    }
+  }
+
+  onGuardedMouseDown(event: MouseEvent): void {
+    if (this.isReadonly()) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+
+  onGuardedKeyDown(event: KeyboardEvent): void {
+    if (this.isReadonly()) {
+      event.preventDefault();
+      event.stopPropagation();
     }
   }
 
@@ -260,6 +286,8 @@ export class SelectOptionField implements OnInit {
 
   openDropdown(): void {
     if (!this.isReadonly()) {
+      // Show all options when opening, but keep the visible text as-is
+      if (this.searchable()) this.filterTerm.set('');
       this.isOpen.set(true);
     }
   }
@@ -290,6 +318,8 @@ export class SelectOptionField implements OnInit {
     this.displayText.set(option.value);
     if (this.searchable()) {
       this.searchTerm.set(option.value);
+      // Keep filter in sync while open so list highlights the selected
+      this.filterTerm.set(option.value);
     }
     this.closeDropdown();
 

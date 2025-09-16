@@ -24,7 +24,9 @@
 .select-container {
   position: relative;
 }
-
+.input-container-vertical .select-container {
+  align-self: flex-start;
+}
 /* Select wrapper - matches your single-select design */
 .select-wrapper {
   position: relative;
@@ -272,4 +274,13 @@
 
 .dropdown-menu::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+.custom-select{
+  border: 1px solid rgb(99, 97, 97);
+}
+.custom-select:disabled::placeholder,
+.custom-select.readonly-input::placeholder {
+  color: #56595e; /* slate-500 for better contrast on gray bg */
+  opacity: 1;
 }

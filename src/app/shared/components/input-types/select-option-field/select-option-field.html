@@ -6,14 +6,16 @@
     }
   </label>
 
-  <div class="select-wrapper" [ngClass]="{'readonly-input': isReadonly() ?? false}">
+  <div class="select-wrapper" >
   @if (searchable()) {
     <!-- SEARCHABLE MODE: Custom dropdown with search -->
       <!-- Search Input -->
       <input
         #searchInput
         type="text"
-        [placeholder]="'Search ' + label().toLowerCase() + '...'"
+        [ngClass]="{'readonly-input': isReadonly() ?? false }"
+        [readonly]="isReadonly()"
+        [placeholder]="placeholder() ?? ' Search ' + label().toLowerCase()"
         [value]="searchTerm()"
         (input)="onSearchInput($event)"
         [matTooltip]="tooltip()"
@@ -24,7 +26,7 @@
         (blur)="onInputBlur()"
         (keydown)="onKeyDown($event)"
         [disabled]="isReadonly() ?? false"
-        class="custom-select"
+        class="custom-select "
         autocomplete="off"
       />
       
@@ -82,17 +84,23 @@
       [compareWith]="compareFN"
       [formControlName]="controlName()"
       [matTooltip]="tooltip()"
+      [ngClass]="{'readonly-input': isReadonly() ?? false }"
       [matTooltipPosition]="tooltipPosition()"
       [matTooltipClass]="tooltipClass()"
       [matTooltipDisabled]="!tooltip()"
       [disabled]="isReadonly() ?? false"
-      class="custom-select"
+      class="custom-select p-2"
+      (mousedown)="onGuardedMouseDown($event)"
+      (keydown)="onGuardedKeyDown($event)"
       (change)="onStaticSelectChange($event)"
     >
-      <option value="">Select {{ label() }}</option>
+    <div class="dropdown-menu">
+      <option class="dropdown-option" value="">Select {{ label() }}</option>
       @for (option of options(); track option.key) {
         <option [value]="option.key">{{ option.value }}</option>
       }
+    </div>
+    
     </select>
   }
 </div>

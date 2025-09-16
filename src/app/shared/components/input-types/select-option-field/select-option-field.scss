@@ -3,10 +3,14 @@
   position: relative;
   display: inline-block;
 
-  &.readonly-input {
-    opacity: 0.6;
-    pointer-events: none;
-  }
+  
+}
+
+.readonly-inputd {
+  pointer-events: none;
+  border: 1px solid rgb(27, 26, 26);
+  background-color: #E5E7EB !important;
+  
 }
 
 .dropdown-toggle {
@@ -169,6 +173,16 @@
 
 .dropdown-menu {
   /* ... your existing styles ... */
+}
+
+/* Improve placeholder visibility */  
+.custom-select{
+  border: 1px solid rgb(99, 97, 97);
+}
+.custom-select:disabled::placeholder,
+.custom-select.readonly-input::placeholder {
+  color: #56595e; /* slate-500 for better contrast on gray bg */
+  opacity: 1;
 }
 
 /* When vertical layout is used, keep wrapper full width and button aligned */
