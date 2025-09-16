@@ -37,7 +37,7 @@ export class AmountToWordInput {
   readonly onChanged = output<any>();
   // Currency parameter - defaults to BDT
   readonly currency = input<string>('BDT');
-  
+  readonly onBlurred = output<any>();
   // Validation inputs (same as AmountInput)
   readonly decimalPlaces = input<number>(2);
   readonly allowNegative = input<boolean>(false);
@@ -582,7 +582,8 @@ onChange(event: Event): void {
 onBlur(): void {
   const control = this.frmGroup().get(this.controlName());
   const value = control ? control.value : undefined;
-  this.onChanged.emit(value);
+  this.onChanged.emit(value); 
+  this.onBlurred.emit(value);  
 }
 
 }

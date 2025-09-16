@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, effect, inject, output } from '@angular/core';
 import { FormGroup, FormsModule, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { MatDatepicker, MatDatepickerInput, MatDatepickerToggle } from '@angular/material/datepicker';
 import { MatInput, MatSuffix } from '@angular/material/input';
@@ -48,6 +48,7 @@ export class DateInput {
   readonly minYear = input<number>(1900);
   readonly maxYear = input<number>(2030);
   readonly enableYearRangeValidation = input<boolean>(true);
+  readonly onBlurred = output<any>();
   
   constructor() {
     // Add custom validator when component initializes
@@ -585,6 +586,9 @@ private convertDisplayFormatToInputFormat(displayValue: string): string | null {
 
 onBlur(): void {
   const control = this.frmGroup().get(this.controlName());
+  const value = control ? control.value : undefined;
+  this.onBlurred.emit(value);  
+
   if (control && control.value) {
     let stringValue: string;
     

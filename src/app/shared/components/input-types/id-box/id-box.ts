@@ -38,7 +38,7 @@ export class IdBoxComponent {
   readonly leadingZero = input<string>('');
   readonly visible = input<boolean>(true);
   readonly allowSpecialChars = input<boolean>(false);
-  
+  readonly onBlurred = output<any>();
   // New validation inputs
   readonly minLen = input<number>();
   readonly maxLen = input<number>();  
@@ -216,7 +216,8 @@ export class IdBoxComponent {
   onBlur(): void {
     const control = this.frmGroup().get(this.controlName());
     const value = control ? control.value : undefined;
-    this.onChanged.emit(value);
+    this.onChanged.emit(value); 
+    this.onBlurred.emit(value);  
   }
 
 

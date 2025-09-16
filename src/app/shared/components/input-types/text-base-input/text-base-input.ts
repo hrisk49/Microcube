@@ -35,6 +35,7 @@ export class TextBaseInput {
   readonly maxLength = input<number>();
   readonly onDoubleClick = output<void>();
   readonly isVertical = input<boolean>(false);
+  readonly onBlurred = output<any>();
 
   // Tooltip support
   readonly isAllowSpecialChars = input<boolean>(true);
@@ -176,6 +177,8 @@ export class TextBaseInput {
   onBlur(): void {
     const control = this.frmGroup().get(this.controlName());
     const value = control ? control.value : undefined;
-    this.onChanged.emit(value);
+    this.onChanged.emit(value); 
+    this.onBlurred.emit(value);  
   }
+  
 }

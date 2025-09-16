@@ -41,7 +41,7 @@ export class AmountInput {
   readonly allowNegative = input<boolean>(false);
   readonly allowLeadingZeros = input<boolean>(false);
   readonly isVertical = input<boolean>(false);
-
+  readonly onBlurred = output<any>();
 
   readonly customErrorMessages = input<{ [key: string]: string }>({});
 
@@ -434,7 +434,8 @@ onChange(event: Event): void {
 onBlur(): void {
   const control = this.frmGroup().get(this.controlName());
   const value = control ? control.value : undefined;
-  this.onChanged.emit(value);
+  this.onChanged.emit(value); 
+  this.onBlurred.emit(value);  
 }
   
 }

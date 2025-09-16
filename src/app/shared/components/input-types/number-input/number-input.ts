@@ -35,7 +35,7 @@ export class NumberInput {
   readonly tooltipClass = input<string>('custom-tooltip');
   readonly tooltipDelay = input<number>(500);
   readonly isVertical = input<boolean>(false);
-
+  readonly onBlurred = output<any>();
   // Add min and max value inputs for validation
   readonly minValue = input<number>();
   readonly maxValue = input<number>();
@@ -295,7 +295,7 @@ export class NumberInput {
   onBlur(event: any): void {
     const input = event.target;
     let value = input.value;
-    
+    this.onBlurred.emit(value);
     // Final cleanup on blur
     if (!this.allowLeadingZeros() && value && value.length > 1 && value.startsWith('0')) {
       // Remove leading zeros one more time
