@@ -6,7 +6,7 @@
     }
   </label>
 
-  <div class="select-wrapper" [ngClass]="{'readonly-input': isReadonly()}">
+  <div class="select-wrapper" [ngClass]="{'readonly-input': isReadonly() ?? false}">
   @if (searchable()) {
     <!-- SEARCHABLE MODE: Custom dropdown with search -->
       <!-- Search Input -->
@@ -33,7 +33,7 @@
         type="button"
         class="dropdown-toggle"
         (click)="toggleDropdown()"
-        [disabled]="isReadonly()"
+        [disabled]="isReadonly() ?? false"
         tabindex="-1"
       >
         <svg class="dropdown-icon" [ngClass]="{'rotate-180': isOpen()}" viewBox="0 0 20 20" fill="currentColor">

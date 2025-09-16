@@ -28,6 +28,7 @@
                     tooltipPosition="above"
                     [tooltipDelay]="300"
                     tooltipClass="success-tooltip"
+                    [isVertical] = "true"
                     (onChanged)="onTextBoxChanged($event)"
                     [customErrorMessages]="{ 
                       required: 'Transaction reference is required',
@@ -112,6 +113,7 @@
                     [controlName]="'amount'"
                     [label]="'Transaction Amount'"
                     [decimalPlaces]="2"
+                    [isVertical]="true"
                     [tooltip]="'Amount affects tax calculation and approval requirements'"
                     [allowLeadingZeros]="false"
                     [maxLen]="12"
@@ -179,6 +181,7 @@
                 <div class="component-section">
                   <app-select-option-field
                     [frmGroup]="frmGroup"
+                    [isVertical]="true"
                     [controlName]="'productCategory'"
                     [label]="'Product Category'"
                     [options]="productCategoryOptions"
@@ -298,6 +301,7 @@
                     label="Reference Number"
                     [minValue]="1"
                     [maxValue]="9999"
+                    [isVertical] ="true" 
                     [maxLen]="4"
                     (onChanged)="onNumberChanged($event)"
                     placeholder="Auto-generated number">
@@ -312,6 +316,7 @@
                     labelText="Office Code"
                     placeholder="Auto-suggested based on currency"
                     [enable]="true"
+                    [isVertical] ="true"
                     [visible]="true"
                     [maxLen]="4"
                     (onChanged)="onOfficeBoxChanged($event)"

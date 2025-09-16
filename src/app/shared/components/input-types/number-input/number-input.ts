@@ -34,6 +34,7 @@ export class NumberInput {
   readonly tooltipPosition = input<'above' | 'below' | 'left' | 'right'>('above');
   readonly tooltipClass = input<string>('custom-tooltip');
   readonly tooltipDelay = input<number>(500);
+  readonly isVertical = input<boolean>(false);
 
   // Add min and max value inputs for validation
   readonly minValue = input<number>();
