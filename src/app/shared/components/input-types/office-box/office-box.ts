@@ -48,6 +48,7 @@ export class OfficeBoxComponent implements OnInit {
   // Outputs
   readonly valueChanged = output<number>();
   readonly onChanged = output<{ officeCode: string; officeName: string }>();
+  readonly onBlurred = output<any>();
 
   // Internal state
   readonly officeName = signal('');
@@ -138,7 +139,8 @@ onChange(event: Event): void {
 onBlur(): void {
   const control = this.frmGroup().get(this.controlName());
   const value = control ? control.value : undefined;
-  this.onChanged.emit(value);
+  this.onChanged.emit(value); 
+  this.onBlurred.emit(value);  
 }
 
 }

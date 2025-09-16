@@ -58,6 +58,7 @@ export class AllComponentsPage implements OnInit {
   frmGroup: FormGroup;
   toastr = inject(ToastrService);
   businessHeaderPanel: WritableSignal<boolean> = signal(true);
+  subPanel1: WritableSignal<boolean> = signal(true);
   isDataSelectionModalOpen = signal(false);
   onClickSave = ONCLICK_SAVE;
   // Relatable field signals
@@ -1659,5 +1660,10 @@ private recalculateTransactionAmounts(transaction: any): any {
   onDotsClick(): void {
     console.log('Dots clicked - opening data selection modal');
     this.openDataSelectionModal();
+  }
+
+  onBlur(value: string): void {
+    console.log('Textbox blurred, value:', value);
+    // You can run extra validation, API calls, or formatting here
   }
 }

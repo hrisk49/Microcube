@@ -52,6 +52,9 @@ input[type="number"]::placeholder {
 .input-container-vertical .input-wrapper {
   align-self: flex-start;
 }
+.input-container-vertical .select-date {
+  align-self: flex-start;
+}
 .readonly-input {
   background-color: #e5e7eb !important;
   cursor: not-allowed;
