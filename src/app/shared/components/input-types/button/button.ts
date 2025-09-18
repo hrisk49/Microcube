@@ -36,19 +36,25 @@ export class Button {
   }
 
   get buttonClasses(): string {
-    const baseClasses = 'py-3 px-4 text-sm font-medium cursor-pointer outline-none focus:outline-none rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 min-h-[32px] h-8';
+    const baseClasses =
+      'py-3 px-4 text-md font-medium cursor-pointer outline-none rounded-md transition-colors duration-200 focus:ring-2 focus:ring-offset-2 min-h-[32px] h-10';
+    
     const stateClasses = this.isDisabled
       ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
-      : 'bg-blue-600 text-white hover:bg-blue-700';
+      : 'text-white hover:opacity-90'; // keep hover effect without changing color
+    
     const customClasses = this.cssClass() || '';
-
-    // If custom classes are provided, use them completely; otherwise use default state classes
+  
+    // Apply default background color inline
+    const defaultBg = 'bg-[#086AD8]';
+  
     if (customClasses) {
       return `${baseClasses} ${customClasses}`;
     } else {
-      return `${baseClasses} ${stateClasses}`;
+      return `${baseClasses} ${defaultBg} ${stateClasses}`;
     }
   }
+  
 
   onButtonClick(event: MouseEvent) {
     if (!this.isDisabled) {

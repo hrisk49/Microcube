@@ -40,13 +40,17 @@ export class Switch implements OnInit, OnChanges {
     const control = this.frmGroup().get(this.controlName());
     if (control) {
       control.valueChanges.subscribe(value => {
-        this.isCheckedChanged.emit(value);
+        const boolValue = this.toBooleanValue(value);
+        this.isCheckedChanged.emit(boolValue);
         this.validateInput();
       });
       
-      // Initialize with isChecked value
-      if (control.value !== this.isChecked()) {
-        control.setValue(this.isChecked());
+      // Initialize with proper boolean conversion
+      const currentBoolValue = this.toBooleanValue(control.value);
+      const expectedBoolValue = this.toBooleanValue(this.isChecked());
+      
+      if (currentBoolValue !== expectedBoolValue) {
+        control.setValue(expectedBoolValue);
       }
       
       // Handle enable/disable state
@@ -58,13 +62,32 @@ export class Switch implements OnInit, OnChanges {
     const control = this.frmGroup().get(this.controlName());
     if (control && changes['isChecked']) {
       // Update form control when isChecked input changes
-      if (control.value !== this.isChecked()) {
-        control.setValue(this.isChecked());
+      const currentBoolValue = this.toBooleanValue(control.value);
+      const expectedBoolValue = this.toBooleanValue(this.isChecked());
+      
+      if (currentBoolValue !== expectedBoolValue) {
+        control.setValue(expectedBoolValue);
       }
     }
     
     this.validateInput();
     this.updateControlState();
+  }
+
+  // Helper method to properly convert various values to boolean
+  private toBooleanValue(value: any): boolean {
+    if (typeof value === 'boolean') {
+      return value;
+    }
+    if (typeof value === 'number') {
+      return value !== 0;
+    }
+    if (typeof value === 'string') {
+      const lowerValue = value.toLowerCase().trim();
+      return lowerValue === 'true' || lowerValue === '1' || lowerValue === 'yes' || lowerValue === 'on';
+    }
+    // For null, undefined, empty arrays, empty objects, etc.
+    return !!value;
   }
 
   updateControlState() {
@@ -108,7 +131,7 @@ export class Switch implements OnInit, OnChanges {
     const control = this.frmGroup().get(this.controlName());
     if (!control) return;
 
-    const value = control.value;
+    const value = this.toBooleanValue(control.value);
     let message = '';
 
     // Check required validation for switches
@@ -122,12 +145,11 @@ export class Switch implements OnInit, OnChanges {
     this.errorMessage.set(message);
   }
 
-
-
   toggleSwitch() {
     const control = this.frmGroup().get(this.controlName());
     if (control && !this.isDisabled) {
-      const newValue = !control.value;
+      const currentValue = this.toBooleanValue(control.value);
+      const newValue = !currentValue;
       control.setValue(newValue);
       this.isCheckedChanged.emit(newValue);
       this.onSwitchChanged.emit(newValue);
@@ -142,10 +164,8 @@ export class Switch implements OnInit, OnChanges {
     return !this.visible() || !this.isVisible();
   }
 
-
-
   get currentValue(): boolean {
     const control = this.frmGroup().get(this.controlName());
-    return control?.value || false;
+    return this.toBooleanValue(control?.value);
   }
-} 
+}
