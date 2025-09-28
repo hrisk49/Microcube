@@ -16,7 +16,7 @@ import { TextArea } from '../input-types/text-area/text-area';
 import { ToastrService } from 'ngx-toastr';
 import { BicSelectionService } from '../../services/bic-selection.service';
 import { NumberInput } from '../input-types/number-input/number-input';
-import { DropdownOption } from '../data-grid/data-grid';
+import { CheckboxChangeEvent, ColumnSelectAllEvent, DropdownOption } from '../data-grid/data-grid';
 import { LdsStepperComponent, Step } from '../lds-stepper/lds-stepper';
 import { MultiSelectOptionField } from '../multi-select-option-field/multi-select-option-field';
 import { DataSelectionModal } from '../data-selection-modal/data-selection-modal';
@@ -25,16 +25,19 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { DateInput } from '../input-types/date-input/date-input';
 import { LdsModalComponent } from '../lds-modal/lds-modal';
 import { CommonModule } from '@angular/common';
+import { Button } from '../input-types/button/button';
+import { OrbitSpinnerComponent } from '../orbit-spinner/spinner';
 
 @Component({
   selector: 'app-all-components-page',
   standalone: true,
   imports: [
-    ReactiveFormsModule,
+    ReactiveFormsModule,  
     TextBaseInput,
     IdBoxComponent,
     AmountInput,
     Switch,
+    Button,
     TextArea,
     AmountToWordInput,
     SelectOptionField,
@@ -49,7 +52,8 @@ import { CommonModule } from '@angular/common';
     DataGridComponent,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
-    DataSelectionModal
+    DataSelectionModal,
+    OrbitSpinnerComponent
   ],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],
@@ -70,6 +74,7 @@ export class AllComponentsPage implements OnInit {
   isHighValueTransaction = signal<boolean>(false);
   relatedTransactions = signal<any[]>([]);
   showModal = false;  
+  isTRUE = false;
   // Enhanced dropdown options with relationships
   currencyOptions = [
     { key: 'USD', value: 'US Dollar', rate: 1, taxRate: 0.05, country: 'US' },
@@ -336,12 +341,15 @@ export class AllComponentsPage implements OnInit {
     });
 
     effect(() => {
-    if(this.onClickSave()) {
+      if(this.onClickSave()) {
         this.save();
         ONCLICK_SAVE.set(false);
     }
   });
+
   }
+
+
 
 
 save(): void {
@@ -626,7 +634,7 @@ debugFormState(): void {
       textBox: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20), Validators.pattern(/^[a-zA-Z0-9_]+$/)]],
       id: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
       textArea: ['', [Validators.required, Validators.maxLength(500)]],
-      switch: [false],
+      switch: [true],
       amount: ['', [Validators.required, Validators.max(1000000), Validators.min(1)]],
       amountToWord: ['', [Validators.required, Validators.max(1000000), Validators.min(1)]],
       dropdown: ['', Validators.required],
@@ -824,6 +832,7 @@ debugFormState(): void {
       // Update amount to words field
       this.frmGroup.patchValue({
         amountToWord: amount
+
       });
       
       if (isHighValue) {
@@ -1051,6 +1060,14 @@ private recalculateTransactionAmounts(transaction: any): any {
     }
   }
 
+  handleCheckboxChange(event: CheckboxChangeEvent) {
+    console.log(`${event.property} changed to ${event.value} for item:`, event.item);
+  }
+
+  handleColumnSelectAll(event: ColumnSelectAllEvent) {
+    console.log(`Column ${event.property} select all: ${event.checked}`);
+  }
+
   // Method to get filtered options for template
   getFilteredSubCategories(): any[] {
     return this.filteredSubCategories();
@@ -1134,7 +1151,7 @@ private recalculateTransactionAmounts(transaction: any): any {
     this.frmGroup.patchValue({
       currency: currentCurrency,
       country: currentCountry,
-      switch: false,
+      switch: true,
       taxRate: 0,
       calculatedTax: 0,
       totalAmount: 0
