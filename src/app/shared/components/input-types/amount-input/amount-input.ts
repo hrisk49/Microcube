@@ -417,6 +417,8 @@ export class AmountInput {
   if (control) {
     control.setValue('');
     control.markAsTouched();
+    this.valueChanged.emit('');
+    this.onChanged.emit('');
   }
 }
 

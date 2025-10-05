@@ -117,7 +117,7 @@
                   [frmGroup]="frmGroup"
                   [controlName]="'amount'"
                   [label]="'Transaction Amount'"
-                  [isReadonly]="true"
+                
                   [isVertical]="true"
                   [decimalPlaces]="2"
                   [allowLeadingZeros]="false"
@@ -160,7 +160,7 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'currency'"
                     [label]="'Currency'"
-                    [isReadonly]="true"
+            
                     [isVertical]="true"
                     [options]="currencyOptions"
                     [tooltip]="'Currency selection affects country and tax rate'"
@@ -248,30 +248,6 @@
               </div>
             </div>
             </section>
-
-            <div>
-              <app-orbit-spinner
-  [size]="'large'"
-  [customSize]="72"
-  [centerColor]="'#0ea5e9'"
-  [orbitColor]="'rgba(14, 165, 233, 0.35)'"
-  [dotColor]="'#38bdf8'"
-  [speed]="'normal'"
-  [customSpeed]="1.2"
-  [showCenter]="true"
-  [showOrbitRing]="true"
-  [showDots]="true"
-  [dotCount]="6"
-  [isVisible]="true"
-  [isPaused]="false"
-  [showText]="true"
-  [text]="'Loading…'"
-  [textPosition]="'bottom'"
-  [textColor]="'#94a3b8'"
-  [backgroundColor]="'rgba(17, 24, 39, 0.4)'"
-  [isOverlay]="false">
-</app-orbit-spinner>
-            </div>
 
             
 
@@ -445,13 +421,13 @@
 
 
             <!-- Transaction Grid Section -->
-            <section class="transaction-grid-section bg-white rounded-lg shadow-sm ">
+            <section class="transaction-grid-section bg-white rounded-lg shadow-sm">
               <app-expansion-panel-header
               [isOpenSignal]="businessHeaderPanel"
               [panelTitle]="'Transaction Grid'"
             />
               
-              <div class="p-4 ">
+              <div class="p-4">
                 <lds-data-grid
                   [id]="'enhanced-transactions'"
                   [dataSource]="sampleTransactions()"
@@ -466,15 +442,9 @@
                   [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
                   [dropdownColumns]="transactionDropdownColumns()"
                   [dropdownOptions]="transactionDropdownOptions()"
-                  [selectedColumns]="['id', 'amount', 'currency']"
+                  [selectedColumns]="['id', 'amount', 'currency', 'country', 'productCategory', 'subCategory', 'status', 'riskLevel', 'totalAmount', 'requiresApproval']"
                   [rowDesignerList]="transactionRowDesigners()"
                   [tblClass]="'enhanced-transaction-table'"
-
-                  [checkboxSelectAllColumns]="['status']"
-                  [checkboxColumns]="['status']"
-                  (onCheckboxValueChange)="handleCheckboxChange($event)"
-                  (onColumnSelectAll)="handleColumnSelectAll($event)"
-
                   (onFHEditClick)="onTransactionEdit($event)"
                   (onFHDeleteClick)="onTransactionDelete($event)"
                   (onFHViewClick)="onTransactionView($event)"
@@ -483,8 +453,6 @@
                   (onSelectAllChange)="onTransactionSelectAll($event)"
                   (dataSourceChanged)="onTransactionDataChanged($event)"
                 ></lds-data-grid>
-
-         
               </div>
             </section>
           </div>

@@ -16,7 +16,7 @@ import { TextArea } from '../input-types/text-area/text-area';
 import { ToastrService } from 'ngx-toastr';
 import { BicSelectionService } from '../../services/bic-selection.service';
 import { NumberInput } from '../input-types/number-input/number-input';
-import { CheckboxChangeEvent, ColumnSelectAllEvent, DropdownOption } from '../data-grid/data-grid';
+import { DropdownOption } from '../data-grid/data-grid';
 import { LdsStepperComponent, Step } from '../lds-stepper/lds-stepper';
 import { MultiSelectOptionField } from '../multi-select-option-field/multi-select-option-field';
 import { DataSelectionModal } from '../data-selection-modal/data-selection-modal';
@@ -26,7 +26,6 @@ import { DateInput } from '../input-types/date-input/date-input';
 import { LdsModalComponent } from '../lds-modal/lds-modal';
 import { CommonModule } from '@angular/common';
 import { Button } from '../input-types/button/button';
-import { OrbitSpinnerComponent } from '../orbit-spinner/spinner';
 
 @Component({
   selector: 'app-all-components-page',
@@ -52,8 +51,7 @@ import { OrbitSpinnerComponent } from '../orbit-spinner/spinner';
     DataGridComponent,
     ExpansionPanelHeader,
     ExpansionSubPanelHeader,
-    DataSelectionModal,
-    OrbitSpinnerComponent
+    DataSelectionModal
   ],
   templateUrl: './all-components-page.html',
   styleUrls: ['./all-components-page.scss'],
@@ -341,15 +339,12 @@ export class AllComponentsPage implements OnInit {
     });
 
     effect(() => {
-      if(this.onClickSave()) {
+    if(this.onClickSave()) {
         this.save();
         ONCLICK_SAVE.set(false);
     }
   });
-
   }
-
-
 
 
 save(): void {
@@ -1058,14 +1053,6 @@ private recalculateTransactionAmounts(transaction: any): any {
     if (subCategory && transaction.amount < subCategory.minAmount) {
       this.toastr.error(`Amount below minimum for ${transaction.subCategory} in ${transaction.id}`, 'Amount Error');
     }
-  }
-
-  handleCheckboxChange(event: CheckboxChangeEvent) {
-    console.log(`${event.property} changed to ${event.value} for item:`, event.item);
-  }
-
-  handleColumnSelectAll(event: ColumnSelectAllEvent) {
-    console.log(`Column ${event.property} select all: ${event.checked}`);
   }
 
   // Method to get filtered options for template

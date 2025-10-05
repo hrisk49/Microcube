@@ -36,7 +36,7 @@ export class TextBaseInput {
   readonly onDoubleClick = output<void>();
   readonly isVertical = input<boolean>(false);
   readonly onBlurred = output<any>();
-
+  readonly onF8 = output<void>();
   // Tooltip support
   readonly isAllowSpecialChars = input<boolean>(true);
   readonly tooltip = input<string>('');
@@ -51,7 +51,7 @@ export class TextBaseInput {
   readonly valueChanged = output<string>();
   readonly onChanged = output<any>();
 
-  
+
   constructor() {
     // Effect to update validators when min/max length inputs change
     effect(() => {
@@ -110,7 +110,26 @@ export class TextBaseInput {
     if (!this.isAllowSpecialChars()) {
       const specialCharRegex = /^[a-zA-Z0-9 ]$/;
       const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
-      
+
+      // Allow navigation and editing keys
+      if (!specialCharRegex.test(event.key) && !allowedKeys.includes(event.key)) {
+        event.preventDefault();
+      }
+    }
+  }
+
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'F8') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.onF8.emit();
+      return;
+    }
+
+    if (!this.isAllowSpecialChars()) {
+      const specialCharRegex = /^[a-zA-Z0-9 ]$/;
+      const allowedKeys = ['Backspace', 'ArrowLeft', 'ArrowRight', 'Delete', 'Tab'];
+
       // Allow navigation and editing keys
       if (!specialCharRegex.test(event.key) && !allowedKeys.includes(event.key)) {
         event.preventDefault();
@@ -123,7 +142,7 @@ export class TextBaseInput {
     const customMessages = this.customErrorMessages();
     const control = this.frmGroup().get(this.controlName());
     let message = `${this.label()} has validation error: ${errorKey}`;
-   
+
     if (typeof customMessages[errorKey] === 'string') {
       message = customMessages[errorKey];
     } else if (customMessages[errorKey] && typeof customMessages[errorKey] === 'object' && 'message' in customMessages[errorKey]) {
@@ -177,8 +196,8 @@ export class TextBaseInput {
   onBlur(): void {
     const control = this.frmGroup().get(this.controlName());
     const value = control ? control.value : undefined;
-    this.onChanged.emit(value); 
-    this.onBlurred.emit(value);  
+    this.onChanged.emit(value);
+    this.onBlurred.emit(value);
   }
-  
+
 }

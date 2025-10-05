@@ -363,6 +363,8 @@ export class NumberInput {
   if (control) {
     control.setValue('');
     control.markAsTouched();
+    this.valueChanged.emit('');
+    this.onChanged.emit('');
   }
 }
 

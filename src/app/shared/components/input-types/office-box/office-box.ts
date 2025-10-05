@@ -122,6 +122,7 @@ export class OfficeBoxComponent implements OnInit {
   if (control) {
     control.setValue('');
     control.markAsTouched();
+    
   }
 }
 
