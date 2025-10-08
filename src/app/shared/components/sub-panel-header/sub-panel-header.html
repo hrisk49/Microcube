@@ -10,12 +10,12 @@
         <div class="flex justify-end items-center gap-4">
             @if (isOptional()) {
                 <button (click)="toggleVisibility()" mat-icon-button>
-                    <mat-icon class="!text-white">keyboard_arrow_down</mat-icon>
+                   <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-800v487L216-537l-56 57 320 320 320-320-56-57-224 224v-487h-80Z"/></svg>
                 </button>
             }
             @if (isButton()) {
                 <button matTooltip="Add {{subPanelTitle()}}" matTooltipPosition="above" mat-icon-button (click)="add()">
-                  <mat-icon class="!text-white">add</mat-icon>
+                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
                 </button>
             }
         </div>

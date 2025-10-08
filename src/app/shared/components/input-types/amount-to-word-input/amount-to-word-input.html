@@ -14,6 +14,7 @@
     <div class="input-wrapper">
       <input
         [formControlName]="controlName()"
+        [attr.controlName]="controlName()"
         [ngClass]="{ 'readonly-input': isReadonly(), 'pl-8': true }"
         type="number"
         (input)="onChangeInput($event)"

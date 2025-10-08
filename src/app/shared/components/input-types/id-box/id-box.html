@@ -9,6 +9,7 @@
   <div class="input-with-button-container">
     <input
       [formControlName]="controlName()"
+      [attr.controlName]="controlName()"
       matInput
       [ngClass]="{'readonly-input': isReadonly() }"
       type="text" 

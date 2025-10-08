@@ -82,7 +82,6 @@
       // Set minimum width to prevent table from being too compressed
       // min-width: 100%;
       width: 100%;
-      min-width: 1200px; 
       border-collapse: collapse;
       table-layout: auto;
       overflow-x: auto;
@@ -218,15 +217,21 @@
 
       .action-buttons {
         display: flex;
-        // gap: 4px;
-        // justify-content: center;
-        min-width: fit-content; 
-        // position: relative;
+        gap: 4px;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: nowrap;
+        width: fit-content;
        
 
         .action-btn {
           
           flex-shrink: 0; 
+          flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            padding: 8px;
+    
 
               background: transparent !important; 
 
@@ -271,10 +276,14 @@
       
       // Special handling for actions column
       .mat-column-actions {
-        width: 100px;
-        max-width: fit-content;
+        width: 100px !important;
+        max-width: 200px !important;
+        min-width: 150px !important;
         text-align: center;
-        // padding: 12px 8px;
+        padding: 12px 8px !important;
+        white-space: nowrap;
+        
+        // If you want it sticky on the right
         position: sticky;
         right: 0;
         background: inherit;
@@ -282,7 +291,6 @@
         
         // Add border to distinguish sticky column
         border-left: 1px solid #e9ecef;
-        border-right: 1px solid #e9ecef;
       }
     }
   }
@@ -399,14 +407,26 @@ th ::ng-deep .mat-mdc-checkbox .mdc-checkbox__native-control ~ .mdc-checkbox__ba
         }
 
         .action-buttons {
-          flex-direction: row; // Keep horizontal on mobile
-          gap: 2px;
+           display: flex;
+            gap: 4px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+            width: fit-content;
+          // flex-direction: row; // Keep horizontal on mobile
+          // gap: 2px;
 
           .action-btn {
-            width: 28px;
-            height: 28px;
-            line-height: 28px;
-          }
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            padding: 8px;
+            
+            mat-icon, svg {
+              width: 24px;
+              height: 24px;
+            }
+  }
         }
         
         // Make actions column sticky on mobile too

@@ -226,6 +226,87 @@ export class AllComponentsPage implements OnInit {
         { value: 'specialist', label: 'Operations Specialist' }
       ],
       assignedRole: 'specialist'
+    },
+    {
+      id: 'TXN004',
+      transactionType: 'PACS.008',
+      amount: 100000.00,
+      currency: 'GBP',
+      country: 'UK',
+      productCategory: 'automotive',
+      subCategory: 'vehicles',
+      status: 'failed',
+      fromAccount: '3333333333',
+      toAccount: '4444444444',
+      date: '2024-01-13',
+      priority: 'high',
+      department: 'operations',
+      category: 'urgent',
+      taxRate: 0.105,
+      calculatedTax: 10500.00,
+      totalAmount: 110500.00,
+      riskLevel: 'low',
+      requiresApproval: true,
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'approver', label: 'Transaction Approver' },
+        { value: 'specialist', label: 'Operations Specialist' }
+      ],
+      assignedRole: 'specialist'
+    },
+    {
+      id: 'TXN004',
+      transactionType: 'PACS.008',
+      amount: 100000.00,
+      currency: 'GBP',
+      country: 'UK',
+      productCategory: 'automotive',
+      subCategory: 'vehicles',
+      status: 'failed',
+      fromAccount: '3333333333',
+      toAccount: '4444444444',
+      date: '2024-01-13',
+      priority: 'high',
+      department: 'operations',
+      category: 'urgent',
+      taxRate: 0.105,
+      calculatedTax: 10500.00,
+      totalAmount: 110500.00,
+      riskLevel: 'low',
+      requiresApproval: true,
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'approver', label: 'Transaction Approver' },
+        { value: 'specialist', label: 'Operations Specialist' }
+      ],
+      assignedRole: 'specialist'
+    },
+    {
+      id: 'TXN004',
+      transactionType: 'PACS.008',
+      amount: 100000.00,
+      currency: 'GBP',
+      country: 'UK',
+      productCategory: 'automotive',
+      subCategory: 'vehicles',
+      status: 'failed',
+      fromAccount: '3333333333',
+      toAccount: '4444444444',
+      date: '2024-01-13',
+      priority: 'high',
+      department: 'operations',
+      category: 'urgent',
+      taxRate: 0.105,
+      calculatedTax: 10500.00,
+      totalAmount: 110500.00,
+      riskLevel: 'low',
+      requiresApproval: true,
+      availableRoles: [
+        { value: 'admin', label: 'Administrator' },
+        { value: 'approver', label: 'Transaction Approver' },
+        { value: 'specialist', label: 'Operations Specialist' }
+      ],
+      assignedRole: 'specialist'
     }
   ]);
 
@@ -1571,14 +1652,38 @@ private recalculateTransactionAmounts(transaction: any): any {
     this.toastr.success(`Printing transaction: ${transaction.id}`, 'Print');
   }
 
-  onTransactionRowSelect(serializedData: string): void {
-    const transaction = JSON.parse(serializedData);
-    console.log('Row selected:', transaction);
+  onTransactionRowSelect(event: { data: string, checked: boolean }): void {
+  const rowData = JSON.parse(event.data);
+  
+  if (event.checked) {
+    console.log('Row CHECKED:', rowData);
+   
+  } else {
+    console.log('Row UNCHECKED:', rowData);
+    
   }
+}
 
-  onTransactionSelectAll(checked: boolean): void {
-    console.log('Select all transactions:', checked);
+onTransactionSelectAll(event: { isSelectAll: boolean, selectedRows: any[], count: number }): void {
+  console.log('Select all:', event.isSelectAll);
+  console.log('Selected rows:', event.selectedRows);
+  console.log('Count:', event.count);
+  
+  if (event.isSelectAll) {
+    // All rows on current page are selected
+    console.log(`Selected ${event.count} transactions`);
+    
+    // Calculate totals
+    const totalAmount = event.selectedRows.reduce((sum, row) => sum + (row.amount || 0), 0);
+    console.log('Total amount:', totalAmount);
+    
+
+  } else {
+    console.log('All selections cleared');
   }
+}
+
+
 
   openDataSelectionModal(): void {
     this.dataSelectionConfig.set({

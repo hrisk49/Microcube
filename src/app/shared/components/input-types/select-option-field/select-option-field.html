@@ -6,9 +6,10 @@
     }
   </label>
 
-  <div class="select-wrapper">
-    @if (searchable()) {
-      <!-- SEARCHABLE MODE -->
+  <div class="select-wrapper" >
+  @if (searchable()) {
+    <!-- SEARCHABLE MODE: Custom dropdown with search -->
+      <!-- Search Input -->
       <input
         #searchInput
         type="text"
@@ -25,10 +26,11 @@
         (blur)="onInputBlur()"
         (keydown)="onKeyDown($event)"
         [disabled]="isReadonly() ?? false"
-        class="custom-select"
+        class="custom-select "
         autocomplete="off"
       />
       
+      <!-- Dropdown Toggle Button --> 
       <button
         type="button"
         class="dropdown-toggle"
@@ -41,6 +43,7 @@
         </svg>
       </button>
 
+      <!-- Custom Dropdown Options -->
       @if (isOpen()) {
         <div class="dropdown-menu">
           @if (filteredOptions().length === 0) {
@@ -53,7 +56,6 @@
                   'selected': option.key === selectedValue(),
                   'highlighted': i === highlightedIndex()
                 }"
-                (mousedown)="onOptionMouseDown($event)"
                 (click)="selectOption(option)"
                 (mouseenter)="highlightedIndex.set(i)"
               >
@@ -64,40 +66,45 @@
         </div>
       }
     
-      <select [compareWith]="compareFN"
-        [formControlName]="controlName()"
-        class="hidden-select"
-        tabindex="-1"
-      >
-        <option value="">Select {{ label() }}</option>
-        @for (option of options(); track option.key) {
-          <option [value]="option.key">{{ option.value }}</option>
-        }
-      </select>
-    } @else {
-      <!-- NON-SEARCHABLE MODE -->
-      <select 
-        [compareWith]="compareFN"
-        [formControlName]="controlName()"
-        [matTooltip]="tooltip()"
-        [ngClass]="{'readonly-input': isReadonly() ?? false }"
-        [matTooltipPosition]="tooltipPosition()"
-        [matTooltipClass]="tooltipClass()"
-        [matTooltipDisabled]="!tooltip()"
-        [disabled]="isReadonly() ?? false"
-        class="custom-select p-2"
-        (mousedown)="onGuardedMouseDown($event)"
-        (keydown)="onGuardedKeyDown($event)"
-        (change)="onStaticSelectChange($event)"
-      >
-        <option value="">Select {{ label() }}</option>
-        @for (option of options(); track option.key) {
-          <option [value]="option.key">{{ option.value }}</option>
-        }
-      </select>
-    }
-  </div>
-  
+    
+    <!-- Hidden select for searchable mode -->
+    <select [compareWith]="compareFN"
+      [formControlName]="controlName()"
+      class="hidden-select"
+      tabindex="-1"
+    >
+      <option value="">Select {{ label() }}</option>
+      @for (option of options(); track option.key) {
+        <option [value]="option.key">{{ option.value }}</option>
+      }
+    </select>
+  } @else {
+    <!-- NON-SEARCHABLE MODE: Static dropdown (regular select) -->
+    <select 
+      [compareWith]="compareFN"
+      [formControlName]="controlName()"
+      [matTooltip]="tooltip()"
+      [ngClass]="{'readonly-input': isReadonly() ?? false }"
+      [matTooltipPosition]="tooltipPosition()"
+      [matTooltipClass]="tooltipClass()"
+      [matTooltipDisabled]="!tooltip()"
+      [disabled]="isReadonly() ?? false"
+      class="custom-select p-2"
+      (mousedown)="onGuardedMouseDown($event)"
+      (keydown)="onGuardedKeyDown($event)"
+      (change)="onStaticSelectChange($event)"
+    >
+    <div class="dropdown-menu">
+      <option class="dropdown-option" value="">Select {{ label() }}</option>
+      @for (option of options(); track option.key) {
+        <option [value]="option.key">{{ option.value }}</option>
+      }
+    </div>
+    
+    </select>
+  }
+</div>
+  <!-- Error Message -->
   @if (frmGroup().get(controlName())?.invalid && (frmGroup().get(controlName())?.touched || frmGroup().get(controlName())?.dirty)) {
     <div class="text-red-500 text-xs mt-1">
       {{ label() }} is required..!

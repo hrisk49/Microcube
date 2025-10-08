@@ -442,7 +442,7 @@
                   [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
                   [dropdownColumns]="transactionDropdownColumns()"
                   [dropdownOptions]="transactionDropdownOptions()"
-                  [selectedColumns]="['id', 'amount', 'currency', 'country', 'productCategory', 'subCategory', 'status', 'riskLevel', 'totalAmount', 'requiresApproval']"
+                  [selectedColumns]="['id', 'amount', 'currency']"
                   [rowDesignerList]="transactionRowDesigners()"
                   [tblClass]="'enhanced-transaction-table'"
                   (onFHEditClick)="onTransactionEdit($event)"
@@ -452,7 +452,8 @@
                   (onChecked)="onTransactionRowSelect($event)"
                   (onSelectAllChange)="onTransactionSelectAll($event)"
                   (dataSourceChanged)="onTransactionDataChanged($event)"
-                ></lds-data-grid>
+                  
+                  ></lds-data-grid>
               </div>
             </section>
           </div>

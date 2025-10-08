@@ -9,6 +9,7 @@
   <textarea
     [id]="id()"
     [formControlName]="controlName()"
+    [attr.controlName]="controlName()"
     [rows]="textareaAttributes().rows"
     [attr.cols]="textareaAttributes().cols || null"
     [placeholder]="placeholder()"

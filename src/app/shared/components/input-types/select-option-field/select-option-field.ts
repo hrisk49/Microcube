@@ -34,7 +34,7 @@ export class SelectOptionField implements OnInit {
   readonly tooltipDelay = input<number>(500);
   readonly tooltipClass = input<string>('custom-tooltip');
   readonly placeholder = input<any>();
-  
+  // Output event for when an option is selected
   readonly onSelect = output<{
     selectedOption: Option;
     selectedKey: any;
@@ -49,21 +49,23 @@ export class SelectOptionField implements OnInit {
   highlightedIndex = signal(-1);
   selectedValue = signal<any>('');
   filteredOptions = signal<Option[]>([]);
-  displayText = signal<string>('');
+  displayText = signal<string>(''); // NEW: For display in non-searchable mode
 
   private _lastControlValue: any = '';
   private _lastOptionsRef: Option[] | null = null;
-  private _isMouseDownOnOption = false; // NEW: Track mouse interaction
 
   constructor() {
+    // Update filtered options when search term or options change
     effect(() => {
       const opts = this.options() || [];
-      const optionsChanged = this._lastOptionsRef !== opts;
+      const optionsChanged = this._lastOptionsRef !== opts; // <-- NEW
       this._lastOptionsRef = opts;
 
       if (!this.searchable()) {
+        // Non-searchable mode: show all options
         this.filteredOptions.set(opts);
       } else {
+        // Searchable mode: filter by filter term (not the visible text)
         const term = this.filterTerm().toLowerCase();
         if (!term) {
           this.filteredOptions.set(opts);
@@ -81,6 +83,29 @@ export class SelectOptionField implements OnInit {
         this._syncDisplayFromValue(this._lastControlValue);
       }
     });
+
+    // Sync with form control value
+    // effect(() => {
+    //   const control = this.frmGroup().get(this.controlName());
+    //   if (control) {
+    //     this.selectedValue.set(control.value || '');
+    //     // Update display based on mode
+    //     if (control.value) {
+    //       const selectedOption = this.options()?.find(opt => opt.key === control.value);
+    //       if (selectedOption) {
+    //         this.displayText.set(selectedOption.value);
+    //         if (this.searchable()) {
+    //           this.searchTerm.set(selectedOption.value);
+    //         }
+    //       }
+    //     } else {
+    //       this.displayText.set('');
+    //       if (this.searchable()) {
+    //         this.searchTerm.set('');
+    //       }
+    //     }
+    //   }
+    // });
   }
 
   ngOnInit(): void {
@@ -92,6 +117,7 @@ export class SelectOptionField implements OnInit {
       .subscribe(val => {
         this._lastControlValue = val ?? '';
         this.selectedValue.set(this._lastControlValue);
+        // display/searchTerm আপডেট
         this._syncDisplayFromValue(this._lastControlValue);
       });
   }
@@ -120,7 +146,7 @@ export class SelectOptionField implements OnInit {
   }
 
   onSearchInput(event: Event): void {
-    if (!this.searchable()) return;
+    if (!this.searchable()) return; // Skip if not searchable
 
     const input = event.target as HTMLInputElement;
     this.searchTerm.set(input.value);
@@ -129,6 +155,7 @@ export class SelectOptionField implements OnInit {
       this.openDropdown();
     }
 
+    // Clear selection if search doesn't match current selection
     const currentControl = this.frmGroup().get(this.controlName());
     if (currentControl && currentControl.value) {
       const selectedOption = this.options()?.find(opt => opt.key === currentControl.value);
@@ -140,25 +167,16 @@ export class SelectOptionField implements OnInit {
 
   onInputClick(): void {
     if (!this.searchable()) {
+      // In non-searchable mode, clicking input opens dropdown
       this.toggleDropdown();
     }
   }
 
-  // NEW: Handle mousedown on dropdown options
-  onOptionMouseDown(event: MouseEvent): void {
-    this._isMouseDownOnOption = true;
-    event.preventDefault(); // Prevent input blur
-  }
-
   onInputBlur(): void {
-    // NEW: Don't close if user is clicking on an option
-    if (this._isMouseDownOnOption) {
-      this._isMouseDownOnOption = false;
-      return;
-    }
-
+    // Delay closing to allow option clicks
     setTimeout(() => {
       this.closeDropdown();
+      // Reset based on mode
       if (this.searchable()) {
         const control = this.frmGroup().get(this.controlName());
         if (control?.value) {
@@ -175,6 +193,7 @@ export class SelectOptionField implements OnInit {
 
   onStaticSelectChange(event: Event): void {
     if (this.isReadonly()) {
+      // Revert any attempted change in readonly mode
       const control = this.frmGroup().get(this.controlName());
       const selectElement = event.target as HTMLSelectElement;
       const current = control?.value ?? '';
@@ -189,9 +208,11 @@ export class SelectOptionField implements OnInit {
     if (selectedKey) {
       const selectedOption = this.options()?.find(opt => opt.key === selectedKey);
       if (selectedOption) {
+        // Update signals
         this.selectedValue.set(selectedKey);
         this.displayText.set(selectedOption.value);
         
+        // Emit the onSelect event
         this.onSelect.emit({
           selectedOption: selectedOption,
           selectedKey: selectedKey,
@@ -200,6 +221,7 @@ export class SelectOptionField implements OnInit {
         });
       }
     } else {
+      // Clear selection
       this.selectedValue.set('');
       this.displayText.set('');
     }
@@ -264,6 +286,7 @@ export class SelectOptionField implements OnInit {
 
   openDropdown(): void {
     if (!this.isReadonly()) {
+      // Show all options when opening, but keep the visible text as-is
       if (this.searchable()) this.filterTerm.set('');
       this.isOpen.set(true);
     }
@@ -295,10 +318,12 @@ export class SelectOptionField implements OnInit {
     this.displayText.set(option.value);
     if (this.searchable()) {
       this.searchTerm.set(option.value);
+      // Keep filter in sync while open so list highlights the selected
       this.filterTerm.set(option.value);
     }
     this.closeDropdown();
 
+    // Emit the onSelect event with comprehensive data
     this.onSelect.emit({
       selectedOption: option,
       selectedKey: option.key,

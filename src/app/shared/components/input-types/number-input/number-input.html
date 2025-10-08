@@ -9,6 +9,7 @@
   <div class="input-wrapper">
   <input 
     [formControlName]="controlName()"
+    [attr.controlName]="controlName()"
     [ngClass]="{'readonly-input': isReadonly() }"
     type="number"
     (keypress)="onKeyPress($event)"

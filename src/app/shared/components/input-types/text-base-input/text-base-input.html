@@ -8,7 +8,9 @@
 
   <div class="input-wrapper">
     <input
+
       [formControlName]="controlName()"
+      [attr.controlName]="controlName()"
       [ngClass]="{'readonly-input': isReadonly() }"
       [readonly]="isReadonly()"
       matInput

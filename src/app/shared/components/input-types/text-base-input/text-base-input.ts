@@ -174,6 +174,7 @@ export class TextBaseInput {
 
   clearInput(): void {
   const control = this.frmGroup().get(this.controlName());
+  console.log(control);
   if (control) {
     control.setValue('');
     control.markAsTouched();

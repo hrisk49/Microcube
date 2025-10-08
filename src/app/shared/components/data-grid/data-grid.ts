@@ -115,11 +115,15 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly readOnlyCheckboxColumns = input<string[]>([]); // Columns that should be read-only
 
   // Basic Outputs
-  readonly onSelectAllChange = output<boolean>();
+  readonly onSelectAllChange = output<{ 
+    isSelectAll: boolean, 
+    selectedRows: T[], 
+    count: number 
+  }>();
   readonly onFHEditClick = output<string>();
   readonly onFHDeleteClick = output<string>();
   readonly onFHViewClick = output<string>();
-  readonly onChecked = output<string>();
+  readonly onChecked = output<{ data: string, checked: boolean }>();
   readonly onPrint = output<string>();
   readonly dataSourceChanged = output<T[]>();
 
@@ -503,29 +507,34 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
     
     this._selectedRows.set(newSelected);
     
-    // Find the actual item in filtered data
-    const filteredIndex = actualIndex;
-    if (filteredIndex < this._filteredData().length) {
-      this.onChecked.emit(JSON.stringify(this._filteredData()[filteredIndex]));
-    }
-  }
-
-  onSelectAll(checked: boolean): void {
-    this._selectAll.set(checked);
     
-    if (checked) {
-      const newSelected = new Set<number>();
-      this.displayedData().forEach((_, index) => {
-        newSelected.add(this._currentPage() * this._pageSize() + index);
-      });
-      this._selectedRows.set(newSelected);
-    } else {
-      this._selectedRows.set(new Set());
-    }
-    
-    this.onSelectAllChange.emit(checked);
+    this.onChecked.emit({ 
+      data: JSON.stringify(this._filteredData()[actualIndex]),
+      checked: checked 
+    });
   }
-
+  
+    onSelectAll(checked: boolean): void {
+      this._selectAll.set(checked);
+      
+      if (checked) {
+        const newSelected = new Set<number>();
+        this.displayedData().forEach((_, index) => {
+          newSelected.add(this._currentPage() * this._pageSize() + index);
+        });
+        this._selectedRows.set(newSelected);
+      } else {
+        this._selectedRows.set(new Set());
+      }
+  
+    const selectedRows = this.getSelectedRows();
+    this.onSelectAllChange.emit({
+      isSelectAll: checked,
+      selectedRows: selectedRows,
+      count: selectedRows.length
+    });
+    }
+  
   // Row editing
   startEdit(index: number): void {
     this._editingRow.set(index);
