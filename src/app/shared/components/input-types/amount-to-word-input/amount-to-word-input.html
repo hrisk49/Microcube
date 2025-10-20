@@ -8,7 +8,7 @@
     <!-- Currency indicator -->
     <span class="text-xs text-gray-500 ml-2">({{ getCurrencyConfig().code }})</span>
   </label>
-  
+
   <div class="flex flex-col">
     <!-- Input with currency symbol -->
     <div class="input-wrapper">
@@ -36,7 +36,7 @@
         (blur)="onBlur()"
       />
           @if (frmGroup().get(controlName())?.value && !isReadonly()) {
-      <button 
+      <button
         type="button"
         class="clear-button"
         (click)="clearInput()"
@@ -46,13 +46,13 @@
     }
 
     </div>
-    
+
     <!-- Amount in words with currency -->
     <div class="text-sm mt-1 text-gray-600 amount-in-words w-80">
       {{ amountToWord() }}
     </div>
   </div>
-  
+
   <!-- Error messages -->
   @if (isInvalid()) {
     <div class="text-red-500 text-sm validation">

@@ -14,7 +14,6 @@ import { ExpansionSubPanelHeader } from '../expansion-sub-panel-header/expansion
 import { Switch } from '../input-types/switch/switch';
 import { TextArea } from '../input-types/text-area/text-area';
 import { ToastrService } from 'ngx-toastr';
-import { BicSelectionService } from '../../services/bic-selection.service';
 import { NumberInput } from '../input-types/number-input/number-input';
 import { DropdownOption } from '../data-grid/data-grid';
 import { LdsStepperComponent, Step } from '../lds-stepper/lds-stepper';
@@ -408,7 +407,7 @@ export class AllComponentsPage implements OnInit {
   }
   constructor(
     private formBuilder: FormBuilder,
-    private bicSelectionService: BicSelectionService,
+   
   ) {
     BUTTON_VISIBILITY.set({
       save: true,
@@ -1561,17 +1560,7 @@ private recalculateTransactionAmounts(transaction: any): any {
     ['address', 'Address']
   ]);
 
-  openFromBicSelectionModal(): void {
-    this.bicSelectionService.openBicSelectionModal(
-      this.frmGroup,
-      {
-        bicField: 'fromBicfi',
-        nameField: 'fromNm',
-        defaultValue: 'SCBLBDDX'
-      },
-      this.bicTableHeaders
-    ).subscribe();
-  }
+
 
   ngAfterViewInit(): void {
     setTimeout(() => {

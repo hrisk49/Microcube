@@ -55,55 +55,92 @@ export class AmountToWordInput {
 
   // Currency configurations
   private currencyConfigs: { [key: string]: CurrencyConfig } = {
-    'BDT': {
-      code: 'BDT',
-      name: 'Taka',
-      subunit: 'Paisa',
-      symbol: '৳'
-    },
-    'USD': {
-      code: 'USD',
-      name: 'Dollar',
-      subunit: 'Cent',
-      symbol: '$'
-    },
-    'EUR': {
-      code: 'EUR',
-      name: 'Euro',
-      subunit: 'Cent',
-      symbol: '€'
-    },
-    'GBP': {
-      code: 'GBP',
-      name: 'Pound',
-      subunit: 'Pence',
-      symbol: '£'
-    },
-    'INR': {
-      code: 'INR',
-      name: 'Rupee',
-      subunit: 'Paisa',
-      symbol: '₹'
-    },
-    'JPY': {
-      code: 'JPY',
-      name: 'Yen',
-      subunit: 'Sen',
-      symbol: '¥'
-    },
-    'CAD': {
-      code: 'CAD',
-      name: 'Dollar',
-      subunit: 'Cent',
-      symbol: 'C$'
-    },
-    'AUD': {
-      code: 'AUD',
-      name: 'Dollar',
-      subunit: 'Cent',
-      symbol: 'A$'
-    }
-  };
+  'BDT': {
+    code: 'BDT',
+    name: 'Taka',
+    subunit: 'Paisa',
+    symbol: '৳'
+  },
+  'USD': {
+    code: 'USD',
+    name: 'Dollar',
+    subunit: 'Cent',
+    symbol: '$'
+  },
+  'EUR': {
+    code: 'EUR',
+    name: 'Euro',
+    subunit: 'Cent',
+    symbol: '€'
+  },
+  'GBP': {
+    code: 'GBP',
+    name: 'Pound',
+    subunit: 'Pence',
+    symbol: '£'
+  },
+  'INR': {
+    code: 'INR',
+    name: 'Rupee',
+    subunit: 'Paisa',
+    symbol: '₹'
+  },
+  'JPY': {
+    code: 'JPY',
+    name: 'Yen',
+    subunit: 'Sen',
+    symbol: '¥'
+  },
+  'CAD': {
+    code: 'CAD',
+    name: 'Canadian Dollar',
+    subunit: 'Cent',
+    symbol: 'C$'
+  },
+  'AUD': {
+    code: 'AUD',
+    name: 'Australian Dollar',
+    subunit: 'Cent',
+    symbol: 'A$'
+  },
+  'ACU': {
+    code: 'ACU',
+    name: 'Asian Clearing Union Dollar',
+    subunit: 'Cent',
+    symbol: 'ACU$'
+  },
+  'DEM': {
+    code: 'DEM',
+    name: 'Deutsche Mark',
+    subunit: 'Pfennig',
+    symbol: 'DM'
+  },
+  'CHF': {
+    code: 'CHF',
+    name: 'Swiss Franc',
+    subunit: 'Rappen',
+    symbol: 'CHF'
+  },
+  'RUP': {
+    code: 'RUP',
+    name: 'Rupee',
+    subunit: 'Paisa',
+    symbol: 'Rs'
+  },
+  'AED': {
+    code: 'AED',
+    name: 'UAE Dirham',
+    subunit: 'Fils',
+    symbol: 'د.إ'
+  },
+  'SAR': {
+    code: 'SAR',
+    name: 'Saudi Riyal',
+    subunit: 'Halala',
+    symbol: '﷼'
+  }
+};
+
 
   constructor() {
     // Effect to update validators when validation inputs change
