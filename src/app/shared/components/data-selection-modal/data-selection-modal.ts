@@ -19,7 +19,7 @@ import { Button } from '../../components/input-types/button/button';
   styleUrls: ['./data-selection-modal.scss']
 })
 export class DataSelectionModal implements OnInit {
-
+  
   protected readonly Object = Object;
   dataSource: any[] = [];
   filteredDataSource: any[] = [];
