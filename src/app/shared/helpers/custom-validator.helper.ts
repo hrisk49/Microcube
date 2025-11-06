@@ -284,3 +284,74 @@ export function ibanValidator(control: any) {
     
     return null;
   }
+
+  // Custom validator for Max34Text
+  export function max34TextValidator(control: any) {
+    // Allow empty/null values (required validation is handled separately)
+    if (!control.value || control.value === '') {
+      return null;
+    }
+    
+    const value = control.value.toString();
+    
+    // Check length
+    if (value.length > 34) {
+      return {
+        invalidMax34Text: 'Field must not exceed 34 characters'
+      };
+    }
+    
+    return null;
+  }
+
+  // Custom validator for NamePrefix2Code
+  export function namePrefix2CodeValidator(control: any) {
+    const validCodes = ['DOCT', 'MADM', 'MIKS', 'MISS', 'MIST'];
+    
+    // Allow empty/null values (required validation is handled separately)
+    if (!control.value || control.value === '') {
+      return null;
+    }
+    
+    const value = control.value.toString().toUpperCase();
+    
+    // Auto-convert to uppercase
+    if (control.value !== value) {
+      setTimeout(() => control.setValue(value, { emitEvent: false }), 0);
+    }
+    
+    // Check if the value is in the valid codes list
+    if (!validCodes.includes(value)) {
+      return {
+        invalidNamePrefix2Code: 'Name Prefix must be one of: DOCT (Doctor), MADM (Madam), MIKS (Gender Neutral), MISS (Miss), MIST (Mister)'
+      };
+    }
+    
+    return null;
+  }
+
+  // Custom validator for NamePrefixCode
+  export function namePrefixCodeValidator(control: any) {
+    const validCodes = ['DOCT', 'MADM', 'MIKS', 'MISS', 'MIST'];
+    
+    // Allow empty/null values (required validation is handled separately)
+    if (!control.value || control.value === '') {
+      return null;
+    }
+    
+    const value = control.value.toString().toUpperCase();
+    
+    // Auto-convert to uppercase
+    if (control.value !== value) {
+      setTimeout(() => control.setValue(value, { emitEvent: false }), 0);
+    }
+    
+    // Check if the value is in the valid codes list
+    if (!validCodes.includes(value)) {
+      return {
+        invalidNamePrefixCode: 'Name Prefix must be one of: DOCT (Doctor), MADM (Madam), MIKS (Gender Neutral), MISS (Miss), MIST (Mister)'
+      };
+    }
+    
+    return null;
+  }

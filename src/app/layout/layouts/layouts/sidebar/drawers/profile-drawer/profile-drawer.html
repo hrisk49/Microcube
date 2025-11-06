@@ -1,4 +1,4 @@
-<div class="h-full overflow-y-auto pb-16 bg-white">
+<div class="h-full overflow-y-auto pb-16 profile-drawer bg-[var(--theme-background)">
   <div class="p-6 space-y-4 pt-2">
 
     <!-- Profile Section -->
@@ -8,8 +8,8 @@
           <mat-icon class="text-white">person</mat-icon>
         </div>
         <div>
-          <h3 class="font-medium text-gray-800">Mahfuz</h3>
-          <p class="text-sm text-gray-600">mahfuz.gmail.com</p>
+          <h3 class="font-medium text-gray-800">Saikat</h3>
+          <p class="text-sm text-gray-600">saikat.gmail.com</p>
         </div>
       </div>
       <button class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center">
@@ -195,6 +195,20 @@
       </div>
     </div>
   </div>
+
+  <div class="border-b border-gray-200 pb-2">
+    <button class="w-full flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors duration-150 cursor-pointer">
+      <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+        <mat-icon class="text-blue-600">palette</mat-icon>
+      </div>
+      <div class="flex-1 text-left">
+        <p class="font-medium text-gray-800">Theme</p>
+        <p class="text-sm text-gray-600">Choose your theme</p>
+      </div>
+      <app-theme-picker></app-theme-picker>
+    </button>
+  </div>
+  
 
   <!-- Chat Drawer -->
   <div

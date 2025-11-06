@@ -1,9 +1,11 @@
-import {Component, inject} from '@angular/core';
+import {Component, effect, inject, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatDialog} from '@angular/material/dialog';
 import {
   DeleteConfirmationDialogue
 } from '../../../../../../shared/components/delete-confirmation-dialogue/delete-confirmation-dialogue';
+import { FormGroup } from '@angular/forms';
+import { FormGroupSignal } from '../../../../../../shared/constant/button-signals.constant';
 
 @Component({
   selector: 'app-delete',
@@ -17,7 +19,14 @@ import {
 export class Delete {
 
   private dialog = inject(MatDialog);
-
+  frmGroup = signal<FormGroup>(FormGroupSignal());
+  
+   constructor() {
+    effect(() => {
+      const formGroup = FormGroupSignal();
+      this.frmGroup.set(formGroup);
+    });
+  }
   delete() {
     let dialogRef = this.dialog.open(DeleteConfirmationDialogue, {
       width: '450px',

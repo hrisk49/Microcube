@@ -90,6 +90,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly showEditButton = input<boolean>(false);
   readonly showDeleteButton = input<boolean>(false);
   readonly showViewButton = input<boolean>(false);
+  readonly showProgressButton = input<boolean>(false);
   readonly showPrintButton = input<boolean>(false);
   readonly enableSelection = input<boolean>(false);
   readonly tblClass = input<string>('');
@@ -123,6 +124,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
   readonly onFHEditClick = output<string>();
   readonly onFHDeleteClick = output<string>();
   readonly onFHViewClick = output<string>();
+  readonly onFHProgressClick = output<string>();
   readonly onChecked = output<{ data: string, checked: boolean }>();
   readonly onPrint = output<string>();
   readonly dataSourceChanged = output<T[]>();
@@ -575,6 +577,10 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
     this.onFHViewClick.emit(JSON.stringify(item));
   }
 
+  onFHProgress(item: T): void {
+    this.onFHProgressClick.emit(JSON.stringify(item));
+  }
+
   onPrintClick(item: T): void {
     this.onPrint.emit(JSON.stringify(item));
   }
@@ -643,7 +649,7 @@ export class DataGridComponent<T extends Record<string, any> = any> implements O
       columns.push('selection');
     }
 
-    if (this.showEditButton() || this.showDeleteButton() || this.showViewButton() || this.showPrintButton()) {
+    if (this.showEditButton() || this.showDeleteButton() || this.showViewButton() || this.showPrintButton() || this.showProgressButton()) {
       columns.push('actions');
     }
      

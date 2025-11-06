@@ -1,5 +1,6 @@
-import { Component, input, output, EventEmitter } from '@angular/core';
+import { Component, input, output, EventEmitter, Inject, Optional } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface InfoModalConfig {
   title?: string;
@@ -17,9 +18,10 @@ export interface InfoModalButton {
 }
 
 @Component({
-  selector: 'app-alert-info',
-  imports: [CommonModule],
-  templateUrl: './alert-info.html'
+    selector: 'app-alert-info',
+    imports: [CommonModule],
+    standalone: true,
+    templateUrl: './alert-info.html'
 })
 export class AlertInfoComponent {
   readonly isOpen = input<boolean>(false);
@@ -33,24 +35,26 @@ export class AlertInfoComponent {
   readonly close = output<void>();
   readonly buttonClick = output<{ action: string; button: InfoModalButton }>();
 
+  constructor(@Optional() @Inject(MAT_DIALOG_DATA) private dialogData: InfoModalConfig | null) {}
+
   get titleText(): string {
-    return this.config().title || this.title();
+    return this.dialogData?.title || this.config().title || this.title();
   }
 
   get messageText(): string {
-    return this.config().message || this.message();
+    return this.dialogData?.message || this.config().message || this.message();
   }
 
   get showClose(): boolean {
-    return this.config().showCloseButton ?? this.showCloseButton();
+    return this.dialogData?.showCloseButton ?? this.config().showCloseButton ?? this.showCloseButton();
   }
 
   get showBackdropValue(): boolean {
-    return this.config().showBackdrop ?? this.showBackdrop();
+    return this.dialogData?.showBackdrop ?? this.config().showBackdrop ?? this.showBackdrop();
   }
 
   get buttons(): InfoModalButton[] {
-    return this.config().buttons || this.getDefaultButtons();
+    return this.dialogData?.buttons || this.config().buttons || this.getDefaultButtons();
   }
 
   getButtonClasses(button: InfoModalButton, index: number): string {
@@ -58,7 +62,7 @@ export class AlertInfoComponent {
     if (index === 0) {
       return 'border-transparent text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500';
     }
-    
+
     // Secondary button (second button) - gray border (like Cancel button)
     return 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50 focus:ring-gray-500';
   }
@@ -84,4 +88,4 @@ export class AlertInfoComponent {
       this.onClose();
     }
   }
-} 
+}

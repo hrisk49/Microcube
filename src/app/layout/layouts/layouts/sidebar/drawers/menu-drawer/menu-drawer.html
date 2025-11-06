@@ -1,4 +1,5 @@
-<div class="h-full overflow-y-auto pb-16 bg-white">
+<div class="h-full overflow-y-auto pb-16 bg-white menu-drawer bg-[var(--theme-background)]"
+>
   <div class="p-6 pt-2">
 
     <div class="border-b border-gray-200">
@@ -21,10 +22,14 @@
       <div [@expandCollapse]="isSectionOpen('messageList') ? 'open' : 'closed'" class="overflow-hidden">
         <div class="space-y-3">
           <!-- Notification Items -->
-          <div class="max-w-md mx-auto bg-gray-0 p-4 pt-0 rounded-lg">
+          <div [routerLink]="'/dashboard'" class="max-w-md mx-auto bg-gray-0 p-4 pt-0 rounded-lg">
             <!-- Notification List -->
-            <div class="">
-              
+            <div class="flex gap-3 p-3 hover:bg-gray-100 rounded-lg transition cursor-pointer">
+              <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-800 break-words whitespace-normal">
+                    Inbox
+                    </p>
+                  </div>
             </div>
           </div>
         </div>

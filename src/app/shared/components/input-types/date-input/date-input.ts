@@ -7,6 +7,7 @@ import { DateAdapter, MAT_DATE_FORMATS } from '@angular/material/core';
 import { CustomDateAdapter } from '../../../adapter/custom-date.adapter';
 import { AppDateFormatsConstant } from '../../../constant/app-date-formats.constant';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { debounceTime } from 'rxjs';
 
 export type DateFormat = 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'YYYY/MM/DD' | 'DD-MM-YYYY' | 'MM-DD-YYYY' | 'YYYY-MM-DD' | 'DD MMM, YYYY';
 
@@ -49,8 +50,9 @@ export class DateInput {
   readonly maxYear = input<number>(2030);
   readonly enableYearRangeValidation = input<boolean>(true);
   readonly onBlurred = output<any>();
-  
-  constructor() {
+  readonly includeTime = input<number>(1);
+
+  constructor() { 
     // Add custom validator when component initializes
     effect(() => {
       const control = this.frmGroup().get(this.controlName());
@@ -67,6 +69,44 @@ export class DateInput {
     // Update date adapter format when dateFormat input changes
     effect(() => {
       this.dateAdapter.setFormat(this.dateFormat());
+    });
+
+     effect(() => {
+      const control = this.frmGroup().get(this.controlName());
+      if (control) {
+        // Subscribe to value changes
+        const subscription = control.valueChanges.pipe(debounceTime(1000)).subscribe(value => {
+          if (value instanceof Date) {
+            if (this.includeTime()===1) {
+              const isoString = this.convertDateToISO8601(value);
+              control.setValue(isoString, { emitEvent: false });
+              
+              // Update the input element to show the display format
+              const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              const displayValue = `${String(value.getDate()).padStart(2, '0')} ${monthNames[value.getMonth()]}, ${value.getFullYear()}`;
+              const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
+              if (inputElement) {
+                inputElement.value = displayValue;
+              }
+            } else {
+              const isoDateTime = this.convertDateToISO8601DateTime(value);
+              control.setValue(isoDateTime, { emitEvent: false });
+              
+              // Update the input element to show the display format
+              const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              const displayValue = `${String(value.getDate()).padStart(2, '0')} ${monthNames[value.getMonth()]}, ${value.getFullYear()}`;
+              const inputElement = document.querySelector(`[formcontrolname="${this.controlName()}"]`) as HTMLInputElement;
+              if (inputElement) {
+                inputElement.value = displayValue;
+              }
+            }
+          }
+        });
+        
+        // Clean up subscription when effect is destroyed
+        return () => subscription.unsubscribe();
+      }
+      return () => {}; // Return empty cleanup function if no subscription
     });
   }
 
@@ -97,10 +137,14 @@ export class DateInput {
   // Handle date selection from calendar
 onDateSelected(event: any): void {
   if (event.value instanceof Date) {
-    const date = event.value as Date;
+    let date = event.value as Date;
     const selectedYear = date.getFullYear();
     const control = this.frmGroup().get(this.controlName());
     
+
+    if (!this.includeTime()) {
+      date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
     if (control) {
       // Validate year range before setting the value
       if (selectedYear < 1900 || selectedYear > 2030) {
@@ -525,6 +569,16 @@ onFocus(event: FocusEvent): void {
     const input = event.target as HTMLInputElement;
     input.value = editable;
   }
+   else if (typeof currentValue === 'string' && this.isISOFormat(currentValue)) {
+    const date = new Date(currentValue);
+    if (!isNaN(date.getTime())) {
+      const convertedValue = this.convertDateObjectToInputFormat(date);
+      if (convertedValue) {
+        const input = event.target as HTMLInputElement;
+        input.value = convertedValue;
+      }
+    }
+  }
   else if (this.isDisplayFormat(currentValue)) {
     const convertedValue = this.convertDisplayFormatToInputFormat(currentValue);
     if (convertedValue) {
@@ -534,6 +588,42 @@ onFocus(event: FocusEvent): void {
     }
   }
 }
+
+// Add this helper method to check if the value is in ISO format
+private isISOFormat(value: string): boolean {
+  // Check for ISO date format (YYYY-MM-DD) or ISO datetime format (YYYY-MM-DDTHH:MM:SS)
+  const isoDatePattern = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?([+-]\d{2}:\d{2})?)?$/;
+  return isoDatePattern.test(value);
+}
+
+// Add this helper method to convert Date object to input format based on dateFormat
+private convertDateObjectToInputFormat(date: Date): string | null {
+  const format = this.dateFormat();
+  const separator = this.getDateSeparator();
+  
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  
+  switch (format) {
+    case 'DD/MM/YYYY':
+    case 'DD-MM-YYYY':
+      return `${day}${separator}${month}${separator}${year}`;
+    case 'MM/DD/YYYY':
+    case 'MM-DD-YYYY':
+      return `${month}${separator}${day}${separator}${year}`;
+    case 'YYYY/MM/DD':
+    case 'YYYY-MM-DD':
+      return `${year}${separator}${month}${separator}${day}`;
+    case 'DD MMM, YYYY':
+      // For this format, return as is since it's already user-friendly
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return `${day} ${monthNames[date.getMonth()]}, ${year}`;
+    default:
+      return null;
+  }
+}
+
 
 
 
@@ -1048,7 +1138,6 @@ private dateFormatValidator(control: AbstractControl): { [key: string]: any } | 
   // Check if the value is a Date object
   if (control.value instanceof Date) {
     dateObject = control.value as Date;
-    const format = this.dateFormat();
     
     // Check year range for Date objects
     const year = dateObject.getFullYear();
@@ -1062,17 +1151,36 @@ private dateFormatValidator(control: AbstractControl): { [key: string]: any } | 
       };
     }
     
-    // Format the Date object based on the current dateFormat
-    if (format === 'DD MMM, YYYY') {
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      value = `${String(dateObject.getDate()).padStart(2, '0')} ${monthNames[dateObject.getMonth()]}, ${dateObject.getFullYear()}`;
-    } else {
-      const separator = this.getDateSeparator();
-      value = format
-        .replace('YYYY', dateObject.getFullYear().toString())
-        .replace('MM', String(dateObject.getMonth() + 1).padStart(2, '0'))
-        .replace('DD', String(dateObject.getDate()).padStart(2, '0'));
+    // Date objects are valid - they're already validated
+    return null;
+  } else if (typeof control.value === 'string') {
+    value = control.value;
+    
+    // Check if it's an ISO format string (from previous conversion)
+    if (this.isISOFormat(value)) {
+      const date = new Date(value);
+      if (!isNaN(date.getTime())) {
+        const year = date.getFullYear();
+        if (year < 1900 || year > 2030) {
+          return {
+            yearOutOfRange: {
+              selectedYear: year,
+              minYear: 1900,
+              maxYear: 2030
+            }
+          };
+        }
+        return null; 
+      }
     }
+    
+    // Check if it's already in display format
+    if (this.isDisplayFormat(value)) {
+      return this.validateMonthAbbreviationFormat(value);
+    }
+    
+    // Otherwise validate against the configured dateFormat
+    return this.validateStandardDateFormat(value);
   } else {
     value = String(control.value || '');
   }
@@ -1237,4 +1345,53 @@ private getDaysInMonth(year: number, month: number): number {
     const control = this.frmGroup().get(this.controlName());
     return !!control?.hasError(errorCode) && control.touched;
   }
+
+
+
+   private convertDateToISO8601(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  /**
+   * Convert Date object to ISO 8601 datetime string (YYYY-MM-DDTHH:MM:SS) with time
+   */
+  private convertDateToISO8601DateTime(date: Date): string {
+   const year = date.getFullYear();
+const month = String(date.getMonth() + 1).padStart(2, '0');
+const day = String(date.getDate()).padStart(2, '0');
+const hours = String(date.getHours()).padStart(2, '0');
+const minutes = String(date.getMinutes()).padStart(2, '0');
+const seconds = String(date.getSeconds()).padStart(2, '0');
+const miliSecond = String(date.getMilliseconds()).padStart(3, '0');
+
+// Calculate the timezone offset correctly
+const totalOffsetMinutes = -date.getTimezoneOffset();
+const offsetSign = totalOffsetMinutes >= 0 ? '+' : '-';
+const offsetHours = String(Math.floor(Math.abs(totalOffsetMinutes / 60))).padStart(2, '0');
+const offsetMinutes = String(Math.abs(totalOffsetMinutes % 60)).padStart(2, '0');
+const timezoneOffset = `${offsetSign}${offsetHours}:${offsetMinutes}`;
+
+// Combine all parts into a complete ISO 8601 string
+if(this.includeTime()===1){
+  const isoString = `${year}-${month}-${day}`;
+  return isoString;
 }
+if(this.includeTime()===2){
+  const isoString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+  return isoString;
+}
+if(this.includeTime()===3){
+  const isoString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${miliSecond}`;
+  return isoString;
+}
+else{
+    const isoString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${miliSecond}${timezoneOffset}`
+    return isoString;
+}
+
+  }
+}
+

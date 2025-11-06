@@ -1,7 +1,7 @@
-import {Component, Inject, OnInit, input, output, EventEmitter} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import { Component, OnInit, input, Output, EventEmitter, effect, Optional } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { Button } from '../../components/input-types/button/button';
 
@@ -38,10 +38,14 @@ export class DataSelectionModal implements OnInit {
   // result = output<any | undefined>();
   multiSelect = false;
 
-  // Inputs/Outputs
+  // Inputs
+  data = input<any>();
   allowDoubleClickSelect = input<boolean>(true);
-  readonly onFindClicked = output<string>();
-  readonly onRowDoubleClick = output<any>();
+  
+  // Outputs
+  @Output() onFindClicked = new EventEmitter<string>();
+  @Output() onRowDoubleClick = new EventEmitter<any>();
+  @Output() result = new EventEmitter<any>();
   
   // Configurable text from modal data
   apiSearchPlaceholder: string = 'Enter search term...';
@@ -50,10 +54,20 @@ export class DataSelectionModal implements OnInit {
   noDataMessage: string = 'No data available. Use the search field above to find items.';
   loadingMessage: string = 'Searching...';
   
-  constructor(
-    public dialogRef: MatDialogRef<any>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
+  constructor(@Optional() public dialogRef?: MatDialogRef<any>) {
+    this.updateFromData();
+  }
+
+  ngOnInit(): void {
+    effect(() => {
+      if (this.data()) {
+        this.updateFromData();
+      }
+    });
+  }
+
+  private updateFromData(): void {
+    const data = this.data();
     this.dataSource = data?.pickTableDataSource ?? [];
     this.filteredDataSource = [...this.dataSource];
     this.pickTablePair = data?.pickTablePair ?? new Map<string, string>();
@@ -68,12 +82,12 @@ export class DataSelectionModal implements OnInit {
     this.updatePagination();
   }
 
-  ngOnInit(): void {
-  }
-
   dialogClose(value: any) {
-    // this.result.emit(value);
-    this.dialogRef.close(value);
+    if (this.dialogRef) {
+      this.dialogRef.close(value);
+    } else {
+      this.result.emit(value);
+    }
   }
 
   // Get ordered column keys based on pickTablePair Map

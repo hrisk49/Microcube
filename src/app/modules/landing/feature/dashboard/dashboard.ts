@@ -1,3 +1,4 @@
+
 import {Component, OnInit} from '@angular/core';
 import Highcharts from 'highcharts';
 import 'highcharts/highcharts-3d';

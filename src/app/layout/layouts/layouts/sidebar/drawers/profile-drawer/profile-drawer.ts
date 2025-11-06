@@ -2,12 +2,14 @@ import {Component, signal} from '@angular/core';
 import {ChatBox} from './drawers/chat-box/chat-box';
 import {MatIcon} from '@angular/material/icon';
 import {animate, state, style, transition, trigger} from '@angular/animations';
+import { ThemePickerComponent } from '../../themePicker/theme-picker.component';
 
 @Component({
   selector: 'app-profile-drawer',
   imports: [
     ChatBox,
     MatIcon,
+    ThemePickerComponent,
   ],
   templateUrl: './profile-drawer.html',
   standalone: true,

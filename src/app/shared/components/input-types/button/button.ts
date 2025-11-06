@@ -46,7 +46,7 @@ export class Button {
     const customClasses = this.cssClass() || '';
   
     // Apply default background color inline
-    const defaultBg = 'bg-[#086AD8]';
+    const defaultBg = 'theme-primary-bg';
   
     if (customClasses) {
       return `${baseClasses} ${customClasses}`;

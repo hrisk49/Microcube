@@ -17,3 +17,5 @@ export const FormGroupSignal = signal<FormGroup>(new FormGroup({}));
 export const ONCLICK_SAVE = signal(false);
 export const ONCLICK_VIEW = signal(false);
 export const ONCLICK_RESET = signal(false);
+export const ONCLICK_EXIT = signal(false);
+export const ONCLICK_DELETE = signal(false);

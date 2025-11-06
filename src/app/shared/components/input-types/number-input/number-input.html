@@ -1,5 +1,5 @@
 <div [formGroup]="frmGroup()" [ngClass]="isVertical() ? 'input-container-vertical': 'input-container-horizontal'">
-  <label class="input-label relative">
+  <label class="input-label">
     {{ label() }}
     @if (isRequired()) {
       <span class="text-red-500">*</span>
@@ -30,7 +30,7 @@
     [maxLength]="maxLen() ?? null"
     [minLength]="minLen() ?? null"
     class="custom-input"
-     autocomplete="off"
+    autocomplete="off"
     step="1"/>
         @if (frmGroup().get(controlName())?.value && !isReadonly()) {
       <button 

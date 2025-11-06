@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ThemeService } from './shared/services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -8,6 +9,12 @@ import { RouterOutlet } from '@angular/router';
   standalone: true,
   styleUrl: './app.scss'
 })
-export class App {
-  protected title = 'SwiftFusion';
+export class App implements OnInit {
+  protected title = 'LdsComponentProject';
+
+  constructor(private themeService: ThemeService) {}
+
+  ngOnInit() {
+    // Theme service will automatically initialize the saved theme
+  }
 }

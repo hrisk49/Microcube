@@ -7,6 +7,7 @@ import {Reset} from './actions/reset/reset';
 import {Exit} from './actions/exit/exit';
 import {Update} from './actions/update/update';
 import {BUTTON_VISIBILITY} from '../../../../shared/constant/button-signals.constant';
+import { SidebarService } from '../../../service/sidebar.service';
 
 @Component({
   selector: 'app-navbar',
@@ -27,10 +28,12 @@ export class Navbar {
 
   buttons = BUTTON_VISIBILITY;
   toggleMenu: boolean = false;
+  sidebarExpanded: boolean = false;
+  constructor(private sidebarService: SidebarService) {
+  }
 
-  constructor() {
-    effect(() => {
-      //console.log('Navbar actions:', this.buttons());
-    });
+  toggleSidebar(): void {
+    this.sidebarService.toggleSidebar();
+    console.log('Navbar toggle clicked');
   }
 }

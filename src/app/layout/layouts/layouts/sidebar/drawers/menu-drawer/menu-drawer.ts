@@ -4,6 +4,8 @@ import {MatIcon} from '@angular/material/icon';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {HttpClient} from '@angular/common/http';
 import {CommonModule} from '@angular/common';
+import { ThemeService } from '../../../../../../shared/services/theme.service';
+import { Subscription } from 'rxjs';
 
 interface UserAccessItem {
   FunctionId: string;
@@ -53,17 +55,26 @@ export class MenuDrawer implements OnInit {
   };
 
   userAccessList: UserAccessItem[] = [];
+  mxMessagesList: UserAccessItem[] = [];
+  messageListItems: UserAccessItem[] = [];
+  activeTheme: string = localStorage.getItem('selectedTheme') || '';
   isLoading = true;
   error: string | null = null;
-
-  constructor(private http: HttpClient) {}
+private themeSub?: Subscription;
+  constructor(
+    private http: HttpClient,
+    private themeService: ThemeService
+  ) {}
 
   ngOnInit(): void {
     this.loadUserAccessList();
+     this.themeSub = this.themeService.currentTheme$.subscribe(themeId => {
+      this.activeTheme = themeId;
+    });
   }
 
   loadUserAccessList(): void {
-    const apiUrl = 'http://192.168.20.250:8090/api/user-login/get-user-access-list';
+    const apiUrl = 'http://192.168.20.93:8091/api/user-login/get-user-access-list';
     const params = {
       userId: localStorage.getItem('userId'),
       appId: '133',
@@ -75,6 +86,7 @@ export class MenuDrawer implements OnInit {
       .subscribe({
         next: (data) => {
           this.userAccessList = data;
+          localStorage.setItem('userAccessList', JSON.stringify(data));
           this.isLoading = false;
         },
         error: (err) => {
@@ -83,7 +95,7 @@ export class MenuDrawer implements OnInit {
           this.isLoading = false;
         }
       });
-  }
+  } 
 
   toggleSection(section: string): void {
     this.openSections[section] = !this.openSections[section];

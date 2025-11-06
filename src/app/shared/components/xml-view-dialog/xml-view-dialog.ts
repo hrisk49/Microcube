@@ -17,32 +17,36 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class XmlViewDialog implements AfterViewInit {
   xmlData: string;
+  title: string;
+  subTitle: string;
   
   @ViewChild('xmlContainer', { static: false }) xmlContainer!: ElementRef<HTMLDivElement>;
 
   constructor(
     public dialogRef: MatDialogRef<XmlViewDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: { xmlData: string }
+    @Inject(MAT_DIALOG_DATA) public data: { xmlData: string, title: string, subTitle: string }
   ) {
     this.xmlData = data.xmlData;
-  }
+    this.title = data.title || 'XML Message Preview';
+    this.subTitle = data.subTitle || 'Generated XML Content:';
+    }
   
   ngAfterViewInit(): void {
     // Ensure horizontal scrollbar starts at the left when XML data loads
-    setTimeout(() => {
-      if (this.xmlContainer && this.xmlContainer.nativeElement) {
-        // Reset both vertical and horizontal scroll to start position
-        this.xmlContainer.nativeElement.scrollTop = 0;
-        this.xmlContainer.nativeElement.scrollLeft = 0;
+    // setTimeout(() => {
+    //   if (this.xmlContainer && this.xmlContainer.nativeElement) {
+    //     // Reset both vertical and horizontal scroll to start position
+    //     this.xmlContainer.nativeElement.scrollTop = 0;
+    //     this.xmlContainer.nativeElement.scrollLeft = 0;
         
-        // Force scroll to left position
-        this.xmlContainer.nativeElement.scrollTo({
-          left: 0,
-          top: 0,
-          behavior: 'auto'
-        });
-      }
-    }, 200);
+    //     // Force scroll to left position
+    //     this.xmlContainer.nativeElement.scrollTo({
+    //       left: 0,
+    //       top: 0,
+    //       behavior: 'auto'
+    //     });
+    //   }
+    // }, 200);
   }
 
   copyToClipboard(): void {

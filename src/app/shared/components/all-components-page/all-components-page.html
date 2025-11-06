@@ -14,6 +14,8 @@
 
           <div class="form-grid-col-1">
             <!-- Primary Fields Section -->
+
+             @if (businessHeaderPanel()) {
             <section class="primary-fields-section bg-gray-50 rounded-lg  mb-6 grid grid-cols-3">
          
               <!-- Transaction Reference Subsection -->
@@ -23,7 +25,7 @@
                   [controlName]="'textBox'"
                   [label]="'Transaction Reference'"
                   [isReadonly]="false"
-                  [isVertical]="true"
+                  displayMode = "vertical"
                   [tooltip]="'Auto-generated based on currency and category'"
                   [tooltipPosition]="'above'"
                   [tooltipDelay]="300"
@@ -45,7 +47,6 @@
                   [frmGroup]="frmGroup"
                   [controlName]="'id'"
                   [label]="'Account ID'"
-                  [isReadonly]="true"
                   [isVertical]="true"
                   [isDotsVisible]="true"
                   [tooltip]="'Click to select account ID'"
@@ -58,78 +59,21 @@
               </div>
 
               <!-- Account Selection Modal Subsection -->
-               @if(showModal){
+               <!-- @if(showModal){
                 <div class=" component-section">
                   <lds-modal
                     [isVisible]="showModal"
-                    [modalTitle]="'Select Account'"
-                    [cssClass]="'modal-xl'"
-                  >
-                    <!-- Modal Search -->
-                    <div class="modal-search-section">
-                      <div class="modal-search-wrapper">
-                        <input class="modal-search-input" placeholder="Search accounts...">
-                        <i class="fa fa-search modal-search-icon"></i>
-                      </div>
-                    </div>
-  
-                    <!-- Modal Data Grid -->
-                    <div class="p-4">
-                      <lds-data-grid
-                        [id]="'account-selection-grid'"
-                        [dataSource]="sampleTransactions()"
-                        [initPageSize]="8"
-                        [enableSelection]="true"
-                        [showEditButton]="true"
-                        [showDeleteButton]="true"
-                        [showViewButton]="true"
-                        [showPrintButton]="true"
-                        [useInlineEdit]="true"
-                        [editableColumns]="['amount', 'status', 'priority', 'currency', 'country', 'productCategory', 'subCategory', 'assignedRole']"
-                        [numberColumns]="['amount', 'calculatedTax', 'totalAmount', 'taxRate']"
-                        [dropdownColumns]="transactionDropdownColumns()"
-                        [dropdownOptions]="transactionDropdownOptions()"
-                        [selectedColumns]="['id', 'amount', 'currency', 'country', 'productCategory', 'subCategory', 'status', 'riskLevel', 'totalAmount', 'requiresApproval']"
-                        [rowDesignerList]="transactionRowDesigners()"
-                        [tblClass]="'enhanced-transaction-table'"
-                        (onFHEditClick)="onTransactionEdit($event)"
-                        (onFHDeleteClick)="onTransactionDelete($event)"
-                        (onFHViewClick)="onTransactionView($event)"
-                        (onPrint)="onTransactionPrint($event)"
-                        (onChecked)="onTransactionRowSelect($event)"
-                        (onSelectAllChange)="onTransactionSelectAll($event)"
-                        (dataSourceChanged)="onTransactionDataChanged($event)"
-                      ></lds-data-grid>
-                    </div>
-  
-                    <!-- Modal Footer -->
-                    <div slot="footer">
-                      <button class="modal-btn modal-btn-primary">Select Account</button>
-                    </div>
-                  </lds-modal>
+                    [modalTitle]="'Modal Title'"
+                    [cssClass]="'modal-sm'"
+                      [modalComponent]="OtherComponentsPageComponent"
+                      [modalComponentData]="modalComponentData || modalConfig"
+                    (modalClosed)="onModalClose(false)"
+                  ></lds-modal>
                 </div>
-               }
+               } -->
             
 
-              <!-- Transaction Amount Subsection -->
-              <div class=" component-section">
-                <lds-amount
-                  [frmGroup]="frmGroup"
-                  [controlName]="'amount'"
-                  [label]="'Transaction Amount'"
-                
-                  [isVertical]="true"
-                  [decimalPlaces]="2"
-                  [allowLeadingZeros]="false"
-                  [maxLen]="12"
-                  [tooltip]="'Amount affects tax calculation and approval requirements'"
-                  (onBlurred)="onBlur($event)"
-                  (onChanged)="onAmountChanged($event)"
-                ></lds-amount>
-                <div class="text-xs text-gray-600 mt-1" *ngIf="isHighValueTransaction()">
-                  ⚠️ High Value Transaction - Approval Required
-                </div>
-              </div>
+           
 
               <!-- Amount in Words Subsection -->
               <div class=" component-section">
@@ -147,13 +91,13 @@
                 ></app-amount-to-word-input>
               </div>
             </section>
-
+          }
             <section class="sub-panel">
               <app-expansion-sub-panel-header
               [isOpenSignal]="subPanel1"
               [subPanelTitle]="'Configure fields'"
             />
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-2">
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4 p-2">
                 <!-- Currency Subsection -->
                 <div class="subsection component-section">
                   <app-select-option-field
@@ -254,10 +198,10 @@
             <!-- Standard Fields Section -->
             <section style="margin-top: 10px;" class="bg-gray-50 rounded-lg ">
               <app-expansion-panel-header
-              [isOpenSignal]="businessHeaderPanel"
+              [isOpenSignal]="businessHeaderPanel2"
               [panelTitle]="'Standard Fields'"
             />
-              <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 p-2">
+              <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4 p-2">
                 <!-- Priority Level Subsection -->
                 <div class="subsection component-section">
                   <app-select-option-field
@@ -277,7 +221,7 @@
                     [frmGroup]="frmGroup"
                     [controlName]="'multiSelect'"
                     [label]="'Additional Services'"
-                    [isReadonly]="true"
+                    (selectionChange)="onCategoryChanged($event)"
                     [isVertical]="true"
                     [options]="dropdownOptions"
                   ></app-multi-select-option-field>
@@ -290,8 +234,9 @@
                     [controlName]="'date'"
                     [label]="'Transaction Date'"
                     [isVertical]="true"
-                    [dateFormat]="'DD-MM-YYYY'"
+                    [dateFormat]="'YYYY-MM-DD'"
                     [maxYear]="2034"
+                    [includeTime]=2
                     [enableYearRangeValidation]="false"
                     (onBlurred)="onBlur($event)"
                   ></app-date-input>
@@ -409,21 +354,29 @@
             </section> -->
 
             <section class="action-buttons-section rounded-lg p-4 mb-6 mt-6">
-              <lds-btn
-              id="saveBtn"
-              value="save"
-              labelText="Save"
-              (onClick)="addCurrentFormToGrid()"
-             >
-            </lds-btn>
-            
+              <div class="flex gap-4">
+                <lds-btn
+                  id="saveBtn"
+                  value="save"
+                  labelText="Save"
+                  (onClick)="addCurrentFormToGrid()"
+                >
+                </lds-btn>
+                <lds-btn
+                  id="openSelfBtn"
+                  value="open"
+                  labelText="Open in Modal"
+                  (onClick)="openModal()"
+                >
+                </lds-btn>
+              </div>
             </section>
 
 
             <!-- Transaction Grid Section -->
             <section class="transaction-grid-section bg-white rounded-lg shadow-sm">
               <app-expansion-panel-header
-              [isOpenSignal]="businessHeaderPanel"
+              [isOpenSignal]="businessHeaderPanel3"
               [panelTitle]="'Transaction Grid'"
             />
               
@@ -457,16 +410,21 @@
               </div>
             </section>
           </div>
+
+
         </div>
       </div>
     </form>
 
     <!-- Data Selection Modal -->
-    <app-data-selection-modal
-      *ngIf="isDataSelectionModalOpen()"
-      (onFindClicked)="onFindClicked($event)"
-      (onRowDoubleClick)="onDataSelectionResult($event)"
-      (result)="onDataSelectionResult($event)"
-    ></app-data-selection-modal>
+<lds-modal
+  [isVisible]="showModal"
+  [modalTitle]="'Account Selection'"
+  [cssClass]="'modal-sm'"
+  [modalComponent]="modalComponent"
+  [modalComponentData]="modalComponentData"
+  (modalClosed)="onModalClose(false)"
+  (modalResult)="onModalResult($event)"
+></lds-modal>
   }
 </div>

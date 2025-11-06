@@ -1,6 +1,7 @@
-import { Component, input, output, EventEmitter } from '@angular/core';
+import { Component, input, output, EventEmitter, Inject, Optional } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 export interface SuccessModalConfig {
   title?: string;
@@ -34,24 +35,26 @@ export class AlertSuccessComponent {
   readonly close = output<void>();
   readonly buttonClick = output<{ action: string; button: SuccessModalButton }>();
 
+  constructor(@Optional() @Inject(MAT_DIALOG_DATA) private dialogData: SuccessModalConfig | null) {}
+
   get titleText(): string {
-    return this.config().title || this.title();
+    return this.dialogData?.title || this.config().title || this.title();
   }
 
   get messageText(): string {
-    return this.config().message || this.message();
+    return this.dialogData?.message || this.config().message || this.message();
   }
 
   get showClose(): boolean {
-    return this.config().showCloseButton ?? this.showCloseButton();
+    return this.dialogData?.showCloseButton ?? this.config().showCloseButton ?? this.showCloseButton();
   }
 
   get showBackdropValue(): boolean {
-    return this.config().showBackdrop ?? this.showBackdrop();
+    return this.dialogData?.showBackdrop ?? this.config().showBackdrop ?? this.showBackdrop();
   }
 
   get buttons(): SuccessModalButton[] {
-    return this.config().buttons || this.getDefaultButtons();
+    return this.dialogData?.buttons || this.config().buttons || this.getDefaultButtons();
   }
 
   getButtonClasses(button: SuccessModalButton, index: number): string {
